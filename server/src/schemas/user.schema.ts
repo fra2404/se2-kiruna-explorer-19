@@ -1,6 +1,6 @@
 import mongoose, { Document, Schema } from 'mongoose';
 import { hashSync, genSaltSync } from 'bcrypt';
-import { IUser } from '@interfaces/IUser';
+import { IUser } from '@interfaces/user.interface';
 import { UserRoleEnum } from '@utils/enums/user-role.enum';
 
 export type UserDocument = IUser & Document;

@@ -11,8 +11,10 @@
     "paths": {
       "@interfaces/*": ["interfaces/*"],
       "@utils/*": ["utils/*"],
-      "@schemas/*": ["schemas/*"]
-      // Aggiungi altri alias se necessario
+      "@schemas/*": ["schemas/*"],
+      "@middlewares/*": ["middlewares/*"],
+      "@services/*": ["services/*"],
+      "@controllers/*": ["controllers/*"]
     }
   },
   "include": ["src/**/*.ts"],
