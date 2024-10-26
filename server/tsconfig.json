@@ -6,7 +6,14 @@
     "rootDir": "./src",
     "strict": true,
     "esModuleInterop": true,
-    "skipLibCheck": true
+    "skipLibCheck": true,
+    "baseUrl": "./src", // Imposta la base URL per i percorsi assoluti
+    "paths": {
+      "@interfaces/*": ["interfaces/*"],
+      "@utils/*": ["utils/*"],
+      "@schemas/*": ["schemas/*"]
+      // Aggiungi altri alias se necessario
+    }
   },
   "include": ["src/**/*.ts"],
   "exclude": ["node_modules"]
