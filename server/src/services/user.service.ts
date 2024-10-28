@@ -3,6 +3,7 @@ import jwt from 'jsonwebtoken';
 import User from '../schemas/user.schema';
 import { IUser } from '../interfaces/user.interface';
 import { CustomError } from '@utils/customError';
+import { IUserResponse } from '@interfaces/user.return.interface';
 
 const secretKey = process.env.JWT_SECRET || 'your-secret-key';
 
@@ -34,11 +35,26 @@ export const createNewUser = async (userData: Partial<IUser>): Promise<string> =
     return 'User created successfully';
 };
 
-export const getUserById = async (id: string): Promise<IUser | null> => {
-    return await User.findById(id);
+
+export const getUserById = async (id: string): Promise<IUserResponse | null> => {
+    const user = await User.findById(id);
+    if (!user) {
+        return null;
+    }
+
+    const userResponse: IUserResponse = {
+        id: user.id.toString(),
+        name: user.name,
+        email: user.email,
+        surname: user.surname,
+        phone: user.phone,
+        role: user.role,
+    };
+
+    return userResponse;
 };
 
-export const loginUser = async (email: string, password: string): Promise<{ user: IUser; token: string }> => {
+export const loginUser = async (email: string, password: string): Promise<{ token: string }> => {
     const user = await User.findOne({ email });
     if (!user) {
         throw new CustomError('Invalid email or password', 401);
@@ -54,5 +70,5 @@ export const loginUser = async (email: string, password: string): Promise<{ user
         expiresIn: '1h',
     });
 
-    return { user, token };
+    return { token };
 };
