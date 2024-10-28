@@ -51,7 +51,7 @@ import { IUserResponse } from '@interfaces/user.return.interface';
 
 /**
  * @swagger
- * /users:
+ * /api/users:
  *   get:
  *     summary: Get all users
  *     tags: [Users]
@@ -76,7 +76,7 @@ export const getUsers = async (req: CustomRequest, res: Response, next: NextFunc
 
 /**
  * @swagger
- * /users:
+ * /api/users:
  *   post:
  *     summary: Create a new user
  *     tags: [Users]
@@ -120,7 +120,7 @@ export const createUser = async (req: CustomRequest, res: Response, next: NextFu
 
 /**
  * @swagger
- * /users/login:
+ * /api/users/login:
  *   post:
  *     summary: Login a user
  *     tags: [Users]
@@ -162,7 +162,7 @@ export const login = async (req: CustomRequest, res: Response, next: NextFunctio
 
 /**
  * @swagger
- * /users/me:
+ * /api/users/me:
  *   get:
  *     summary: Get current user
  *     tags: [Users]
