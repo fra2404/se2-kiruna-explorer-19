@@ -176,14 +176,19 @@ export const login = async (req: CustomRequest, res: Response, next: NextFunctio
  */
 export const getMe = async (req: CustomRequest, res: Response, next: NextFunction): Promise<void> => {
   try {
-    const userId = req.user?.id;
-    if (!userId) {
-      throw new CustomError('User ID not found in token', 400);
+    if (!req.user) {
+      throw new CustomError('User not authenticated', 401);
     }
-    const user: IUserResponse | null = await getUserById(userId);
-    if (!user) {
-      throw new CustomError('User not found', 404);
-    }
+
+    const user: IUserResponse = {
+      id: req.user.id,
+      name: req.user.name,
+      email: req.user.email,
+      surname: req.user.surname,
+      phone: req.user.phone,
+      role: req.user.role,
+    };
+
     res.json(user);
   } catch (error) {
     next(error);
