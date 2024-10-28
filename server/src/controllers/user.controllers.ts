@@ -67,7 +67,7 @@ import { IUserResponse } from '@interfaces/user.return.interface';
  */
 export const getUsers = async (req: CustomRequest, res: Response, next: NextFunction): Promise<void> => {
   try {
-    const users: IUser[] = await getAllUsers();
+    const users: IUserResponse[] = await getAllUsers();
     res.json(users);
   } catch (error) {
     next(error);

@@ -7,8 +7,16 @@ import { IUserResponse } from '@interfaces/user.return.interface';
 
 const secretKey = process.env.JWT_SECRET || 'your-secret-key';
 
-export const getAllUsers = async (): Promise<IUser[]> => {
-    return await User.find();
+export const getAllUsers = async (): Promise<IUserResponse[]> => {
+    const users = await User.find();
+    return users.map(user => ({
+        id: user.id.toString(),
+        name: user.name,
+        email: user.email,
+        surname: user.surname,
+        phone: user.phone,
+        role: user.role,
+    }));
 };
 
 export const createNewUser = async (userData: Partial<IUser>): Promise<string> => {
