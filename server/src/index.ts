@@ -1,7 +1,8 @@
-import dotenv from 'dotenv';
 import connectDB from './config/database';
 import { app } from './app';
 import 'module-alias/register';
+import dotenv from 'dotenv';
+import { setupSwagger } from './swagger';
 
 // Carica le variabili d'ambiente dal file .env
 dotenv.config();
@@ -13,6 +14,9 @@ const PORT = process.env.PORT || 5000;
 
 // Connetti al database
 connectDB();
+
+// Configura Swagger
+setupSwagger(app);
 
 app.listen(PORT, () => {
   console.log(`Server started on port ${PORT}`);
