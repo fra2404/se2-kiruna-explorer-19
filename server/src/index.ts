@@ -1,10 +1,11 @@
-import dotenv from 'dotenv';
 import connectDB from './config/database';
+import dotenv from 'dotenv';
 import { app } from './app';
 import 'module-alias/register';
 
-// Carica le variabili d'ambiente dal file .env
 dotenv.config();
+
+// Carica le variabili d'ambiente dal file .env
 
 // Log per verificare il caricamento delle variabili d'ambiente
 console.log('MONGO_URI:', process.env.MONGO_URI);

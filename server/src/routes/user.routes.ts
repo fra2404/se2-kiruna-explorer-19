@@ -1,12 +1,14 @@
-import { createUser, getUsers } from '@controllers/user.controllers';
+import { createUser, getUsers, getMe, login } from '@controllers/user.controllers';
 import { authenticateUser } from '@middlewares/auth.middleware';
 import { handleValidationErrors } from '@middlewares/validation.middleware';
-import { validateUser } from '@utils/validators/user.validator';
+import { validateUserLogin, validateUserSignUp } from '@utils/validators/user.validator';
 import express from 'express';
 
 const router = express.Router();
 
-router.get('/users', authenticateUser, getUsers);
-router.post('/users', validateUser, handleValidationErrors, createUser);
+router.get('/', authenticateUser, getUsers);
+router.post('/signup', validateUserSignUp, handleValidationErrors, createUser);
+router.post('/login', validateUserLogin, handleValidationErrors, login);
+router.get('/me', authenticateUser, getMe);
 
 export default router;

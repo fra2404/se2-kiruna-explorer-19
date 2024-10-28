@@ -1,0 +1,58 @@
+import bcrypt from 'bcrypt';
+import jwt from 'jsonwebtoken';
+import User from '../schemas/user.schema';
+import { IUser } from '../interfaces/user.interface';
+import { CustomError } from '@utils/customError';
+
+const secretKey = process.env.JWT_SECRET || 'your-secret-key';
+
+export const getAllUsers = async (): Promise<IUser[]> => {
+    return await User.find();
+};
+
+export const createNewUser = async (userData: Partial<IUser>): Promise<string> => {
+    const { name, email, password, surname, phone, role } = userData;
+
+    // Hash the password
+    const salt = await bcrypt.genSalt(10);
+    if (!password) {
+        throw new CustomError('Password is required', 400);
+    }
+    const hashedPassword = await bcrypt.hash(password, salt);
+
+    const newUser = new User({
+        name,
+        email,
+        password: hashedPassword,
+        surname,
+        phone,
+        role,
+    });
+
+    await newUser.save();
+
+    return 'User created successfully';
+};
+
+export const getUserById = async (id: string): Promise<IUser | null> => {
+    return await User.findById(id);
+};
+
+export const loginUser = async (email: string, password: string): Promise<{ user: IUser; token: string }> => {
+    const user = await User.findOne({ email });
+    if (!user) {
+        throw new CustomError('Invalid email or password', 401);
+    }
+
+    const isMatch = await bcrypt.compare(password, user.password);
+    if (!isMatch) {
+        throw new CustomError('Invalid email or password', 401);
+    }
+
+    // Generate JWT
+    const token = jwt.sign({ id: user._id, email: user.email, role: user.role }, secretKey, {
+        expiresIn: '1h',
+    });
+
+    return { user, token };
+};
