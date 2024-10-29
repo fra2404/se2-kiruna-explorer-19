@@ -25,7 +25,7 @@ const userSchema = new Schema<UserDocument>(
     },
     phone: {
       type: String,
-      required: true,
+      required: false,
     },
     role: {
       type: String,
