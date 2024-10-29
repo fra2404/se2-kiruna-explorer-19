@@ -1,47 +1,71 @@
 import { getUsers } from '@controllers/user.controllers';
 import { IUserResponse } from '@interfaces/user.return.interface';
-import { jest, describe, expect, beforeEach, it } from '@jest/globals'
+import { jest, describe, expect, beforeEach } from '@jest/globals'
 import { Request, Response, NextFunction, json } from 'express';
 
-//service -> controller -> route
+//SERVICE TESTS
+import { getAllUsers } from '../services/user.service';
+import User from '../schemas/user.schema';
 
+jest.mock("../schemas/user.schema");
 
-jest.mock('@services/user.service');
+//Suite for user services
+describe("Tests for user services", () => {
+    describe("Tests for getAllUsers", () => {
+        //test 1
+        test("Should return all users", async () => {
+            //Mock of the datas thath User.find() should return
+            const mockUsers = [
+                {
+                    id: "1",
+                    name: "John",
+                    email: "john@example.com",
+                    surname: "Doe",
+                    phone: "123456789",
+                    role: "admin",
+                },
+                {
+                    id: "2",
+                    name: "Jane",
+                    email: "jane@example.com",
+                    surname: "Smith",
+                    phone: "987654321",
+                    role: "user",
+                },
+            ];
 
-describe('getUsers', () => {
-    let req: Partial<Request>;
-    let res: Partial<Response>;
-    let next: NextFunction;
+            //Mock of User.find
+            const findMock = jest.spyOn(User, "find").mockResolvedValue(mockUsers as any);
 
-    beforeEach(() => {
-        req = {};
-        res = {
-            //response mock check
-            json: jest.fn() as unknown as (data: any) => Response,
-        };
-        //errors mock check
-        next = jest.fn();
-    });
+            //Call of getAllUsers
+            const result = await getAllUsers();
 
-    it('should return all users', async () => {
-        const mockUsers: IUserResponse[] = [
-            { id: '1', name: 'Francesco', surname: 'Albano', email: 'example1@mail.com', phone: '+393271540653', role: 'visitor' },
-            { id: '2', name: 'Sergio', surname: 'Cicero', email: 'example2@mail.com', phone: '+393271540653', role: 'resident' },
-        ];
+            //Checking result
+            expect(result).toEqual([
+                {
+                    id: "1",
+                    name: "John",
+                    email: "john@example.com",
+                    surname: "Doe",
+                    phone: "123456789",
+                    role: "admin",
+                },
+                {
+                    id: "2",
+                    name: "Jane",
+                    email: "jane@example.com",
+                    surname: "Smith",
+                    phone: "987654321",
+                    role: "user",
+                },
+            ]);
 
-        await getUsers(req as Request, res as Response, next);
-
-        expect(res.json).toHaveBeenCalledWith(mockUsers);
-        expect(next).not.toHaveBeenCalled();
-    });
-
-    it('should return an error', async () => {
-        const error = new Error('Connection error');
-
-        await getUsers(req as Request, res as Response, next);
-
-        expect(res.json).not.toHaveBeenCalled();
-        expect(next).toHaveBeenCalledWith(error);
+            expect(User.find).toHaveBeenCalledTimes(1);
+            findMock.mockRestore();
+        });
     });
 });
 
+//CONTROLLER TESTS
+
+//ROUTE TESTS
