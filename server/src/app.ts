@@ -1,6 +1,6 @@
 import express from 'express';
 import cookieParser from 'cookie-parser';
-import userRoutes from './routes/user.routes';
+import router from './routes/routes';
 import { errorHandler } from './middlewares/errorHandler.middleware';
 
 export const app = express();
@@ -9,7 +9,7 @@ app.use(express.json());
 app.use(cookieParser());
 
 // Rotte
-app.use('/api', userRoutes);
+app.use('/api', router);
 
 // Middleware di gestione degli errori
 app.use(errorHandler);

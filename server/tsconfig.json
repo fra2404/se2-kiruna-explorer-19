@@ -7,14 +7,14 @@
     "strict": true,
     "esModuleInterop": true,
     "skipLibCheck": true,
-    "baseUrl": "./src", // Imposta la base URL per i percorsi assoluti
+    "baseUrl": "./src",
     "paths": {
       "@interfaces/*": ["interfaces/*"],
       "@utils/*": ["utils/*"],
       "@schemas/*": ["schemas/*"],
-      "@middlewares/*": ["middlewares/*"],
+      "@controllers/*": ["controllers/*"],
       "@services/*": ["services/*"],
-      "@controllers/*": ["controllers/*"]
+      "@middlewares/*": ["middlewares/*"]
     }
   },
   "include": ["src/**/*.ts"],
