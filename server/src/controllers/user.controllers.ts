@@ -1,7 +1,12 @@
 import { Response, NextFunction } from 'express';
 import { CustomRequest } from '@interfaces/customRequest.interface';
 import { IUser } from '../interfaces/user.interface';
-import { createNewUser, getAllUsers, getUserById, loginUser } from '@services/user.service';
+import {
+  createNewUser,
+  getAllUsers,
+  getUserById,
+  loginUser,
+} from '@services/user.service';
 import { CustomError } from '@utils/customError';
 import { IUserResponse } from '@interfaces/user.return.interface';
 
@@ -31,9 +36,10 @@ import { IUserResponse } from '@interfaces/user.return.interface';
  *           type: string
  *           description: The user's role
  *           enum:
- *             - TIZIO1
- *             - TIZIO2
- *             - TIZIO3
+ *             - PLANNER
+ *             - DEVELOPER
+ *             - VISITOR
+ *             - RESIDENT
  *     TokenResponse:
  *       type: object
  *       properties:
@@ -65,7 +71,11 @@ import { IUserResponse } from '@interfaces/user.return.interface';
  *               items:
  *                 $ref: '#/components/schemas/User'
  */
-export const getUsers = async (req: CustomRequest, res: Response, next: NextFunction): Promise<void> => {
+export const getUsers = async (
+  req: CustomRequest,
+  res: Response,
+  next: NextFunction,
+): Promise<void> => {
   try {
     const users: IUserResponse[] = await getAllUsers();
     res.json(users);
@@ -100,15 +110,20 @@ export const getUsers = async (req: CustomRequest, res: Response, next: NextFunc
  *               role:
  *                 type: string
  *                 enum:
- *                   - TIZIO1
- *                   - TIZIO2
- *                   - TIZIO3
+ *                   - PLANNER
+ *                   - DEVELOPER
+ *                   - VISITOR
+ *                   - RESIDENT
  *     responses:
  *       201:
  *         description: User created successfully
- *         
+ *
  */
-export const createUser = async (req: CustomRequest, res: Response, next: NextFunction): Promise<void> => {
+export const createUser = async (
+  req: CustomRequest,
+  res: Response,
+  next: NextFunction,
+): Promise<void> => {
   try {
     const result: string = await createNewUser(req.body);
 
@@ -143,7 +158,11 @@ export const createUser = async (req: CustomRequest, res: Response, next: NextFu
  *             schema:
  *               $ref: '#/components/schemas/TokenResponse'
  */
-export const login = async (req: CustomRequest, res: Response, next: NextFunction): Promise<void> => {
+export const login = async (
+  req: CustomRequest,
+  res: Response,
+  next: NextFunction,
+): Promise<void> => {
   try {
     const { email, password } = req.body;
     const { token }: { token: string } = await loginUser(email, password);
@@ -152,7 +171,7 @@ export const login = async (req: CustomRequest, res: Response, next: NextFunctio
       secure: process.env.NODE_ENV === 'production',
       sameSite: 'strict',
       maxAge: 3600000, // 1 hour
-      path: '/'
+      path: '/',
     });
     res.json({ token });
   } catch (error) {
@@ -174,7 +193,11 @@ export const login = async (req: CustomRequest, res: Response, next: NextFunctio
  *             schema:
  *               $ref: '#/components/schemas/User'
  */
-export const getMe = async (req: CustomRequest, res: Response, next: NextFunction): Promise<void> => {
+export const getMe = async (
+  req: CustomRequest,
+  res: Response,
+  next: NextFunction,
+): Promise<void> => {
   try {
     if (!req.user) {
       throw new CustomError('User not authenticated', 401);

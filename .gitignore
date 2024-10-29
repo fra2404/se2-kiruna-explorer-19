@@ -16,7 +16,6 @@ mongo_data
 package-lock.json
 
 # Editor directories and files
-.vscode/*
 !.vscode/extensions.json
 .idea
 .DS_Store
