@@ -1,3 +1,8 @@
+import { Route, Routes, useParams } from 'react-router-dom';
+import KirunaMap from './components/Map.tsx'
+import ComponentExample from './components/ComponentExample.tsx';
+
+import './App.css'
 import LoginForm from './components/LoginForm';
 // import InputComponent from './components/atoms/input/input';
 
@@ -19,6 +24,17 @@ function App() {
   // };
 
   return (
+    <Routes>
+      <Route path="/" element={
+        <KirunaMap >
+
+        </KirunaMap>
+      }/>
+      <Route path="/component-example" element={
+        <ComponentExample />
+      }/>
+    </Routes>
+  )
     <div className="w-screen h-screen flex flex-col items-center justify-center">
       <LoginForm />
     </div>
