@@ -35,10 +35,10 @@ function App() {
       }/>
     </Routes>
   )
-    <div className="w-screen h-screen flex flex-col items-center justify-center">
+    /*<div className="w-screen h-screen flex flex-col items-center justify-center">
       <LoginForm />
     </div>
-  );
+  );*/
 }
 
 export default App;
