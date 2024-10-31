@@ -20,4 +20,4 @@ router.post('/signup', validateUserSignUp, handleValidationErrors, createUser);
 router.post('/login', validateUserLogin, handleValidationErrors, login);
 router.get('/me', authenticateUser, getMe);
 
-export default router;
+export const userRoutes = router;
