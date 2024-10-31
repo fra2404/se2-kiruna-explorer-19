@@ -145,7 +145,7 @@ const InputComponent: React.FC<InputComponentProps> = ({
   };
 
   const selectOptions = selectedOption
-    ? [{ value: '', label: 'Campo vuoto (per annullare)' }, ...options]
+    ? [{ value: '', label: 'Incorrect format (per annullare)' }, ...options]
     : options;
 
   return (
@@ -248,7 +248,7 @@ const InputComponent: React.FC<InputComponentProps> = ({
         </div>
       )}
       {isFieldEmpty && required && isTouched && (
-        <span className="text-red-500 text-xs italic">Campo vuoto</span>
+        <span className="text-red-500 text-xs italic">Invalid input</span>
       )}
       {!isFieldEmpty && !isEmailValid && type === 'email' && isTouched && (
         <span className="text-red-500 text-xs italic">Email non valida</span>

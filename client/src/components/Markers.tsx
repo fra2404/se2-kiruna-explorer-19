@@ -5,93 +5,74 @@
 import { useState, useEffect } from "react";
 import { Marker, Popup } from "react-leaflet";
 import 'leaflet/dist/leaflet.css';
-import { Icon } from 'leaflet';
+import { DivIcon, Icon } from 'leaflet';
+import AgreementIcon from "../assets/icons/agreement-icon";
+import { renderToString } from "react-dom/server";
+import ConflictIcon from "../assets/icons/conflict-icon";
+import ConsultationIcon from "../assets/icons/consultation-icon";
+import DesignDocIcon from "../assets/icons/design-doc-icon";
+import InformativeDocIcon from "../assets/icons/informative-doc-icon";
+import MaterialEffectsIcon from "../assets/icons/material-effects-icon";
+import PrescriptiveDocIcon from "../assets/icons/prescriptive-doc-icon";
+import TechnicalDocIcon from "../assets/icons/technical-doc-icon";
 
-//Define custom icons for different categories
-const agreementIcon = new Icon({
-    iconUrl: 'path/to/icon.png',
-    iconSize: [35, 35], // size of the icon
-    iconAnchor: [22, 94], // point of the icon which will correspond to marker's location
-    popupAnchor: [-3, -76] // point from which the popup should open relative to the iconAnchor
-
-})
-const conflictIcon = new Icon({
-    iconUrl: 'path/to/icon.png',
-    iconSize: [35, 35], // size of the icon
-    iconAnchor: [22, 94], // point of the icon which will correspond to marker's location
-    popupAnchor: [-3, -76] // point from which the popup should open relative to the iconAnchor
-})
-const consultationIcon = new Icon({
-    iconUrl: 'path/to/icon.png',
-    iconSize: [35, 35], // size of the icon
-    iconAnchor: [22, 94], // point of the icon which will correspond to marker's location
-    popupAnchor: [-3, -76] // point from which the popup should open relative to the iconAnchor
-})
-
-const designDocIcon = new Icon({
-    iconUrl: 'path/to/icon.png',
-    iconSize: [38, 45], // size of the icon
-    iconAnchor: [22, 94], // point of the icon which will correspond to marker's location
-    popupAnchor: [-3, -76] // point from which the popup should open relative to the iconAnchor
-})
-
-const informativeDocIcon = new Icon({
-    iconUrl: 'path/to/icon.png',
-    iconSize: [38, 45], // size of the icon
-    iconAnchor: [22, 94], // point of the icon which will correspond to marker's location
-    popupAnchor: [-3, -76] // point from which the popup should open relative to the iconAnchor
-})
-
-const materialEffectsIcon = new Icon({
-    iconUrl: 'path/to/icon.png',
-    iconSize: [38, 45], // size of the icon
-    iconAnchor: [22, 94], // point of the icon which will correspond to marker's location
-    popupAnchor: [-3, -76] // point from which the popup should open relative to the iconAnchor
-})
-
-const prescriptiveDocIcon = new Icon({
-    iconUrl: 'path/to/icon.png',
-    iconSize: [38, 45], // size of the icon
-    iconAnchor: [22, 94], // point of the icon which will correspond to marker's location
-    popupAnchor: [-3, -76] // point from which the popup should open relative to the iconAnchor
-})
-
-const technicalDocIcon = new Icon({
-    iconUrl: 'path/to/icon.png',
-    iconSize: [38, 45], // size of the icon
-    iconAnchor: [22, 94], // point of the icon which will correspond to marker's location
-    popupAnchor: [-3, -76] // point from which the popup should open relative to the iconAnchor
-})
-
-const defaultIcon = new Icon({
-    iconUrl: 'path/to/icon.png',
-    iconSize: [38, 45], // size of the icon
-    iconAnchor: [22, 94], // point of the icon which will correspond to marker's location
-    popupAnchor: [-3, -76] // point from which the popup should open relative to the iconAnchor
-})
-
-
-// Function to get the appropriate icon for a category
-const getCategoryIcon = category => {
+// Function to get the appropriate icon for a category, with the right color according to stakeholders
+const getCategoryIcon = (category: string, fillColor: string) => {
+    //Define custom icons for different categories
     if (category === 'agreement') {
-        return agreementIcon;
+        return new DivIcon({
+            iconSize: [35, 35], // size of the icon
+            className: "agreementIcon",
+            html: renderToString(<AgreementIcon fillColor={fillColor} />)
+        });
     } else if (category === 'conflict') {
-        return conflictIcon;
+        return new DivIcon({
+            iconSize: [35, 35], // size of the icon
+            className: "conflictIcon",
+            html: renderToString(<ConflictIcon fillColor={fillColor}/>)
+        });
     } else if (category === 'consultation') {
-        return consultationIcon;
+        return new DivIcon({
+            iconSize: [35, 35], // size of the icon
+            className: "consultationIcon",
+            html: renderToString(<ConsultationIcon fillColor={fillColor}/>)
+        });
     } else if (category === 'designDoc') {
-        return designDocIcon;
+        return new DivIcon({
+            iconSize: [35, 35], // size of the icon
+            className: "designDocIcon",
+            html: renderToString(<DesignDocIcon fillColor={fillColor}/>)
+        });
     } else if (category === 'informativeDoc') {
-        return informativeDocIcon;
+        return new DivIcon({
+            iconSize: [35, 35], // size of the icon
+            className: "informativeDocIcon",
+            html: renderToString(<InformativeDocIcon fillColor={fillColor}/>)
+        });
     } else if (category === 'materialEffects') {
-        return materialEffectsIcon;
+        return new DivIcon({
+            iconSize: [35, 35], // size of the icon
+            className: "materialEffectsIcon",
+            html: renderToString(<MaterialEffectsIcon fillColor={fillColor}/>)
+        });
     } else if (category === 'prescriptiveDoc') {
-        return prescriptiveDocIcon;
+        return new DivIcon({
+            iconSize: [35, 35], // size of the icon
+            className: "prescriptiveDocIcon",
+            html: renderToString(<PrescriptiveDocIcon fillColor={fillColor}/>)
+        });
     } else if (category === 'technicalDoc') {
-        return technicalDocIcon;
+        return new DivIcon({
+            iconSize: [35, 35], // size of the icon
+            className: "technicalDocIcon",
+            html: renderToString(<TechnicalDocIcon fillColor={fillColor}/>)
+        });
     } else {
         // Default icon if category doesn't match any of the above
-        return defaultIcon; // Or another default icon
+        new Icon({
+            iconUrl: 'path/to/icon.png',
+            iconSize: [38, 45] // size of the icon
+        })
     }
 };
 
@@ -101,14 +82,19 @@ const getCategoryIcon = category => {
 
 
 export default function Markers() {
-    const [documents, setDocuments] = useState([]);
+    const [documents, setDocuments] = useState([
+        {latitude: 67.857443, longitude: 20.230131, title: "Document 1", category: "conflict"},
+        {latitude: 67.849019, longitude: 20.218337, title: "Document 2", category: "agreement"},
+        {latitude: 67.834257, longitude: 20.285673, title: "Document 3", category: "designDoc"},
+        {latitude: 67.860667, longitude: 20.287734, title: "Document 4", category: "technicalDoc"},
+    ]);
 
-    useEffect(() => {
+    /*useEffect(() => {
         // Fetch agency data from the server
         fetch('/documents') // TODO: example of endpoint. I don't know yet the real one.
             .then(response => response.json())
             .then(documents => setDocuments(documents));
-    }, []);
+    }, []);*/
 
 
     // Create an array of document coordinates with additional information
@@ -117,9 +103,8 @@ export default function Markers() {
         longitude: document.longitude,
         title: document.title,
         category: document.category,
-        icon: getCategoryIcon(document.category),
+        icon: getCategoryIcon(document.category, "black"),      //TODO: change second parameter to match stakeholder's colors for that document
     }));
-
 
     return (
         <>
