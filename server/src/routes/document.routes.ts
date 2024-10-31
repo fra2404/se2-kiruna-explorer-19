@@ -1,14 +1,8 @@
 import {
-<<<<<<< HEAD
     addDocument,
     getDocuments
   } from '@controllers/document.controllers';
 import {validateAddDocument} from '@utils/validators/document.validator';
-=======
-  addDocument
-} from '@controllers/document.controllers';
-import { validateAddDocument } from '@utils/validators/document.validator';
->>>>>>> e3d430b6c115e751560d6a2d092ff6c440dd79b5
 import { handleValidationErrors } from '@middlewares/validation.middleware';
 
 import express from 'express';

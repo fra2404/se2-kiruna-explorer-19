@@ -1,12 +1,7 @@
 import { NextFunction, Request, Response } from 'express';
 import { CustomError } from '@utils/customError';
-<<<<<<< HEAD
 import { addingDocument, getAllDocuments } from '../services/document.service'; 
 import { IDocument } from '@interfaces/document.interface';
-=======
-import { addingDocument } from '../services/document.service';
->>>>>>> e3d430b6c115e751560d6a2d092ff6c440dd79b5
-
 export const addDocument = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
     try {
         const { title, stakeholders, scale, type, date, connections, language, media, coordinates, summary } = req.body;
