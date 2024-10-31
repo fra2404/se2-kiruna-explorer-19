@@ -24,4 +24,6 @@ package-lock.json
 *.njsproj
 *.sln
 *.sw?
-client/package-lock.json
+client\package-lock.json
+server\package-lock.json
+package-lock.json
