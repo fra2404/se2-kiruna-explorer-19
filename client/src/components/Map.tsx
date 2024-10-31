@@ -1,9 +1,9 @@
 import { useState, useEffect, useContext, SetStateAction, Dispatch } from 'react';
-import { MapContainer, TileLayer, ZoomControl, Polygon, Popup, useMapEvents, Marker} from 'react-leaflet';
+import { MapContainer, TileLayer, ZoomControl, Popup, useMapEvents, Marker } from 'react-leaflet';
 import "leaflet/dist/leaflet.css";
 import L, { LatLng, LatLngExpression } from 'leaflet';
 import API from '../API';
-import FeedbackContext from '../contexts/FeedbackContext';
+import FeedbackContext from '../context/FeedbackContext;
 import Header from './Header';
 import Markers from './Markers';
 import Areas from './Areas';
@@ -68,7 +68,7 @@ export default function KirunaMap() {
                 center={kirunaLatLngCoords}
                 zoom={13}
                 doubleClickZoom={false}
-                scrollWheelZoom={false}
+                scrollWheelZoom={true}  // Enable the scroll wheel zoom
                 zoomControl={false}   // Disable the zoom control, we will use a custom one
                 touchZoom={true}    //Touch capabilities for smartphones. TODO: It needs to be tested
 
