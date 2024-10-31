@@ -1,10 +1,10 @@
 import { NextFunction, Request, Response } from 'express';
 import { CustomError } from '@utils/customError';
-import { addingDocument } from '../services/document.service'; 
+import { addingDocument } from '../services/document.service';
 
 export const addDocument = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
     try {
-        const { title, stakeholders, scale, type, connections, language, media, coordinates, summary } = req.body;
+        const { title, stakeholders, scale, type, date, connections, language, media, coordinates, summary } = req.body;
 
         // Call the service to add the document
         const newDocument = await addingDocument({
@@ -12,6 +12,7 @@ export const addDocument = async (req: Request, res: Response, next: NextFunctio
             stakeholders,
             scale,
             type,
+            date,
             connections,
             language,
             media,
@@ -26,7 +27,7 @@ export const addDocument = async (req: Request, res: Response, next: NextFunctio
         });
     } catch (error) {
         next(error)
-        
+
         res.status(500).json({ success: false, message: 'Server Error' });
     }
 };

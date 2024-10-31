@@ -41,6 +41,10 @@ const documentSchema = new Schema<DocumentDocument>(
             required: true,
             enum: DocTypeEnum,
         },
+        date: {
+            type: String,
+            required: true,
+        },
         connections: [connectionSchema],
         language: {
             type: String,
