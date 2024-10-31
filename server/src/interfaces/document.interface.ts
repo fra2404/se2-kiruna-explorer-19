@@ -13,6 +13,7 @@ export interface IDocument {
     stakeholders: string;
     scale: string;
     type: DocTypeEnum;
+    date: string;
     connections?: [IConnection];
     language?: string;
     media?: [ObjectId];
