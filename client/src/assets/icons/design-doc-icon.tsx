@@ -1,7 +1,7 @@
 export default function DesignDocIcon({fillColor}: any) {
 	return (
 		<svg version="1.1" id="Layer_1" xmlns="http://www.w3.org/2000/svg" xmlnsXlink="http://www.w3.org/1999/xlink" x="0px" y="0px"
-			width="100%" viewBox="0 0 920 926" enable-background="new 0 0 920 926" xmlSpace="preserve">
+			width="100%" viewBox="0 0 920 926" enableBackground="new 0 0 920 926" xmlSpace="preserve">
 		<path fill={fillColor} opacity="1.000000" stroke="none" 
 			d="
 		M366.999908,864.189941 
