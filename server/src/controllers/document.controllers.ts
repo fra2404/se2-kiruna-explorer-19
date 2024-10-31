@@ -1,6 +1,7 @@
 import { NextFunction, Request, Response } from 'express';
 import { CustomError } from '@utils/customError';
-import { addingDocument } from '../services/document.service'; 
+import { addingDocument, getAllDocuments } from '../services/document.service'; 
+import { IDocument } from '@interfaces/document.interface';
 
 export const addDocument = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
     try {
@@ -30,4 +31,22 @@ export const addDocument = async (req: Request, res: Response, next: NextFunctio
         res.status(500).json({ success: false, message: 'Server Error' });
     }
 };
+
+
+export const getDocuments = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+    try {
+        const documents: IDocument[] = await getAllDocuments();
+        
+        // Check if documents were found
+        if (documents.length === 0) {
+            res.status(404).json({ success: false, message: 'No documents found on the DB' });
+        }
+
+        // Return list of documents
+        res.json(documents);
+    } catch (error) {
+        next(error); 
+    }
+};
+
 
