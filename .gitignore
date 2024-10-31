@@ -26,3 +26,4 @@ package-lock.json
 *.sw?
 client/package-lock.json
 server/package-lock.json
+package-lock.json
