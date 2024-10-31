@@ -1,7 +1,7 @@
-import { useState, useEffect, useContext } from 'react';
-import { MapContainer, TileLayer, ZoomControl, Polygon, Popup} from 'react-leaflet';
+import { useState, useEffect, useContext, SetStateAction, Dispatch } from 'react';
+import { MapContainer, TileLayer, ZoomControl, Polygon, Popup, useMapEvents, Marker} from 'react-leaflet';
 import "leaflet/dist/leaflet.css";
-import L, { LatLngExpression } from 'leaflet';
+import L, { LatLng, LatLngExpression } from 'leaflet';
 import API from '../API';
 import FeedbackContext from '../contexts/FeedbackContext';
 import Header from './Header';
@@ -67,6 +67,7 @@ export default function KirunaMap() {
                 style={{ width: "100%", height: "100%" }}
                 center={kirunaLatLngCoords}
                 zoom={13}
+                doubleClickZoom={false}
                 scrollWheelZoom={false}
                 zoomControl={false}   // Disable the zoom control, we will use a custom one
                 touchZoom={true}    //Touch capabilities for smartphones. TODO: It needs to be tested
@@ -79,19 +80,32 @@ export default function KirunaMap() {
                     url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
                 />
 
-                {/* Here there go a component that handles all the markers */}
-                {/* <Marker position={firstMarkerCoords}>
-                    <Popup>
-                        A pretty CSS3 popup. <br /> Easily customizable.
-                    </Popup>
-                </Marker> */}
                 <Areas />
 
-                {/*<CustomMarker popupText="This custom popup works" coordinates={firstMarkerCoords} ></CustomMarker>*/}
+                {/* Here there go a component that handles all the markers */}
                 <Markers />
+
+                <ClickMarker />
+
                 <ZoomControl position="bottomleft" />
 
             </MapContainer>
         </div>
     );
+}
+
+function ClickMarker() {
+    const [position, setPosition] = useState<LatLng | null>(null);
+    const map = useMapEvents({
+        dblclick(e) {
+            setPosition(e.latlng);
+        }
+    });
+
+    return position === null ? null : (
+        <Popup position={position}>
+            Do you want to add a document in this position?
+
+        </Popup>
+    )
 }
