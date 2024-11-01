@@ -12,8 +12,6 @@ import { addingDocument } from "@services/document.service";
 
 jest.mock("../services/user.service");
 
-jest.mock('../services/document.service');
-
 /* ******************************************* Suite n#1 - USERS ******************************************* */
 describe("Tests for user controllers", () => {
     //Mock of the objects that will be use to test controllers
@@ -258,6 +256,7 @@ describe("Tests for user controllers", () => {
     });//getMe
 });//END OF USER CONTROLLERS
 
+jest.mock('../services/document.service');
 /* ******************************************* Suite n#2 - DOCUMENTS ******************************************* */
 describe("Tests for document controller", () => {
     describe("Tests for addDocument", () => {
@@ -283,13 +282,13 @@ describe("Tests for document controller", () => {
             res = {
                 status: jest.fn().mockReturnThis(),
                 json: jest.fn(),
-            };
+            } as Partial<Response>;
     
             next = jest.fn();
         });
 
         test("Should return a new document", async () => {
-            (addingDocument as jest.Mock).mockResolvedValue(req.body);
+            (addingDocument as any).mockResolvedValue(req.body);
 
             await addDocument(req as Request, res as Response, next);
 
@@ -302,7 +301,7 @@ describe("Tests for document controller", () => {
 
         test("Should handle errors", async () => {
             const error = "Error: something went wrong";
-            (addingDocument as jest.Mock).mockRejectedValue(error);
+            (addingDocument as any).mockRejectedValue(error);
 
             await addDocument(req as Request, res as Response, next);
 
@@ -310,11 +309,13 @@ describe("Tests for document controller", () => {
             expect(res.status).toHaveBeenCalledWith(500);
         })
 
-        /**
-         * Tests to be written:
-         *  Empty document
-         *  Document with some NULL fields
-         *  Invalid values on fields (see cards)
-        */
+        test("Should handle empty documets", async () => {
+            req.body = {}
+
+            await addDocument(req as Request, res as Response, next);
+
+            expect(next).toHaveBeenCalled();
+            expect(res.status).toHaveBeenCalledWith(500);
+        })
     });
 });
