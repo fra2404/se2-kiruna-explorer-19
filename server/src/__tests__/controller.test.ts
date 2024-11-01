@@ -1,24 +1,21 @@
+import { Request, Response, NextFunction } from "express";
 import { jest, describe, expect, beforeEach } from '@jest/globals'
-import jwt from 'jsonwebtoken';
-import bcrypt from 'bcrypt';
 
 import { IUserResponse } from '@interfaces/user.return.interface';
-import { IUser } from '../interfaces/user.interface';
-import User from '../schemas/user.schema';
-import { Request, Response, NextFunction } from 'express';
 import { CustomRequest } from '@interfaces/customRequest.interface';
 import { UserRoleEnum } from "@utils/enums/user-role.enum";
-import { getAllUsers, createNewUser, getUserById, loginUser } from '../services/user.service';
-import { getUsers, createUser } from "../controllers/user.controllers";
+import { getAllUsers, createNewUser, loginUser } from '../services/user.service';
+import { getUsers, createUser, login, getMe } from "../controllers/user.controllers";
 import { CustomError } from '@utils/customError';
-import { DocTypeEnum } from '@utils/enums/doc-type.enum';
+import { addDocument } from "@controllers/document.controllers";
+import { addingDocument } from "@services/document.service";
 
 jest.mock("../services/user.service");
 
-//Suite n#1 - USER
+/* ******************************************* Suite n#1 - USERS ******************************************* */
 describe("Tests for user controllers", () => {
     //Mock of the objects that will be use to test controllers
-    let req: Partial<Request>;
+    let req: Partial<CustomRequest>;
     let res: Partial<Response>;
     let next: NextFunction;
 
@@ -27,6 +24,8 @@ describe("Tests for user controllers", () => {
         req = {};
         res = { json: jest.fn(), } as Partial<Response>;
         next = jest.fn();
+
+        jest.clearAllMocks();
     });
     /* ************************************************** */
 
@@ -144,10 +143,70 @@ describe("Tests for user controllers", () => {
     describe("Tests for login", () => {
         //test 1
         test("Should successfully log a registered user", async () => {
+            //Data mocking
+            req = {
+                body: {
+                    email: 'sergio@example.com',
+                    password: 'password123',
+                },
+            };
+          
+            res = {
+                cookie: jest.fn(),
+                json: jest.fn(),
+                status: jest.fn().mockReturnThis(),
+            } as Partial<Response>;
+
+            const cookie_settings = {
+                httpOnly: true,
+                secure: process.env.NODE_ENV === 'production',
+                sameSite: 'strict',
+                maxAge: 3600000,
+                path: '/',
+            };
+
+            const fakeToken = "fake_token_value";
+
+            //Support functions mocking
+            (loginUser as jest.Mock).mockImplementation(async () => ({token: fakeToken}));
+
+            //Call of login
+            await login(req as CustomRequest, res as Response, next);
+
+            expect(loginUser).toHaveBeenCalledWith(req.body.email, req.body.password);
+            expect(res.cookie).toHaveBeenCalledWith('auth-token', fakeToken, cookie_settings);
+            expect(res.json).toHaveBeenCalledWith({ token: fakeToken });
         });
 
         //test 2
         test("Should return an error", async () => {
+            //Data mocking
+            req = {
+                body: {
+                    email: 'user@example.com',
+                    password: 'wronPassword12',
+                },
+            };
+          
+            res = {
+                cookie: jest.fn(),
+                json: jest.fn(),
+                status: jest.fn().mockReturnThis(),
+            } as Partial<Response>;
+
+            const fakeToken = "fake_token_value";
+            const err = new CustomError("Login has failed", 400);
+
+            //Support functions mocking
+            jest.spyOn(require("../services/user.service"), "loginUser")
+            .mockImplementation(async () => { throw err; });
+
+            //Call of login
+            await login(req as CustomRequest, res as Response, next);
+
+            expect(next).toHaveBeenCalledWith(err);
+            expect(res.cookie).not.toHaveBeenCalled();
+            expect(res.json).not.toHaveBeenCalled();
         });
     });//login
     /* ************************************************** */
@@ -156,10 +215,107 @@ describe("Tests for user controllers", () => {
     describe("Tests for getMe", () => {
         //test 1
         test("Should successfully retrieve the infos of a logged user", async () => {
+            //Data mocking
+            req = {
+                user: {
+                    id: '1',
+                    name: 'Carlo',
+                    email: 'carlo@example.com',
+                    surname: 'Cracco',
+                    phone: '123456789',
+                    role: UserRoleEnum.Udeveloper,
+                },
+            } as Partial<CustomRequest>;
+          
+            //Call of getMe
+            await getMe(req as CustomRequest, res as Response, next);
+          
+            expect(res.json).toHaveBeenCalledWith({
+                id: '1',
+                name: 'Carlo',
+                email: 'carlo@example.com',
+                surname: 'Cracco',
+                phone: '123456789',
+                role: UserRoleEnum.Udeveloper,
+            });
+            expect(next).not.toHaveBeenCalled();
         });
 
         //test 2
         test("Should return an error", async () => {
+            //Data mocking
+            req = {} as Partial<CustomRequest>;
+            const err = new CustomError('User not authenticated', 401);
+
+            //Call of getMe
+            await getMe(req as CustomRequest, res as Response, next);
+
+            expect(next).toHaveBeenCalledWith(err);
+            expect(res.json).not.toHaveBeenCalled();
         });
     });//getMe
 });//END OF USER CONTROLLERS
+
+jest.mock('../services/document.service');
+/* ******************************************* Suite n#2 - DOCUMENTS ******************************************* */
+describe("Tests for document controller", () => {
+    describe("Tests for addDocument", () => {
+        let req: Partial<Request>;
+        let res: Partial<Response>;
+        let next: NextFunction;
+
+        beforeEach(() => {
+            req = {
+                body: {
+                    title: 'Test Document',
+                    stakeholders: ['Stakeholder1', 'Stakeholder2'],
+                    scale: '1:1000',
+                    type: 'agreement',
+                    connections: ['Document1', 'Document2'],
+                    language: 'EN',
+                    media: ['Media1', 'Media2'],
+                    coordinates: [10, 20],
+                    summary: 'Test summary',
+                },
+            };
+    
+            res = {
+                status: jest.fn().mockReturnThis(),
+                json: jest.fn(),
+            } as Partial<Response>;
+    
+            next = jest.fn();
+        });
+
+        test("Should return a new document", async () => {
+            (addingDocument as any).mockResolvedValue(req.body);
+
+            await addDocument(req as Request, res as Response, next);
+
+            expect(res.status).toHaveBeenCalledWith(201);
+            expect(res.json).toHaveBeenCalledWith({
+                success: true,
+                data: req.body
+            })
+        });
+
+        test("Should handle errors", async () => {
+            const error = "Error: something went wrong";
+            (addingDocument as any).mockRejectedValue(error);
+
+            await addDocument(req as Request, res as Response, next);
+
+            expect(next).toHaveBeenCalledWith(error);
+            expect(res.status).toHaveBeenCalledWith(500);
+        })
+
+        test("Should handle empty documets", async () => {
+            req.body = {}
+
+            await addDocument(req as Request, res as Response, next);
+
+            expect(next).toHaveBeenCalled();
+            expect(res.status).toHaveBeenCalledWith(500);
+        })
+    });
+});
