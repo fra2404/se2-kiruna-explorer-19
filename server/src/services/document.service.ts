@@ -28,7 +28,7 @@ export const getDocumentById = async (id: string): Promise<IDocument | null> => 
         const document = await Document.findById(id);
         return document;
     } catch (error) {
-        console.log(error);
+       // console.log(error);
         throw new Error('Failed to retrieve document'); 
     }
 };
