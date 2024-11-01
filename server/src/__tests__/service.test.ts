@@ -3,17 +3,28 @@ import jwt from 'jsonwebtoken';
 import bcrypt from 'bcrypt';
 
 import User from '../schemas/user.schema';
+import Document from '../schemas/document.schema';
 import { IUser } from '../interfaces/user.interface';
+import { IDocument } from '@interfaces/document.interface'; 
 import { UserRoleEnum } from "@utils/enums/user-role.enum";
+import { DocTypeEnum } from "@utils/enums/doc-type.enum";
 import { getAllUsers, createNewUser, getUserById, loginUser } from '../services/user.service';
+import { addingDocument, getAllDocuments, getDocumentById } from '../services/document.service';
+
 import { CustomError } from '@utils/customError';
+import { BadConnectionError, DocNotFoundError } from "../utils/errors";
 
 jest.mock("../schemas/user.schema");
+jest.mock("../schemas/document.schema");
 jest.mock('bcrypt');
 jest.mock('jsonwebtoken');
 
 /* ******************************************* Suite n#1 - USERS ******************************************* */
 describe("Tests for user services", () => {
+    beforeEach(() => {
+        jest.clearAllMocks();
+    });
+    
     //getAllUsers
     describe("Tests for getAllUsers", () => {
         //test 1
@@ -233,3 +244,150 @@ describe("Tests for user services", () => {
 });//END OF USER SERVICES
 
 /* ******************************************* Suite n#2 - DOCUMENTS ******************************************* */
+describe("Tests for user services", () => {
+    beforeEach(() => {
+        jest.clearAllMocks();
+    });
+    
+    //addingDocument
+    describe("Tests for addingDocument", () => {
+        //test 1
+        test("Should successfully add a new document", async () => {
+            //Data mocking
+            const mockDocumentData: IDocument = {
+                title: "Test title",
+                stakeholders: "Test corp",
+                scale: "Test value",
+                type: DocTypeEnum.Agreement,
+                date: "01-01-2000",
+                summary: "Test summary"
+            };
+
+            //Support functions mocking
+            (Document.prototype.save as jest.Mock).mockImplementation(async () => undefined);
+
+            //Call of addingDocument
+            await expect(addingDocument(mockDocumentData)).resolves.toBeUndefined();
+
+            expect(Document).toHaveBeenCalledWith(mockDocumentData);
+            expect(Document.prototype.save).toHaveBeenCalled();
+        });
+
+        //test 2
+        test("Should return an error", async () => {
+            //Data mocking
+            const mockDocumentData: IDocument = {
+                title: "",
+                stakeholders: "",
+                scale: "",
+                type: DocTypeEnum.Agreement,
+                date: "",
+                summary: ""
+            };
+            
+            //Support functions mocking
+            (Document.prototype.save as jest.Mock).mockImplementation(async () => {
+                throw new CustomError("An error occurred while saving the document", 500);
+            });
+
+            //Call of addingDocument
+            await expect(addingDocument(mockDocumentData)).rejects.toThrow(new BadConnectionError());
+
+            expect(Document).toHaveBeenCalledWith(mockDocumentData);
+            expect(Document.prototype.save).toHaveBeenCalled();
+        });
+    });//addingDocument
+    /* ************************************************** */
+
+    //getAllDocuments
+    describe("Tests for getAllDocuments", () => {
+        //test 1
+        test("Should successfully retrieve all documents", async () => {
+            //Data mocking
+            const mockDocuments = [
+                { 
+                    title: "Test title 1", 
+                    stakeholders: "Company A", 
+                    scale: "Test value 1", 
+                    type: DocTypeEnum.Agreement, 
+                    date: "01-01-2000", 
+                    summary: "Test summary 1" },
+                { 
+                    title: "Test title 2", 
+                    stakeholders: "Company B", 
+                    scale: "Test value 2", 
+                    type: DocTypeEnum.Competition, 
+                    date: "02-01-2000", 
+                    summary: "Test summary 2" 
+                }
+            ];
+
+            //Support functions mocking
+            (Document.find as jest.Mock).mockImplementation(async() => mockDocuments);
+
+            //Call of getAllDocuments
+            const result = await getAllDocuments();
+
+            expect(result).toEqual(mockDocuments);
+            expect(Document.find).toHaveBeenCalledTimes(1);
+        });
+
+        //test 2
+        test("Should return an error", async () => {
+            //Support functions mocking
+            (Document.find as jest.Mock).mockImplementation(async () => {
+                throw new CustomError("An error occurred while retrieving the documents", 500);
+            });
+
+            //Call of getAllDocuments
+            await expect(getAllDocuments()).rejects.toThrow(new DocNotFoundError());
+
+            expect(Document.find).toHaveBeenCalledTimes(1);
+        });
+    });//getAllDocuments
+    /* ************************************************** */
+
+    //getDocumentById
+    describe("Tests for getDocumentById", () => {
+        //test 1
+        test("Should successfully retrieve a specific document", async () => {
+            //Data mocking
+            const docID = "1";
+
+            const mockDocument = { 
+                id: docID,
+                title: "Test title 1", 
+                stakeholders: "Company A", 
+                scale: "Test value 1", 
+                type: DocTypeEnum.Agreement, 
+                date: "01-01-2000", 
+                summary: "Test summary 1" 
+            };
+
+            //Support functions mocking
+            (Document.findById as jest.Mock).mockImplementation(async() => mockDocument);
+
+            //Call of getAllDocuments
+            const result = await getDocumentById(docID);
+
+            expect(result).toEqual(mockDocument);
+            expect(Document.findById).toHaveBeenCalledWith(docID);
+            expect(Document.findById).toHaveBeenCalledTimes(1);
+        });
+
+        //test 2
+        test("Should return an error", async () => {
+            //Support functions mocking
+            (Document.findById as jest.Mock).mockImplementation(async () => {
+                throw new CustomError("An error occurred while retrieving the document", 500);
+            });
+
+            //Call of getAllDocuments
+            //"100" is a random non-existing document id
+            await expect(getDocumentById("100")).rejects.toThrow(new DocNotFoundError());
+
+            expect(Document.findById).toHaveBeenCalledWith("100");
+            expect(Document.findById).toHaveBeenCalledTimes(1);
+        });
+    });//getDocumentById
+});//END OF CONTROLLER SERVICES
