@@ -60,7 +60,7 @@ const documentSchema = new Schema<DocumentDocument>(
         coordinates: {
             type: Schema.Types.ObjectId,
             ref: 'Coordinate',
-            required: true,
+            required: false,
         },
         summary: {
             type: String,
