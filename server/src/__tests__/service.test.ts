@@ -1,4 +1,4 @@
-import { jest, describe, expect, beforeEach } from '@jest/globals'
+import { jest, describe, expect } from '@jest/globals'
 import jwt from 'jsonwebtoken';
 import bcrypt from 'bcrypt';
 
@@ -12,7 +12,7 @@ jest.mock("../schemas/user.schema");
 jest.mock('bcrypt');
 jest.mock('jsonwebtoken');
 
-//Suite n#1
+/* ******************************************* Suite n#1 - USERS ******************************************* */
 describe("Tests for user services", () => {
     //getAllUsers
     describe("Tests for getAllUsers", () => {
@@ -230,4 +230,6 @@ describe("Tests for user services", () => {
             await expect(loginUser(choosenEmailMock, choosenPassMock)).rejects.toThrow('Invalid email or password');
         });
     });//loginUser
-});
+});//END OF USER SERVICES
+
+/* ******************************************* Suite n#2 - DOCUMENTS ******************************************* */

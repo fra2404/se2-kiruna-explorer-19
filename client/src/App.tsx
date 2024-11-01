@@ -1,9 +1,10 @@
 import { Route, Routes, useParams } from 'react-router-dom';
-import KirunaMap from './components/Map.tsx'
+import KirunaMap from './components/Map.tsx';
 import ComponentExample from './components/ComponentExample.tsx';
 
-import './App.css'
+import './App.css';
 import LoginForm from './components/LoginForm';
+import { AuthProvider } from './context/AuthContext.tsx';
 // import InputComponent from './components/atoms/input/input';
 
 // const options = [
@@ -24,6 +25,7 @@ function App() {
   // };
 
   return (
+    /* 
     <Routes>
       <Route path="/" element={
         <KirunaMap >
@@ -34,11 +36,13 @@ function App() {
         <ComponentExample />
       }/>
     </Routes>
-  )
-    /*<div className="w-screen h-screen flex flex-col items-center justify-center">
-      <LoginForm />
-    </div>
-  );*/
+  ) */
+    <AuthProvider>
+      <div className="w-screen h-screen flex flex-col items-center justify-center">
+        <LoginForm />
+      </div>
+    </AuthProvider>
+  );
 }
 
 export default App;

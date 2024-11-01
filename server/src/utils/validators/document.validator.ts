@@ -1,9 +1,23 @@
-import { body } from 'express-validator';
+import { body, param } from 'express-validator';
 
 export const validateAddDocument = [
-  body('title').notEmpty().withMessage('Title is required'),
+  body('title')
+    .notEmpty().withMessage('Title is required')
+    .isString().withMessage('Title must be a string'),
+  body('stakeholders')
+    .optional()
+    .isString().withMessage('Stakeholders must be a string'),
+  body('scale')
+    .optional()
+    .isString().withMessage('Scale must be a string'),
   body('type').notEmpty().withMessage('Type is required')
-    .isIn(['TYPE1', 'TYPE2', 'TYPE3']).withMessage('Type is invalid'), // Adjust types
+    .isIn(['DETAILED_PLAN', 'COMPETITION', 'AGREEMENT', 'DEFORMATION_FORECAST']).withMessage('Type is invalid'), // Adjust types
   body('connections').optional().isArray().withMessage('Connections must be an array of connections'),
   body('language').optional().isString().withMessage('Language must be a string')
+];
+
+export const validateDocumentId = [
+  param('id')
+      .isMongoId()
+      .withMessage('Invalid document ID format')
 ];

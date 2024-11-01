@@ -41,6 +41,10 @@ const documentSchema = new Schema<DocumentDocument>(
             required: true,
             enum: DocTypeEnum,
         },
+        date: {
+            type: String,
+            required: true,
+        },
         connections: [connectionSchema],
         language: {
             type: String,
@@ -56,7 +60,7 @@ const documentSchema = new Schema<DocumentDocument>(
         coordinates: {
             type: Schema.Types.ObjectId,
             ref: 'Coordinate',
-            required: true,
+            required: false,
         },
         summary: {
             type: String,
