@@ -1,37 +1,23 @@
 import { NextFunction, Request, Response } from 'express';
 import { CustomError } from '@utils/customError';
-import { 
-    addingDocument, 
-    getAllDocuments, 
+import {
+    addingDocument,
+    getAllDocuments,
     getDocumentById,
-    updatingDocument 
-} from '../services/document.service'; 
+    updatingDocument
+} from '../services/document.service';
 import { IDocument } from '@interfaces/document.interface';
 
 //add new document
 export const addDocument = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
     try {
-        const { title, stakeholders, scale, type, date, connections, language, media, coordinates, summary } = req.body;
+        const document = req.body as IDocument;
 
         // Call the service
-        const newDocument = await addingDocument({
-            title,
-            stakeholders,
-            scale,
-            type,
-            date,
-            connections,
-            language,
-            media,
-            coordinates,
-            summary,
-        });
+        const result = await addingDocument(document);
 
         //created document
-        res.status(201).json({
-            success: true,
-            data: newDocument,
-        });
+        res.status(201).json(result);
     } catch (error) {
         next(error)
 
@@ -45,7 +31,7 @@ export const getDocuments = async (req: Request, res: Response, next: NextFuncti
     try {
         //Call the service
         const documents: IDocument[] = await getAllDocuments();
-        
+
         // Check if documents were found
         if (documents.length === 0) {
             res.status(404).json({ success: false, message: 'No documents found on the DB' });
@@ -54,7 +40,7 @@ export const getDocuments = async (req: Request, res: Response, next: NextFuncti
         // Return list of documents
         res.json(documents);
     } catch (error) {
-        next(error); 
+        next(error);
     }
 };
 
@@ -75,7 +61,7 @@ export const getDocument = async (req: Request, res: Response, next: NextFunctio
         // Return the document
         res.json(document);
     } catch (error) {
-        next(error); 
+        next(error);
     }
 };
 
