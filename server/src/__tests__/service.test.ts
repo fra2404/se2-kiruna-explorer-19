@@ -12,7 +12,7 @@ jest.mock("../schemas/user.schema");
 jest.mock('bcrypt');
 jest.mock('jsonwebtoken');
 
-//Suite n#1 - USER
+/* ******************************************* Suite n#1 - USERS ******************************************* */
 describe("Tests for user services", () => {
     //getAllUsers
     describe("Tests for getAllUsers", () => {
@@ -232,4 +232,4 @@ describe("Tests for user services", () => {
     });//loginUser
 });//END OF USER SERVICES
 
-//Suite n#2 - DOCUMENT
+/* ******************************************* Suite n#2 - DOCUMENTS ******************************************* */
