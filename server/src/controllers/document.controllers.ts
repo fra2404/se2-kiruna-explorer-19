@@ -1,6 +1,11 @@
 import { NextFunction, Request, Response } from 'express';
 import { CustomError } from '@utils/customError';
-import { addingDocument, getAllDocuments, getDocumentById } from '../services/document.service'; 
+import { 
+    addingDocument, 
+    getAllDocuments, 
+    getDocumentById,
+    updatingDocument 
+} from '../services/document.service'; 
 import { IDocument } from '@interfaces/document.interface';
 
 //add new document
@@ -74,4 +79,28 @@ export const getDocument = async (req: Request, res: Response, next: NextFunctio
     }
 };
 
+//Update document
+export const updateDocument = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+    try {
+        const { id } = req.params;
+        const updateData = req.body;
+
+        // Call the service function to update the document
+        const updatedDocument = await updatingDocument(id, updateData);
+
+        // If no document is found with the given ID, return an error response
+        if (!updatedDocument) {
+            res.status(404).json({ success: false, message: 'Document not found' });
+            return;
+        }
+
+        // Successfully updated response
+        res.status(200).json({
+            success: true,
+            data: updatedDocument,
+        });
+    } catch (error) {
+        next(error);
+    }
+};
 
