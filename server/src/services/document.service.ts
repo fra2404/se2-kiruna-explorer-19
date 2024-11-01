@@ -7,7 +7,7 @@ export const addingDocument = async (documentData: IDocument): Promise<void> => 
         const newDocument = new Document(documentData);
         await newDocument.save();
     } catch (error) {
-        console.log(error);
+       // console.log(error);
         throw new Error('Failed to add document');
     }
 };
