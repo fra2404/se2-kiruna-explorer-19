@@ -1,5 +1,6 @@
 import Document from '../schemas/document.schema'; 
 import { IDocument } from '@interfaces/document.interface'; 
+import { BadConnectionError, DocNotFoundError } from "../utils/errors";
 
 //addDocument(Story 1)
 export const addingDocument = async (documentData: IDocument): Promise<void> => {
@@ -7,8 +8,7 @@ export const addingDocument = async (documentData: IDocument): Promise<void> => 
         const newDocument = new Document(documentData);
         await newDocument.save();
     } catch (error) {
-       // console.log(error);
-        throw new Error('Failed to add document');
+        throw new BadConnectionError();
     }
 };
 
@@ -18,7 +18,7 @@ export const getAllDocuments = async (): Promise<IDocument[]> => {
         const documents = await Document.find(); 
         return documents; 
     } catch (error) {
-        throw new Error('Failed to retrieve documents'); 
+        throw new DocNotFoundError(); 
     }
 };
 
@@ -28,7 +28,6 @@ export const getDocumentById = async (id: string): Promise<IDocument | null> => 
         const document = await Document.findById(id);
         return document;
     } catch (error) {
-       // console.log(error);
-        throw new Error('Failed to retrieve document'); 
+        throw new DocNotFoundError(); 
     }
 };
