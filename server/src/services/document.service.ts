@@ -3,14 +3,49 @@ import { IDocument } from '@interfaces/document.interface';
 import { IDocumentResponse } from '@interfaces/document.return.interface';
 import { BadConnectionError, DocNotFoundError } from "../utils/errors";
 import { ICoordinate } from '@interfaces/coordinate.interface';
-import { getCoordinateById } from './coordinatetest.service';
+import { getCoordinateById } from './coordinate.service';
 
 //addDocument(Story 1)
 export const addingDocument = async (documentData: IDocument): Promise<void> => {
     try {
+
+        //check existence of Connection in DB
+        if (documentData.connections && documentData.connections.length > 0) {
+            for (const connection of documentData.connections) {
+                const existingDocument = await Document.findById(connection.document);
+                console.log(existingDocument)
+                if (!existingDocument) {
+                    throw new Error(`Document with ID ${connection.document} does not exist.`);
+                }   
+
+            }
+        }
+
+
+        //add new document
         const newDocument = new Document(documentData);
         await newDocument.save();
+
+
+        //update other part of connection by Id of new document
+        if (documentData.connections && documentData.connections.length > 0) {
+            for (const connection of documentData.connections) {
+                const existingDocument = await Document.findById(connection.document);
+                
+                if (existingDocument) {
+                    existingDocument.connections = existingDocument.connections || [];
+                    
+                    existingDocument.connections.push({
+                        document: newDocument.id, 
+                        type: connection.type 
+                    });
+                    await existingDocument.save();
+                }
+            }
+        }
+
     } catch (error) {
+        console.log(error);
         throw new BadConnectionError();
     }
 };
