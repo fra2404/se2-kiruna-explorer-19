@@ -22,15 +22,13 @@ export const validateAddDocument = [
         if (!connection.document) {
           throw new Error('Connection must have a document ID.');
         }
-
         // Validate connection type
         if (!connection.type || !['LINK1', 'LINK2', 'LINK3'].includes(connection.type)) {
           throw new Error('Connection type is invalid.');
         }
       });
-      return true; // Indicate that the validation passed
+      return true;
     }),
-   // .isIn(['LINK1', 'LINK2']).withMessage('Connection is invalid'),
   body('language') 
     .optional()
     .isString().withMessage('Language must be a string'),
@@ -60,10 +58,22 @@ export const validateUpdateDocument = [
     .isString().withMessage('Scale must be a string'),
   body('type').notEmpty().withMessage('Type is required')
     .isIn(['AGREEMENT', 'CONFLICT', 'CONSULTATION', 'DESIGN_DOC', 'INFORMATIVE_DOC', 'MATERIAL_EFFECTS', 'PRESCRIPTIVE_DOC', 'TECHNICAL_DOC']).withMessage('Type is invalid'),
-  body('connections')
-    .optional()
+    body('connections')
+    .optional() 
     .isArray().withMessage('Connections must be an array of connections')
-    .isIn(['LINK1', 'LINK2']).withMessage('Connection is invalid'),
+    .custom((connections) => {
+      connections.forEach((connection: IConnection) => {
+        // Validate connection document ID
+        if (!connection.document) {
+          throw new Error('Connection must have a document ID.');
+        }
+        // Validate connection type
+        if (!connection.type || !['LINK1', 'LINK2', 'LINK3'].includes(connection.type)) {
+          throw new Error('Connection type is invalid.');
+        }
+      });
+      return true;
+    }),
   body('language')
     .optional()
     .isString().withMessage('Language must be a string'),
