@@ -11,7 +11,7 @@ export const validateAddDocument = [
     .optional()
     .isString().withMessage('Scale must be a string'),
   body('type').notEmpty().withMessage('Type is required')
-    .isIn(['AGREEMENT', 'CONFLICT', 'CONSULTATION', 'DESIGN_DOC', 'INFORMATIVE_DOC', 'MAETRIAL_EFFECTS', 'PRESCRIPTIVE_DOC', 'TECHNICAL_DOC']).withMessage('Type is invalid'),
+    .isIn(['AGREEMENT', 'CONFLICT', 'CONSULTATION', 'DESIGN_DOC', 'INFORMATIVE_DOC', 'MATERIAL_EFFECTS', 'PRESCRIPTIVE_DOC', 'TECHNICAL_DOC']).withMessage('Type is invalid'),
   body('connections')
     .optional()
     .isArray().withMessage('Connections must be an array of connections'),

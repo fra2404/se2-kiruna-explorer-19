@@ -184,7 +184,7 @@ export const addDocument = async (req: Request, res: Response, next: NextFunctio
         const result = await addingDocument(document);
 
         //created document
-        res.status(201).json(result);
+        res.status(201).json({success: true, data: result});
     } catch (error) {
         next(error)
         res.status(500).json({ success: false, message: 'Server Error' });

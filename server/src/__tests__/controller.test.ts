@@ -319,7 +319,7 @@ describe("Tests for document controller", () => {
         })
     });
 
-    describe("Tests for addDocument", () => {
+    describe("Tests for getDocument", () => {
         let req: Partial<Request>;
         let res: Partial<Response>;
         let next: NextFunction;

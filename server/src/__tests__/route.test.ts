@@ -5,8 +5,6 @@ import { addDocument, getDocuments } from "@controllers/document.controllers";
 import request from "supertest";
 import { authenticateUser } from "@middlewares/auth.middleware";
 import { authorizeRoles } from "@middlewares/role.middleware";
-import { validateAddDocument } from "@utils/validators/document.validator";
-import { handleValidationErrors } from "@middlewares/validation.middleware";
 
 jest.mock('../controllers/document.controllers');
 jest.mock('../controllers/document.controllers');
@@ -37,7 +35,7 @@ describe("Tests for document route", () => {
             });
             (authorizeRoles as jest.Mock).mockImplementation((req, res, next) => {
                 next();
-            })
+            });
 
             const response = await request(app)
             .post('/api/documents/add')
@@ -45,7 +43,7 @@ describe("Tests for document route", () => {
                 title: 'Test Document',
                 stakeholders: ['Stakeholder1', 'Stakeholder2'],
                 scale: '1:1000',
-                type: 'AGREEEMENT',
+                type: 'AGREEMENT',
                 connections: ['Document1', 'Document2'],
                 language: 'EN',
                 media: ['Media1', 'Media2'],
