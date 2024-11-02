@@ -1,18 +1,19 @@
-import { Route, Routes, useParams } from 'react-router-dom';
+import { Route, Routes } from 'react-router-dom';
 import KirunaMap from './components/Map.tsx';
-import ComponentExample from './components/ComponentExample.tsx';
-
 import './App.css';
-import LoginForm from './components/LoginForm';
 import { AuthProvider } from './context/AuthContext.tsx';
+import LoginPage from './pages/LoginPage.tsx';
+import DocumentForm from './components/DocumentForm.tsx';
 
 function App() {
-
-
   return ( 
-    <Routes>
-      <Route path="/" element={<KirunaMap></KirunaMap>}/>
-    </Routes>
+    <AuthProvider>
+      <Routes>
+        <Route path="/" element={<KirunaMap></KirunaMap>}/>
+        <Route path="/login" element={<LoginPage />}/>
+        <Route path="/document" element={<DocumentForm />}/>
+      </Routes>
+    </AuthProvider>
   );
 }
 

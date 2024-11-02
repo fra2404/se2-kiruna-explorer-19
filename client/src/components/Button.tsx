@@ -24,7 +24,7 @@ export function ButtonRounded(props : any) {
                     {/* <img src={props.img} alt={props.text} style={{ width: "1.5rem", height: "1.5rem", marginLeft: "0.5rem" }} /> */}
                 </Button>
                 :
-                <Button variant={props.variant} onClick={props.onClick} className={className}>{props.text} </Button>
+                <Button variant={props.variant} onClick={props.onClick} className={className}>{props.text}</Button>
 
             }
         </div>
