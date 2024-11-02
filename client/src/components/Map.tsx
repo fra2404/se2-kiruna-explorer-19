@@ -1,11 +1,12 @@
-import { useState, useEffect, useContext } from 'react';
-import { MapContainer, TileLayer, ZoomControl, Polygon, Popup} from 'react-leaflet';
+import { useState, useEffect, useContext, SetStateAction, Dispatch } from 'react';
+import { MapContainer, TileLayer, ZoomControl, Popup, useMapEvents, Marker } from 'react-leaflet';
 import "leaflet/dist/leaflet.css";
-import L, { LatLngExpression } from 'leaflet';
+import L, { LatLng, LatLngExpression } from 'leaflet';
 import API from '../API';
-import FeedbackContext from '../contexts/FeedbackContext';
-import CustomMarker from './CustomMarker';
+import FeedbackContext from '../context/FeedbackContext;
 import Header from './Header';
+import Markers from './Markers';
+import Areas from './Areas';
 
 
 export default function KirunaMap() {
@@ -44,18 +45,6 @@ export default function KirunaMap() {
             .catch(e => setFeedbackFromError(e));
     }, [shouldRefresh]);
 
-    const areasCoords: Record<string, LatLngExpression[]> = {
-        "City center": [[67.854844, 20.243384], [67.849990, 20.243727], [67.850702, 20.266230], [67.857173, 20.265538]],
-        "Luossajarvi": [[67.862737, 20.186711], [67.868170, 20.166441], [67.877093, 20.165441], [67.874507, 20.186398], [67.866747, 20.198250]],
-        "Kiirunavaaragruvan": [[67.839309, 20.214946], [67.833351, 20.225252], [67.833092, 20.203952]]
-    };
-
-    const areas = Object.entries(areasCoords).map(([areaName,coords]) => {
-        return (<Polygon key={areaName} pathOptions={{color: "blue"}} positions={coords}>
-            <Popup>{areaName}</Popup>
-        </Polygon>)
-    });
-
     const [width, setWidth] = useState(window.innerWidth);
     const [height, setHeight] = useState(window.innerHeight);
 
@@ -78,7 +67,8 @@ export default function KirunaMap() {
                 style={{ width: "100%", height: "100%" }}
                 center={kirunaLatLngCoords}
                 zoom={13}
-                scrollWheelZoom={false}
+                doubleClickZoom={false}
+                scrollWheelZoom={true}  // Enable the scroll wheel zoom
                 zoomControl={false}   // Disable the zoom control, we will use a custom one
                 touchZoom={true}    //Touch capabilities for smartphones. TODO: It needs to be tested
 
@@ -90,20 +80,32 @@ export default function KirunaMap() {
                     url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
                 />
 
-                {/* Here there go a component that handles all the markers */}
-                {/* <Marker position={firstMarkerCoords}>
-                    <Popup>
-                        A pretty CSS3 popup. <br /> Easily customizable.
-                    </Popup>
-                </Marker> */}
-                {
-                  areas
-                }
+                <Areas />
 
-                <CustomMarker popupText="This custom popup works" coordinates={firstMarkerCoords} ></CustomMarker>
+                {/* Here there go a component that handles all the markers */}
+                <Markers />
+
+                <ClickMarker />
+
                 <ZoomControl position="bottomleft" />
 
             </MapContainer>
         </div>
     );
+}
+
+function ClickMarker() {
+    const [position, setPosition] = useState<LatLng | null>(null);
+    const map = useMapEvents({
+        dblclick(e) {
+            setPosition(e.latlng);
+        }
+    });
+
+    return position === null ? null : (
+        <Popup position={position}>
+            Do you want to add a document in this position?
+
+        </Popup>
+    )
 }
