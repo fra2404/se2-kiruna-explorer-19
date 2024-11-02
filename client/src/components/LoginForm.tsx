@@ -13,7 +13,7 @@ const LoginForm = () => {
     };
 
     return (
-      <form onSubmit={handleSubmit} className="w-full max-w-[600px] bg-white border px-6 py-3 rounded">
+      <form onSubmit={handleSubmit} className="w-full max-w-[600px] mt-36 bg-white border px-6 py-3 rounded">
         <h1 className="text-2xl font-bold text-center">Login</h1>
 
         <InputComponent label="Email" type="email" value={email} onChange={handleEmailChange} required />
@@ -25,7 +25,6 @@ const LoginForm = () => {
             Login
           </button>
         </div>
-        
       </form>
     );
 }

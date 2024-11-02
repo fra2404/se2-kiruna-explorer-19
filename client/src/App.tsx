@@ -1,9 +1,11 @@
-import { Route, Routes, useParams } from 'react-router-dom';
+import { Route, Routes } from 'react-router-dom';
 import KirunaMap from './components/Map.tsx'
 import ComponentExample from './components/ComponentExample.tsx';
 
 import './App.css'
-import LoginForm from './components/LoginForm';
+import LoginPage from './pages/LoginPage.tsx';
+import DocumentCreationPage from './pages/DocumentCreationPage.tsx';
+
 // import InputComponent from './components/atoms/input/input';
 
 // const options = [
@@ -11,17 +13,18 @@ import LoginForm from './components/LoginForm';
 //   { value: 'IT', label: 'Italy', code: 'IT', prefix: '+39' },
 //   { value: 'FR', label: 'France', code: 'FR', prefix: '+33' },
 // ];
+// const [value, setValue] = useState('');
+
+// const handleChange = (
+//   event: React.ChangeEvent<
+//     HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement
+//   >,
+// ) => {
+//   setValue(event.target.value);
+// };
 
 function App() {
-  // const [value, setValue] = useState('');
 
-  // const handleChange = (
-  //   event: React.ChangeEvent<
-  //     HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement
-  //   >,
-  // ) => {
-  //   setValue(event.target.value);
-  // };
 
   return (
     <Routes>
@@ -30,14 +33,17 @@ function App() {
 
         </KirunaMap>
       }/>
+
       <Route path="/component-example" element={
         <ComponentExample />
       }/>
+
+      <Route path="/login" element={
+        <LoginPage />
+      }/>
+
+      <Route path="/new-document" element={<DocumentCreationPage />} />
     </Routes>
-  )
-    <div className="w-screen h-screen flex flex-col items-center justify-center">
-      <LoginForm />
-    </div>
   );
 }
 
