@@ -51,7 +51,7 @@ export const getAllDocuments = async (): Promise<IDocumentResponse[]> => {
                 connections: document.connections || [], 
                 language: document.language,
                 media: document.media,
-                coordinates: coordinate || null, // Set coordinates or null
+                coordinates: coordinate || null, 
                 summary: document.summary,
             };
         }));
@@ -64,15 +64,51 @@ export const getAllDocuments = async (): Promise<IDocumentResponse[]> => {
 
 
 
-//getDocument(story 3)
-export const getDocumentById = async (id: string): Promise<IDocument | null> => {
+// //getDocument(story 3)
+// export const getDocumentById = async (id: string): Promise<IDocument | null> => {
+//     try {
+//         const document = await Document.findById(id);
+//         return document;
+//     } catch (error) {
+//         throw new DocNotFoundError(); 
+//     }
+// };
+export const getDocumentById = async (id: string): Promise<IDocumentResponse | null> => {
     try {
         const document = await Document.findById(id);
-        return document;
+        
+        // If document does not exist
+        if (!document) {
+            return null;
+        }
+
+        // Fetch the coordinate if it exists
+        let coordinate: ICoordinate | null = null;
+        const coordinateId = document.coordinates; 
+
+        if (coordinateId) {
+            coordinate = await getCoordinateById(coordinateId.toString()); 
+        }
+
+        // Return the result as IDocumentResponse
+        return {
+            id: document.id,
+            title: document.title,
+            stakeholders: document.stakeholders,
+            scale: document.scale,
+            type: document.type,
+            date: document.date,
+            connections: document.connections || [],
+            language: document.language,
+            media: document.media,
+            coordinates: coordinate || null, 
+            summary: document.summary,
+        };
     } catch (error) {
-        throw new DocNotFoundError(); 
+        throw new DocNotFoundError();
     }
 };
+
 
 //updateDocument(story 2)
 export const updatingDocument = async (id: string, updateData: Partial<IDocument>): Promise<IDocument | null> => {

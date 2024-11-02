@@ -218,7 +218,7 @@ export const getDocument = async (req: Request, res: Response, next: NextFunctio
         const { id } = req.params;
 
         // Call the service
-        const document: IDocument | null = await getDocumentById(id);
+        const document: IDocumentResponse | null = await getDocumentById(id);
 
         // Check if the document was found
         if (!document) {
