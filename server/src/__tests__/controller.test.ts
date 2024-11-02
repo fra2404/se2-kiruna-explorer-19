@@ -7,8 +7,8 @@ import { UserRoleEnum } from "@utils/enums/user-role.enum";
 import { getAllUsers, createNewUser, loginUser } from '../services/user.service';
 import { getUsers, createUser, login, getMe } from "../controllers/user.controllers";
 import { CustomError } from '@utils/customError';
-import { addDocument } from "@controllers/document.controllers";
-import { addingDocument } from "@services/document.service";
+import { addDocument, getDocuments } from "@controllers/document.controllers";
+import { addingDocument, getAllDocuments } from "@services/document.service";
 
 jest.mock("../services/user.service");
 
@@ -317,5 +317,69 @@ describe("Tests for document controller", () => {
             expect(next).toHaveBeenCalled();
             expect(res.status).toHaveBeenCalledWith(500);
         })
+    });
+
+    describe("Tests for getDocument", () => {
+        let req: Partial<Request>;
+        let res: Partial<Response>;
+        let next: NextFunction;
+
+        const documents = [
+            {
+                title: 'Test Document',
+                stakeholders: ['Stakeholder1', 'Stakeholder2'],
+                scale: '1:1000',
+                type: 'AGREEMENT',
+                connections: ['Document1', 'Document2'],
+                language: 'EN',
+                media: ['Media1', 'Media2'],
+                coordinates: [10, 20],
+                summary: 'Test summary',
+            },
+            {
+                title: 'Test Document 2',
+                stakeholders: ['Stakeholder1'],
+                scale: '1:10000',
+                type: 'TECHNICAL_DOC',
+                connections: ['Document1', 'Document2'],
+                language: 'EN',
+                media: ['Media1', 'Media2'],
+                coordinates: [10, 20],
+                summary: 'Test summary',
+            }
+        ]
+
+        beforeEach(() => {
+            req = {
+                body: {},
+            };
+    
+            res = {
+                status: jest.fn().mockReturnThis(),
+                json: jest.fn(),
+            } as Partial<Response>;
+    
+            next = jest.fn();
+        });
+
+        test("Should return all documents", async () => {
+            (getAllDocuments as any).mockResolvedValue(documents);
+
+            await getDocuments(req as Request, res as Response, next);
+
+            expect(res.status).toHaveBeenCalledWith(201);
+            expect(res.json).toHaveBeenCalledWith({
+                success: true,
+                data: documents
+            })
+        });
+
+        test("Should return 404 error (no documents)", async () => {
+            (getAllDocuments as any).mockResolvedValue([]);
+
+            await getDocuments(req as Request, res as Response, next);
+
+            expect(res.status).toHaveBeenCalledWith(404);
+        });
     });
 });

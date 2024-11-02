@@ -184,7 +184,7 @@ export const addDocument = async (req: Request, res: Response, next: NextFunctio
         const result = await addingDocument(document);
 
         //created document
-        res.status(201).json(result);
+        res.status(201).json({success: true, data: result});
     } catch (error) {
         next(error)
         res.status(500).json({ success: false, message: 'Server Error' });
@@ -204,7 +204,7 @@ export const getDocuments = async (req: Request, res: Response, next: NextFuncti
         }
 
         // Return list of documents
-        res.json(documents);
+        res.status(201).json({success: true, data: documents});
     } catch (error) {
         next(error);
     }
@@ -225,7 +225,7 @@ export const getDocument = async (req: Request, res: Response, next: NextFunctio
         }
 
         // Return the document
-        res.json(document);
+        res.status(201).json({success: true, data: document});
     } catch (error) {
         next(error);
     }
