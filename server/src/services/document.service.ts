@@ -31,3 +31,18 @@ export const getDocumentById = async (id: string): Promise<IDocument | null> => 
         throw new DocNotFoundError(); 
     }
 };
+
+//updateDocument(story 2)
+export const updatingDocument = async (id: string, updateData: Partial<IDocument>): Promise<IDocument | null> => {
+    try {
+            const updatedDocument = await Document.findByIdAndUpdate(id, updateData, {
+            new: true,             
+            runValidators: true,   
+        });
+
+        return updatedDocument;
+    } catch (error) {
+        console.log(error);
+        throw new Error('Failed to update document');
+    }
+};
