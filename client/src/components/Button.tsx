@@ -5,7 +5,7 @@ import { Col, Row } from "react-bootstrap";
 import Logo from "../assets/icons/logo";    // The SVG is not rendered correctly
 
 
-export function ButtonRounded(props) {
+export function ButtonRounded(props : any) {
     const className = props.className + " rounded-full";
     return (
         <div>
