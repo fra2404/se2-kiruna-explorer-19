@@ -47,7 +47,7 @@ export const getDocuments = async (req: Request, res: Response, next: NextFuncti
         }
 
         // Return list of documents
-        res.json(documents);
+        res.status(201).json({success: true, data: documents});
     } catch (error) {
         next(error); 
     }
@@ -68,7 +68,7 @@ export const getDocument = async (req: Request, res: Response, next: NextFunctio
         }
 
         // Return the document
-        res.json(document);
+        res.status(201).json({success: true, data: document});
     } catch (error) {
         next(error); 
     }
