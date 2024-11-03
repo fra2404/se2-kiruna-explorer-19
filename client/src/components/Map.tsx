@@ -8,6 +8,7 @@ import Markers from './Markers';
 import Areas from './Areas';
 import { useAuth } from '../context/AuthContext';
 import "leaflet/dist/leaflet.css";
+import { ButtonRounded } from './Button';
 
 
 export default function KirunaMap() {
@@ -85,8 +86,11 @@ function ClickMarker() {
 
     return position === null ? null : (
         <Popup position={position}>
-            Do you want to add a document in this position?
-
+            <span className='text-base'>Do you want to add a document in this position?</span><br /><br />
+            <div className='flex justify-between'>
+                <ButtonRounded variant="outlined" text="Yes" className="bg-black text-white text-base pt-2 pb-2 pl-3 pr-3" onClick={() => {}}/>
+                <ButtonRounded variant="outlined" text="Cancel" className="text-base pt-2 pb-2 pl-3 pr-3" onClick={() => {setPosition(null)}}/>
+            </div>
         </Popup>
     )
 }
