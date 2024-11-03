@@ -1,5 +1,5 @@
 import { useState, useEffect, useContext } from 'react';
-import { MapContainer, TileLayer, ZoomControl, Popup, useMapEvents, Marker } from 'react-leaflet';
+import { MapContainer, TileLayer, ZoomControl, Popup, useMapEvents } from 'react-leaflet';
 import { LatLng, LatLngExpression } from 'leaflet';
 import API from '../API';
 import FeedbackContext from '../context/FeedbackContext';
@@ -9,7 +9,10 @@ import Areas from './Areas';
 import { useAuth } from '../context/AuthContext';
 import "leaflet/dist/leaflet.css";
 import { ButtonRounded } from './Button';
+import DocumentForm from './DocumentForm';
+import Modal from "react-modal";
 
+export const kirunaLatLngCoords: LatLngExpression = [67.85572, 20.22513];   // this are DD coordinates for Kiruna different from DMS coordinates for Kiruna
 
 export default function KirunaMap() {
     const { isLoggedIn, user } = useAuth();   // Retrieve this information from the context created by FAL
@@ -17,9 +20,6 @@ export default function KirunaMap() {
 
     const [documents, setDocuments] = useState([]); // state to save a list of documents
     const [shouldRefresh, setShouldRefresh] = useState(true);   // useState is used to force a re-render of the map container
-
-    const kirunaLatLngCoords: LatLngExpression = [67.85572, 20.22513];   // this are DD coordinates for Kiruna different from DMS coordinates for Kiruna
-    const firstMarkerCoords: LatLngExpression = [67.857443, 20.230131];
 
     useEffect(() => { // If the user is logged in
         // Retrieve the documents from the backend and save them in the state
@@ -69,6 +69,7 @@ export default function KirunaMap() {
                     {/* Here there go a component that handles all the markers */}
                     <Markers />
                     <ClickMarker />
+                    
                     <ZoomControl position="bottomleft" />
                 </MapContainer>
             </div>
@@ -78,19 +79,41 @@ export default function KirunaMap() {
 
 function ClickMarker() {
     const [position, setPosition] = useState<LatLng | null>(null);
-    const map = useMapEvents({
+    useMapEvents({
         dblclick(e) {
             setPosition(e.latlng);
         }
     });
 
+    //Modal options
+    const [modalOpen, setModalOpen] = useState(false);
+    const modalStyles = {
+        content: {
+            top: '50%',
+            left: '50%',
+            right: 'auto',
+            bottom: 'auto',
+            marginRight: '-50%',
+            transform: 'translate(-50%, -50%)',
+            width: '80%',
+            maxWidth: '95vh',
+            maxHeight: '90vh',
+        },
+        overlay: {zIndex: 1000}
+    }
+
     return position === null ? null : (
-        <Popup position={position}>
-            <span className='text-base'>Do you want to add a document in this position?</span><br /><br />
-            <div className='flex justify-between'>
-                <ButtonRounded variant="outlined" text="Yes" className="bg-black text-white text-base pt-2 pb-2 pl-3 pr-3" onClick={() => {}}/>
-                <ButtonRounded variant="outlined" text="Cancel" className="text-base pt-2 pb-2 pl-3 pr-3" onClick={() => {setPosition(null)}}/>
-            </div>
-        </Popup>
+        <>
+            <Popup position={position}>
+                <span className='text-base'>Do you want to add a document in this position?</span><br /><br />
+                <div className='flex justify-between'>
+                    <ButtonRounded variant="outlined" text="Yes" className="bg-black text-white text-base pt-2 pb-2 pl-3 pr-3" onClick={() => {setModalOpen(true);}}/>
+                    <ButtonRounded variant="outlined" text="Cancel" className="text-base pt-2 pb-2 pl-3 pr-3" onClick={() => {setPosition(null)}}/>
+                </div>
+            </Popup>
+            <Modal style={modalStyles} isOpen={modalOpen} onRequestClose={() => setModalOpen(false)}>
+                <DocumentForm position={position} />
+            </Modal>
+        </>
     )
 }
