@@ -164,7 +164,6 @@ export const updatingDocument = async (id: string, updateData: Partial<IDocument
 
         return updatedDocument;
     } catch (error) {
-        console.log(error);
         throw new Error('Failed to update document');
     }
 };

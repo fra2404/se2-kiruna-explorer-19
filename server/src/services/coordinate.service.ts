@@ -1,7 +1,7 @@
-import { Coordinate } from '@schemas/coordinate.schema';
-import { ICoordinate } from '@interfaces/coordinate.interface';
-import { CustomError } from '@utils/customError';
-import { PositionError } from '@utils/errors';
+import { Coordinate } from '../schemas/coordinate.schema';
+import { ICoordinate } from '../interfaces/coordinate.interface';
+import { CustomError } from '../utils/customError';
+import { PositionError } from '../utils/errors';
 
 // Function to get a coordinate by its ID
 export const getCoordinateById = async (id: string): Promise<ICoordinate | null> => {

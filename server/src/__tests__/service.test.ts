@@ -5,13 +5,13 @@ import bcrypt from 'bcrypt';
 import User from '../schemas/user.schema';
 import Document from '../schemas/document.schema';
 import { IUser } from '../interfaces/user.interface';
-import { IDocument } from '@interfaces/document.interface'; 
-import { UserRoleEnum } from "@utils/enums/user-role.enum";
-import { DocTypeEnum } from "@utils/enums/doc-type.enum";
+import { IDocument } from '../interfaces/document.interface'; 
+import { UserRoleEnum } from "../utils/enums/user-role.enum";
+import { DocTypeEnum } from "../utils/enums/doc-type.enum";
 import { getAllUsers, createNewUser, getUserById, loginUser } from '../services/user.service';
 import { addingDocument, getAllDocuments, getDocumentById } from '../services/document.service';
 
-import { CustomError } from '@utils/customError';
+import { CustomError } from '../utils/customError';
 import { BadConnectionError, DocNotFoundError } from "../utils/errors";
 
 jest.mock("../schemas/user.schema");
@@ -304,23 +304,31 @@ describe("Tests for user services", () => {
         //test 1
         test("Should successfully retrieve all documents", async () => {
             //Data mocking
-            const mockDocuments = [
-                { 
+            const mockDocuments = [{ 
+                    id: "1",
                     title: "Test title 1", 
                     stakeholders: "Company A", 
                     scale: "Test value 1", 
                     type: DocTypeEnum.Agreement, 
                     date: "01-01-2000", 
+                    connections: 1,
+                    language: "Italian",
+                    media: undefined,
+                    coordinates: null,
                     summary: "Test summary 1" },
-                { 
-                    title: "Test title 2", 
-                    stakeholders: "Company B", 
-                    scale: "Test value 2", 
-                    type: DocTypeEnum.Competition, 
-                    date: "02-01-2000", 
-                    summary: "Test summary 2" 
-                }
-            ];
+                    { 
+                        id: "2",
+                        title: "Test title 2", 
+                        stakeholders: "Company B", 
+                        scale: "Test value 2", 
+                        type: DocTypeEnum.Competition, 
+                        date: "02-01-2000", 
+                        connections: 3,
+                        language: "Spanish",
+                        media: undefined,
+                        coordinates: null,
+                        summary: "Test summary 2" 
+                }];
 
             //Support functions mocking
             (Document.find as jest.Mock).mockImplementation(async() => mockDocuments);
@@ -361,6 +369,10 @@ describe("Tests for user services", () => {
                 scale: "Test value 1", 
                 type: DocTypeEnum.Agreement, 
                 date: "01-01-2000", 
+                connections: 1,
+                language: "Italian",
+                media: undefined,
+                coordinates: null,
                 summary: "Test summary 1" 
             };
 

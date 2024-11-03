@@ -1,10 +1,10 @@
 import express, { NextFunction, Request, Response } from "express";
 import bodyParser from "body-parser";
 import { documentRoutes } from "../routes/document.routes";
-import { addDocument, getDocuments } from "@controllers/document.controllers";
+import { addDocument, getDocuments } from "../controllers/document.controllers";
 import request from "supertest";
-import { authenticateUser } from "@middlewares/auth.middleware";
-import { authorizeRoles } from "@middlewares/role.middleware";
+import { authenticateUser } from "../middlewares/auth.middleware";
+import { authorizeRoles } from "../middlewares/role.middleware";
 
 jest.mock('../controllers/document.controllers');
 jest.mock('../controllers/document.controllers');
@@ -12,7 +12,11 @@ jest.mock('../middlewares/auth.middleware');
 jest.mock('../middlewares/role.middleware');
 
 /* ******************************************* Suite n#1 - DOCUMENTS ******************************************* */
-//TODO: the tests return the following error: Route.post() requires a callback function but got a [object Undefined]. I think that is a problem of validateAddDocument, but I have not found a solution
+//TODO: the tests return the following error: 
+//Route.post() requires a callback function but got a [object Undefined]. 
+//I think that is a problem of validateAddDocument, but I have not found a solution
+
+//I HOPE SO!! >:)
 
 const app = express();
 app.use(bodyParser.json());
