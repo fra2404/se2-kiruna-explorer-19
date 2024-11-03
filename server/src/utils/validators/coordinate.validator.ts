@@ -1,4 +1,4 @@
-import { body, ValidationChain } from 'express-validator';
+import { body, param, ValidationChain } from 'express-validator';
 
 export const validateCoordinate: ValidationChain[] = [
     body('type')
@@ -36,4 +36,8 @@ export const validateCoordinate: ValidationChain[] = [
             return true;
         }),
     body('name').isString().withMessage('Name must be a string').notEmpty().withMessage('Name is required'),
+];
+
+export const validateId: ValidationChain[] = [
+    param('id').isMongoId().withMessage('Invalid ID format'),
 ];

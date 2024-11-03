@@ -1,5 +1,5 @@
-import { useState, useEffect, useContext } from 'react';
-import { MapContainer, TileLayer, ZoomControl, Popup, useMapEvents, Marker } from 'react-leaflet';
+import { useState, useEffect, useContext, useRef } from 'react';
+import { MapContainer, TileLayer, ZoomControl, Popup, useMapEvents, useMap } from 'react-leaflet';
 import { LatLng, LatLngExpression } from 'leaflet';
 import API from '../API';
 import FeedbackContext from '../context/FeedbackContext';
@@ -9,7 +9,10 @@ import Areas from './Areas';
 import { useAuth } from '../context/AuthContext';
 import "leaflet/dist/leaflet.css";
 import { ButtonRounded } from './Button';
+import DocumentForm from './DocumentForm';
+import Modal from "react-modal";
 
+export const kirunaLatLngCoords: LatLngExpression = [67.85572, 20.22513];   // this are DD coordinates for Kiruna different from DMS coordinates for Kiruna
 
 export default function KirunaMap() {
     const { isLoggedIn, user } = useAuth();   // Retrieve this information from the context created by FAL
@@ -18,8 +21,21 @@ export default function KirunaMap() {
     const [documents, setDocuments] = useState([]); // state to save a list of documents
     const [shouldRefresh, setShouldRefresh] = useState(true);   // useState is used to force a re-render of the map container
 
-    const kirunaLatLngCoords: LatLngExpression = [67.85572, 20.22513];   // this are DD coordinates for Kiruna different from DMS coordinates for Kiruna
-    const firstMarkerCoords: LatLngExpression = [67.857443, 20.230131];
+    //Hard coded areas, will be retrieved from the backend when we will have it
+    const areasCoords = {
+        "A1": {
+            "name": "City center",
+            "coords": [[67.854844, 20.243384], [67.849990, 20.243727], [67.850702, 20.266230], [67.857173, 20.265538]],
+        },
+        "A2": {
+            "name": "Luossajarvi",
+            "coords": [[67.862737, 20.186711], [67.868170, 20.166441], [67.877093, 20.165441], [67.874507, 20.186398], [67.866747, 20.198250]],
+        },
+        "A3": {
+            "name": "Kiirunavaaragruvan",
+            "coords": [[67.839309, 20.214946], [67.833351, 20.225252], [67.833092, 20.203952]]
+        }
+    };
 
     useEffect(() => { // If the user is logged in
         // Retrieve the documents from the backend and save them in the state
@@ -64,11 +80,12 @@ export default function KirunaMap() {
                         attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
                         url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"/>
 
-                    <Areas />
+                    <Areas areasCoords={areasCoords} />
 
                     {/* Here there go a component that handles all the markers */}
                     <Markers />
-                    <ClickMarker />
+                    <ClickMarker areasCoords={areasCoords} />
+                    
                     <ZoomControl position="bottomleft" />
                 </MapContainer>
             </div>
@@ -76,21 +93,44 @@ export default function KirunaMap() {
     );
 }
 
-function ClickMarker() {
+function ClickMarker(props: any) {
     const [position, setPosition] = useState<LatLng | null>(null);
-    const map = useMapEvents({
+    useMapEvents({
         dblclick(e) {
             setPosition(e.latlng);
         }
     });
+    const popupRef = useRef<L.Popup>(null);
+
+    //Modal options
+    const [modalOpen, setModalOpen] = useState(false);
+    const modalStyles = {
+        content: {
+            top: '50%',
+            left: '50%',
+            right: 'auto',
+            bottom: 'auto',
+            marginRight: '-50%',
+            transform: 'translate(-50%, -50%)',
+            width: '80%',
+            maxWidth: '95vh',
+            maxHeight: '90vh',
+        },
+        overlay: {zIndex: 1000}
+    }
 
     return position === null ? null : (
-        <Popup position={position}>
-            <span className='text-base'>Do you want to add a document in this position?</span><br /><br />
-            <div className='flex justify-between'>
-                <ButtonRounded variant="outlined" text="Yes" className="bg-black text-white text-base pt-2 pb-2 pl-3 pr-3" onClick={() => {}}/>
-                <ButtonRounded variant="outlined" text="Cancel" className="text-base pt-2 pb-2 pl-3 pr-3" onClick={() => {setPosition(null)}}/>
-            </div>
-        </Popup>
+        <>
+            <Popup ref={popupRef} position={position}>
+                <span className='text-base'>Do you want to add a document in this position?</span><br /><br />
+                <div className='flex justify-between'>
+                    <ButtonRounded variant="outlined" text="Yes" className="bg-black text-white text-base pt-2 pb-2 pl-3 pr-3" onClick={() => {setModalOpen(true);}}/>
+                    <ButtonRounded variant="outlined" text="Cancel" className="text-base pt-2 pb-2 pl-3 pr-3" onClick={() => {popupRef.current?.remove(); setPosition(null); }}/>
+                </div>
+            </Popup>
+            <Modal style={modalStyles} isOpen={modalOpen} onRequestClose={() => setModalOpen(false)}>
+                <DocumentForm selection="position" areas={props.areasCoords} position={position} />
+            </Modal>
+        </>
     )
 }
