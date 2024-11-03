@@ -7,6 +7,7 @@ import Modal from "react-modal";
 import { kirunaLatLngCoords } from './Map';
 import { MapContainer, Marker, Polygon, TileLayer, useMapEvents, ZoomControl } from 'react-leaflet';
 import { LatLng } from 'leaflet';
+import InputComponent from './atoms/input/input';
 
 Modal.setAppElement("#root");
 
@@ -24,7 +25,10 @@ const DocumentForm = (props: any) => {
     ];
 
     const documentTypeOptions = [
-        { value: "Material effect", label: "Material effect" },
+        { value: "Agreement", label: "Agreement" },
+        { value: "Conflict", label: "Conflict" },
+        { value: "Consultation", label: "Consultation" },
+        { value: "Material effects", label: "Material effects" },
         { value: "Prescriptive document", label: "Prescriptive document" },
         { value: "Design document", label: "Design document" },
         { value: "Informative document", label: "Informative document" },
@@ -40,21 +44,22 @@ const DocumentForm = (props: any) => {
         { value: "Text", label: "Text" }
     ];
 
-    const [title, setTitle] = useState("")
-    const [stakeholders, setStakeholders] = useState(null)
-    const [scale, setScale] = useState(null)
-    const [issuanceDate, setIssuanceDate] = useState(new Date().toISOString().split('T')[0])
-    const [docType, setDocType] = useState(null)
-    const [numPages, setNumPages] = useState(0)
-    const [connections, setConnections] = useState<Connection[]>([])
-    const [language, setLanguage] = useState("")
-    const [description, setDescription] = useState("")
+    const [title, setTitle] = useState(props.selectedDocument ? props.selectedDocument["title"] || "" : "")
+    const [stakeholders, setStakeholders] = useState(props.selectedDocument ? props.selectedDocument["stakeholders"] || null : null)
+    const [scale, setScale] = useState(props.selectedDocument ? props.selectedDocument["scale"] || null : null)
+    const [issuanceDate, setIssuanceDate] = useState(props.selectedDocument ? ( props.selectedDocument["issuanceDate"] ? props.selectedDocument["issuanceDate"] : new Date().toISOString().split('T')[0] ) : new Date().toISOString().split('T')[0])
+    const [docType, setDocType] = useState(props.selectedDocument ? props.selectedDocument["type"] || null : null)
+    const [numPages, setNumPages] = useState(props.selectedDocument ? props.selectedDocument["numPages"] || 0 : 0)
+    const [connections, setConnections] = useState<Connection[]>(props.selectedDocument ? props.selectedDocument["connections"] || [] : [])
+    const [language, setLanguage] = useState(props.selectedDocument ? props.selectedDocument["language"] || "" : "")
+    const [description, setDescription] = useState(props.selectedDocument ? props.selectedDocument["description"] || "" : "")
     const [position, setPosition] = useState(props.position)
     const [selection, setSelection] = useState(props.selection)                 //Can be "position" or "area", according to what the user selected
     const [selectedAreaId, setSelectedAreaId] = useState(props.selectedAreaId)  //If the user selected an area, this variable contains the it of that area
-    const [connectionModalOpen, setConnectionModalOpen] = useState(false)
 
-    const modalStyles = {
+    //Connection modal
+    const [connectionModalOpen, setConnectionModalOpen] = useState(false)
+    const connectionModalStyles = {
         content: {
             top: '50%',
             left: '50%',
@@ -88,6 +93,8 @@ const DocumentForm = (props: any) => {
     function MapClickHandler() {
         useMapEvents({
             click(e) {
+                setSelection("position");
+                setSelectedAreaId(undefined);
                 setPosition(e.latlng);
             }
         });
@@ -212,10 +219,15 @@ const DocumentForm = (props: any) => {
                             </div>
                         </div>
 
-                        <div className="col-span-2 row-span-1 col-start-1 row-start-3 md:text-center mt-5">
-                            <div className='h-96 w-full'>
+                        <div className="col-span-2 row-span-1 col-start-1 row-start-3 mt-5">
+                            <h4>Document position:</h4>
+                            <div className='w-full grid md:text-center' style={{height: "70vh"}}>
+                                <div className='w-80 absolute pr-4 justify-self-end' style={{zIndex: 1000}}>
+                                    <InputComponent label="Select an area" type="select" options={Object.entries(props.areas).map(([areaId, info]: [string, any]) => {return {value: areaId, label: info["name"]} })} value={selectedAreaId} onChange={(v) => {setSelectedAreaId(v["target"]["value"]); setSelection("area"); setPosition(undefined) }} />
+                                </div>
+
                                 <MapContainer
-                                    style={{ width: "100%", height: "100%" }}
+                                    style={{ width: "100%", height: "100%", zIndex: 10 }}
                                     center={position ? position : kirunaLatLngCoords}   //The map is centered on the document's position, if exists. Otherwise it is centered on Kiruna
                                     zoom={13}
                                     doubleClickZoom={false}
@@ -246,7 +258,7 @@ const DocumentForm = (props: any) => {
                 </form>
             </div>
 
-            <Modal style={modalStyles} isOpen={connectionModalOpen} onRequestClose={() => setConnectionModalOpen(false)}>
+            <Modal style={connectionModalStyles} isOpen={connectionModalOpen} onRequestClose={() => setConnectionModalOpen(false)}>
                 <div className="relative">
                     <button onClick={() => setConnectionModalOpen(false)} className="absolute top-0 right-0 p-2 text-xl text-gray-500 hover:text-gray-700">
                         &times;
