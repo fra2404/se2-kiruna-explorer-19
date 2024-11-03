@@ -53,6 +53,9 @@ export const validateAddDocument = [
       }
       return true;
     }),  
+  body('coordinates')
+    .optional()
+    .isMongoId().withMessage('Coordinates must be a valid MongoDB ObjectId')  
 ];
 
 export const validateDocumentId = [
@@ -96,7 +99,6 @@ export const validateUpdateDocument = [
     .optional()
     .isString().withMessage('Language must be a string'),
   body('summary')
-    .optional()
     .notEmpty().withMessage('Summary is required')
     .isString().withMessage('Summary must be a string'),
   body('date')
@@ -117,4 +119,7 @@ export const validateUpdateDocument = [
       }
       return true;
     }),  
+  body('coordinates')
+    .optional()
+    .isMongoId().withMessage('Coordinates must be a valid MongoDB ObjectId')  
 ];

@@ -1,4 +1,5 @@
 import Document from '../schemas/document.schema'; 
+import { Coordinate } from '@schemas/coordinate.schema';
 import { IDocument } from '@interfaces/document.interface'; 
 import { IDocumentResponse } from '@interfaces/document.return.interface';
 import { BadConnectionError, DocNotFoundError } from "../utils/errors";
@@ -8,6 +9,14 @@ import { getCoordinateById } from './coordinate.service';
 //addDocument(Story 1)
 export const addingDocument = async (documentData: IDocument): Promise<void> => {
     try {
+
+        // //check existence of Coordinate in DB
+        // if (documentData.coordinates) {
+        //     const existingCoordinate = await Coordinate.findById(documentData.coordinates);
+        //     if (!existingCoordinate) {
+        //         throw new Error(`Coordinate with ID ${documentData.coordinates} does not exist.`);
+        //     }
+        // }
 
         //check existence of Connection in DB
         if (documentData.connections && documentData.connections.length > 0) {
