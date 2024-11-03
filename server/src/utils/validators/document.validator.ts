@@ -12,9 +12,9 @@ export const validateAddDocument = [
     .notEmpty().withMessage('Scale is required')
     .isString().withMessage('Scale must be a string'),
   body('type').notEmpty().withMessage('Type is required')
-    .isIn(['AGREEMENT', 'CONFLICT', 'CONSULTATION', 'DESIGN_DOC', 'INFORMATIVE_DOC', 'MATERIAL_EFFECTS', 'PRESCRIPTIVE_DOC', 'TECHNICAL_DOC']).withMessage('Type is invalid'),  
+    .isIn(['AGREEMENT', 'CONFLICT', 'CONSULTATION', 'DESIGN_DOC', 'INFORMATIVE_DOC', 'MATERIAL_EFFECTS', 'PRESCRIPTIVE_DOC', 'TECHNICAL_DOC']).withMessage('Type is invalid'),
   body('connections')
-    .optional() 
+    .optional()
     .isArray().withMessage('Connections must be an array of connections')
     .custom((connections) => {
       connections.forEach((connection: IConnection) => {
@@ -29,7 +29,7 @@ export const validateAddDocument = [
       });
       return true;
     }),
-  body('language') 
+  body('language')
     .optional()
     .isString().withMessage('Language must be a string'),
   body('summary')
@@ -57,8 +57,8 @@ export const validateAddDocument = [
 
 export const validateDocumentId = [
   param('id')
-      .isMongoId()
-      .withMessage('Invalid document ID format')
+    .isMongoId()
+    .withMessage('Invalid document ID format')
 ];
 
 export const validateUpdateDocument = [
@@ -76,8 +76,8 @@ export const validateUpdateDocument = [
     .isString().withMessage('Scale must be a string'),
   body('type').notEmpty().withMessage('Type is required')
     .isIn(['AGREEMENT', 'CONFLICT', 'CONSULTATION', 'DESIGN_DOC', 'INFORMATIVE_DOC', 'MATERIAL_EFFECTS', 'PRESCRIPTIVE_DOC', 'TECHNICAL_DOC']).withMessage('Type is invalid'),
-    body('connections')
-    .optional() 
+  body('connections')
+    .optional()
     .isArray().withMessage('Connections must be an array of connections')
     .custom((connections) => {
       connections.forEach((connection: IConnection) => {

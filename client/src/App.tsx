@@ -1,48 +1,22 @@
-import { Route, Routes, useParams } from 'react-router-dom';
+import { Route, Routes } from 'react-router-dom';
 import KirunaMap from './components/Map.tsx';
-import ComponentExample from './components/ComponentExample.tsx';
-
 import './App.css';
-import LoginForm from './components/LoginForm';
 import { AuthProvider } from './context/AuthContext.tsx';
-// import InputComponent from './components/atoms/input/input';
-
-// const options = [
-//   { value: 'US', label: 'United States', code: 'US', prefix: '+1' },
-//   { value: 'IT', label: 'Italy', code: 'IT', prefix: '+39' },
-//   { value: 'FR', label: 'France', code: 'FR', prefix: '+33' },
-// ];
+import LoginPage from './pages/LoginPage.tsx';
+import DocumentForm from './components/DocumentForm.tsx';
 
 function App() {
-  // const [value, setValue] = useState('');
-
-  // const handleChange = (
-  //   event: React.ChangeEvent<
-  //     HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement
-  //   >,
-  // ) => {
-  //   setValue(event.target.value);
-  // };
-
-  return (
-    /* 
-    <Routes>
-      <Route path="/" element={
-        <KirunaMap >
-
-        </KirunaMap>
-      }/>
-      <Route path="/component-example" element={
-        <ComponentExample />
-      }/>
-    </Routes>
-  ) */
+  return ( 
     <AuthProvider>
-      <div className="w-screen h-screen flex flex-col items-center justify-center">
-        <LoginForm />
-      </div>
+      <Routes>
+        <Route path="/" element={<KirunaMap></KirunaMap>}/>
+        <Route path="/login" element={<LoginPage />}/>
+        <Route path="/document" element={<DocumentForm />}/>
+      </Routes>
     </AuthProvider>
   );
 }
+
+
 
 export default App;

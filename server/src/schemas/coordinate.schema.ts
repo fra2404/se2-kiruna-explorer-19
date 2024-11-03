@@ -11,7 +11,7 @@ const coordinateSchema = new Schema<ICoordinate>(
         type: {
             type: String,
             required: true,
-            enum: ['Point', 'Area'],
+            enum: ['Point', 'Polygon'],
         },
         coordinates: {
             type: Schema.Types.Mixed,
@@ -34,7 +34,7 @@ const pointSchema = new Schema({
     },
 });
 
-const areaSchema = new Schema({
+const polygonSchema = new Schema({
     coordinates: {
         type: [[Number]], //  [[longitude, latitude], ...]
         required: true,
@@ -42,6 +42,6 @@ const areaSchema = new Schema({
 });
 
 const Point = Coordinate.discriminator('Point', pointSchema);
-const Area = Coordinate.discriminator('Area', areaSchema);
+const Polygon = Coordinate.discriminator('Polygon', polygonSchema);
 
-export { Coordinate, Point, Area };
+export { Coordinate, Point, Polygon };
