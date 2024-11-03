@@ -14,7 +14,7 @@ export interface IDocument {
     scale: string;
     type: DocTypeEnum;
     date: string;
-    connections?: [IConnection];
+    connections?: IConnection[];
     language?: string;
     media?: [ObjectId];
     coordinates?: ObjectId;

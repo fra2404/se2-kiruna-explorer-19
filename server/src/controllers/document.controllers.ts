@@ -7,6 +7,7 @@ import {
     updatingDocument
 } from '../services/document.service';
 import { IDocument } from '@interfaces/document.interface';
+import { IDocumentResponse } from '@interfaces/document.return.interface';
 
 
 /**
@@ -196,7 +197,7 @@ export const addDocument = async (req: Request, res: Response, next: NextFunctio
 export const getDocuments = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
     try {
         //Call the service
-        const documents: IDocument[] = await getAllDocuments();
+        const documents: IDocumentResponse[] = await getAllDocuments();
 
         // Check if documents were found
         if (documents.length === 0) {
@@ -217,7 +218,7 @@ export const getDocument = async (req: Request, res: Response, next: NextFunctio
         const { id } = req.params;
 
         // Call the service
-        const document: IDocument | null = await getDocumentById(id);
+        const document: IDocumentResponse | null = await getDocumentById(id);
 
         // Check if the document was found
         if (!document) {
