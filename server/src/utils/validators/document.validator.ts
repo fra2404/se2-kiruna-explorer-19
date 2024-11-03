@@ -6,10 +6,10 @@ export const validateAddDocument = [
     .notEmpty().withMessage('Title is required')
     .isString().withMessage('Title must be a string'),
   body('stakeholders')
-    .optional()
+    .notEmpty().withMessage('Stakeholders is required')
     .isString().withMessage('Stakeholders must be a string'),
   body('scale')
-    .optional()
+    .notEmpty().withMessage('Scale is required')
     .isString().withMessage('Scale must be a string'),
   body('type').notEmpty().withMessage('Type is required')
     .isIn(['AGREEMENT', 'CONFLICT', 'CONSULTATION', 'DESIGN_DOC', 'INFORMATIVE_DOC', 'MATERIAL_EFFECTS', 'PRESCRIPTIVE_DOC', 'TECHNICAL_DOC']).withMessage('Type is invalid'),  
@@ -34,7 +34,25 @@ export const validateAddDocument = [
     .isString().withMessage('Language must be a string'),
   body('summary')
     .optional()
-    .isString().withMessage('Summary must be a string')
+    .isString().withMessage('Summary must be a string'),
+  body('date')
+    .notEmpty().withMessage('Date is required')
+    .matches(/^\d{2}-\d{2}-\d{4}$/).withMessage('Date must be in the format dd-mm-yyyy')
+    .custom((value) => {
+      const [day, month, year] = value.split('-').map(Number);
+      const isValidDate = (d: number, m: number, y: number) => {
+        const date = new Date(y, m - 1, d);
+        return (
+          date.getFullYear() === y &&
+          date.getMonth() === m - 1 &&
+          date.getDate() === d
+        );
+      };
+      if (!isValidDate(day, month, year)) {
+        throw new Error('Invalid date');
+      }
+      return true;
+    }),  
 ];
 
 export const validateDocumentId = [
@@ -48,13 +66,13 @@ export const validateUpdateDocument = [
     .isMongoId()
     .withMessage('Invalid document ID format'),
   body('title')
-    .optional()
+    .notEmpty().withMessage('Title is required')
     .isString().withMessage('Title must be a string'),
   body('stakeholders')
-    .optional()
+    .notEmpty().withMessage('Stakeholders is required')
     .isString().withMessage('Stakeholders must be a string'),
   body('scale')
-    .optional()
+    .notEmpty().withMessage('Scale is required')
     .isString().withMessage('Scale must be a string'),
   body('type').notEmpty().withMessage('Type is required')
     .isIn(['AGREEMENT', 'CONFLICT', 'CONSULTATION', 'DESIGN_DOC', 'INFORMATIVE_DOC', 'MATERIAL_EFFECTS', 'PRESCRIPTIVE_DOC', 'TECHNICAL_DOC']).withMessage('Type is invalid'),
@@ -79,5 +97,24 @@ export const validateUpdateDocument = [
     .isString().withMessage('Language must be a string'),
   body('summary')
     .optional()
-    .isString().withMessage('Summary must be a string')
+    .notEmpty().withMessage('Summary is required')
+    .isString().withMessage('Summary must be a string'),
+  body('date')
+    .notEmpty().withMessage('Date is required')
+    .matches(/^\d{2}-\d{2}-\d{4}$/).withMessage('Date must be in the format dd-mm-yyyy')
+    .custom((value) => {
+      const [day, month, year] = value.split('-').map(Number);
+      const isValidDate = (d: number, m: number, y: number) => {
+        const date = new Date(y, m - 1, d);
+        return (
+          date.getFullYear() === y &&
+          date.getMonth() === m - 1 &&
+          date.getDate() === d
+        );
+      };
+      if (!isValidDate(day, month, year)) {
+        throw new Error('Invalid date');
+      }
+      return true;
+    }),  
 ];
