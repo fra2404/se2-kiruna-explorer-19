@@ -1,16 +1,20 @@
 import { Request, Response, NextFunction } from "express";
 import { jest, describe, expect, beforeEach } from '@jest/globals'
 
-import { IUserResponse } from '@interfaces/user.return.interface';
-import { CustomRequest } from '@interfaces/customRequest.interface';
-import { UserRoleEnum } from "@utils/enums/user-role.enum";
+import { IUserResponse } from '../interfaces/user.return.interface';
+import { IDocumentResponse } from '@interfaces/document.return.interface';
+import { CustomRequest } from '../interfaces/customRequest.interface';
+import { UserRoleEnum } from "../utils/enums/user-role.enum";
+import { DocTypeEnum } from "../utils/enums/doc-type.enum";
 import { getAllUsers, createNewUser, loginUser } from '../services/user.service';
 import { getUsers, createUser, login, getMe } from "../controllers/user.controllers";
-import { CustomError } from '@utils/customError';
-import { addDocument, getDocuments } from "@controllers/document.controllers";
-import { addingDocument, getAllDocuments } from "@services/document.service";
+import { CustomError } from '../utils/customError';
+import { addDocument, getDocuments, getDocument, updateDocument } from "../controllers/document.controllers";
+import { addingDocument, getAllDocuments, getDocumentById, updatingDocument } from "../services/document.service";
+import { BadConnectionError, DocNotFoundError } from "@utils/errors";
 
-jest.mock("../services/user.service");
+jest.mock("../services/user.service"); //For suite n#1
+jest.mock('../services/document.service'); //For suite n#2
 
 /* ******************************************* Suite n#1 - USERS ******************************************* */
 describe("Tests for user controllers", () => {
@@ -256,9 +260,9 @@ describe("Tests for user controllers", () => {
     });//getMe
 });//END OF USER CONTROLLERS
 
-jest.mock('../services/document.service');
 /* ******************************************* Suite n#2 - DOCUMENTS ******************************************* */
 describe("Tests for document controller", () => {
+    //addDocument
     describe("Tests for addDocument", () => {
         let req: Partial<Request>;
         let res: Partial<Response>;
@@ -287,6 +291,7 @@ describe("Tests for document controller", () => {
             next = jest.fn();
         });
 
+        //test 1
         test("Should return a new document", async () => {
             (addingDocument as any).mockResolvedValue(req.body);
 
@@ -299,6 +304,7 @@ describe("Tests for document controller", () => {
             })
         });
 
+        //test 2
         test("Should handle errors", async () => {
             const error = "Error: something went wrong";
             (addingDocument as any).mockRejectedValue(error);
@@ -309,6 +315,7 @@ describe("Tests for document controller", () => {
             expect(res.status).toHaveBeenCalledWith(500);
         })
 
+        //test 3
         test("Should handle empty documets", async () => {
             req.body = {}
 
@@ -317,9 +324,11 @@ describe("Tests for document controller", () => {
             expect(next).toHaveBeenCalled();
             expect(res.status).toHaveBeenCalledWith(500);
         })
-    });
+    });//addDocument
+    /* ************************************************** */
 
-    describe("Tests for getDocument", () => {
+    //getDocuments
+    describe("Tests for getDocuments", () => {
         let req: Partial<Request>;
         let res: Partial<Response>;
         let next: NextFunction;
@@ -362,6 +371,7 @@ describe("Tests for document controller", () => {
             next = jest.fn();
         });
 
+        //test 1
         test("Should return all documents", async () => {
             (getAllDocuments as any).mockResolvedValue(documents);
 
@@ -374,6 +384,7 @@ describe("Tests for document controller", () => {
             })
         });
 
+        //test 2
         test("Should return 404 error (no documents)", async () => {
             (getAllDocuments as any).mockResolvedValue([]);
 
@@ -381,5 +392,165 @@ describe("Tests for document controller", () => {
 
             expect(res.status).toHaveBeenCalledWith(404);
         });
-    });
-});
+    });//getDocuments
+    /* ************************************************** */
+
+    //getDocument
+    describe("Tests for getDocument", () => {
+        let req: Partial<Request>;
+        let res: Partial<Response>;
+        let next: NextFunction;
+
+        beforeEach(() => {
+            req = {
+            params: { id: '1' }
+        };
+
+        res = {
+            status: jest.fn().mockReturnThis(),
+            json: jest.fn()
+        } as Partial<Response>;
+
+        next = jest.fn();
+        });
+
+        //test 1
+        test("Should return 201 and the document if found", async () => {
+            //Data mocking
+            const mockDocument: IDocumentResponse = { 
+                id: "1",
+                title: "Test title 1", 
+                stakeholders: "Company A", 
+                scale: "Test value 1", 
+                type: DocTypeEnum.Agreement, 
+                date: "01-01-2000", 
+                connections: undefined,
+                language: "Italian",
+                media: undefined,
+                coordinates: null,
+                summary: "Test summary 1" 
+            };
+    
+            //Support functions mock
+            (getDocumentById as jest.Mock).mockImplementation(async () => mockDocument);
+    
+            //Call of getDocument
+            await getDocument(req as Request, res as Response, next);
+    
+            expect(getDocumentById).toHaveBeenCalledWith('1');
+            expect(res.status).toHaveBeenCalledWith(201);
+            expect(res.json).toHaveBeenCalledWith({ success: true, data: mockDocument });
+        });
+
+        //test 2
+        test("Should return an error if the document is not found", async () => {
+            const err = new DocNotFoundError();
+            
+            jest.spyOn(require("../services/document.service"), "getDocumentById")
+            .mockImplementation(async () => { throw err; });
+    
+            await getDocument(req as Request, res as Response, next);
+    
+            expect(getDocumentById).toHaveBeenCalledWith('1');
+            expect(next).toHaveBeenCalledWith(err);
+        });
+
+        //test 3
+        test("Should return an error if the connection to the DB fails", async () => {
+            const err = new BadConnectionError();
+            
+            jest.spyOn(require("../services/document.service"), "getDocumentById")
+            .mockImplementation(async () => { throw err; });
+    
+            await getDocument(req as Request, res as Response, next);
+    
+            expect(getDocumentById).toHaveBeenCalledWith('1');
+            expect(next).toHaveBeenCalledWith(err);
+        });
+    });//getDocument
+    /* ************************************************** */
+
+    //updateDocument
+    describe("Tests for updateDocument", () => {
+        let req: Partial<Request>;
+        let res: Partial<Response>;
+        let next: NextFunction;
+    
+        beforeEach(() => {
+            req = {
+                params: { id: '1' },
+                body: {
+                    title: "Test document",
+                    stakeholders: "Company A",
+                    scale: "Test value",
+                    type: DocTypeEnum.Plan,
+                    date: "01-01-2000",
+                    summary: "Tets summary updated"
+                }
+            };
+    
+            res = {
+                status: jest.fn().mockReturnThis(),
+                json: jest.fn()
+            } as Partial<Response>;
+    
+            next = jest.fn();
+        });
+    
+        //test 1
+        test("Should complete the update and return 200", async () => {
+            //Data mocking
+            const mockUpdatedDocument: IDocumentResponse = {
+                id: '1',
+                title: "Test document",
+                stakeholders: "Company A",
+                scale: "Test value",
+                type: DocTypeEnum.Plan,
+                date: "01-01-2000",
+                summary: "Tets summary updated"
+            };
+    
+            //Support functions mocking
+            (updatingDocument as jest.Mock).mockImplementation(async () => mockUpdatedDocument);
+    
+            //Call of updateDocument
+            await updateDocument(req as Request, res as Response, next);
+    
+            expect(updatingDocument).toHaveBeenCalledWith('1', req.body);
+            expect(res.status).toHaveBeenCalledWith(200);
+            expect(res.json).toHaveBeenCalledWith({ success: true, data: mockUpdatedDocument });
+        });
+    
+        //test 2
+        test("Should return an error as the document is not found", async () => {
+            //Support functions mocking
+            //NOTE:
+            //The service "updatingDocument" was not designed to throw a "DocNotFoundError"
+            //So the document is "not found" if an empty object (aka a null object) is returned by the method
+            (updatingDocument as jest.Mock).mockImplementation(async () => null);
+    
+            await updateDocument(req as Request, res as Response, next);
+    
+            expect(updatingDocument).toHaveBeenCalledWith('1', req.body);
+            expect(res.status).toHaveBeenCalledWith(404);
+            expect(res.json).toHaveBeenCalledWith({ success: false, message: 'Document not found' });
+        });
+    
+        //test 3
+        it("Should return an error as the connection with the database fails", async () => {
+            //Data mocking
+            const err = new BadConnectionError();
+
+            //Support functions mocking
+            jest.spyOn(require("../services/document.service"), "updatingDocument")
+            .mockImplementation(async () => { throw err; });
+    
+            await updateDocument(req as Request, res as Response, next);
+    
+            expect(updatingDocument).toHaveBeenCalledWith('1', req.body);
+            expect(next).toHaveBeenCalledWith(err);
+            expect(res.status).toHaveBeenCalledWith(500);
+            expect(res.json).toHaveBeenCalledWith({ success: false, message: 'Server Error' });
+        });
+    });//updateDocument
+});//END OF DOCUMENT CONTROLLERS
