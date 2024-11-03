@@ -1,18 +1,50 @@
-import { LatLngExpression } from "leaflet";
-import { Polygon, Popup } from "react-leaflet";
+import { LatLng, LatLngExpression } from "leaflet";
+import { Polygon, Popup, useMap } from "react-leaflet";
+import { ButtonRounded } from "./Button";
+import { useRef, useState } from "react";
+import Modal from "react-modal";
+import DocumentForm from "./DocumentForm";
 
-export default function Areas() {
-    //Hard coded areas, will be retrieved from the backend when we will have it
-    const areasCoords: Record<string, LatLngExpression[]> = {
-        "City center": [[67.854844, 20.243384], [67.849990, 20.243727], [67.850702, 20.266230], [67.857173, 20.265538]],
-        "Luossajarvi": [[67.862737, 20.186711], [67.868170, 20.166441], [67.877093, 20.165441], [67.874507, 20.186398], [67.866747, 20.198250]],
-        "Kiirunavaaragruvan": [[67.839309, 20.214946], [67.833351, 20.225252], [67.833092, 20.203952]]
-    };
+export default function Areas(props: any) {
+    const [selectedAreaId, setSelectedAreaId] = useState("");
 
-    const areas = Object.entries(areasCoords).map(([areaName,coords]) => {
-        return (<Polygon key={areaName} pathOptions={{color: "blue"}} positions={coords}>
-            <Popup>{areaName}</Popup>
-        </Polygon>)
+    const popupRef = useRef<L.Popup>(null);
+
+    //Modal options
+    const [modalOpen, setModalOpen] = useState(false);
+    const modalStyles = {
+        content: {
+            top: '50%',
+            left: '50%',
+            right: 'auto',
+            bottom: 'auto',
+            marginRight: '-50%',
+            transform: 'translate(-50%, -50%)',
+            width: '80%',
+            maxWidth: '95vh',
+            maxHeight: '90vh',
+        },
+        overlay: {zIndex: 1000}
+    }
+
+    const areas = Object.entries(props.areasCoords).map(([areaId,info]: [string, any]) => {
+        return (
+            <>
+                <Polygon key={areaId} pathOptions={{color: "blue"}} positions={info["coords"] as unknown as LatLng[]}>
+                    <Popup ref={popupRef}>
+                        <span className="text-lg font-bold">{info["name"]}</span><br /><br />
+                        <span className='text-base'>Do you want to add a document in this area?</span><br /><br />
+                        <div className='flex justify-between'>
+                            <ButtonRounded variant="outlined" text="Yes" className="bg-black text-white text-base pt-2 pb-2 pl-3 pr-3" onClick={() => {setSelectedAreaId(areaId); setModalOpen(true);}}/>
+                            <ButtonRounded variant="outlined" text="Cancel" className="text-base pt-2 pb-2 pl-3 pr-3" onClick={() => {popupRef.current?.remove()}}/>
+                        </div>
+                    </Popup>
+                </Polygon>
+                <Modal style={modalStyles} isOpen={modalOpen} onRequestClose={() => setModalOpen(false)}>
+                    <DocumentForm areas={props.areasCoords} selection="area" selectedAreaId={selectedAreaId} />
+                </Modal>
+            </>
+        )
     });
 
     return areas;

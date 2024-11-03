@@ -5,7 +5,8 @@ import ConnectionForm from './ConnectionForm';
 import { FaPlus } from 'react-icons/fa';
 import Modal from "react-modal";
 import { kirunaLatLngCoords } from './Map';
-import { MapContainer, Marker, TileLayer, useMapEvents, ZoomControl } from 'react-leaflet';
+import { MapContainer, Marker, Polygon, TileLayer, useMapEvents, ZoomControl } from 'react-leaflet';
+import { LatLng } from 'leaflet';
 
 Modal.setAppElement("#root");
 
@@ -49,7 +50,9 @@ const DocumentForm = (props: any) => {
     const [language, setLanguage] = useState("")
     const [description, setDescription] = useState("")
     const [position, setPosition] = useState(props.position)
-    const [connectionModalOpen, setConnectionModalOpen] = useState(false);
+    const [selection, setSelection] = useState(props.selection)                 //Can be "position" or "area", according to what the user selected
+    const [selectedAreaId, setSelectedAreaId] = useState(props.selectedAreaId)  //If the user selected an area, this variable contains the it of that area
+    const [connectionModalOpen, setConnectionModalOpen] = useState(false)
 
     const modalStyles = {
         content: {
@@ -226,7 +229,12 @@ const DocumentForm = (props: any) => {
                                     <TileLayer
                                         attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
                                         url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"/>
-                                    {position && <Marker position={position} /> }
+                                    {selection == "position" && position && <Marker position={position} /> }
+                                    {selection == "area" && selectedAreaId && 
+                                        <Polygon pathOptions={{color: "blue"}} positions={props.areas[selectedAreaId]["coords"] as LatLng[]}>
+                                            
+                                        </Polygon>
+                                    }
 
                                     <MapClickHandler />
                                     
