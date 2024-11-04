@@ -24,6 +24,23 @@ async function login(email: string, password: string): Promise<{ isLoggedIn: boo
     return { isLoggedIn: true, user };
 }
 
+async function logout(): Promise<{ isLoggedOut: boolean }> {
+    const response = await fetch(`${SERVER_URL}/users/logout`, {
+        method: 'POST',
+        credentials: 'include',
+        headers: {
+            'Content-Type': 'application/json'
+        }
+    });
+    console.log('Response status:', response.status);
+
+    if (!response.ok) {
+        return { isLoggedOut: false };
+    }
+
+    return { isLoggedOut: true };
+}
+
 async function getMe(): Promise<IUser> {
     const response = await fetch(`${SERVER_URL}/users/me`, {
         method: 'GET',
@@ -97,5 +114,5 @@ const API = {
     getDocuments
 }
 
-export { login, getMe, checkAuth };
+export { login, logout, getMe, checkAuth };
 export default API;

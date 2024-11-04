@@ -5,7 +5,11 @@ import React, {
   FC,
   ReactNode,
 } from 'react';
-import { login as loginAction, checkAuth as checkAuthAction } from '../API'; // Assicurati di importare le funzioni corrette
+import {
+  login as loginAction,
+  checkAuth as checkAuthAction,
+  logout as logoutAction,
+} from '../API'; // Assicurati di importare le funzioni corrette
 import { IUser } from '../utils/interfaces/user.interface';
 
 interface AuthContextType {
@@ -53,11 +57,11 @@ export const AuthProvider: FC<{ children: ReactNode }> = ({ children }) => {
   };
 
   const logout = async () => {
-    document.cookie =
-      'auth-token=; path=/; Max-Age=0; HttpOnly; Secure; SameSite=Strict';
-
-    setIsLoggedIn(false);
-    setUser(null);
+    const result = await logoutAction();
+    if (result.isLoggedOut) {
+      setIsLoggedIn(false);
+      setUser(null);
+    }
   };
 
   return (

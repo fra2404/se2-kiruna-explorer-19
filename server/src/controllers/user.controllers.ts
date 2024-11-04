@@ -217,3 +217,28 @@ export const getMe = async (
     next(error);
   }
 };
+
+
+/**
+ * @swagger
+ * /api/users/logout:
+ *   post:
+ *     summary: Logout a user
+ *     tags: [Users]
+ *     responses:
+ *       200:
+ *         description: User logged out successfully
+ */
+export const logout = async (req: CustomRequest, res: Response, next: NextFunction): Promise<void> => {
+  try {
+    res.clearCookie('auth-token', {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === 'production',
+      sameSite: 'strict',
+      path: '/',
+    });
+    res.json({ message: 'User logged out successfully' });
+  } catch (error) {
+    next(error);
+  }
+};
