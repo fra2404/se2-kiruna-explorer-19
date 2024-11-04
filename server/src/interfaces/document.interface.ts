@@ -19,4 +19,8 @@ export interface IDocument {
     media?: [ObjectId];
     coordinates?: ObjectId;
     summary: string;
+
+    createdAt?: Date;
+    updatedAt?: Date;
+    __v?: number;
 }
