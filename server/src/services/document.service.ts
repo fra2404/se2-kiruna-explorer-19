@@ -1,5 +1,5 @@
 import Document from '../schemas/document.schema';
-import { Coordinate } from '@schemas/coordinate.schema';
+import { Coordinate } from '../schemas/coordinate.schema';
 import { IDocument } from '@interfaces/document.interface';
 import { IDocumentResponse } from '@interfaces/document.return.interface';
 import { DocNotFoundError, PositionError } from "../utils/errors";

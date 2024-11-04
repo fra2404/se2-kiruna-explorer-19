@@ -9,7 +9,7 @@ import { DocTypeEnum } from "../utils/enums/doc-type.enum";
 import { getAllUsers, createNewUser, loginUser } from '../services/user.service';
 import { getUsers, createUser, login, getMe } from "../controllers/user.controllers";
 import { CustomError } from '../utils/customError';
-import { addDocument, getDocuments, getDocument, updateDocument } from "../controllers/document.controllers";
+import { addDocumentController, getAllDocumentsController, getDocumentByIdController, updateDocumentController } from "../controllers/document.controllers";
 import { addingDocument, getAllDocuments, getDocumentById, updatingDocument } from "../services/document.service";
 import { BadConnectionError, DocNotFoundError } from "@utils/errors";
 
@@ -261,9 +261,9 @@ describe("Tests for user controllers", () => {
 });//END OF USER CONTROLLERS
 
 /* ******************************************* Suite n#2 - DOCUMENTS ******************************************* */
-describe("Tests for document controller", () => {
-    //addDocument
-    describe("Tests for addDocument", () => {
+describe("Tests for document controllers", () => {
+    //addDocumentController
+    describe("Tests for addDocumentController", () => {
         let req: Partial<Request>;
         let res: Partial<Response>;
         let next: NextFunction;
@@ -295,7 +295,7 @@ describe("Tests for document controller", () => {
         test("Should return a new document", async () => {
             (addingDocument as any).mockResolvedValue(req.body);
 
-            await addDocument(req as Request, res as Response, next);
+            await addDocumentController(req as Request, res as Response, next);
 
             expect(res.status).toHaveBeenCalledWith(201);
             expect(res.json).toHaveBeenCalledWith({
@@ -309,7 +309,7 @@ describe("Tests for document controller", () => {
             const error = "Error: something went wrong";
             (addingDocument as any).mockRejectedValue(error);
 
-            await addDocument(req as Request, res as Response, next);
+            await addDocumentController(req as Request, res as Response, next);
 
             expect(next).toHaveBeenCalledWith(error);
             expect(res.status).toHaveBeenCalledWith(500);
@@ -319,16 +319,16 @@ describe("Tests for document controller", () => {
         test("Should handle empty documets", async () => {
             req.body = {}
 
-            await addDocument(req as Request, res as Response, next);
+            await addDocumentController(req as Request, res as Response, next);
 
             expect(next).toHaveBeenCalled();
             expect(res.status).toHaveBeenCalledWith(500);
         })
-    });//addDocument
+    });//addDocumentController
     /* ************************************************** */
 
-    //getDocuments
-    describe("Tests for getDocuments", () => {
+    //getAllDocumentsController
+    describe("Tests for getAllDocumentsController", () => {
         let req: Partial<Request>;
         let res: Partial<Response>;
         let next: NextFunction;
@@ -375,7 +375,7 @@ describe("Tests for document controller", () => {
         test("Should return all documents", async () => {
             (getAllDocuments as any).mockResolvedValue(documents);
 
-            await getDocuments(req as Request, res as Response, next);
+            await getAllDocumentsController(req as Request, res as Response, next);
 
             expect(res.status).toHaveBeenCalledWith(201);
             expect(res.json).toHaveBeenCalledWith({
@@ -388,15 +388,15 @@ describe("Tests for document controller", () => {
         test("Should return 404 error (no documents)", async () => {
             (getAllDocuments as any).mockResolvedValue([]);
 
-            await getDocuments(req as Request, res as Response, next);
+            await getAllDocumentsController(req as Request, res as Response, next);
 
             expect(res.status).toHaveBeenCalledWith(404);
         });
-    });//getDocuments
+    });//getAllDocumentsController
     /* ************************************************** */
 
-    //getDocument
-    describe("Tests for getDocument", () => {
+    //getDocumentByIdController
+    describe("Tests for getDocumentByIdController", () => {
         let req: Partial<Request>;
         let res: Partial<Response>;
         let next: NextFunction;
@@ -434,8 +434,8 @@ describe("Tests for document controller", () => {
             //Support functions mock
             (getDocumentById as jest.Mock).mockImplementation(async () => mockDocument);
     
-            //Call of getDocument
-            await getDocument(req as Request, res as Response, next);
+            //Call of getDocumentByIdController
+            await getDocumentByIdController(req as Request, res as Response, next);
     
             expect(getDocumentById).toHaveBeenCalledWith('1');
             expect(res.status).toHaveBeenCalledWith(201);
@@ -449,7 +449,7 @@ describe("Tests for document controller", () => {
             jest.spyOn(require("../services/document.service"), "getDocumentById")
             .mockImplementation(async () => { throw err; });
     
-            await getDocument(req as Request, res as Response, next);
+            await getDocumentByIdController(req as Request, res as Response, next);
     
             expect(getDocumentById).toHaveBeenCalledWith('1');
             expect(next).toHaveBeenCalledWith(err);
@@ -462,16 +462,16 @@ describe("Tests for document controller", () => {
             jest.spyOn(require("../services/document.service"), "getDocumentById")
             .mockImplementation(async () => { throw err; });
     
-            await getDocument(req as Request, res as Response, next);
+            await getDocumentByIdController(req as Request, res as Response, next);
     
             expect(getDocumentById).toHaveBeenCalledWith('1');
             expect(next).toHaveBeenCalledWith(err);
         });
-    });//getDocument
+    });//getDocumentByIdController
     /* ************************************************** */
 
-    //updateDocument
-    describe("Tests for updateDocument", () => {
+    //updateDocumentController
+    describe("Tests for updateDocumentController", () => {
         let req: Partial<Request>;
         let res: Partial<Response>;
         let next: NextFunction;
@@ -513,8 +513,8 @@ describe("Tests for document controller", () => {
             //Support functions mocking
             (updatingDocument as jest.Mock).mockImplementation(async () => mockUpdatedDocument);
     
-            //Call of updateDocument
-            await updateDocument(req as Request, res as Response, next);
+            //Call of updateDocumentController
+            await updateDocumentController(req as Request, res as Response, next);
     
             expect(updatingDocument).toHaveBeenCalledWith('1', req.body);
             expect(res.status).toHaveBeenCalledWith(200);
@@ -529,7 +529,7 @@ describe("Tests for document controller", () => {
             //So the document is "not found" if an empty object (aka a null object) is returned by the method
             (updatingDocument as jest.Mock).mockImplementation(async () => null);
     
-            await updateDocument(req as Request, res as Response, next);
+            await updateDocumentController(req as Request, res as Response, next);
     
             expect(updatingDocument).toHaveBeenCalledWith('1', req.body);
             expect(res.status).toHaveBeenCalledWith(404);
@@ -545,12 +545,12 @@ describe("Tests for document controller", () => {
             jest.spyOn(require("../services/document.service"), "updatingDocument")
             .mockImplementation(async () => { throw err; });
     
-            await updateDocument(req as Request, res as Response, next);
+            await updateDocumentController(req as Request, res as Response, next);
     
             expect(updatingDocument).toHaveBeenCalledWith('1', req.body);
             expect(next).toHaveBeenCalledWith(err);
             expect(res.status).toHaveBeenCalledWith(500);
             expect(res.json).toHaveBeenCalledWith({ success: false, message: 'Server Error' });
         });
-    });//updateDocument
+    });//updateDocumentController
 });//END OF DOCUMENT CONTROLLERS
