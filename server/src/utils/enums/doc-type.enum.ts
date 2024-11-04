@@ -5,7 +5,6 @@
 //     Forecast = 'DEFORMATION_FORECAST',
 // }
 
-
 export enum DocTypeEnum {
     Agreement = 'AGREEMENT',
     Conflict = 'CONFLICT',

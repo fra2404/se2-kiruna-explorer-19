@@ -483,7 +483,7 @@ describe("Tests for document controller", () => {
                     title: "Test document",
                     stakeholders: "Company A",
                     scale: "Test value",
-                    type: DocTypeEnum.Plan,
+                    type: DocTypeEnum.Agreement,
                     date: "01-01-2000",
                     summary: "Tets summary updated"
                 }
@@ -505,7 +505,7 @@ describe("Tests for document controller", () => {
                 title: "Test document",
                 stakeholders: "Company A",
                 scale: "Test value",
-                type: DocTypeEnum.Plan,
+                type: DocTypeEnum.Agreement,
                 date: "01-01-2000",
                 summary: "Tets summary updated"
             };
