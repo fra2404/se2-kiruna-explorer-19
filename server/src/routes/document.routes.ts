@@ -1,9 +1,15 @@
-import { addDocumentController, getAllDocumentsController, getDocumentByIdController, updateDocumentController } from '@controllers/document.controllers';
+import { 
+  addDocumentController, 
+  getAllDocumentsController, 
+  getDocumentByIdController, 
+  updateDocumentController,
+  //getTypesController,
+  getDocumentsByTypeController } from '@controllers/document.controllers';
 import {
   validateAddDocument,
   validateDocumentId,
-  validateUpdateDocument
-} from '@utils/validators/document.validator';
+  validateDocumentType,
+  validateUpdateDocument } from '@utils/validators/document.validator';
 import { handleValidationErrors } from '@middlewares/validation.middleware';
 
 import express from 'express';
@@ -16,5 +22,6 @@ router.post('/add', authenticateUser, authorizeRoles('PLANNER', 'DEVELOPER'), va
 router.get('/', authenticateUser, getAllDocumentsController); //Get All Documents
 router.get('/:id', authenticateUser, authorizeRoles('PLANNER', 'DEVELOPER'), validateDocumentId, getDocumentByIdController); // Get Document by ID
 router.put('/:id', authenticateUser, authorizeRoles('PLANNER', 'DEVELOPER'), validateDocumentId, validateUpdateDocument, handleValidationErrors, updateDocumentController);
-
+//router.get('/types', authenticateUser, authorizeRoles('PLANNER', 'DEVELOPER'), getTypesController); //Get All Types
+router.get('/types/:type', authenticateUser, authorizeRoles('PLANNER', 'DEVELOPER'), validateDocumentType, getDocumentsByTypeController); //Get Document based On Type
 export const documentRoutes = router;

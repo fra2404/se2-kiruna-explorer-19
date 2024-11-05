@@ -37,15 +37,19 @@ components:
         id:
           type: string
           description: The ID of the document
+          example: 60d0fe4f5311236168a109ca
         title:
           type: string
           description: The title of the document
+          example: Sample Document
         stakeholders:
           type: string
           description: The stakeholders of the document
+          example: Stakeholder 1
         scale:
           type: string
           description: The scale of the document
+          example: '1:1000'
         type:
           type: string
           description: The type of the document
@@ -58,6 +62,7 @@ components:
             - MATERIAL_EFFECTS
             - PRESCRIPTIVE_DOC
             - TECHNICAL_DOC
+          example: AGREEMENT
         connections:
           type: array
           items:
@@ -66,6 +71,7 @@ components:
               document:
                 type: string
                 description: The ID of the connected document
+                example: 60d0fe4f5311236168a109ca
               type:
                 type: string
                 description: The type of the connection
@@ -73,18 +79,26 @@ components:
                   - LINK1
                   - LINK2
                   - LINK3
+                example: LINK1
         language:
           type: string
           description: The language of the document
+          example: English
         summary:
           type: string
           description: The summary of the document
+          example: This is a summary of the document.
         date:
           type: string
           description: The date of the document in the format dd-mm-yyyy
+          example: '2024-11-05'
         coordinates:
-          type: object
+          type: string
           $ref: '#/components/schemas/Coordinate'
+        media:
+          type: array
+          items:
+            type: string
     User:
       type: object
       properties:
@@ -269,6 +283,33 @@ paths:
                 $ref: '#/components/schemas/Document'
         '404':
           description: Document not found
+  /documents/types/{type}:
+    get:
+      summary: Get documents by type
+      description: Retrieve all documents of a specified type.
+      parameters:
+        - in: path
+          name: type
+          required: true
+          description: The type of the document (e.g., AGREEMENT, CONFLICT, CONSULTATION).
+          schema:
+            type: string
+      responses:
+        '200':
+          description: A list of documents of the specified type.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  documents:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Document'
+        '404':
+          description: No documents found for the specified type.
+        '500':
+          description: Internal server error.
   /api/users:
     get:
       summary: Get all users

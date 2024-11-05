@@ -1,9 +1,16 @@
 import { Request, Response, NextFunction } from 'express';
-import { addingDocument, getAllDocuments, getDocumentById, updatingDocument } from '../services/document.service';
+import { 
+        addingDocument, 
+        getAllDocuments, 
+        getDocumentById, 
+        updatingDocument, 
+       // getDocumentTypes,
+        getDocumentByType } from '../services/document.service';
 import { IDocument } from '@interfaces/document.interface';
 import { IDocumentResponse } from '@interfaces/document.return.interface';
 import { ICoordinate } from '@interfaces/coordinate.interface';
 import { DocNotFoundError } from '@utils/errors';
+
 
 /**
  * @swagger
@@ -196,6 +203,116 @@ export const updateDocumentController = async (req: Request, res: Response, next
             throw new DocNotFoundError();
         }
         res.status(200).json(updatedDocument);
+    } catch (error) {
+        next(error); // Pass the error to the error handler middleware
+    }
+};
+
+
+
+
+// export const getTypesController = (req: Request, res: Response, next: NextFunction): void => {
+//     try {
+//         const docTypes = getDocumentTypes();
+//         res.status(200).json({ types: docTypes });
+//     } catch (error) {
+//         next(error); // Pass the error to the error handler middleware
+//     }
+// };
+
+
+
+
+
+/**
+ * @swagger
+ * /documents/types/{type}:
+ *   get:
+ *     summary: Get documents by type
+ *     description: Retrieve all documents of a specified type.
+ *     parameters:
+ *       - in: path
+ *         name: type
+ *         required: true
+ *         description: The type of the document (e.g., AGREEMENT, CONFLICT, CONSULTATION).
+ *         schema:
+ *           type: string
+ *     responses:
+ *       200:
+ *         description: A list of documents of the specified type.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 documents:
+ *                   type: array
+ *                   items:
+ *                     $ref: '#/components/schemas/Document'
+ *       404:
+ *         description: No documents found for the specified type.
+ *       500:
+ *         description: Internal server error.
+ *
+ * components:
+ *   schemas:
+ *     Document:
+ *       type: object
+ *       properties:
+ *         id:
+ *           type: string
+ *           example: '60d0fe4f5311236168a109ca'
+ *         title:
+ *           type: string
+ *           example: 'Sample Document'
+ *         stakeholders:
+ *           type: string
+ *           example: 'Stakeholder 1'
+ *         scale:
+ *           type: string
+ *           example: '1:1000'
+ *         type:
+ *           type: string
+ *           example: 'AGREEMENT'
+ *         date:
+ *           type: string
+ *           example: '2024-11-05'
+ *         connections:
+ *           type: array
+ *           items:
+ *             type: object
+ *             properties:
+ *               document:
+ *                 type: string
+ *                 example: '60d0fe4f5311236168a109ca'
+ *               type:
+ *                 type: string
+ *                 example: 'LINK1'
+ *         language:
+ *           type: string
+ *           example: 'English'
+ *         media:
+ *           type: array
+ *           items:
+ *             type: string
+ *         coordinates:
+ *           type: string
+ *         summary:
+ *           type: string
+ *           example: 'This is a summary of the document.'
+ */
+
+export const getDocumentsByTypeController = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+    const { type } = req.params;
+
+    try {
+        const documents = await getDocumentByType(type);
+
+        if (documents.length === 0) {
+            throw new DocNotFoundError();
+        }
+
+        res.status(200).json({ documents });
     } catch (error) {
         next(error); // Pass the error to the error handler middleware
     }

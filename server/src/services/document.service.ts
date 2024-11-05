@@ -5,6 +5,7 @@ import { IDocumentResponse } from '@interfaces/document.return.interface';
 import { DocNotFoundError, PositionError } from "../utils/errors";
 import { ICoordinate } from '@interfaces/coordinate.interface';
 import { getCoordinateById } from './coordinate.service';
+import { DocTypeEnum } from '@utils/enums/doc-type.enum';
 
 //addDocument(Story 1)
 export const addingDocument = async (documentData: IDocument): Promise<IDocumentResponse | null> => {
@@ -208,4 +209,42 @@ export const updatingDocument = async (id: string, updateData: Partial<IDocument
     };
 
     return document;
+};
+
+
+// export const getDocumentTypes = (): string[] => {
+//     return Object.values(DocTypeEnum);
+// };
+
+
+export const getDocumentByType = async (type: string): Promise<IDocumentResponse[]> => {
+    const documents = await Document.find({ type });
+
+    // Not Found Document
+    if (documents.length === 0) {
+        throw new DocNotFoundError();
+    }
+
+    // Convert the documents to the desired response format
+    return Promise.all(documents.map(async (document) => {
+        const documentObject = document.toObject();
+        delete documentObject._id;
+        delete documentObject.createdAt;
+        delete documentObject.updatedAt;
+        delete documentObject.__v;
+
+        // Fetch the coordinate if it exists
+        let coordinate: ICoordinate | null = null;
+        const coordinateId = document.coordinates;
+
+        if (coordinateId) {
+            coordinate = await getCoordinateById(coordinateId.toString());
+        }
+
+        return {
+            id: document.id,
+            ...documentObject,
+            coordinates: coordinate || null, 
+        } as IDocumentResponse;
+    }));
 };

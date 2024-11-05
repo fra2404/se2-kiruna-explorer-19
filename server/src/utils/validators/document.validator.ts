@@ -74,6 +74,14 @@ export const validateDocumentId = [
     .withMessage('Invalid document ID format')
 ];
 
+
+export const validateDocumentType = [
+  param('type')
+      .isIn(['AGREEMENT', 'CONFLICT', 'CONSULTATION', 'DESIGN_DOC', 'INFORMATIVE_DOC', 'MATERIAL_EFFECTS', 'PRESCRIPTIVE_DOC', 'TECHNICAL_DOC']).withMessage('Type is invalid')
+];
+
+
+
 export const validateUpdateDocument = [
   body('title')
     .optional()
