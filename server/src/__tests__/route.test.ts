@@ -1,7 +1,7 @@
 import express, { NextFunction, Request, Response } from "express";
 import bodyParser from "body-parser";
 import { documentRoutes } from "../routes/document.routes";
-import { addDocument, getDocuments } from "../controllers/document.controllers";
+import { addDocumentController, getAllDocumentsController } from "../controllers/document.controllers";
 import request from "supertest";
 import { authenticateUser } from "../middlewares/auth.middleware";
 import { authorizeRoles } from "../middlewares/role.middleware";
