@@ -26,7 +26,7 @@ export default function Areas({id, areaCoordinates, name, coordinates, isLoggedI
         <>
             <Polygon key={id} pathOptions={{color: "blue"}} positions={areaCoordinates as unknown as LatLng[]}>
                 <Popup ref={popupRef}>
-                    <span className="text-lg font-bold">{name}</span><br /><br />
+                    <span className="text-lg font-bold">{name}</span><br />
                     {isLoggedIn && 
                     <>
                         <span className='text-base'>Do you want to add a document in this area?</span><br /><br />

@@ -5,9 +5,10 @@ import ConnectionForm from './ConnectionForm';
 import { FaPlus } from 'react-icons/fa';
 import Modal from "react-modal";
 import { kirunaLatLngCoords } from './Map';
-import { MapContainer, Marker, Polygon, TileLayer, useMapEvents, ZoomControl } from 'react-leaflet';
+import { MapContainer, Marker, Polygon, TileLayer, Tooltip, useMapEvents, ZoomControl } from 'react-leaflet';
 import { LatLng } from 'leaflet';
 import InputComponent from './atoms/input/input';
+import { ButtonRounded } from './Button';
 
 Modal.setAppElement("#root");
 
@@ -64,6 +65,7 @@ const DocumentForm = ({positionProp, selectedCoordIdProp, coordinates}: Document
     //Georeferencing information
     const [position, setPosition] = useState<LatLng | undefined>(positionProp)
     const [selectedCoordId, setSelectedCoordId] = useState<string | undefined>(selectedCoordIdProp)  //If the user selected an area, this variable contains the it of that area
+    const [coordName, setCoordName] = useState("")
 
     //Connection modal
     const [connectionModalOpen, setConnectionModalOpen] = useState(false)
@@ -77,6 +79,22 @@ const DocumentForm = ({positionProp, selectedCoordIdProp, coordinates}: Document
             transform: 'translate(-50%, -50%)',
             width: '80%',
             maxWidth: '700px',
+        },
+        overlay: {zIndex: 1000}
+    }
+
+    //coordNameModal
+    const [coordNameModalOpen, setCoordNameModalOpen] = useState(selectedCoordId ? false : true)
+    const coordNameModalStyles = {
+        content: {
+            top: '50%',
+            left: '50%',
+            right: 'auto',
+            bottom: 'auto',
+            marginRight: '-50%',
+            transform: 'translate(-50%, -50%)',
+            width: '80%',
+            maxWidth: '500px',
         },
         overlay: {zIndex: 1000}
     }
@@ -103,6 +121,7 @@ const DocumentForm = ({positionProp, selectedCoordIdProp, coordinates}: Document
             click(e) {
                 setSelectedCoordId(undefined);
                 setPosition(e.latlng);
+                setCoordNameModalOpen(true);
             }
         });
         return null;
@@ -262,7 +281,12 @@ const DocumentForm = ({positionProp, selectedCoordIdProp, coordinates}: Document
                                     <TileLayer
                                         attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
                                         url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"/>
-                                    {(position || (selectedCoordId && coordinates[selectedCoordId]["type"] == "Point")) && <Marker position={position || (selectedCoordId && coordinates[selectedCoordId]["coordinates"])} /> }
+                                    {(position || (selectedCoordId && coordinates[selectedCoordId]["type"] == "Point")) && 
+                                        <Marker position={position || (selectedCoordId && coordinates[selectedCoordId]["coordinates"])}>
+                                            <Tooltip permanent direction="top" offset={[-15, -10]}>{selectedCoordId ? coordinates[selectedCoordId]["name"] : coordName}</Tooltip>
+                                        </Marker>
+                                    }
+
                                     {selectedCoordId && coordinates[selectedCoordId]["type"] == "Polygon" &&
                                         <Polygon pathOptions={{color: "blue"}} positions={coordinates[selectedCoordId]["coordinates"]}>
                                             
@@ -286,6 +310,19 @@ const DocumentForm = ({positionProp, selectedCoordIdProp, coordinates}: Document
                     </button>
 
                     <ConnectionForm setModalOpen={setConnectionModalOpen} handleAddConnection={handleAddConnection} />
+                </div>
+            </Modal>
+
+            <Modal style={coordNameModalStyles} isOpen={coordNameModalOpen} onRequestClose={() => {setCoordNameModalOpen(false); setPosition(undefined); setCoordName("")} }>
+                <InputComponent label="Enter the name of the new point/area" type="text" placeholder='Enter the name of the new point/area...' required={true} value={coordName} onChange={(v) => setCoordName(v["target"]["value"])} />
+                <div className='flex justify-between'>
+                    <ButtonRounded variant="filled" text="Confirm" className="bg-black text-white text-base pt-2 pb-2 pl-3 pr-3" onClick={() => {
+                            if(coordName.trim() != "") {
+                                setCoordNameModalOpen(false);
+                            }
+                        }} 
+                    />
+                    <ButtonRounded variant="outlined" text="Cancel" className="text-base pt-2 pb-2 pl-3 pr-3" onClick={() => {setPosition(undefined); setCoordName(""); setCoordNameModalOpen(false)}}/>
                 </div>
             </Modal>
         </>
