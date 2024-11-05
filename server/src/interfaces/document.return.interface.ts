@@ -6,15 +6,15 @@ import { ObjectId } from "mongoose"
 
 
 export interface IDocumentResponse {
-    id: string; 
-    title: string; 
-    stakeholders?: string; 
-    scale?: string; 
-    type: DocTypeEnum; 
+    id: string;
+    title: string;
+    stakeholders?: string;
+    scale?: string;
+    type: DocTypeEnum;
     date: string;
-    connections?: IConnection[]; 
-    language?: string; 
-    media?:  [ObjectId]; 
-    coordinates?: ICoordinate | null; 
-    summary: string; 
+    summary: string;
+    connections?: IConnection[];
+    language?: string;
+    media?: [ObjectId];
+    coordinates?: ICoordinate | null;
 }

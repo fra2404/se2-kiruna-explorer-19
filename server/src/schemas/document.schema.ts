@@ -6,10 +6,6 @@ import mongoose, { Document, Schema } from 'mongoose';
 export type DocumentDocument = IDocument & Document;
 
 const connectionSchema = new Schema<IConnection>({
-    _id: {
-        type: Schema.Types.ObjectId,
-        auto: true,
-    },
     document: {
         type: Schema.Types.ObjectId,
         ref: 'Document',
@@ -20,7 +16,7 @@ const connectionSchema = new Schema<IConnection>({
         enum: LinkTypeEnum,
         required: true,
     },
-});
+}, { _id: false });
 
 const documentSchema = new Schema<DocumentDocument>(
     {

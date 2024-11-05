@@ -4,18 +4,24 @@ import bcrypt from 'bcrypt';
 
 import User from '../schemas/user.schema';
 import Document from '../schemas/document.schema';
+import { Coordinate } from '../schemas/coordinate.schema';
 import { IUser } from '../interfaces/user.interface';
 import { IDocument } from '../interfaces/document.interface'; 
+import { ICoordinate } from '../interfaces/coordinate.interface';
 import { UserRoleEnum } from "../utils/enums/user-role.enum";
 import { DocTypeEnum } from "../utils/enums/doc-type.enum";
 import { getAllUsers, createNewUser, getUserById, loginUser } from '../services/user.service';
 import { addingDocument, getAllDocuments, getDocumentById } from '../services/document.service';
+import { addCoordinateService, getAllCoordinates, getCoordinateById } from '@services/coordinate.service';
 
 import { CustomError } from '../utils/customError';
 import { BadConnectionError, DocNotFoundError } from "../utils/errors";
+import { PositionError } from '@utils/errors';
 
+//MOCKS
 jest.mock("../schemas/user.schema");
 jest.mock("../schemas/document.schema");
+jest.mock("../schemas/coordinate.schema");
 jest.mock('bcrypt');
 jest.mock('jsonwebtoken');
 
@@ -244,7 +250,7 @@ describe("Tests for user services", () => {
 });//END OF USER SERVICES
 
 /* ******************************************* Suite n#2 - DOCUMENTS ******************************************* */
-describe("Tests for user services", () => {
+describe("Tests for document services", () => {
     beforeEach(() => {
         jest.clearAllMocks();
     });
@@ -321,7 +327,7 @@ describe("Tests for user services", () => {
                         title: "Test title 2", 
                         stakeholders: "Company B", 
                         scale: "Test value 2", 
-                        type: DocTypeEnum.Competition, 
+                        type: DocTypeEnum.Consultation, 
                         date: "02-01-2000", 
                         connections: 3,
                         language: "Spanish",
@@ -403,3 +409,148 @@ describe("Tests for user services", () => {
         });
     });//getDocumentById
 });//END OF CONTROLLER SERVICES
+
+/* ******************************************* Suite n#3 - COORDINATES ******************************************* */
+describe("Tests for coordinate services", () => {
+    beforeEach(() => {
+        jest.clearAllMocks();
+    });
+
+    //getCoordinateById
+    describe("Tests for getCoordinateById", () => {
+        //Input mocking
+        const coordinateId = "1";
+
+        //test 1
+        test("Should successfully retrieve a coordinate object", async () => {
+            //Data mocking
+            const mockCoordinate = {
+                id: coordinateId,
+                type: "Point",
+                coordinates: [45.123, 7.123],
+                name: "Test coordinate",
+            };
+
+            //Support functions mocking
+            jest.spyOn(Coordinate, "findById").mockResolvedValue({toObject: () => mockCoordinate});
+
+            //Call of getCoordinateById
+            const result = await getCoordinateById(coordinateId);
+
+            expect(Coordinate.findById).toHaveBeenCalledWith(coordinateId);
+            expect(result).toEqual(mockCoordinate);
+        });
+
+        //test 2
+        test("Should return null if the coordinate is not found", async () => {
+            //Support functions mocking
+            (Coordinate.findById as jest.Mock).mockImplementation(async () => null);
+    
+            //Call of getCoordinateById
+            const result = await getCoordinateById(coordinateId);
+    
+            expect(Coordinate.findById).toHaveBeenCalledWith(coordinateId);
+            expect(result).toBeNull();
+        });
+
+        //test 3
+        test("Should throw an error if the connection with the DB fails", async () => {
+            //Data mocking
+            const err = new CustomError("Internal Server Error", 500);
+            
+            //Support functions mocking
+            (Coordinate.findById as jest.Mock).mockImplementation(async () => err);
+    
+            //getCoordinateById
+            await expect(getCoordinateById(coordinateId)).rejects.toThrow(err);
+
+            expect(Coordinate.findById).toHaveBeenCalledWith(coordinateId);
+        });
+    });//getCoordinateById
+    /* ************************************************** */
+
+    //addCoordinateService
+    describe("Tests for addCoordinateService", () => {
+        //Input mocking
+        const mockCoordinate = {
+            type: "Point",
+            coordinates: [45.123, 7.123],
+            name: "Test coordinate",
+        } as ICoordinate;
+
+        //test 1
+        test("Should successfully save a new coordinate", async () => {
+            //Support functions mocking
+            (Coordinate.prototype.save as jest.Mock).mockImplementation(async () => mockCoordinate);
+            (Coordinate.prototype.toObject as jest.Mock).mockReturnValueOnce(mockCoordinate);
+
+            //Call of addCoordinateService
+            const result = await addCoordinateService(mockCoordinate);
+
+            expect(Coordinate.prototype.save).toHaveBeenCalled();
+            expect(result).toEqual(mockCoordinate);
+        });
+
+        //test 2
+        test("Should throw an error if the connection with the DB fails", async () => {
+            //Data mocking
+            const err = new CustomError("Internal Server Error", 500);
+            
+            //Support functions mocking
+            jest.spyOn(Coordinate.prototype, "save").mockRejectedValue(err);
+            //The code interrupts before "toObject" is called, so there is no need to test its call
+    
+            //Call of addCoordinateService
+            await expect(addCoordinateService(mockCoordinate)).rejects.toThrow(err);
+
+            expect(Coordinate.prototype.save).toHaveBeenCalled();
+        });
+    });//addCoordinateService
+    /* ************************************************** */
+
+    //getAllCoordinates
+    describe("Tests for getAllCoordinates", () => {
+        //test 1
+        test("Should successfully retrieve all saved coordinates", async () => {
+            // Data mocking
+            const mockCoordinates = [{
+                id: "1",
+                type: "Point",
+                coordinates: [45.123, 7.123],
+                name: "Test Coordinate 1",
+            },
+            {
+                id: "2",
+                type: "Area",
+                coordinates: [[45.123, 7.123], [46.123, 8.123]],
+                name: "Test Coordinate 2",
+            }];
+
+            //Support functions mocking
+            jest.spyOn(Coordinate, 'find').mockResolvedValue(mockCoordinates.map(coordinate => ({
+                ...coordinate,
+                toObject: () => coordinate
+            })));
+
+            //Call of getAllCoordinates
+            const result = await getAllCoordinates();
+
+            expect(Coordinate.find).toHaveBeenCalled(); 
+            expect(result).toEqual(mockCoordinates);
+        });
+
+        //test 2
+        test("Should throw an error if the connection with the DB fails", async () => {
+            //Data mocking
+            const err = new PositionError();
+            
+            //Support functions mocking
+            (Coordinate.find as jest.Mock).mockImplementation(async () => err);
+    
+            //getCoordinateById
+            await expect(getAllCoordinates()).rejects.toThrow(err);
+
+            expect(Coordinate.find).toHaveBeenCalled();
+        });
+    });//getAllCoordinates
+});//END OF COORDINATE SERVICES

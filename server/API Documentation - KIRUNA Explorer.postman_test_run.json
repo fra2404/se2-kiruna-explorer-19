@@ -1,0 +1,1134 @@
+{
+	"id": "b09202b6-1f8f-42a3-8059-5ecdcde72893",
+	"name": "API Documentation - KIRUNA Explorer Copy",
+	"timestamp": "2024-11-05T10:13:36.393Z",
+	"collection_id": "23447628-47d6cced-7270-453f-9cfa-1154529d8c5d",
+	"folder_id": 0,
+	"environment_id": "23447628-c07af9fa-7ec7-46ac-abd9-a0a0061e2d80",
+	"totalPass": 102,
+	"delay": 0,
+	"persist": true,
+	"status": "finished",
+	"startedAt": "2024-11-05T10:13:35.499Z",
+	"totalFail": 0,
+	"results": [
+		{
+			"id": "4a84b52f-96e0-4aeb-9e14-686b08cf107d",
+			"name": "Create a new user",
+			"url": "http://localhost:5001/api/users/signup",
+			"time": 83,
+			"responseCode": {
+				"code": 201,
+				"name": "Created"
+			},
+			"tests": {
+				"Response status code is 201": true,
+				"Response time is within an acceptable range": true,
+				"Response is not null": true,
+				"Response follows the expected schema for user data": true
+			},
+			"testPassFailCounts": {
+				"Response status code is 201": {
+					"pass": 1,
+					"fail": 0
+				},
+				"Response time is within an acceptable range": {
+					"pass": 1,
+					"fail": 0
+				},
+				"Response is not null": {
+					"pass": 1,
+					"fail": 0
+				},
+				"Response follows the expected schema for user data": {
+					"pass": 1,
+					"fail": 0
+				}
+			},
+			"times": [
+				83
+			],
+			"allTests": [
+				{
+					"Response status code is 201": true,
+					"Response time is within an acceptable range": true,
+					"Response is not null": true,
+					"Response follows the expected schema for user data": true
+				}
+			]
+		},
+		{
+			"id": "0ffecfd0-0e93-4d94-b82a-c6663b540fcd",
+			"name": "Wrong Email",
+			"url": "http://localhost:5001/api/users/login",
+			"time": 4,
+			"responseCode": {
+				"code": 403,
+				"name": "Forbidden"
+			},
+			"tests": {
+				"Unauthorized status code": true,
+				"Error message for incorrect email": true,
+				"The 'errors' array is empty": true
+			},
+			"testPassFailCounts": {
+				"Unauthorized status code": {
+					"pass": 1,
+					"fail": 0
+				},
+				"Error message for incorrect email": {
+					"pass": 1,
+					"fail": 0
+				},
+				"The 'errors' array is empty": {
+					"pass": 1,
+					"fail": 0
+				}
+			},
+			"times": [
+				4
+			],
+			"allTests": [
+				{
+					"Unauthorized status code": true,
+					"Error message for incorrect email": true,
+					"The 'errors' array is empty": true
+				}
+			]
+		},
+		{
+			"id": "8fa66681-575e-40a4-b302-71e6b7f510b5",
+			"name": "Wrong Password",
+			"url": "http://localhost:5001/api/users/login",
+			"time": 78,
+			"responseCode": {
+				"code": 403,
+				"name": "Forbidden"
+			},
+			"tests": {
+				"Unauthorized status code": true,
+				"Error message for incorrect email": true,
+				"The 'errors' array is empty": true
+			},
+			"testPassFailCounts": {
+				"Unauthorized status code": {
+					"pass": 1,
+					"fail": 0
+				},
+				"Error message for incorrect email": {
+					"pass": 1,
+					"fail": 0
+				},
+				"The 'errors' array is empty": {
+					"pass": 1,
+					"fail": 0
+				}
+			},
+			"times": [
+				78
+			],
+			"allTests": [
+				{
+					"Unauthorized status code": true,
+					"Error message for incorrect email": true,
+					"The 'errors' array is empty": true
+				}
+			]
+		},
+		{
+			"id": "c614b391-7200-4db2-aa74-38ebd8c0ce84",
+			"name": "Wrong Input",
+			"url": "http://localhost:5001/api/users/login",
+			"time": 78,
+			"responseCode": {
+				"code": 403,
+				"name": "Forbidden"
+			},
+			"tests": {
+				"Unauthorized status code": true,
+				"Error message for incorrect email": true,
+				"The 'errors' array is empty": true
+			},
+			"testPassFailCounts": {
+				"Unauthorized status code": {
+					"pass": 1,
+					"fail": 0
+				},
+				"Error message for incorrect email": {
+					"pass": 1,
+					"fail": 0
+				},
+				"The 'errors' array is empty": {
+					"pass": 1,
+					"fail": 0
+				}
+			},
+			"times": [
+				78
+			],
+			"allTests": [
+				{
+					"Unauthorized status code": true,
+					"Error message for incorrect email": true,
+					"The 'errors' array is empty": true
+				}
+			]
+		},
+		{
+			"id": "b5cb819f-001f-48c7-ab6b-81455cc02593",
+			"name": "Login a user",
+			"url": "http://localhost:5001/api/users/login",
+			"time": 78,
+			"responseCode": {
+				"code": 200,
+				"name": "OK"
+			},
+			"tests": {
+				"Response status code is 200": true,
+				"Response time is less than 200ms": true,
+				"Response has the required field 'token'": true,
+				"Token is a non-empty string": true,
+				"Content-Type is application/json": true,
+				"Token is a valid JWT token": true,
+				"JWT token is set as a cookie": true
+			},
+			"testPassFailCounts": {
+				"Response status code is 200": {
+					"pass": 1,
+					"fail": 0
+				},
+				"Response time is less than 200ms": {
+					"pass": 1,
+					"fail": 0
+				},
+				"Response has the required field 'token'": {
+					"pass": 1,
+					"fail": 0
+				},
+				"Token is a non-empty string": {
+					"pass": 1,
+					"fail": 0
+				},
+				"Content-Type is application/json": {
+					"pass": 1,
+					"fail": 0
+				},
+				"Token is a valid JWT token": {
+					"pass": 1,
+					"fail": 0
+				},
+				"JWT token is set as a cookie": {
+					"pass": 1,
+					"fail": 0
+				}
+			},
+			"times": [
+				78
+			],
+			"allTests": [
+				{
+					"Response status code is 200": true,
+					"Response time is less than 200ms": true,
+					"Response has the required field 'token'": true,
+					"Token is a non-empty string": true,
+					"Content-Type is application/json": true,
+					"Token is a valid JWT token": true,
+					"JWT token is set as a cookie": true
+				}
+			]
+		},
+		{
+			"id": "c0e621ef-148a-43a7-9945-b79aab157956",
+			"name": "Get current user",
+			"url": "http://localhost:5001/api/users/me",
+			"time": 5,
+			"responseCode": {
+				"code": 200,
+				"name": "OK"
+			},
+			"tests": {
+				"Response body structure is valid": true,
+				"Response status code is 200": true,
+				"Response time is less than 200ms": true,
+				"Content-Type header is application/json": true,
+				"All required properties are present in the response": true,
+				"Id, name, email, surname, phone, and role properties are non-empty strings": true,
+				"Returned name matches the specified value": true,
+				"Returned surname matches the specified value": true,
+				"Returned email matches the specified value": true,
+				"Returned phone matches the specified value": true,
+				"Returned role matches the specified value": true
+			},
+			"testPassFailCounts": {
+				"Response body structure is valid": {
+					"pass": 1,
+					"fail": 0
+				},
+				"Response status code is 200": {
+					"pass": 1,
+					"fail": 0
+				},
+				"Response time is less than 200ms": {
+					"pass": 1,
+					"fail": 0
+				},
+				"Content-Type header is application/json": {
+					"pass": 1,
+					"fail": 0
+				},
+				"All required properties are present in the response": {
+					"pass": 1,
+					"fail": 0
+				},
+				"Id, name, email, surname, phone, and role properties are non-empty strings": {
+					"pass": 1,
+					"fail": 0
+				},
+				"Returned name matches the specified value": {
+					"pass": 1,
+					"fail": 0
+				},
+				"Returned surname matches the specified value": {
+					"pass": 1,
+					"fail": 0
+				},
+				"Returned email matches the specified value": {
+					"pass": 1,
+					"fail": 0
+				},
+				"Returned phone matches the specified value": {
+					"pass": 1,
+					"fail": 0
+				},
+				"Returned role matches the specified value": {
+					"pass": 1,
+					"fail": 0
+				}
+			},
+			"times": [
+				5
+			],
+			"allTests": [
+				{
+					"Response body structure is valid": true,
+					"Response status code is 200": true,
+					"Response time is less than 200ms": true,
+					"Content-Type header is application/json": true,
+					"All required properties are present in the response": true,
+					"Id, name, email, surname, phone, and role properties are non-empty strings": true,
+					"Returned name matches the specified value": true,
+					"Returned surname matches the specified value": true,
+					"Returned email matches the specified value": true,
+					"Returned phone matches the specified value": true,
+					"Returned role matches the specified value": true
+				}
+			]
+		},
+		{
+			"id": "7809d074-cb57-4254-a40b-04a5c8097161",
+			"name": "Get all users",
+			"url": "http://localhost:5001/api/users",
+			"time": 7,
+			"responseCode": {
+				"code": 200,
+				"name": "OK"
+			},
+			"tests": {
+				"Response body is an array": true,
+				"Response body is an array and contains a specific object with the specified properties and values": true,
+				"At least one object in the response array has the name 'TestName' and surname 'TestSurname'": true,
+				"Response status code is 200": true,
+				"Response time is less than 200ms": true
+			},
+			"testPassFailCounts": {
+				"Response body is an array": {
+					"pass": 1,
+					"fail": 0
+				},
+				"Response body is an array and contains a specific object with the specified properties and values": {
+					"pass": 1,
+					"fail": 0
+				},
+				"At least one object in the response array has the name 'TestName' and surname 'TestSurname'": {
+					"pass": 1,
+					"fail": 0
+				},
+				"Response status code is 200": {
+					"pass": 1,
+					"fail": 0
+				},
+				"Response time is less than 200ms": {
+					"pass": 1,
+					"fail": 0
+				}
+			},
+			"times": [
+				7
+			],
+			"allTests": [
+				{
+					"Response body is an array": true,
+					"Response body is an array and contains a specific object with the specified properties and values": true,
+					"At least one object in the response array has the name 'TestName' and surname 'TestSurname'": true,
+					"Response status code is 200": true,
+					"Response time is less than 200ms": true
+				}
+			]
+		},
+		{
+			"id": "0fe74d37-bdb7-408c-a8be-9762b288580c",
+			"name": "Create Area",
+			"url": "http://localhost:5001/api/coordinates/create",
+			"time": 7,
+			"responseCode": {
+				"code": 201,
+				"name": "Created"
+			},
+			"tests": {
+				"Response status code is 201": true,
+				"Response has the required fields - message, coordinate": true,
+				"Coordinate type is a non-empty string": true,
+				"Coordinates is an array with at least one element": true,
+				"Name is a non-empty string": true,
+				"Specific values are present in the response": true,
+				"Response time is less than 200ms": true,
+				"Set id of point to call that": true
+			},
+			"testPassFailCounts": {
+				"Response status code is 201": {
+					"pass": 1,
+					"fail": 0
+				},
+				"Response has the required fields - message, coordinate": {
+					"pass": 1,
+					"fail": 0
+				},
+				"Coordinate type is a non-empty string": {
+					"pass": 1,
+					"fail": 0
+				},
+				"Coordinates is an array with at least one element": {
+					"pass": 1,
+					"fail": 0
+				},
+				"Name is a non-empty string": {
+					"pass": 1,
+					"fail": 0
+				},
+				"Specific values are present in the response": {
+					"pass": 1,
+					"fail": 0
+				},
+				"Response time is less than 200ms": {
+					"pass": 1,
+					"fail": 0
+				},
+				"Set id of point to call that": {
+					"pass": 1,
+					"fail": 0
+				}
+			},
+			"times": [
+				7
+			],
+			"allTests": [
+				{
+					"Response status code is 201": true,
+					"Response has the required fields - message, coordinate": true,
+					"Coordinate type is a non-empty string": true,
+					"Coordinates is an array with at least one element": true,
+					"Name is a non-empty string": true,
+					"Specific values are present in the response": true,
+					"Response time is less than 200ms": true,
+					"Set id of point to call that": true
+				}
+			]
+		},
+		{
+			"id": "20c08fa1-232b-4748-bcc2-704f4e42791c",
+			"name": "Create Polygon",
+			"url": "http://localhost:5001/api/coordinates/create",
+			"time": 6,
+			"responseCode": {
+				"code": 201,
+				"name": "Created"
+			},
+			"tests": {
+				"Response status code is 201": true,
+				"Response has the required fields - message, coordinate": true,
+				"Coordinate type is a non-empty string": true,
+				"Coordinates is an array with at least one element": true,
+				"Name is a non-empty string": true,
+				"Specific values are present in the response": true,
+				"Response time is less than 200ms": true,
+				"Response structure and content for type 'Polygon'": true
+			},
+			"testPassFailCounts": {
+				"Response status code is 201": {
+					"pass": 1,
+					"fail": 0
+				},
+				"Response has the required fields - message, coordinate": {
+					"pass": 1,
+					"fail": 0
+				},
+				"Coordinate type is a non-empty string": {
+					"pass": 1,
+					"fail": 0
+				},
+				"Coordinates is an array with at least one element": {
+					"pass": 1,
+					"fail": 0
+				},
+				"Name is a non-empty string": {
+					"pass": 1,
+					"fail": 0
+				},
+				"Specific values are present in the response": {
+					"pass": 1,
+					"fail": 0
+				},
+				"Response time is less than 200ms": {
+					"pass": 1,
+					"fail": 0
+				},
+				"Response structure and content for type 'Polygon'": {
+					"pass": 1,
+					"fail": 0
+				}
+			},
+			"times": [
+				6
+			],
+			"allTests": [
+				{
+					"Response status code is 201": true,
+					"Response has the required fields - message, coordinate": true,
+					"Coordinate type is a non-empty string": true,
+					"Coordinates is an array with at least one element": true,
+					"Name is a non-empty string": true,
+					"Specific values are present in the response": true,
+					"Response time is less than 200ms": true,
+					"Response structure and content for type 'Polygon'": true
+				}
+			]
+		},
+		{
+			"id": "a9ce1951-4f12-43f5-bb5e-7f79e459e269",
+			"name": "Get a coordinate by ID",
+			"url": "http://localhost:5001/api/coordinates/6729efd0d68944ac14e5462d",
+			"time": 4,
+			"responseCode": {
+				"code": 200,
+				"name": "OK"
+			},
+			"tests": {
+				"Response status code is 200": true,
+				"Response time is within acceptable range": true,
+				"Response has the required fields": true,
+				"Validate that the _id is a non-empty string": true,
+				"Type is a non-empty string": true,
+				"Specific values are present in the response": true
+			},
+			"testPassFailCounts": {
+				"Response status code is 200": {
+					"pass": 1,
+					"fail": 0
+				},
+				"Response time is within acceptable range": {
+					"pass": 1,
+					"fail": 0
+				},
+				"Response has the required fields": {
+					"pass": 1,
+					"fail": 0
+				},
+				"Validate that the _id is a non-empty string": {
+					"pass": 1,
+					"fail": 0
+				},
+				"Type is a non-empty string": {
+					"pass": 1,
+					"fail": 0
+				},
+				"Specific values are present in the response": {
+					"pass": 1,
+					"fail": 0
+				}
+			},
+			"times": [
+				4
+			],
+			"allTests": [
+				{
+					"Response status code is 200": true,
+					"Response time is within acceptable range": true,
+					"Response has the required fields": true,
+					"Validate that the _id is a non-empty string": true,
+					"Type is a non-empty string": true,
+					"Specific values are present in the response": true
+				}
+			]
+		},
+		{
+			"id": "89cf9aaf-157c-4d28-8b50-0b82897dd61b",
+			"name": "Get all coordinates",
+			"url": "http://localhost:5001/api/coordinates",
+			"time": 4,
+			"responseCode": {
+				"code": 200,
+				"name": "OK"
+			},
+			"tests": {
+				"Response status code is 200": true,
+				"Response time is less than 500ms": true,
+				"Validate the response schema for required fields - id, type, coordinates, and name": true,
+				"Coordinates is an array with at least one element": true
+			},
+			"testPassFailCounts": {
+				"Response status code is 200": {
+					"pass": 1,
+					"fail": 0
+				},
+				"Response time is less than 500ms": {
+					"pass": 1,
+					"fail": 0
+				},
+				"Validate the response schema for required fields - id, type, coordinates, and name": {
+					"pass": 1,
+					"fail": 0
+				},
+				"Coordinates is an array with at least one element": {
+					"pass": 1,
+					"fail": 0
+				}
+			},
+			"times": [
+				4
+			],
+			"allTests": [
+				{
+					"Response status code is 200": true,
+					"Response time is less than 500ms": true,
+					"Validate the response schema for required fields - id, type, coordinates, and name": true,
+					"Coordinates is an array with at least one element": true
+				}
+			]
+		},
+		{
+			"id": "23980f92-32b8-43be-ab4e-41c442a38114",
+			"name": "Add a new document (without connection)",
+			"url": "http://localhost:5001/api/documents/create",
+			"time": 13,
+			"responseCode": {
+				"code": 201,
+				"name": "Created"
+			},
+			"tests": {
+				"Status code is 201": true,
+				"Response is in JSON format": true,
+				"Verify response structure and values": true,
+				"Set id of document to call that": true
+			},
+			"testPassFailCounts": {
+				"Status code is 201": {
+					"pass": 1,
+					"fail": 0
+				},
+				"Response is in JSON format": {
+					"pass": 1,
+					"fail": 0
+				},
+				"Verify response structure and values": {
+					"pass": 1,
+					"fail": 0
+				},
+				"Set id of document to call that": {
+					"pass": 1,
+					"fail": 0
+				}
+			},
+			"times": [
+				13
+			],
+			"allTests": [
+				{
+					"Status code is 201": true,
+					"Response is in JSON format": true,
+					"Verify response structure and values": true,
+					"Set id of document to call that": true
+				}
+			]
+		},
+		{
+			"id": "b42d1226-06d9-4bfa-978d-be27157f4b2b",
+			"name": "Add a new document (with connection)",
+			"url": "http://localhost:5001/api/documents/create",
+			"time": 15,
+			"responseCode": {
+				"code": 201,
+				"name": "Created"
+			},
+			"tests": {
+				"Status code is 201": true,
+				"Response is in JSON format": true,
+				"Verify response structure and values": true,
+				"Set id of document to call that": true
+			},
+			"testPassFailCounts": {
+				"Status code is 201": {
+					"pass": 1,
+					"fail": 0
+				},
+				"Response is in JSON format": {
+					"pass": 1,
+					"fail": 0
+				},
+				"Verify response structure and values": {
+					"pass": 1,
+					"fail": 0
+				},
+				"Set id of document to call that": {
+					"pass": 1,
+					"fail": 0
+				}
+			},
+			"times": [
+				15
+			],
+			"allTests": [
+				{
+					"Status code is 201": true,
+					"Response is in JSON format": true,
+					"Verify response structure and values": true,
+					"Set id of document to call that": true
+				}
+			]
+		},
+		{
+			"id": "97f05e21-cc15-4a6f-a70b-b662a18a6255",
+			"name": "Check Connection Created",
+			"url": "http://localhost:5001/api/documents/6729efd0d68944ac14e54636",
+			"time": 8,
+			"responseCode": {
+				"code": 200,
+				"name": "OK"
+			},
+			"tests": {
+				"Status code is 200": true,
+				"Response is in JSON format": true,
+				"Connections array contains at least one document equal to idDoc2": true,
+				"All connections have type 'LINK1'": true,
+				"Verify response structure and values": true
+			},
+			"testPassFailCounts": {
+				"Status code is 200": {
+					"pass": 1,
+					"fail": 0
+				},
+				"Response is in JSON format": {
+					"pass": 1,
+					"fail": 0
+				},
+				"Connections array contains at least one document equal to idDoc2": {
+					"pass": 1,
+					"fail": 0
+				},
+				"All connections have type 'LINK1'": {
+					"pass": 1,
+					"fail": 0
+				},
+				"Verify response structure and values": {
+					"pass": 1,
+					"fail": 0
+				}
+			},
+			"times": [
+				8
+			],
+			"allTests": [
+				{
+					"Status code is 200": true,
+					"Response is in JSON format": true,
+					"Connections array contains at least one document equal to idDoc2": true,
+					"All connections have type 'LINK1'": true,
+					"Verify response structure and values": true
+				}
+			]
+		},
+		{
+			"id": "0c63b34f-481f-4dee-9509-23b2e4a26c32",
+			"name": "Update a document by ID",
+			"url": "http://localhost:5001/api/documents/6729efd0d68944ac14e54636",
+			"time": 9,
+			"responseCode": {
+				"code": 200,
+				"name": "OK"
+			},
+			"tests": {
+				"Status code is 200": true,
+				"Response is in JSON format": true,
+				"Connections array contains at least one document equal to idDoc2": true,
+				"All connections have type 'LINK1'": true,
+				"Verify response structure and values": true
+			},
+			"testPassFailCounts": {
+				"Status code is 200": {
+					"pass": 1,
+					"fail": 0
+				},
+				"Response is in JSON format": {
+					"pass": 1,
+					"fail": 0
+				},
+				"Connections array contains at least one document equal to idDoc2": {
+					"pass": 1,
+					"fail": 0
+				},
+				"All connections have type 'LINK1'": {
+					"pass": 1,
+					"fail": 0
+				},
+				"Verify response structure and values": {
+					"pass": 1,
+					"fail": 0
+				}
+			},
+			"times": [
+				9
+			],
+			"allTests": [
+				{
+					"Status code is 200": true,
+					"Response is in JSON format": true,
+					"Connections array contains at least one document equal to idDoc2": true,
+					"All connections have type 'LINK1'": true,
+					"Verify response structure and values": true
+				}
+			]
+		},
+		{
+			"id": "93de896c-c994-4037-8b7c-0a0755f03271",
+			"name": "Get all documents",
+			"url": "http://localhost:5001/api/documents",
+			"time": 18,
+			"responseCode": {
+				"code": 200,
+				"name": "OK"
+			},
+			"tests": {
+				"Codice di stato è 200": true,
+				"Tempo di risposta inferiore a 500 ms": true,
+				"La risposta contiene almeno due documenti": true,
+				"L'array contiene i documenti con idDoc1 e idDoc2": true
+			},
+			"testPassFailCounts": {
+				"Codice di stato è 200": {
+					"pass": 1,
+					"fail": 0
+				},
+				"Tempo di risposta inferiore a 500 ms": {
+					"pass": 1,
+					"fail": 0
+				},
+				"La risposta contiene almeno due documenti": {
+					"pass": 1,
+					"fail": 0
+				},
+				"L'array contiene i documenti con idDoc1 e idDoc2": {
+					"pass": 1,
+					"fail": 0
+				}
+			},
+			"times": [
+				18
+			],
+			"allTests": [
+				{
+					"Codice di stato è 200": true,
+					"Tempo di risposta inferiore a 500 ms": true,
+					"La risposta contiene almeno due documenti": true,
+					"L'array contiene i documenti con idDoc1 e idDoc2": true
+				}
+			]
+		},
+		{
+			"id": "789ec559-ac33-4560-8d76-19fb0fde3471",
+			"name": "Logout a user",
+			"url": "http://localhost:5001/api/users/logout",
+			"time": 5,
+			"responseCode": {
+				"code": 200,
+				"name": "OK"
+			},
+			"tests": {
+				"Response status code is 200": true,
+				"Content-Type header is application/json": true,
+				"Response has a 'message' field": true,
+				"Message field is a non-empty string": true,
+				"Response time is less than 200ms": true
+			},
+			"testPassFailCounts": {
+				"Response status code is 200": {
+					"pass": 1,
+					"fail": 0
+				},
+				"Content-Type header is application/json": {
+					"pass": 1,
+					"fail": 0
+				},
+				"Response has a 'message' field": {
+					"pass": 1,
+					"fail": 0
+				},
+				"Message field is a non-empty string": {
+					"pass": 1,
+					"fail": 0
+				},
+				"Response time is less than 200ms": {
+					"pass": 1,
+					"fail": 0
+				}
+			},
+			"times": [
+				5
+			],
+			"allTests": [
+				{
+					"Response status code is 200": true,
+					"Content-Type header is application/json": true,
+					"Response has a 'message' field": true,
+					"Message field is a non-empty string": true,
+					"Response time is less than 200ms": true
+				}
+			]
+		},
+		{
+			"id": "c205a5eb-a16e-4315-9697-a352e473e4bb",
+			"name": "DeleteCoordinate",
+			"url": "http://localhost:5001/api/coordinates",
+			"time": 5,
+			"responseCode": {
+				"code": 200,
+				"name": "OK"
+			},
+			"tests": {
+				"Response status code is 200": true,
+				"Response has the required field 'message'": true,
+				"Response time is less than 200ms": true,
+				"Content-Type header is application/json": true,
+				"Response schema matches the expected schema": true
+			},
+			"testPassFailCounts": {
+				"Response status code is 200": {
+					"pass": 1,
+					"fail": 0
+				},
+				"Response has the required field 'message'": {
+					"pass": 1,
+					"fail": 0
+				},
+				"Response time is less than 200ms": {
+					"pass": 1,
+					"fail": 0
+				},
+				"Content-Type header is application/json": {
+					"pass": 1,
+					"fail": 0
+				},
+				"Response schema matches the expected schema": {
+					"pass": 1,
+					"fail": 0
+				}
+			},
+			"times": [
+				5
+			],
+			"allTests": [
+				{
+					"Response status code is 200": true,
+					"Response has the required field 'message'": true,
+					"Response time is less than 200ms": true,
+					"Content-Type header is application/json": true,
+					"Response schema matches the expected schema": true
+				}
+			]
+		},
+		{
+			"id": "8811d6f4-d7a5-425c-b171-3a3828d3a629",
+			"name": "Delete test user",
+			"url": "http://localhost:5001/api/users",
+			"time": 6,
+			"responseCode": {
+				"code": 200,
+				"name": "OK"
+			},
+			"tests": {
+				"Response status code is 200": true,
+				"Response time is within an acceptable range": true,
+				"Response is not null": true,
+				"Response follows the expected schema for user data": true
+			},
+			"testPassFailCounts": {
+				"Response status code is 200": {
+					"pass": 1,
+					"fail": 0
+				},
+				"Response time is within an acceptable range": {
+					"pass": 1,
+					"fail": 0
+				},
+				"Response is not null": {
+					"pass": 1,
+					"fail": 0
+				},
+				"Response follows the expected schema for user data": {
+					"pass": 1,
+					"fail": 0
+				}
+			},
+			"times": [
+				6
+			],
+			"allTests": [
+				{
+					"Response status code is 200": true,
+					"Response time is within an acceptable range": true,
+					"Response is not null": true,
+					"Response follows the expected schema for user data": true
+				}
+			]
+		},
+		{
+			"id": "7156c4c1-9e2b-479d-8089-7cd2f1aa2d93",
+			"name": "Delete Documents",
+			"url": "http://localhost:5001/api/documents",
+			"time": 4,
+			"responseCode": {
+				"code": 200,
+				"name": "OK"
+			},
+			"tests": {
+				"Response status code is 200": true,
+				"Response time is within an acceptable range": true,
+				"Response is not null": true,
+				"Response follows the expected schema for user data": true
+			},
+			"testPassFailCounts": {
+				"Response status code is 200": {
+					"pass": 1,
+					"fail": 0
+				},
+				"Response time is within an acceptable range": {
+					"pass": 1,
+					"fail": 0
+				},
+				"Response is not null": {
+					"pass": 1,
+					"fail": 0
+				},
+				"Response follows the expected schema for user data": {
+					"pass": 1,
+					"fail": 0
+				}
+			},
+			"times": [
+				4
+			],
+			"allTests": [
+				{
+					"Response status code is 200": true,
+					"Response time is within an acceptable range": true,
+					"Response is not null": true,
+					"Response follows the expected schema for user data": true
+				}
+			]
+		}
+	],
+	"count": 1,
+	"totalTime": 437,
+	"collection": {
+		"requests": [
+			{
+				"id": "4a84b52f-96e0-4aeb-9e14-686b08cf107d",
+				"method": "POST"
+			},
+			{
+				"id": "0ffecfd0-0e93-4d94-b82a-c6663b540fcd",
+				"method": "POST"
+			},
+			{
+				"id": "8fa66681-575e-40a4-b302-71e6b7f510b5",
+				"method": "POST"
+			},
+			{
+				"id": "c614b391-7200-4db2-aa74-38ebd8c0ce84",
+				"method": "POST"
+			},
+			{
+				"id": "b5cb819f-001f-48c7-ab6b-81455cc02593",
+				"method": "POST"
+			},
+			{
+				"id": "c0e621ef-148a-43a7-9945-b79aab157956",
+				"method": "GET"
+			},
+			{
+				"id": "7809d074-cb57-4254-a40b-04a5c8097161",
+				"method": "GET"
+			},
+			{
+				"id": "0fe74d37-bdb7-408c-a8be-9762b288580c",
+				"method": "POST"
+			},
+			{
+				"id": "20c08fa1-232b-4748-bcc2-704f4e42791c",
+				"method": "POST"
+			},
+			{
+				"id": "a9ce1951-4f12-43f5-bb5e-7f79e459e269",
+				"method": "GET"
+			},
+			{
+				"id": "89cf9aaf-157c-4d28-8b50-0b82897dd61b",
+				"method": "GET"
+			},
+			{
+				"id": "23980f92-32b8-43be-ab4e-41c442a38114",
+				"method": "POST"
+			},
+			{
+				"id": "b42d1226-06d9-4bfa-978d-be27157f4b2b",
+				"method": "POST"
+			},
+			{
+				"id": "97f05e21-cc15-4a6f-a70b-b662a18a6255",
+				"method": "GET"
+			},
+			{
+				"id": "0c63b34f-481f-4dee-9509-23b2e4a26c32",
+				"method": "PUT"
+			},
+			{
+				"id": "93de896c-c994-4037-8b7c-0a0755f03271",
+				"method": "GET"
+			},
+			{
+				"id": "789ec559-ac33-4560-8d76-19fb0fde3471",
+				"method": "POST"
+			},
+			{
+				"id": "c205a5eb-a16e-4315-9697-a352e473e4bb",
+				"method": "DELETE"
+			},
+			{
+				"id": "8811d6f4-d7a5-425c-b171-3a3828d3a629",
+				"method": "DELETE"
+			},
+			{
+				"id": "7156c4c1-9e2b-479d-8089-7cd2f1aa2d93",
+				"method": "DELETE"
+			}
+		]
+	}
+}
