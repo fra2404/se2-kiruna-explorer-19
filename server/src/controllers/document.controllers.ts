@@ -210,9 +210,6 @@ export const updateDocumentController = async (req: Request, res: Response, next
     }
 };
 
-<<<<<<< HEAD
-
-
 
 // export const getTypesController = (req: Request, res: Response, next: NextFunction): void => {
 //     try {
@@ -320,7 +317,7 @@ export const getDocumentsByTypeController = async (req: Request, res: Response, 
         next(error); // Pass the error to the error handler middleware
     }
 };
-=======
+
 export const deleteDocumentController = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
     try {
         const result: string = await deleteDocumentByName('TestDoc');
