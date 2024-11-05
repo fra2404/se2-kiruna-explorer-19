@@ -109,7 +109,7 @@ export default function KirunaMap() {
         {' '}
         {/* This is needed to avoid glitch in the visualization of the map */}
         <Header />
-        <Overlay coordinates={undefined} />
+        <Overlay coordinates={coordinates} />
         <MapContainer
           style={{ width: '100%', height: '100%' }}
           center={kirunaLatLngCoords}
