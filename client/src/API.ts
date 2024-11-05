@@ -86,9 +86,17 @@ async function getDocuments() {
         .then(mapApiDocumentsToDocuments);
 }
 
+async function getCoordinates() {
+    return await fetch(`${SERVER_URL}/coordinates`, {
+        method: 'GET'
+    })
+    .then(handleInvalidResponse)
+    .then(response => response.json());
+}
+
 
 // Utility functions:
-function handleInvalidResponse(response) {
+function handleInvalidResponse(response: any) {
     if (!response.ok) {
         throw Error(response.statusText)
     }
@@ -104,14 +112,15 @@ function handleInvalidResponse(response) {
  * @param apiDocuments 
  * @returns 
  */
-function mapApiDocumentsToDocuments(apiDocuments) {
-    return apiDocuments.map(document => new DocumentFile(document.id, document.description, document.title, document.file, document.language, document.issueDate));
+function mapApiDocumentsToDocuments(apiDocuments: any) {
+    return apiDocuments.map((document: any) => new DocumentFile(document.id, document.description, document.title, document.file, document.language, document.issueDate));
 }
 
 
 
 const API = {
-    getDocuments
+    getDocuments,
+    getCoordinates
 }
 
 export { login, logout, getMe, checkAuth };

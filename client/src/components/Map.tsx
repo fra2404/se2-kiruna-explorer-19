@@ -31,26 +31,28 @@ export const modalStyles = {                                                //St
 
 export default function KirunaMap() {
     const { isLoggedIn, user } = useAuth();   // Retrieve this information from the context created by FAL
-    const { setFeedbackFromError } = useContext(FeedbackContext);   // this context is used to handle errors during the navigation
+    const { setFeedbackFromError } = useContext(FeedbackContext);   // this context is used to handle errors during the navigation+
 
     const [documents, setDocuments] = useState([]); // state to save a list of documents
+    const [coordinates, setCoordinates] = useState({}); //State to save a listo of coordinates (areas and points)
     const [shouldRefresh, setShouldRefresh] = useState(true);   // useState is used to force a re-render of the map container
 
-    //Hard coded areas, will be retrieved from the backend when we will have it
-    const areasCoords = {
-        "A1": {
-            "name": "City center",
-            "coords": [[67.854844, 20.243384], [67.849990, 20.243727], [67.850702, 20.266230], [67.857173, 20.265538]],
-        },
-        "A2": {
-            "name": "Luossajarvi",
-            "coords": [[67.862737, 20.186711], [67.868170, 20.166441], [67.877093, 20.165441], [67.874507, 20.186398], [67.866747, 20.198250]],
-        },
-        "A3": {
-            "name": "Kiirunavaaragruvan",
-            "coords": [[67.839309, 20.214946], [67.833351, 20.225252], [67.833092, 20.203952]]
-        }
-    };
+    //Retreive areas and points from BE and save them in a structure.
+    useEffect(() => {
+        API.getCoordinates()
+        .then((coords) => {
+            let result: {[id: string]: {type:string, coordinates: LatLng | LatLng[] | LatLng[][], name: string}} = {};
+            coords.forEach((c: {_id: string, type: string, coordinates: LatLng | LatLng[] | LatLng[][], name: string}) => {
+                result[c._id] = {
+                    type: c.type,
+                    coordinates: c.coordinates,
+                    name: c.name
+                }; 
+            });
+            setCoordinates(result);
+        })
+        .catch(e => {console.log(e); setFeedbackFromError(e); });
+    }, []);
 
     useEffect(() => { // If the user is logged in
         // Retrieve the documents from the backend and save them in the state
@@ -95,11 +97,22 @@ export default function KirunaMap() {
                         attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
                         url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"/>
 
-                    <Areas areasCoords={areasCoords} />
-
-                    {/* Here there go a component that handles all the markers */}
-                    <Markers areasCoords={areasCoords}/>
-                    <ClickMarker areasCoords={areasCoords} />
+                    {
+                        //Component that handles markers (both areas and points)
+                        Object.entries(coordinates).map(([coordId, coordInfo]: any) => {
+                            if(coordInfo.type == "Point") {
+                                return (
+                                    <Markers id={coordId} pointCoordinates={coordInfo.coordinates} name={coordInfo.name} coordinates={coordinates} isLoggedIn={isLoggedIn} />
+                                );
+                            }
+                            else {
+                                return (
+                                    <Areas id={coordId} areaCoordinates={coordInfo.coordinates} name={coordInfo.name} coordinates={coordinates} isLoggedIn={isLoggedIn} />
+                                );
+                            }
+                        })
+                    }
+                    {isLoggedIn && <ClickMarker coordinates={coordinates} />}
                     
                     <ZoomControl position="bottomleft" />
                 </MapContainer>
@@ -108,7 +121,11 @@ export default function KirunaMap() {
     );
 }
 
-function ClickMarker(props: any) {
+interface ClickMarkerProps {
+    coordinates: any
+}
+
+function ClickMarker({coordinates}: ClickMarkerProps) {
     const [position, setPosition] = useState<LatLng | null>(null);
     useMapEvents({
         dblclick(e) {
@@ -130,7 +147,7 @@ function ClickMarker(props: any) {
                 </div>
             </Popup>
             <Modal style={modalStyles} isOpen={modalOpen} onRequestClose={() => setModalOpen(false)}>
-                <DocumentForm selection="position" areas={props.areasCoords} position={position} />
+                <DocumentForm coordinates={coordinates} positionProp={position} />
             </Modal>
         </>
     )
