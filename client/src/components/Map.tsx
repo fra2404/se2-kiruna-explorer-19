@@ -180,8 +180,8 @@ function ClickMarker({ coordinates }: ClickMarkerProps) {
     const popupRef = useRef<L.Popup>(null);
 
     //Modal options
-    // const [modalOpen, setModalOpen] = useState(false);
-    const { modalOpen, setModalOpen } = useModal();
+    const [modalOpen, setModalOpen] = useState(false);
+    //const { modalOpen, setModalOpen } = useModal();
 
     return position === null ? null : (
         <>
