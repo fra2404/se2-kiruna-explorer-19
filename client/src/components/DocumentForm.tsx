@@ -16,7 +16,13 @@ export interface Connection {
   relatedDocument: string;
 }
 
-const DocumentForm = (props: any) => {
+interface DocumentFormProps {
+    positionProp?: LatLng,
+    selectedCoordIdProp?: string,
+    coordinates: any
+}
+
+const DocumentForm = ({positionProp, selectedCoordIdProp, coordinates}: DocumentFormProps) => {
     const stakeholdersOptions = [
         { value: "Kiruna Kommun", label: "Kiruna Kommun" },
         { value: "Kiruna Kommun / Residents", label: "Kiruna Kommun / Residents" },
@@ -44,18 +50,20 @@ const DocumentForm = (props: any) => {
         { value: "Text", label: "Text" }
     ];
 
-    const [title, setTitle] = useState(props.selectedDocument ? props.selectedDocument["title"] || "" : "")
-    const [stakeholders, setStakeholders] = useState(props.selectedDocument ? props.selectedDocument["stakeholders"] || null : null)
-    const [scale, setScale] = useState(props.selectedDocument ? props.selectedDocument["scale"] || null : null)
-    const [issuanceDate, setIssuanceDate] = useState(props.selectedDocument ? ( props.selectedDocument["issuanceDate"] ? props.selectedDocument["issuanceDate"] : new Date().toISOString().split('T')[0] ) : new Date().toISOString().split('T')[0])
-    const [docType, setDocType] = useState(props.selectedDocument ? props.selectedDocument["type"] || null : null)
-    const [numPages, setNumPages] = useState(props.selectedDocument ? props.selectedDocument["numPages"] || 0 : 0)
-    const [connections, setConnections] = useState<Connection[]>(props.selectedDocument ? props.selectedDocument["connections"] || [] : [])
-    const [language, setLanguage] = useState(props.selectedDocument ? props.selectedDocument["language"] || "" : "")
-    const [description, setDescription] = useState(props.selectedDocument ? props.selectedDocument["description"] || "" : "")
-    const [position, setPosition] = useState(props.position)
-    const [selection, setSelection] = useState(props.selection)                 //Can be "position" or "area", according to what the user selected
-    const [selectedAreaId, setSelectedAreaId] = useState(props.selectedAreaId)  //If the user selected an area, this variable contains the it of that area
+    //Document information
+    const [title, setTitle] = useState("")
+    const [stakeholders, setStakeholders] = useState(null)
+    const [scale, setScale] = useState(null)
+    const [issuanceDate, setIssuanceDate] = useState(new Date().toISOString().split('T')[0])
+    const [docType, setDocType] = useState(null)
+    const [numPages, setNumPages] = useState(0)
+    const [connections, setConnections] = useState<Connection[]>([])
+    const [language, setLanguage] = useState("")
+    const [description, setDescription] = useState("")
+
+    //Georeferencing information
+    const [position, setPosition] = useState<LatLng | undefined>(positionProp)
+    const [selectedCoordId, setSelectedCoordId] = useState<string | undefined>(selectedCoordIdProp)  //If the user selected an area, this variable contains the it of that area
 
     //Connection modal
     const [connectionModalOpen, setConnectionModalOpen] = useState(false)
@@ -93,8 +101,7 @@ const DocumentForm = (props: any) => {
     function MapClickHandler() {
         useMapEvents({
             click(e) {
-                setSelection("position");
-                setSelectedAreaId(undefined);
+                setSelectedCoordId(undefined);
                 setPosition(e.latlng);
             }
         });
@@ -222,8 +229,22 @@ const DocumentForm = (props: any) => {
                         <div className="col-span-2 row-span-1 col-start-1 row-start-3 mt-5">
                             <h4>Document position:</h4>
                             <div className='w-full grid md:text-center' style={{height: "70vh"}}>
-                                <div className='w-80 absolute pr-4 justify-self-end' style={{zIndex: 1000}}>
-                                    <InputComponent label="Select an area" type="select" options={Object.entries(props.areas).map(([areaId, info]: [string, any]) => {return {value: areaId, label: info["name"]} })} value={selectedAreaId} onChange={(v) => {setSelectedAreaId(v["target"]["value"]); setSelection("area"); setPosition(undefined) }} />
+                                <div className='w-80 absolute justify-self-end' style={{zIndex: 1000}}>
+                                    <InputComponent 
+                                        label="Select an area" 
+                                        type="select" 
+                                        options={Object.entries(coordinates).map(([areaId, info]: [string, any]) => {return {value: areaId, label: info["name"]} })} 
+                                        value={selectedCoordId} 
+                                        onChange={(v) => {
+                                            setSelectedCoordId(v["target"]["value"]); 
+                                            if(selectedCoordId && coordinates[selectedCoordId]["type"] == "Point") {
+                                                setPosition(coordinates[selectedCoordId]["coordiates"]);
+                                            }
+                                            else {
+                                                setPosition(undefined);
+                                            }
+                                        }
+                                    } />
                                 </div>
 
                                 <MapContainer
@@ -241,9 +262,9 @@ const DocumentForm = (props: any) => {
                                     <TileLayer
                                         attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
                                         url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"/>
-                                    {selection == "position" && position && <Marker position={position} /> }
-                                    {selection == "area" && selectedAreaId && 
-                                        <Polygon pathOptions={{color: "blue"}} positions={props.areas[selectedAreaId]["coords"] as LatLng[]}>
+                                    {(position || (selectedCoordId && coordinates[selectedCoordId]["type"] == "Point")) && <Marker position={position || (selectedCoordId && coordinates[selectedCoordId]["coordinates"])} /> }
+                                    {selectedCoordId && coordinates[selectedCoordId]["type"] == "Polygon" &&
+                                        <Polygon pathOptions={{color: "blue"}} positions={coordinates[selectedCoordId]["coordinates"]}>
                                             
                                         </Polygon>
                                     }

@@ -2,10 +2,10 @@
  * Component for displaying all the markers on the map
  */
 
-import { useState } from "react";
+import { useRef, useState } from "react";
 import { Marker, Popup } from "react-leaflet";
 import 'leaflet/dist/leaflet.css';
-import { DivIcon, Icon } from 'leaflet';
+import { DivIcon, Icon, LatLng } from 'leaflet';
 import AgreementIcon from "../assets/icons/agreement-icon";
 import { renderToString } from "react-dom/server";
 import ConflictIcon from "../assets/icons/conflict-icon";
@@ -83,59 +83,45 @@ const getTypeIcon = (type: string, fillColor: string) => {
 
 
 
+interface MarkersProps {
+    id: string,
+    pointCoordinates: LatLng,
+    name: string,
+    coordinates: any,
+    isLoggedIn: boolean
+}
 
-
-export default function Markers(props: any) {
-    const [documents, setDocuments] = useState([
-        {latitude: 67.857443, longitude: 20.230131, title: "Document 1", type: "Conflict"},
-        {latitude: 67.849019, longitude: 20.218337, title: "Document 2", type: "Agreement"},
-        {latitude: 67.834257, longitude: 20.285673, title: "Document 3", type: "Design document"},
-        {latitude: 67.860667, longitude: 20.287734, title: "Document 4", type: "Technical document"},
-    ]);
-
-    /*useEffect(() => {
-        // Fetch agency data from the server
-        fetch('/documents') // TODO: example of endpoint. I don't know yet the real one.
-            .then(response => response.json())
-            .then(documents => setDocuments(documents));
-    }, []);*/
-
-
-    // Create an array of document coordinates with additional information
-    const documentsCoordinates = documents.map(document => ({
-        latitude: document.latitude,
-        longitude: document.longitude,
-        title: document.title,
-        type: document.type,
-        icon: getTypeIcon(document.type, "black"),      //TODO: change second parameter to match stakeholder's colors for that document
-    }));
-
+export default function Markers({id, pointCoordinates, name, coordinates, isLoggedIn}: MarkersProps) {
     const [modalOpen, setModalOpen] = useState(false);
-    const [selectedDocument, setSelectedDocument]: any = useState({});
+
+    const [selectedPointId, setSelectedPointId] = useState("");
+
+    const popupRef = useRef<L.Popup>(null);
 
     return (
         <>
-            {documentsCoordinates.map((document, index) => (
-                <>
-                    <Marker
-                        key={index}
-                        position={[document.latitude, document.longitude]}
-                        icon={document.icon} // Use the selected icon
-                    >
-                        <Popup>
-                            <span className="text-lg font-bold">{document.title}</span><br />
-                            <span className="text-base">Type: {document.type}</span><br /><br />
-                            <div className="flex justify-center">
-                                <ButtonRounded variant="filled" text="See details" className="bg-black text-white text-base pt-2 pb-2 pl-3 pr-3" onClick={() => {setSelectedDocument(document); setModalOpen(true);}}/>
-                            </div>
-                        </Popup>
-                    </Marker>
+            <Marker
+                key={id}
+                position={pointCoordinates}
+                //icon={document.icon} // Use the selected icon
+            >
+                <Popup>
+                    <span className="text-lg font-bold">{name}</span><br />
+                    {isLoggedIn && 
+                    <>
+                        <span className='text-base'>Do you want to add a document in this point?</span><br /><br />
+                        <div className='flex justify-between'>
+                            <ButtonRounded variant="filled" text="Yes" className="bg-black text-white text-base pt-2 pb-2 pl-3 pr-3" onClick={() => {setSelectedPointId(id); setModalOpen(true);}}/>
+                            <ButtonRounded variant="outlined" text="Cancel" className="text-base pt-2 pb-2 pl-3 pr-3" onClick={() => {popupRef.current?.remove()}}/>
+                        </div>
+                    </>
+                    }
+                </Popup>
+            </Marker>
 
-                    <Modal style={modalStyles} isOpen={modalOpen} onRequestClose={() => setModalOpen(false)}>
-                        <DocumentForm selection="position" areas={props.areasCoords} position={ [selectedDocument.latitude, selectedDocument.longitude]} selectedDocument={selectedDocument} />
-                    </Modal>
-                </>
-            ))}
+            <Modal style={modalStyles} isOpen={modalOpen} onRequestClose={() => setModalOpen(false)}>
+                <DocumentForm coordinates={coordinates} selectedCoordIdProp={selectedPointId} />
+            </Modal>
         </>
     )
 }
