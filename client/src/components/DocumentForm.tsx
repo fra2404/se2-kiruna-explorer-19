@@ -10,6 +10,7 @@ import {
   Marker,
   Polygon,
   TileLayer,
+  Tooltip,
   useMapEvents,
   ZoomControl,
 } from 'react-leaflet';
@@ -86,7 +87,8 @@ const DocumentForm = ({
   const [position, setPosition] = useState<LatLng | undefined>(positionProp);
   const [selectedCoordId, setSelectedCoordId] = useState<string | undefined>(
     selectedCoordIdProp,
-  ); //If the user selected an area, this variable contains the it of that area
+  ); //If the user selected an area, this variable contains the id of that area
+  const [coordName, setCoordName] = useState("")
 
   //Connection modal
   const [connectionModalOpen, setConnectionModalOpen] = useState(false);
@@ -103,6 +105,22 @@ const DocumentForm = ({
     },
     overlay: { zIndex: 1000 },
   };
+
+  //coordNameModal
+    const [coordNameModalOpen, setCoordNameModalOpen] = useState((!selectedCoordId && position) ? true : false)
+    const coordNameModalStyles = {
+        content: {
+            top: '50%',
+            left: '50%',
+            right: 'auto',
+            bottom: 'auto',
+            marginRight: '-50%',
+            transform: 'translate(-50%, -50%)',
+            width: '80%',
+            maxWidth: '500px',
+        },
+        overlay: {zIndex: 1000}
+    }
 
   const handleAddConnection = (connection: Connection) => {
     setConnectionModalOpen(false);
@@ -132,6 +150,7 @@ const DocumentForm = ({
       click(e) {
         setSelectedCoordId(undefined);
         setPosition(e.latlng);
+        setCoordNameModalOpen(true);
       },
     });
     return null;
@@ -333,13 +352,9 @@ const DocumentForm = ({
                   {(position ||
                     (selectedCoordId &&
                       coordinates[selectedCoordId]['type'] == 'Point')) && (
-                    <Marker
-                      position={
-                        position ||
-                        (selectedCoordId &&
-                          coordinates[selectedCoordId]['coordinates'])
-                      }
-                    />
+                      <Marker position={position || (selectedCoordId && coordinates[selectedCoordId]["coordinates"])}>
+                        <Tooltip permanent direction="top" offset={[-15, -10]}>{selectedCoordId ? coordinates[selectedCoordId]["name"] : coordName}</Tooltip>
+                      </Marker>
                   )}
                   {selectedCoordId &&
                     coordinates[selectedCoordId]['type'] == 'Polygon' && (
@@ -394,6 +409,19 @@ const DocumentForm = ({
             setModalOpen={setConnectionModalOpen}
             handleAddConnection={handleAddConnection}
           />
+        </div>
+      </Modal>
+
+      <Modal style={coordNameModalStyles} isOpen={coordNameModalOpen} onRequestClose={() => {setCoordNameModalOpen(false); setPosition(undefined); setCoordName("")} }>
+        <InputComponent label="Enter the name of the new point/area" type="text" placeholder='Enter the name of the new point/area...' required={true} value={coordName} onChange={(v) => setCoordName(v["target"]["value"])} />
+        <div className='flex justify-between'>
+            <ButtonRounded variant="filled" text="Confirm" className="bg-black text-white text-base pt-2 pb-2 pl-3 pr-3" onClick={() => {
+                if(coordName.trim() != "") {
+                  setCoordNameModalOpen(false);
+                }
+              }} 
+            />
+            <ButtonRounded variant="outlined" text="Cancel" className="text-base pt-2 pb-2 pl-3 pr-3" onClick={() => {setPosition(undefined); setCoordName(""); setCoordNameModalOpen(false)}}/>
         </div>
       </Modal>
     </>
