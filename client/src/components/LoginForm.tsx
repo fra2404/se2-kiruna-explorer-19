@@ -1,7 +1,6 @@
 import { useState } from 'react';
 import { useAuth } from '../context/AuthContext';
 import { FaRegEye, FaRegEyeSlash } from 'react-icons/fa';
-import { useNavigate } from 'react-router-dom';
 
 const LoginForm = (props: any) => {  
   const [email, setEmail] = useState('');
@@ -14,8 +13,6 @@ const LoginForm = (props: any) => {
   const togglePasswordVisibility = () => {
     setIsPasswordVisible(!isPasswordVisible);
   }
-
-  const navigate = useNavigate();
 
   const validateEmail = (email: string) => {
     const re = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;

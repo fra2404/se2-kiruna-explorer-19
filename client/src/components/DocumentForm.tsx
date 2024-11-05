@@ -8,6 +8,7 @@ import { kirunaLatLngCoords } from './Map';
 import { MapContainer, Marker, Polygon, TileLayer, useMapEvents, ZoomControl } from 'react-leaflet';
 import { LatLng } from 'leaflet';
 import InputComponent from './atoms/input/input';
+import Toast from './Toast';
 
 Modal.setAppElement("#root");
 
@@ -56,10 +57,19 @@ const DocumentForm = (props: any) => {
     const [position, setPosition] = useState(props.position)
     const [selection, setSelection] = useState(props.selection)                 //Can be "position" or "area", according to what the user selected
     const [selectedAreaId, setSelectedAreaId] = useState(props.selectedAreaId)  //If the user selected an area, this variable contains the it of that area
+    const [toastMsg, setToastMsg] = useState({
+        isShown: false,
+        type: "success",
+        message: "",
+    });
 
-    //Connection modal
-    const [connectionModalOpen, setConnectionModalOpen] = useState(false)
-    const connectionModalStyles = {
+    // Connection modal
+    const [modalOpen, setModalOpen] = useState(false);
+    const [editIndex, setEditIndex] = useState<number | null>(null);
+    const [mode, setMode] = useState<'add' | 'edit'>('add');
+    const [connectionToEdit, setConnectionToEdit] = useState<Connection | null>(null);
+
+    const modalStyles = {
         content: {
             top: '50%',
             left: '50%',
@@ -70,24 +80,72 @@ const DocumentForm = (props: any) => {
             width: '80%',
             maxWidth: '700px',
         },
-        overlay: {zIndex: 1000}
+        overlay: { zIndex: '1000' },
     }
 
     const handleAddConnection = (connection: Connection) => {
-        setConnectionModalOpen(false);
         setConnections([...connections, connection]);
-        console.log(connections)
-    }
+    } 
 
     const handleDeleteConnection = (index: number) => {
-        const newConnections = connections.filter((_, i) => i !== index);
-        setConnections(newConnections);
-    };   
+        const updatedConnections = connections.filter((_, i) => i !== index);
+        setConnections(updatedConnections);
+    };  
+    
+    const handleEditConnection = (index : number, updatedConnection: Connection) => {
+        const updatedConnections = connections.map((conn, i) =>
+            i === index ? updatedConnection : conn
+        );
+        setConnections(updatedConnections);
+    }
 
-    const handleEditConnection = (index : any, newConnection : Connection) => {
-        const newConnections = connections.map((connection, i) => i === index ? newConnection : connection)
-        setConnections(newConnections)
+    const openEditForm = (index: number) => {
+        setConnectionToEdit(connections[index]);
+        setEditIndex(index);
+        setMode('edit');
+        setModalOpen(true);
     };
+
+    const openAddForm = () => {
+        setConnectionToEdit(null);
+        setEditIndex(null);
+        setMode('add');
+        setModalOpen(true);
+    };
+
+    const showToastMessage = (message: string, type: string) => {
+        setToastMsg({
+          isShown: true,
+          message,
+          type,
+        });
+    };
+
+    const hideToastMessage = () => {
+        setToastMsg({
+          isShown: false,
+          message: "",
+          type: "error",
+        });
+    };
+
+    const handleSubmit = (e: any) => {
+        e.preventDefault();
+
+
+        if (!title || !docType || !stakeholders || !scale || !issuanceDate || !description) {
+            showToastMessage("Please fill all required fields", "error");
+            return;
+        }
+
+        if ((latitude && !validateLatitude(latitude)) || (longitude && !validateLongitude(longitude))) {
+            showToastMessage("Invalid latitude or longitude", "error");
+            return;
+        }
+
+
+        // submit the form
+    }
 
     //Handle document position
     function MapClickHandler() {
@@ -105,11 +163,10 @@ const DocumentForm = (props: any) => {
         <>
             <div className="w-full rounded shadow-md border">
                 <h2 className="text-center text-2xl font-bold mt-6">Create a new document</h2>
-                <form className="m-6">
-                    <div className="grid grid-cols-1 md:grid-cols-2 md:grid-rows-2 gap-x-4 gap-y-3">
+                <form onSubmit={handleSubmit} className="m-6">
+                    <div className="">
                         
-                        {/* Grid one */}
-                        <div className="col-span-1 row-span-1 col-start-1 row-start-1">
+                        <div className="">
 
                             {/* Title */}
                             <div className="my-4">
@@ -122,6 +179,17 @@ const DocumentForm = (props: any) => {
                                 />
                             </div>
 
+                            {/* Type of document */}
+                            <div className="">
+                                <label className="mr-1 font-semibold">Type</label>
+                                <span className="text-red-600">*</span>
+                                <Select placeholder="Select document type..."
+                                    defaultValue={docType}
+                                    onChange={setDocType}
+                                    options={documentTypeOptions}
+                                    className="mt-2 w-full" />
+                            </div>
+
                             {/* Stakeholders */}
                             <div className="my-4">
                                 <label className="mr-1 font-semibold">Stakeholders</label>
@@ -130,7 +198,7 @@ const DocumentForm = (props: any) => {
                                 defaultValue={stakeholders}
                                 onChange={setStakeholders}
                                 options={stakeholdersOptions}
-                                className="mt-2"
+                                className="mt-2 w-full"
                                 placeholder="Select stakeholders..."
                                 />
                             </div>
@@ -143,7 +211,7 @@ const DocumentForm = (props: any) => {
                                 defaultValue={scale}
                                 onChange={setScale}
                                 options={scaleTypeOptions}
-                                className="mt-2"
+                                className="mt-2 w-full"
                                 placeholder="Select scale..."
                                 />
                             </div>
@@ -158,8 +226,7 @@ const DocumentForm = (props: any) => {
                             </div> 
                         </div>
 
-                        {/* Grid two */}
-                        <div className="col-span-1 row-span-1 col-start-2 row-start-1">
+                        <div className="">
 
                             {/* Description */}
                             <div className="my-4">
@@ -192,28 +259,17 @@ const DocumentForm = (props: any) => {
                             </div>
                         </div>
 
-                        <div className="col-span-2 row-span-1 col-start-1 row-start-2 md:text-center mt-5">
-                            {/* Type of document */}
-                            <div className="">
-                                <label className="mr-1 font-semibold">Type</label>
-                                <span className="text-red-600">*</span>
-                                <Select placeholder="Select document type..."
-                                    defaultValue={docType}
-                                    onChange={setDocType}
-                                    options={documentTypeOptions}
-                                    className="mt-2 max-w-[500px] md:mx-auto" />
-                            </div>
-
+                        <div className="mt-3">
                             <div className="my-2">
                                 <label className="font-semibold">Connections</label>
 
                                 {
                                     connections?.length === 0 ?
-                                    <h1 className="mt-2 text-gray-500">No connections yet</h1> : connections?.length > 0 &&
-                                    <ConnectionList connections={connections} handleDelete={handleDeleteConnection} handleEdit={handleEditConnection} handleAddConnection={handleAddConnection} />
+                                    <h1 className="mt-2 text-gray-500 text-sm">No connections yet</h1> : connections?.length > 0 &&
+                                    <ConnectionList connections={connections} handleDelete={handleDeleteConnection} openEditForm={openEditForm} />
                                 }
 
-                                <div onClick={() => setConnectionModalOpen(true)} className="flex items-center justify-center max-w-[100px] h-10 rounded md:mx-auto border border-dashed border-blue-500 group hover:bg-blue-500 cursor-pointer my-2">
+                                <div onClick={() => openAddForm()} className="flex items-center justify-center max-w-[100px] h-10 rounded  border border-dashed border-blue-500 group hover:bg-blue-500 cursor-pointer my-2">
                                     <FaPlus size={18} className="text-blue-500 group-hover:text-white" />
                                 </div>
                             </div>
@@ -258,13 +314,18 @@ const DocumentForm = (props: any) => {
                 </form>
             </div>
 
-            <Modal style={connectionModalStyles} isOpen={connectionModalOpen} onRequestClose={() => setConnectionModalOpen(false)}>
+            <Modal style={modalStyles} isOpen={modalOpen} onRequestClose={() => setModalOpen(false)}>
                 <div className="relative">
-                    <button onClick={() => setConnectionModalOpen(false)} className="absolute top-0 right-0 p-2 text-xl text-gray-500 hover:text-gray-700">
+                    <button onClick={() => setModalOpen(false)} className="absolute top-0 right-0 p-2 text-xl text-gray-500 hover:text-gray-700">
                         &times;
                     </button>
 
-                    <ConnectionForm setModalOpen={setConnectionModalOpen} handleAddConnection={handleAddConnection} />
+                    <ConnectionForm closeModal={() => setModalOpen(false)} 
+                    handleAdd={handleAddConnection }
+                    handleEdit={handleEditConnection} 
+                    mode={mode}
+                    connectionToEdit={connectionToEdit}
+                    editIndex={editIndex} />
                 </div>
             </Modal>
         </>
