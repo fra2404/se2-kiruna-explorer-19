@@ -9,7 +9,9 @@ import {
   MapContainer,
   Marker,
   Polygon,
+  Popup,
   TileLayer,
+  Tooltip,
   useMapEvents,
   ZoomControl,
 } from 'react-leaflet';
@@ -31,6 +33,8 @@ interface DocumentFormProps {
   positionProp?: LatLng;
   selectedCoordIdProp?: string;
   coordinates: any;
+  modalOpen: boolean;
+  setModalOpen: (open: boolean) => void;
 }
 
 const DocumentForm = ({
@@ -86,18 +90,18 @@ const DocumentForm = ({
   const [position, setPosition] = useState<LatLng | undefined>(positionProp);
   const [selectedCoordId, setSelectedCoordId] = useState<string | undefined>(
     selectedCoordIdProp,
-  ); // If the user selected an area, this variable contains the it of that area
+  ); //If the user selected an area, this variable contains the it of that area
+
+  // Connection modal : To enter a new connection
+  const [connectionModalOpen, setConnectionModalOpen] = useState(false);
+  const [editIndex, setEditIndex] = useState<number | null>(null);
+  const [mode, setMode] = useState<'add' | 'edit'>('add');
+  const [connectionToEdit, setConnectionToEdit] = useState<Connection | null>(null);
   const [toastMsg, setToastMsg] = useState({
     isShown: false,
     type: "success",
     message: "",
   });
-
-  // Connection modal : To enter a new connection
-  const [modalOpen, setModalOpen] = useState(false);
-  const [editIndex, setEditIndex] = useState<number | null>(null);
-  const [mode, setMode] = useState<'add' | 'edit'>('add');
-  const [connectionToEdit, setConnectionToEdit] = useState<Connection | null>(null);
 
   const modalStyles = {
     content: {
@@ -133,14 +137,14 @@ const DocumentForm = ({
     setConnectionToEdit(connections[index]);
     setEditIndex(index);
     setMode('edit');
-    setModalOpen(true);
+    setConnectionModalOpen(true);
   };
 
   const openAddForm = () => {
     setConnectionToEdit(null);
     setEditIndex(null);
     setMode('add');
-    setModalOpen(true);
+    setConnectionModalOpen(true);
   };
 
   const showToastMessage = (message: string, type: string) => {
@@ -192,13 +196,16 @@ const DocumentForm = ({
   // Handle document position
   function MapClickHandler() {
     useMapEvents({
-      click(e) {
+      dblclick(e) {
         setSelectedCoordId(undefined);
         setPosition(e.latlng);
+        // setCoordNamePopupOpen(true);
       },
     });
     return null;
   }
+
+  // console.log(showCoordNamePopup);
 
   return (
     <>
@@ -386,14 +393,38 @@ const DocumentForm = ({
                   {(position ||
                     (selectedCoordId &&
                       coordinates[selectedCoordId]['type'] == 'Point')) && (
-                    <Marker
-                      position={
-                        position ||
-                        (selectedCoordId &&
-                          coordinates[selectedCoordId]['coordinates'])
-                      }
-                    />
+                      <Marker position={position || (selectedCoordId && coordinates[selectedCoordId]["coordinates"])} ref={(r) => {
+                        r?.openPopup();
+                      }}>
+                        <Tooltip permanent> {
+                            selectedCoordId ? (
+                              coordinates[selectedCoordId]["name"]
+                            ) : (
+                              coordName
+                            )
+                          }
+                        </Tooltip>
+                      </Marker>
                   )}
+
+                  {
+                    coordNamePopupOpen && position &&
+                    <Popup position={position} closeButton={false} closeOnClick={false} closeOnEscapeKey={false} autoClose={false}>
+                      <>
+                        <InputComponent label="Enter the name of the new point/area" type="text" placeholder='Enter the name of the new point/area...' required={true} value={coordName} onChange={(v) => setCoordName(v["target"]["value"])} />
+                        <div className='flex justify-between'>
+                            <ButtonRounded variant="filled" text="Confirm" className="bg-black text-white text-xs pt-2 pb-2 pl-3 pr-3" onClick={() => {
+                                if(coordName.trim() != "") {
+                                  setCoordNamePopupOpen(false);
+                                }
+                              }} 
+                            />
+                            <ButtonRounded variant="outlined" text="Cancel" className="text-xs pt-2 pb-2 pl-3 pr-3" onClick={() => {setPosition(undefined); setCoordName(""); setCoordNamePopupOpen(false)}}/>
+                        </div>
+                      </>
+                    </Popup>
+                  }
+
                   {selectedCoordId &&
                     coordinates[selectedCoordId]['type'] == 'Polygon' && (
                       <Polygon
@@ -432,11 +463,11 @@ const DocumentForm = ({
 
       <Modal style={modalStyles} isOpen={modalOpen} onRequestClose={() => setModalOpen(false)}>
         <div className="relative">
-          <button onClick={() => setModalOpen(false)} className="absolute top-0 right-0 p-2 text-xl text-gray-500 hover:text-gray-700">
+          <button onClick={() => setConnectionModalOpen(false)} className="absolute top-0 right-0 p-2 text-xl text-gray-500 hover:text-gray-700">
             &times;
           </button>
 
-          <ConnectionForm closeModal={() => setModalOpen(false)} 
+          <ConnectionForm closeModal={() => setConnectionModalOpen(false)} 
             handleAdd={handleAddConnection }
             handleEdit={handleEditConnection} 
             mode={mode}

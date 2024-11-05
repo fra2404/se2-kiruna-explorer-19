@@ -19,6 +19,7 @@ import { ButtonRounded } from './Button';
 import DocumentForm from './DocumentForm';
 import Modal from 'react-modal';
 import Overlay from './Overlay';
+import CustomZoomControl from './molecules/ZoomControl';
 
 export const kirunaLatLngCoords: LatLngExpression = [67.85572, 20.22513]; // this are DD coordinates for Kiruna different from DMS coordinates for Kiruna
 
@@ -50,7 +51,7 @@ export default function KirunaMap() {
     useEffect(() => {
         API.getCoordinates()
             .then((coords) => {
-                let result: {
+                const result: {
                     [id: string]: {
                         type: string;
                         coordinates: LatLng | LatLng[] | LatLng[][];
@@ -108,7 +109,7 @@ export default function KirunaMap() {
                 {' '}
                 {/* This is needed to avoid glitch in the visualization of the map */}
                 <Header />
-                <Overlay></Overlay>
+                {isLoggedIn && <Overlay coordinates={coordinates} />}
                 <MapContainer
                     style={{ width: '100%', height: '100%' }}
                     center={kirunaLatLngCoords}
@@ -159,7 +160,7 @@ export default function KirunaMap() {
                         })
                     }
                     {isLoggedIn && <ClickMarker coordinates={coordinates} />}
-                    <ZoomControl position="bottomleft" />
+                    <CustomZoomControl />
                 </MapContainer>
             </div>
         </>
@@ -180,8 +181,8 @@ function ClickMarker({ coordinates }: ClickMarkerProps) {
     const popupRef = useRef<L.Popup>(null);
 
     //Modal options
-    // const [modalOpen, setModalOpen] = useState(false);
-    const { modalOpen, setModalOpen } = useModal();
+    const [modalOpen, setModalOpen] = useState(false);
+    //const { modalOpen, setModalOpen } = useModal();
 
     return position === null ? null : (
         <>
@@ -197,7 +198,10 @@ function ClickMarker({ coordinates }: ClickMarkerProps) {
                         text="Yes"
                         className="bg-black text-white text-base pt-2 pb-2 pl-3 pr-3"
                         onClick={() => {
-                            setModalOpen(true);
+                            if(!modalOpen) {
+                                setModalOpen(true);
+                                popupRef.current?.remove();
+                            }
                         }}
                     />
                     <ButtonRounded
@@ -219,6 +223,7 @@ function ClickMarker({ coordinates }: ClickMarkerProps) {
                 <DocumentForm
                     coordinates={coordinates}
                     positionProp={position}
+                    showCoordNamePopup={true}
                     modalOpen={modalOpen}
                     setModalOpen={setModalOpen}
                 />
