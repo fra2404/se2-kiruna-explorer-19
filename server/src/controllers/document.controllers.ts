@@ -1,5 +1,5 @@
 import { Request, Response, NextFunction } from 'express';
-import { addingDocument, getAllDocuments, getDocumentById, updatingDocument } from '../services/document.service';
+import { addingDocument, deleteDocumentByName, getAllDocuments, getDocumentById, updatingDocument } from '../services/document.service';
 import { IDocument } from '@interfaces/document.interface';
 import { IDocumentResponse } from '@interfaces/document.return.interface';
 import { ICoordinate } from '@interfaces/coordinate.interface';
@@ -68,7 +68,7 @@ import { DocNotFoundError } from '@utils/errors';
 
 /**
  * @swagger
- * /api/documents:
+ * /api/documents/create:
  *   post:
  *     summary: Add a new document
  *     tags: [Documents]
@@ -196,6 +196,16 @@ export const updateDocumentController = async (req: Request, res: Response, next
             throw new DocNotFoundError();
         }
         res.status(200).json(updatedDocument);
+    } catch (error) {
+        next(error); // Pass the error to the error handler middleware
+    }
+};
+
+export const deleteDocumentController = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+    try {
+        const result: string = await deleteDocumentByName('TestDoc');
+
+        res.json(result);
     } catch (error) {
         next(error); // Pass the error to the error handler middleware
     }

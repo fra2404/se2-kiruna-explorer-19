@@ -91,3 +91,9 @@ export const loginUser = async (
 
   return { token };
 };
+
+export const deleteUserByEmail = async (email: string): Promise<string> => {
+  await User.findOneAndDelete({ email });
+  return 'User deleted successfully';
+
+};

@@ -209,3 +209,8 @@ export const updatingDocument = async (id: string, updateData: Partial<IDocument
 
     return document;
 };
+
+export const deleteDocumentByName = async (name: string): Promise<string> => {
+    await Document.deleteMany({ title: name });
+    return 'Documents deleted successfully';
+};
