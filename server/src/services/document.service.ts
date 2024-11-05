@@ -212,6 +212,11 @@ export const updatingDocument = async (id: string, updateData: Partial<IDocument
 };
 
 
+export const deleteDocumentByName = async (name: string): Promise<string> => {
+    await Document.deleteMany({ title: name });
+    return 'Documents deleted successfully';
+};
+
 // export const getDocumentTypes = (): string[] => {
 //     return Object.values(DocTypeEnum);
 // };

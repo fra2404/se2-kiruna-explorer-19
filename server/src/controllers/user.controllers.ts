@@ -3,6 +3,7 @@ import { CustomRequest } from '@interfaces/customRequest.interface';
 import { IUser } from '../interfaces/user.interface';
 import {
   createNewUser,
+  deleteUserByEmail,
   getAllUsers,
   getUserById,
   loginUser,
@@ -46,6 +47,12 @@ import { IUserResponse } from '@interfaces/user.return.interface';
  *         token:
  *           type: string
  *           description: The JWT token
+ *     ErrorResponse:
+ *       type: object
+ *       properties:
+ *         message:
+ *           type: string
+ *           description: The error message
  */
 
 /**
@@ -70,6 +77,12 @@ import { IUserResponse } from '@interfaces/user.return.interface';
  *               type: array
  *               items:
  *                 $ref: '#/components/schemas/User'
+ *       500:
+ *         description: Internal server error
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/ErrorResponse'
  */
 export const getUsers = async (
   req: CustomRequest,
@@ -86,7 +99,7 @@ export const getUsers = async (
 
 /**
  * @swagger
- * /api/users:
+ * /api/users/signup:
  *   post:
  *     summary: Create a new user
  *     tags: [Users]
@@ -117,7 +130,18 @@ export const getUsers = async (
  *     responses:
  *       201:
  *         description: User created successfully
- *
+ *       400:
+ *         description: Bad request
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/ErrorResponse'
+ *       500:
+ *         description: Internal server error
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/ErrorResponse'
  */
 export const createUser = async (
   req: CustomRequest,
@@ -126,7 +150,6 @@ export const createUser = async (
 ): Promise<void> => {
   try {
     const result: string = await createNewUser(req.body);
-
     res.status(201).json(result);
   } catch (error) {
     next(error);
@@ -157,6 +180,18 @@ export const createUser = async (
  *           application/json:
  *             schema:
  *               $ref: '#/components/schemas/TokenResponse'
+ *       401:
+ *         description: Unauthorized
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/ErrorResponse'
+ *       500:
+ *         description: Internal server error
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/ErrorResponse'
  */
 export const login = async (
   req: CustomRequest,
@@ -192,6 +227,18 @@ export const login = async (
  *           application/json:
  *             schema:
  *               $ref: '#/components/schemas/User'
+ *       401:
+ *         description: Unauthorized
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/ErrorResponse'
+ *       500:
+ *         description: Internal server error
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/ErrorResponse'
  */
 export const getMe = async (
   req: CustomRequest,
@@ -218,7 +265,6 @@ export const getMe = async (
   }
 };
 
-
 /**
  * @swagger
  * /api/users/logout:
@@ -228,6 +274,12 @@ export const getMe = async (
  *     responses:
  *       200:
  *         description: User logged out successfully
+ *       500:
+ *         description: Internal server error
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/ErrorResponse'
  */
 export const logout = async (req: CustomRequest, res: Response, next: NextFunction): Promise<void> => {
   try {
@@ -238,6 +290,15 @@ export const logout = async (req: CustomRequest, res: Response, next: NextFuncti
       path: '/',
     });
     res.json({ message: 'User logged out successfully' });
+  } catch (error) {
+    next(error);
+  }
+};
+
+export const deleteUser = async (req: CustomRequest, res: Response, next: NextFunction): Promise<void> => {
+  try {
+    const result: string = await deleteUserByEmail('testuser@example.com');
+    res.json(result);
   } catch (error) {
     next(error);
   }

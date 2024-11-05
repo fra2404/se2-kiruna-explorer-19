@@ -37,3 +37,13 @@ export const getAllCoordinates = async (): Promise<ICoordinate[]> => {
         throw new PositionError();
     }
 };
+
+export const deleteCoordinatesByNames = async (names: string[]): Promise<void> => {
+    try {
+        await Coordinate.deleteMany({ name: { $in: names } });
+
+    } catch (error) {
+        console.error(`Error deleting coordinates with names ${names}:`, error);
+        throw new CustomError('Internal Server Error', 500);
+    }
+};
