@@ -5,13 +5,14 @@ import { useModal } from '../context/ModalContext';
 import Modal from 'react-modal';
 import { modalStyles } from './Map';
 import DocumentForm from './DocumentForm';
+import { useState } from 'react';
 
 interface OverlayProps {
     coordinates: any        //Need to pass coordinates to the modal as parameter
 }
 
 export default function Overlay({coordinates}: OverlayProps) {
-    const { modalOpen, setModalOpen } = useModal();
+    const [modalOpen, setModalOpen] = useState(false);
     return (
         <Container fluid className="p-3" style={{ position: "absolute", top: "50vh", left: 0, width: "100%", zIndex: 1000 }}>
             <Row className="h-100 align-items-center justify-content-end">
@@ -31,6 +32,7 @@ export default function Overlay({coordinates}: OverlayProps) {
             >
                 <DocumentForm
                     coordinates={coordinates}
+                    positionProp={undefined}
                     modalOpen={modalOpen}
                     setModalOpen={setModalOpen}
                 />

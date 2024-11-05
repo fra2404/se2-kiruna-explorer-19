@@ -197,7 +197,10 @@ function ClickMarker({ coordinates }: ClickMarkerProps) {
                         text="Yes"
                         className="bg-black text-white text-base pt-2 pb-2 pl-3 pr-3"
                         onClick={() => {
-                            setModalOpen(true);
+                            if(!modalOpen) {
+                                console.log("Ciao");
+                                setModalOpen(true);
+                            }
                         }}
                     />
                     <ButtonRounded
@@ -219,6 +222,7 @@ function ClickMarker({ coordinates }: ClickMarkerProps) {
                 <DocumentForm
                     coordinates={coordinates}
                     positionProp={position}
+                    showCoordNamePopup={true}
                     modalOpen={modalOpen}
                     setModalOpen={setModalOpen}
                 />
