@@ -1,6 +1,8 @@
-import Select from 'react-select';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Connection } from './DocumentForm';
+import { ButtonRounded } from './Button';
+import InputComponent from './atoms/input/input';
+import API from '../API'; // Importa l'API
 
 const ConnectionForm = ({
   setModalOpen,
@@ -12,81 +14,100 @@ const ConnectionForm = ({
   connection: Connection;
 }) => {
   const connectionTypeOptions = [
-    { value: 'Direct', label: 'Direct' },
-    { value: 'Collateral', label: 'Collateral' },
-    { value: 'Projection', label: 'Projection' },
-    { value: 'Update', label: 'Update' },
+    { value: 'DIRECT', label: 'Direct' },
+    { value: 'COLLATERAL', label: 'Collateral' },
+    { value: 'PROJECTION', label: 'Projection' },
+    { value: 'UPDATE', label: 'Update' },
   ];
 
-  const targetDocumentOptions = [
-    { value: 'Document 1', label: 'Document 1' },
-    { value: 'Document 2', label: 'Document 2' },
-    { value: 'Document 3', label: 'Document 3' },
-    { value: 'Document 4', label: 'Document 4' },
-  ];
-
-  const [type, setType] = useState<any>(
-    { value: connection?.type, label: connection?.type } || null,
-  );
+  const [targetDocumentOptions, setTargetDocumentOptions] = useState<any[]>([]);
+  const [type, setType] = useState<any>({
+    value: connection?.type,
+    label: connection?.type,
+  });
   const [targetDocument, setTargetDocument] = useState<any>(
-    {
-      value: connection?.relatedDocument,
-      label: connection?.relatedDocument,
-    } || null,
+    connection?.relatedDocument
+      ? { value: connection.relatedDocument, label: connection.relatedDocument }
+      : null,
   );
+
+  useEffect(() => {
+    const fetchDocuments = async () => {
+      try {
+        const documents = await API.getDocuments();
+        const options = documents.map((doc: any) => ({
+          value: doc.id,
+          label: doc.title,
+        }));
+        setTargetDocumentOptions(options);
+      } catch (error) {
+        console.error('Error fetching documents:', error);
+      }
+    };
+
+    fetchDocuments();
+  }, []);
 
   const handleSubmit = (e: any) => {
     e.preventDefault();
-    const connection: Connection = {
-      type: type?.value || '',
-      relatedDocument: targetDocument?.value || '',
+    console.log('Selected Type:', type);
+    console.log('Selected Target Document:', targetDocument);
+
+    const newConnection: Connection = {
+      type: type.target.value || '',
+      relatedDocument: targetDocument,
     };
-    handleAddConnection(connection);
+
+    console.log('New Connection:', newConnection); // Stampa newConnection per debug
+
+    handleAddConnection(newConnection);
+    setModalOpen(false); // Chiudi il modal dopo l'aggiunta
   };
 
   return (
     <div className="my-4 w-full max-w-[600px] md:mx-auto p-8">
       <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
         <div className="w-full">
-          <label className="mr-1 font-semibold">Connection type</label>
-          <span className="text-red-600">*</span>
-          <Select
-            className="mt-2"
-            defaultValue={type}
-            onChange={setType}
+          <InputComponent
+            label="Connection type"
+            type="select"
             options={connectionTypeOptions}
+            value={type}
+            onChange={(selectedOption: any) => setType(selectedOption)}
+            required={true}
             placeholder="Select a type..."
           />
         </div>
 
         <div className="w-full">
-          <label className="mr-1 font-semibold">Target document</label>
-          <span className="text-red-600">*</span>
-          <Select
-            className="mt-2"
-            defaultValue={targetDocument}
-            onChange={setTargetDocument}
+          <InputComponent
+            label="Target document"
+            type="select"
             options={targetDocumentOptions}
+            value={targetDocument}
+            onChange={(selectedOption: any) =>
+              setTargetDocument(selectedOption)
+            }
+            required={true}
             placeholder="Select a document..."
+            returnObject={true} // Passa l'intero oggetto selezionato
           />
         </div>
       </div>
 
-      <div className="w-1/2 flex items-center justify-center mx-auto gap-4">
-        <button
+      <div className="w-full flex justify-center gap-4">
+        <ButtonRounded
+          variant="filled"
+          text="Add"
+          className="bg-black text-white text-base pt-2 pb-2 pl-4 pr-4 rounded mt-4"
           onClick={handleSubmit}
-          type="button"
-          className="bg-blue-600 hover:bg-blue-500 text-white px-4 py-2 rounded mt-4"
-        >
-          Add
-        </button>
-        <button
+        />
+        <ButtonRounded
+          variant="outlined"
+          text="Cancel"
+          className="text-base pt-2 pb-2 pl-4 pr-4 mt-4"
           onClick={() => setModalOpen(false)}
-          type="button"
-          className="bg-red-600 hover:bg-red-500 text-white px-4 py-2 rounded mt-4"
-        >
-          Cancel
-        </button>
+        />
       </div>
     </div>
   );
