@@ -24,6 +24,23 @@ async function login(email: string, password: string): Promise<{ isLoggedIn: boo
     return { isLoggedIn: true, user };
 }
 
+async function logout(): Promise<{ isLoggedOut: boolean }> {
+    const response = await fetch(`${SERVER_URL}/users/logout`, {
+        method: 'POST',
+        credentials: 'include',
+        headers: {
+            'Content-Type': 'application/json'
+        }
+    });
+    console.log('Response status:', response.status);
+
+    if (!response.ok) {
+        return { isLoggedOut: false };
+    }
+
+    return { isLoggedOut: true };
+}
+
 async function getMe(): Promise<IUser> {
     const response = await fetch(`${SERVER_URL}/users/me`, {
         method: 'GET',
@@ -69,9 +86,36 @@ async function getDocuments() {
         .then(mapApiDocumentsToDocuments);
 }
 
+/**
+ * Post a new document to the backend.
+ * @params document: DocumentFile
+ * @returns Promise<DocumentFile>
+ */
+
+async function addDocument(document: DocumentFile) {
+    return await fetch(`${SERVER_URL}/documents/create`, {
+        method: 'POST',
+        credentials: 'include',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(document)
+    })
+        .then(handleInvalidResponse)
+        .then(response => response.json());
+}
+
+async function getCoordinates() {
+    return await fetch(`${SERVER_URL}/coordinates`, {
+        method: 'GET'
+    })
+    .then(handleInvalidResponse)
+    .then(response => response.json());
+}
+
 
 // Utility functions:
-function handleInvalidResponse(response) {
+function handleInvalidResponse(response: any) {
     if (!response.ok) {
         throw Error(response.statusText)
     }
@@ -87,15 +131,17 @@ function handleInvalidResponse(response) {
  * @param apiDocuments 
  * @returns 
  */
-function mapApiDocumentsToDocuments(apiDocuments) {
-    return apiDocuments.map(document => new DocumentFile(document.id, document.description, document.title, document.file, document.language, document.issueDate));
+function mapApiDocumentsToDocuments(apiDocuments: any) {
+    return apiDocuments.map((document: any) => new DocumentFile(document.id, document.description, document.title, document.file, document.language, document.issueDate));
 }
 
 
 
 const API = {
-    getDocuments
+    getDocuments,
+    getCoordinates,
+    addDocument
 }
 
-export { login, getMe, checkAuth };
+export { login, logout, getMe, checkAuth };
 export default API;

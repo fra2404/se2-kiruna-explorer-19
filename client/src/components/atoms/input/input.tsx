@@ -145,7 +145,7 @@ const InputComponent: React.FC<InputComponentProps> = ({
   };
 
   const selectOptions = selectedOption
-    ? [{ value: '', label: 'Incorrect format (per annullare)' }, ...options]
+    ? [{ value: '', label: 'Cancel selection' }, ...options]
     : options;
 
   return (

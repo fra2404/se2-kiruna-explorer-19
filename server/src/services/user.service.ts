@@ -4,6 +4,7 @@ import User from '../schemas/user.schema';
 import { IUser } from '../interfaces/user.interface';
 import { CustomError } from '@utils/customError';
 import { IUserResponse } from '@interfaces/user.return.interface';
+import { UserNotAuthorizedError } from '@utils/errors';
 
 const secretKey = process.env.JWT_SECRET || 'your-secret-key';
 
@@ -71,12 +72,12 @@ export const loginUser = async (
 ): Promise<{ token: string }> => {
   const user = await User.findOne({ email });
   if (!user) {
-    throw new CustomError('Invalid email or password', 401);
+    throw new UserNotAuthorizedError();
   }
 
   const isMatch = await bcrypt.compare(password, user.password);
   if (!isMatch) {
-    throw new CustomError('Invalid email or password', 401);
+    throw new UserNotAuthorizedError();
   }
 
   // Generate JWT
@@ -89,4 +90,10 @@ export const loginUser = async (
   );
 
   return { token };
+};
+
+export const deleteUserByEmail = async (email: string): Promise<string> => {
+  await User.findOneAndDelete({ email });
+  return 'User deleted successfully';
+
 };

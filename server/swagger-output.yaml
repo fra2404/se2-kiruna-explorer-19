@@ -1,0 +1,461 @@
+openapi: 3.0.0
+info:
+  title: API Documentation - KIRUNA Explorer
+  version: 1.0.0
+components:
+  securitySchemes:
+    cookieAuth:
+      type: apiKey
+      in: cookie
+      name: auth-token
+  schemas:
+    Coordinate:
+      type: object
+      properties:
+        id:
+          type: string
+          description: The coordinate ID
+        type:
+          type: string
+          description: The type of the coordinate (Point or Polygon)
+          enum:
+            - Point
+            - Polygon
+        coordinates:
+          type: array
+          items:
+            type: number
+          description: >-
+            The coordinates (longitude and latitude for Point, array of arrays
+            for Polygon)
+        name:
+          type: string
+          description: The name of the coordinate
+    Document:
+      type: object
+      properties:
+        id:
+          type: string
+          description: The ID of the document
+          example: 60d0fe4f5311236168a109ca
+        title:
+          type: string
+          description: The title of the document
+          example: Sample Document
+        stakeholders:
+          type: string
+          description: The stakeholders of the document
+          example: Stakeholder 1
+        scale:
+          type: string
+          description: The scale of the document
+          example: '1:1000'
+        type:
+          type: string
+          description: The type of the document
+          enum:
+            - AGREEMENT
+            - CONFLICT
+            - CONSULTATION
+            - DESIGN_DOC
+            - INFORMATIVE_DOC
+            - MATERIAL_EFFECTS
+            - PRESCRIPTIVE_DOC
+            - TECHNICAL_DOC
+          example: AGREEMENT
+        connections:
+          type: array
+          items:
+            type: object
+            properties:
+              document:
+                type: string
+                description: The ID of the connected document
+                example: 60d0fe4f5311236168a109ca
+              type:
+                type: string
+                description: The type of the connection
+                enum:
+                  - LINK1
+                  - LINK2
+                  - LINK3
+                example: LINK1
+        language:
+          type: string
+          description: The language of the document
+          example: English
+        summary:
+          type: string
+          description: The summary of the document
+          example: This is a summary of the document.
+        date:
+          type: string
+          description: The date of the document in the format dd-mm-yyyy
+          example: '2024-11-05'
+        coordinates:
+          type: string
+          $ref: '#/components/schemas/Coordinate'
+        media:
+          type: array
+          items:
+            type: string
+    User:
+      type: object
+      properties:
+        id:
+          type: string
+          description: The user ID
+        name:
+          type: string
+          description: The user's name
+        email:
+          type: string
+          description: The user's email
+        surname:
+          type: string
+          description: The user's surname
+        phone:
+          type: string
+          description: The user's phone number
+        role:
+          type: string
+          description: The user's role
+          enum:
+            - PLANNER
+            - DEVELOPER
+            - VISITOR
+            - RESIDENT
+    TokenResponse:
+      type: object
+      properties:
+        token:
+          type: string
+          description: The JWT token
+    ErrorResponse:
+      type: object
+      properties:
+        message:
+          type: string
+          description: The error message
+security:
+  - cookieAuth: []
+paths:
+  /api/coordinates/create:
+    post:
+      summary: Create a new coordinate
+      tags:
+        - Coordinates
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Coordinate'
+      responses:
+        '201':
+          description: Coordinate added successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                  coordinate:
+                    $ref: '#/components/schemas/Coordinate'
+        '400':
+          description: Bad request
+        '500':
+          description: Internal server error
+  /api/coordinates:
+    get:
+      summary: Get all coordinates
+      tags:
+        - Coordinates
+      responses:
+        '200':
+          description: List of all coordinates
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Coordinate'
+        '500':
+          description: Internal server error
+  /api/coordinates/{id}:
+    get:
+      summary: Get a coordinate by ID
+      tags:
+        - Coordinates
+      parameters:
+        - in: path
+          name: id
+          schema:
+            type: string
+          required: true
+          description: The coordinate ID
+      responses:
+        '200':
+          description: Coordinate found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Coordinate'
+        '404':
+          description: Coordinate not found
+        '500':
+          description: Internal server error
+  /api/documents/create:
+    post:
+      summary: Add a new document
+      tags:
+        - Documents
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Document'
+      responses:
+        '201':
+          description: Document added successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                  document:
+                    $ref: '#/components/schemas/Document'
+  /api/documents:
+    get:
+      summary: Get all documents
+      tags:
+        - Documents
+      responses:
+        '200':
+          description: List of all documents
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Document'
+  /api/documents/{id}:
+    get:
+      summary: Get a document by ID
+      tags:
+        - Documents
+      parameters:
+        - in: path
+          name: id
+          schema:
+            type: string
+          required: true
+          description: The document ID
+      responses:
+        '200':
+          description: Document data
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Document'
+        '404':
+          description: Document not found
+    put:
+      summary: Update a document by ID
+      tags:
+        - Documents
+      parameters:
+        - in: path
+          name: id
+          schema:
+            type: string
+          required: true
+          description: The document ID
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Document'
+      responses:
+        '200':
+          description: Document updated successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Document'
+        '404':
+          description: Document not found
+  /documents/types/{type}:
+    get:
+      summary: Get documents by type
+      description: Retrieve all documents of a specified type.
+      parameters:
+        - in: path
+          name: type
+          required: true
+          description: The type of the document (e.g., AGREEMENT, CONFLICT, CONSULTATION).
+          schema:
+            type: string
+      responses:
+        '200':
+          description: A list of documents of the specified type.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  documents:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Document'
+        '404':
+          description: No documents found for the specified type.
+        '500':
+          description: Internal server error.
+  /api/users:
+    get:
+      summary: Get all users
+      tags:
+        - Users
+      responses:
+        '200':
+          description: List of all users
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/User'
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+  /api/users/signup:
+    post:
+      summary: Create a new user
+      tags:
+        - Users
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+                email:
+                  type: string
+                password:
+                  type: string
+                surname:
+                  type: string
+                phone:
+                  type: string
+                role:
+                  type: string
+                  enum:
+                    - PLANNER
+                    - DEVELOPER
+                    - VISITOR
+                    - RESIDENT
+      responses:
+        '201':
+          description: User created successfully
+        '400':
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+  /api/users/login:
+    post:
+      summary: Login a user
+      tags:
+        - Users
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                email:
+                  type: string
+                password:
+                  type: string
+      responses:
+        '200':
+          description: User logged in successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TokenResponse'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+  /api/users/me:
+    get:
+      summary: Get current user
+      tags:
+        - Users
+      responses:
+        '200':
+          description: Current user information
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+  /api/users/logout:
+    post:
+      summary: Logout a user
+      tags:
+        - Users
+      responses:
+        '200':
+          description: User logged out successfully
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+tags:
+  - name: Coordinates
+    description: Coordinate management
+  - name: Users
+    description: User management

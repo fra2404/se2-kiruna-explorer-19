@@ -1,13 +1,17 @@
-import { NextFunction, Request, Response } from 'express';
-import { CustomError } from '@utils/customError';
-import {
-    addingDocument,
-    getAllDocuments,
-    getDocumentById,
-    updatingDocument
-} from '../services/document.service';
+import { Request, Response, NextFunction } from 'express';
+import { 
+        addingDocument, 
+        getAllDocuments, 
+        getDocumentById, 
+        updatingDocument, 
+        deleteDocumentByName,
+       // getDocumentTypes,
+        getDocumentByType } from '../services/document.service';
+// import { addingDocument, deleteDocumentByName, getAllDocuments, getDocumentById, updatingDocument } from '../services/document.service';
 import { IDocument } from '@interfaces/document.interface';
 import { IDocumentResponse } from '@interfaces/document.return.interface';
+import { ICoordinate } from '@interfaces/coordinate.interface';
+import { DocNotFoundError } from '@utils/errors';
 
 
 /**
@@ -17,69 +21,63 @@ import { IDocumentResponse } from '@interfaces/document.return.interface';
  *     Document:
  *       type: object
  *       properties:
- *         _id:
+ *         id:
  *           type: string
- *           description: The document ID
+ *           description: The ID of the document
  *         title:
  *           type: string
  *           description: The title of the document
  *         stakeholders:
  *           type: string
- *           description: The stakeholders involved in the document
+ *           description: The stakeholders of the document
  *         scale:
  *           type: string
  *           description: The scale of the document
  *         type:
  *           type: string
- *           description: The type of document
+ *           description: The type of the document
  *           enum:
- *             - DETAILED_PLAN
- *             - COMPETITION
  *             - AGREEMENT
- *             - DEFORMATION_FORECAST
- *         date:
- *           type: string
- *           format: date
- *           description: The date related to the document
+ *             - CONFLICT
+ *             - CONSULTATION
+ *             - DESIGN_DOC
+ *             - INFORMATIVE_DOC
+ *             - MATERIAL_EFFECTS
+ *             - PRESCRIPTIVE_DOC
+ *             - TECHNICAL_DOC
  *         connections:
  *           type: array
  *           items:
- *             type: string
- *           description: An array of related document IDs
+ *             type: object
+ *             properties:
+ *               document:
+ *                 type: string
+ *                 description: The ID of the connected document
+ *               type:
+ *                 type: string
+ *                 description: The type of the connection
+ *                 enum:
+ *                   - LINK1
+ *                   - LINK2
+ *                   - LINK3
  *         language:
  *           type: string
  *           description: The language of the document
- *         media:
- *           type: array
- *           items:
- *             type: string
- *           description: Media associated with the document
- *         coordinates:
- *           type: string
- *           description: Geographic coordinates related to the document
  *         summary:
  *           type: string
- *           description: A brief summary of the document
- *     DocumentResponse:
- *       type: object
- *       properties:
- *         success:
- *           type: boolean
- *           description: Indicates if the operation was successful
- *         data:
- *           $ref: '#/components/schemas/Document'
+ *           description: The summary of the document
+ *         date:
+ *           type: string
+ *           description: The date of the document in the format dd-mm-yyyy
+ *         coordinates:
+ *           type: object
+ *           $ref: '#/components/schemas/Coordinate'
+ *     
  */
 
 /**
  * @swagger
- * tags:
- *   name: Documents
- *   description: Document management
- */
-
-/**
- * @swagger
- * /documents/add:
+ * /api/documents/create:
  *   post:
  *     summary: Add a new document
  *     tags: [Documents]
@@ -91,71 +89,99 @@ import { IDocumentResponse } from '@interfaces/document.return.interface';
  *             $ref: '#/components/schemas/Document'
  *     responses:
  *       201:
- *         description: Document created successfully
+ *         description: Document added successfully
  *         content:
  *           application/json:
  *             schema:
- *               $ref: '#/components/schemas/DocumentResponse'
- *       500:
- *         description: Internal server error
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                 document:
+ *                   $ref: '#/components/schemas/Document'
  */
+export const addDocumentController = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+    try {
+        const newDocument = await addingDocument(req.body as IDocument);
+        res.status(201).json({ message: 'Document added successfully', document: newDocument });
+    } catch (error) {
+        next(error); // Pass the error to the error handler middleware
+    }
+};
 
 /**
  * @swagger
- * /documents:
+ * /api/documents:
  *   get:
  *     summary: Get all documents
  *     tags: [Documents]
  *     responses:
  *       200:
- *         description: Successfully retrieved documents
+ *         description: List of all documents
  *         content:
  *           application/json:
  *             schema:
  *               type: array
  *               items:
  *                 $ref: '#/components/schemas/Document'
- *       404:
- *         description: No documents found
  */
+export const getAllDocumentsController = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+    try {
+        const documents: IDocumentResponse[] = await getAllDocuments();
+        res.status(200).json(documents);
+    } catch (error) {
+        next(error); // Pass the error to the error handler middleware
+    }
+};
 
 /**
  * @swagger
- * /documents/{id}:
+ * /api/documents/{id}:
  *   get:
  *     summary: Get a document by ID
  *     tags: [Documents]
  *     parameters:
- *       - name: id
- *         in: path
- *         required: true
- *         description: The ID of the document to retrieve
+ *       - in: path
+ *         name: id
  *         schema:
  *           type: string
+ *         required: true
+ *         description: The document ID
  *     responses:
  *       200:
- *         description: Document retrieved successfully
+ *         description: Document data
  *         content:
  *           application/json:
  *             schema:
- *               $ref: '#/components/schemas/DocumentResponse'
+ *               $ref: '#/components/schemas/Document'
  *       404:
  *         description: Document not found
  */
+export const getDocumentByIdController = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+    try {
+        const document = await getDocumentById(req.params.id);
+        if (!document) {
+            throw new DocNotFoundError();
+        }
+        res.status(200).json(document);
+    } catch (error) {
+        next(error); // Pass the error to the error handler middleware
+    }
+};
 
 /**
  * @swagger
- * /documents/{id}:
+ * /api/documents/{id}:
  *   put:
  *     summary: Update a document by ID
  *     tags: [Documents]
  *     parameters:
- *       - name: id
- *         in: path
- *         required: true
- *         description: The ID of the document to update
+ *       - in: path
+ *         name: id
  *         schema:
  *           type: string
+ *         required: true
+ *         description: The document ID
  *     requestBody:
  *       required: true
  *       content:
@@ -168,93 +194,136 @@ import { IDocumentResponse } from '@interfaces/document.return.interface';
  *         content:
  *           application/json:
  *             schema:
- *               $ref: '#/components/schemas/DocumentResponse'
+ *               $ref: '#/components/schemas/Document'
  *       404:
  *         description: Document not found
+ */
+export const updateDocumentController = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+    try {
+        const updatedDocument = await updatingDocument(req.params.id, req.body);
+        if (!updatedDocument) {
+            throw new DocNotFoundError();
+        }
+        res.status(200).json(updatedDocument);
+    } catch (error) {
+        next(error); // Pass the error to the error handler middleware
+    }
+};
+
+
+// export const getTypesController = (req: Request, res: Response, next: NextFunction): void => {
+//     try {
+//         const docTypes = getDocumentTypes();
+//         res.status(200).json({ types: docTypes });
+//     } catch (error) {
+//         next(error); // Pass the error to the error handler middleware
+//     }
+// };
+
+
+
+
+
+/**
+ * @swagger
+ * /documents/types/{type}:
+ *   get:
+ *     summary: Get documents by type
+ *     description: Retrieve all documents of a specified type.
+ *     parameters:
+ *       - in: path
+ *         name: type
+ *         required: true
+ *         description: The type of the document (e.g., AGREEMENT, CONFLICT, CONSULTATION).
+ *         schema:
+ *           type: string
+ *     responses:
+ *       200:
+ *         description: A list of documents of the specified type.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 documents:
+ *                   type: array
+ *                   items:
+ *                     $ref: '#/components/schemas/Document'
+ *       404:
+ *         description: No documents found for the specified type.
  *       500:
- *         description: Internal server error
+ *         description: Internal server error.
+ *
+ * components:
+ *   schemas:
+ *     Document:
+ *       type: object
+ *       properties:
+ *         id:
+ *           type: string
+ *           example: '60d0fe4f5311236168a109ca'
+ *         title:
+ *           type: string
+ *           example: 'Sample Document'
+ *         stakeholders:
+ *           type: string
+ *           example: 'Stakeholder 1'
+ *         scale:
+ *           type: string
+ *           example: '1:1000'
+ *         type:
+ *           type: string
+ *           example: 'AGREEMENT'
+ *         date:
+ *           type: string
+ *           example: '2024-11-05'
+ *         connections:
+ *           type: array
+ *           items:
+ *             type: object
+ *             properties:
+ *               document:
+ *                 type: string
+ *                 example: '60d0fe4f5311236168a109ca'
+ *               type:
+ *                 type: string
+ *                 example: 'LINK1'
+ *         language:
+ *           type: string
+ *           example: 'English'
+ *         media:
+ *           type: array
+ *           items:
+ *             type: string
+ *         coordinates:
+ *           type: string
+ *         summary:
+ *           type: string
+ *           example: 'This is a summary of the document.'
  */
 
+export const getDocumentsByTypeController = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+    const { type } = req.params;
 
-//add new document
-export const addDocument = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
     try {
-        const document = req.body as IDocument;
+        const documents = await getDocumentByType(type);
 
-        // Call the service
-        const result = await addingDocument(document);
-
-        //created document
-        res.status(201).json({success: true, data: result});
-    } catch (error) {
-        next(error)
-        res.status(500).json({ success: false, message: 'Server Error' });
-    }
-};
-
-
-// get all documents
-export const getDocuments = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
-    try {
-        //Call the service
-        const documents: IDocumentResponse[] = await getAllDocuments();
-
-        // Check if documents were found
         if (documents.length === 0) {
-            res.status(404).json({ success: false, message: 'No documents found on the DB' });
+            throw new DocNotFoundError();
         }
 
-        // Return list of documents
-        res.status(201).json({success: true, data: documents});
+        res.status(200).json({ documents });
     } catch (error) {
-        next(error);
+        next(error); // Pass the error to the error handler middleware
     }
 };
 
-
-//get one document by ID
-export const getDocument = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+export const deleteDocumentController = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
     try {
-        const { id } = req.params;
+        const result: string = await deleteDocumentByName('TestDoc');
 
-        // Call the service
-        const document: IDocumentResponse | null = await getDocumentById(id);
-
-        // Check if the document was found
-        if (!document) {
-            res.status(404).json({ success: false, message: 'Document not found' });
-        }
-
-        // Return the document
-        res.status(201).json({success: true, data: document});
+        res.json(result);
     } catch (error) {
-        next(error);
+        next(error); // Pass the error to the error handler middleware
     }
 };
-
-//Update document
-export const updateDocument = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
-    try {
-        const { id } = req.params;
-        const updateData = req.body;
-
-        // Call the service function to update the document
-        const updatedDocument = await updatingDocument(id, updateData);
-
-        // If no document is found with the given ID, return an error response
-        if (!updatedDocument) {
-            res.status(404).json({ success: false, message: 'Document not found' });
-            return;
-        }
-
-        // Successfully updated response
-        res.status(200).json({
-            success: true,
-            data: updatedDocument,
-        });
-    } catch (error) {
-        next(error);
-        res.status(500).json({ success: false, message: 'Server Error' });
-    }
-};
-

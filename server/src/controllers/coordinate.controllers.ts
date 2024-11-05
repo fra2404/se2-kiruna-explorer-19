@@ -1,5 +1,5 @@
 import { Request, Response, NextFunction } from 'express';
-import { addCoordinateService, getAllCoordinates, getCoordinateById } from '@services/coordinate.service';
+import { addCoordinateService, deleteCoordinatesByNames, getAllCoordinates, getCoordinateById } from '@services/coordinate.service';
 import { CustomError } from '@utils/customError';
 import { PositionError } from '@utils/errors';
 
@@ -135,6 +135,16 @@ export const getCoordinateByIdController = async (req: Request, res: Response, n
             return next(new PositionError());
         }
         res.status(200).json(coordinate);
+    } catch (error) {
+        next(new CustomError('Internal Server Error', 500));
+    }
+};
+
+export const deleteCoordinateController = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+    try {
+        const names = ["TestColosseo", "TestArea di Roma"];
+        await deleteCoordinatesByNames(names);
+        res.status(200).json({ message: 'Coordinates deleted successfully' });
     } catch (error) {
         next(new CustomError('Internal Server Error', 500));
     }
