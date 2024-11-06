@@ -1,3 +1,4 @@
+import { IDocument } from "./utils/interfaces/document.interface";
 import { IUser } from "./utils/interfaces/user.interface";
 
 const SERVER_URL = 'http://localhost:5001/api'; // endpoint of the server
@@ -76,14 +77,47 @@ async function checkAuth(): Promise<{ isLoggedIn: boolean; user: IUser | null }>
 /**
  * This function is used to retrieve all the documents from the backend.
  */
-async function getDocuments() {
-    return await fetch(`${SERVER_URL}/documents`, {
+async function getDocuments(): Promise<IDocument[]> {
+    const response = await fetch(`${SERVER_URL}/documents`, {
         method: 'GET',
         credentials: 'include'
-    })
-        .then(handleInvalidResponse)
-        .then(response => response.json())
-        .then(mapApiDocumentsToDocuments);
+    });
+
+    if (!response.ok) {
+        throw new Error('Failed to fetch documents');
+    }
+
+    const documents = await response.json();
+    return documents; // Restituisci i documenti direttamente
+}
+
+async function createDocument(documentData: {
+    title: string;
+    stakeholders: string;
+    scale: string;
+    type: string;
+    language: string;
+    summary: string;
+    date: string;
+    coordinates: string;
+    connections: { document: string; type: string }[];
+}): Promise<{ success: boolean; document?: IDocument | null }> {
+    const response = await fetch(`${SERVER_URL}/documents/create`, {
+        method: 'POST',
+        credentials: 'include',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(documentData)
+    });
+    console.log('Response status:', response.status);
+
+    if (!response.ok) {
+        return { success: false };
+    }
+
+    const document = await response.json();
+    return { success: true, document };
 }
 
 /**
@@ -109,8 +143,8 @@ async function getCoordinates() {
     return await fetch(`${SERVER_URL}/coordinates`, {
         method: 'GET'
     })
-    .then(handleInvalidResponse)
-    .then(response => response.json());
+        .then(handleInvalidResponse)
+        .then(response => response.json());
 }
 
 
@@ -143,5 +177,5 @@ const API = {
     addDocument
 }
 
-export { login, logout, getMe, checkAuth };
+export { login, logout, getMe, checkAuth, createDocument, getDocuments };
 export default API;

@@ -27,7 +27,7 @@ export const validateAddDocument = [
           throw new Error('Connection document ID must be a valid MongoDB ObjectId.');
         }
         // Validate connection type
-        if (!connection.type || !['LINK1', 'LINK2', 'LINK3'].includes(connection.type)) {
+        if (!connection.type || !['DIRECT', 'COLLATERAL', 'PROJECTION', 'UPDATE'].includes(connection.type)) {
           throw new Error('Connection type is invalid.');
         }
       });
@@ -41,9 +41,9 @@ export const validateAddDocument = [
     .isString().withMessage('Summary must be a string'),
   body('date')
     .notEmpty().withMessage('Date is required')
-    .matches(/^\d{2}-\d{2}-\d{4}$/).withMessage('Date must be in the format dd-mm-yyyy')
+    .matches(/^\d{4}-\d{2}-\d{2}$/).withMessage('Date must be in the format yyyy-mm-dd')
     .custom((value) => {
-      const [day, month, year] = value.split('-').map(Number);
+      const [year, month, day] = value.split('-').map(Number);
       const isValidDate = (d: number, m: number, y: number) => {
         const date = new Date(y, m - 1, d);
         return (
@@ -58,7 +58,7 @@ export const validateAddDocument = [
       const inputDate = new Date(year, month - 1, day);
       const today = new Date();
       today.setHours(0, 0, 0, 0); // Set to midnight to compare only date part
-      if (inputDate > today) {
+      if (inputDate.getTime() > today.getTime()) {
         throw new Error('Date cannot be in the future');
       }
       return true;
@@ -77,7 +77,7 @@ export const validateDocumentId = [
 
 export const validateDocumentType = [
   param('type')
-      .isIn(['AGREEMENT', 'CONFLICT', 'CONSULTATION', 'DESIGN_DOC', 'INFORMATIVE_DOC', 'MATERIAL_EFFECTS', 'PRESCRIPTIVE_DOC', 'TECHNICAL_DOC']).withMessage('Type is invalid')
+    .isIn(['AGREEMENT', 'CONFLICT', 'CONSULTATION', 'DESIGN_DOC', 'INFORMATIVE_DOC', 'MATERIAL_EFFECTS', 'PRESCRIPTIVE_DOC', 'TECHNICAL_DOC']).withMessage('Type is invalid')
 ];
 
 
@@ -108,7 +108,7 @@ export const validateUpdateDocument = [
           throw new Error('Connection document ID must be a valid MongoDB ObjectId.');
         }
         // Validate connection type
-        if (!connection.type || !['LINK1', 'LINK2', 'LINK3'].includes(connection.type)) {
+        if (!connection.type || !['DIRECT', 'COLLATERAL', 'PROJECTION', 'UPDATE'].includes(connection.type)) {
           throw new Error('Connection type is invalid.');
         }
       });
@@ -122,7 +122,7 @@ export const validateUpdateDocument = [
     .isString().withMessage('Summary must be a string'),
   body('date')
     .optional()
-    .matches(/^\d{2}-\d{2}-\d{4}$/).withMessage('Date must be in the format dd-mm-yyyy')
+    .matches(/^\d{4}-\d{2}-\d{2}$/).withMessage('Date must be in the format yyyy-mm-dd')
     .custom((value) => {
       const [day, month, year] = value.split('-').map(Number);
       const isValidDate = (d: number, m: number, y: number) => {
@@ -139,7 +139,7 @@ export const validateUpdateDocument = [
       const inputDate = new Date(year, month - 1, day);
       const today = new Date();
       today.setHours(0, 0, 0, 0); // Set to midnight to compare only date part
-      if (inputDate > today) {
+      if (inputDate.getTime() > today.getTime()) {
         throw new Error('Date cannot be in the future');
       }
       return true;

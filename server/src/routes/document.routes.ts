@@ -23,7 +23,7 @@ import { authorizeRoles } from '@middlewares/role.middleware';
 const router = express.Router();
 
 router.post('/create', authenticateUser, authorizeRoles('PLANNER', 'DEVELOPER'), validateAddDocument, handleValidationErrors, addDocumentController); //Add Document
-router.get('/', authenticateUser, getAllDocumentsController); //Get All Documents
+router.get('/', getAllDocumentsController); //Get All Documents
 router.get('/:id', authenticateUser, validateDocumentId, getDocumentByIdController); // Get Document by ID
 router.put('/:id', authenticateUser, authorizeRoles('PLANNER', 'DEVELOPER'), validateDocumentId, validateUpdateDocument, handleValidationErrors, updateDocumentController);
 //router.get('/types', authenticateUser, authorizeRoles('PLANNER', 'DEVELOPER'), getTypesController); //Get All Types

@@ -60,7 +60,7 @@ const documentSchema = new Schema<DocumentDocument>(
         },
         summary: {
             type: String,
-            required: true,
+            required: false,
         },
     },
     {
