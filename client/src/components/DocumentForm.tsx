@@ -2,7 +2,7 @@ import { useState } from 'react';
 import ConnectionList from './ConnectionList';
 import ConnectionForm from './ConnectionForm';
 import Modal from 'react-modal';
-import { kirunaLatLngCoords } from './Map';
+import { kirunaLatLngCoords, modalStyles } from './Map';
 import {
   MapContainer,
   Marker,
@@ -16,7 +16,7 @@ import {
 import { LatLng } from 'leaflet';
 import InputComponent from './atoms/input/input';
 import { ButtonRounded } from './Button';
-import { getTypeIcon } from './typeIcon'; // Importa la funzione getTypeIcon
+import { getTypeIcon } from './typeIcon'; // Imports getTypeIcon function
 import AgreementIcon from '../assets/icons/agreement-icon';
 import ConflictIcon from '../assets/icons/conflict-icon';
 import ConsultationIcon from '../assets/icons/consultation-icon';
@@ -26,7 +26,10 @@ import MaterialEffectsIcon from '../assets/icons/material-effects-icon';
 import PrescriptiveDocIcon from '../assets/icons/prescriptive-doc-icon';
 import TechnicalDocIcon from '../assets/icons/technical-doc-icon';
 import { createDocument } from '../API';
-import { FaCheckCircle } from 'react-icons/fa'; // Importa l'icona di successo da react-icons
+import { FaCheckCircle } from 'react-icons/fa'; // Imports success icon from react-icons
+import Toast from './Toast';
+
+import API from '../API';
 
 Modal.setAppElement('#root');
 
@@ -39,7 +42,6 @@ interface DocumentFormProps {
   positionProp?: LatLng;
   selectedCoordIdProp?: string;
   coordinates: any;
-  showCoordNamePopup?: boolean;
   modalOpen: boolean;
   setModalOpen: (open: boolean) => void;
 }
@@ -113,7 +115,7 @@ const DocumentForm = ({
     { value: 'Text', label: 'Text' },
   ];
 
-  //Document information
+  // Document information
   const [title, setTitle] = useState('');
   const [stakeholders, setStakeholders] = useState<string | undefined>(
     undefined,
@@ -123,11 +125,12 @@ const DocumentForm = ({
     new Date().toISOString().split('T')[0],
   );
   const [docType, setDocType] = useState<string | undefined>(undefined);
+  const [numPages, setNumPages] = useState(0);
   const [connections, setConnections] = useState<Connection[]>([]);
   const [language, setLanguage] = useState('');
   const [description, setDescription] = useState('');
 
-  //Georeferencing information
+  // Georeferencing information
   const [position, setPosition] = useState<LatLng | undefined>(positionProp);
   const [selectedCoordId, setSelectedCoordId] = useState<string | undefined>(
     selectedCoordIdProp,
@@ -138,9 +141,18 @@ const DocumentForm = ({
 
   const [isDocumentSaved, setIsDocumentSaved] = useState(false);
 
-  //Connection modal
+  // Connection modal : To enter a new connection
   const [connectionModalOpen, setConnectionModalOpen] = useState(false);
-  const connectionModalStyles = {
+  const [editIndex, setEditIndex] = useState<number | null>(null);
+  const [mode, setMode] = useState<'add' | 'edit'>('add');
+  const [connectionToEdit, setConnectionToEdit] = useState<Connection | null>(null);
+  const [toastMsg, setToastMsg] = useState({
+    isShown: false,
+    type: "success",
+    message: "",
+  });
+
+  const modalStyles = {
     content: {
       top: '50%',
       left: '50%',
@@ -151,18 +163,38 @@ const DocumentForm = ({
       width: '80%',
       maxWidth: '700px',
     },
-    overlay: { zIndex: 1000 },
-  };
+    overlay: { zIndex: '1000' },
+  }
 
   const handleAddConnection = (connection: Connection) => {
-    setConnectionModalOpen(false);
     setConnections([...connections, connection]);
     console.log('sono qui', connections);
   };
 
   const handleDeleteConnection = (index: number) => {
-    const newConnections = connections.filter((_, i) => i !== index);
-    setConnections(newConnections);
+    const updatedConnections = connections.filter((_, i) => i !== index);
+    setConnections(updatedConnections);
+  };  
+    
+  const handleEditConnection = (index : number, updatedConnection: Connection) => {
+    const updatedConnections = connections.map((conn, i) =>
+    i === index ? updatedConnection : conn
+  );
+    setConnections(updatedConnections);
+  }
+
+  const openEditForm = (index: number) => {
+    setConnectionToEdit(connections[index]);
+    setEditIndex(index);
+    setMode('edit');
+    setConnectionModalOpen(true);
+  };
+
+  const openAddForm = () => {
+    setConnectionToEdit(null);
+    setEditIndex(null);
+    setMode('add');
+    setConnectionModalOpen(true);
   };
 
   const validateStep = () => {
@@ -224,19 +256,49 @@ const DocumentForm = ({
     }
   };
 
-  //Handle document position
+  const handleSubmit = (e: any) => {
+    e.preventDefault();
+    if (!title || !docType || !stakeholders || !scale || !issuanceDate || !description) {
+      showToastMessage("Please fill all required fields", "error");
+      return;
+    }
+
+    const document = {
+      title,
+      stakeholders: stakeholders.value,
+      scale: scale.value,
+      type: docType.value,
+      date: issuanceDate,
+      connections,
+      language,
+      numPages,
+      summary: description
+    };
+
+    API.addDocument(document)
+      .then((response) => {
+        if (response && response.data) {
+          showToastMessage(response.data.message, "success");
+        }
+      })
+      .catch((error : any) => {
+        showToastMessage(error.message, "error");
+      });
+  }
+
+  // Handle document position
   function MapClickHandler() {
     useMapEvents({
       dblclick(e) {
         setSelectedCoordId(undefined);
         setPosition(e.latlng);
-        setCoordNamePopupOpen(true);
+        // setCoordNamePopupOpen(true);
       },
     });
     return null;
   }
 
-  console.log(showCoordNamePopup);
+  // console.log(showCoordNamePopup);
 
   const renderStep = () => {
     switch (currentStep) {
@@ -610,25 +672,26 @@ const DocumentForm = ({
         </form>
       </div>
 
-      <Modal
-        style={connectionModalStyles}
-        isOpen={connectionModalOpen}
-        onRequestClose={() => setConnectionModalOpen(false)}
-      >
+      <Modal style={modalStyles} isOpen={modalOpen} onRequestClose={() => setModalOpen(false)}>
         <div className="relative">
-          <button
-            onClick={() => setConnectionModalOpen(false)}
-            className="absolute top-0 right-0 p-2 text-xl text-gray-500 hover:text-gray-700"
-          >
+          <button onClick={() => setConnectionModalOpen(false)} className="absolute top-0 right-0 p-2 text-xl text-gray-500 hover:text-gray-700">
             &times;
           </button>
 
-          <ConnectionForm
-            setModalOpen={setConnectionModalOpen}
-            handleAddConnection={handleAddConnection}
-          />
+          <ConnectionForm closeModal={() => setConnectionModalOpen(false)} 
+            handleAdd={handleAddConnection }
+            handleEdit={handleEditConnection} 
+            mode={mode}
+            connectionToEdit={connectionToEdit}
+            editIndex={editIndex} />
         </div>
       </Modal>
+
+      <Toast
+        isShown={toastMsg.isShown}
+        message={toastMsg.message}
+        type={toastMsg.type}
+        onClose={hideToastMessage}/>
     </>
   );
 };

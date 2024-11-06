@@ -120,6 +120,25 @@ async function createDocument(documentData: {
     return { success: true, document };
 }
 
+/**
+ * Post a new document to the backend.
+ * @params document: DocumentFile
+ * @returns Promise<DocumentFile>
+ */
+
+async function addDocument(document: DocumentFile) {
+    return await fetch(`${SERVER_URL}/documents/create`, {
+        method: 'POST',
+        credentials: 'include',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(document)
+    })
+        .then(handleInvalidResponse)
+        .then(response => response.json());
+}
+
 async function getCoordinates() {
     return await fetch(`${SERVER_URL}/coordinates`, {
         method: 'GET'
@@ -154,7 +173,8 @@ function mapApiDocumentsToDocuments(apiDocuments: any) {
 
 const API = {
     getDocuments,
-    getCoordinates
+    getCoordinates,
+    addDocument
 }
 
 export { login, logout, getMe, checkAuth, createDocument, getDocuments };

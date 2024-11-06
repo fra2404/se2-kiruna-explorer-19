@@ -1,8 +1,22 @@
+
+import Select from 'react-select';
 import { useState, useEffect } from 'react';
 import { Connection } from './DocumentForm';
 import { ButtonRounded } from './Button';
 import InputComponent from './atoms/input/input';
 import API from '../API'; // Importa l'API
+
+import API from '../API';
+
+
+export interface ConnectionFormProps {
+  closeModal: () => void;
+  handleAdd: (connection: Connection) => void;
+  handleEdit: (index: number, updatedConnection: Connection) => void;
+  mode: 'add' | 'edit';
+  connectionToEdit?: Connection;
+  editIndex?: number;
+}
 
 const ConnectionForm = ({
   setModalOpen,

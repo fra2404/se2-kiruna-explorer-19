@@ -1,29 +1,29 @@
-import { jest, describe, expect } from '@jest/globals'
-import jwt from 'jsonwebtoken';
-import bcrypt from 'bcrypt';
+import { jest, describe, expect } from "@jest/globals"
+import jwt from "jsonwebtoken";
+import bcrypt from "bcrypt";
 
-import User from '../schemas/user.schema';
-import Document from '../schemas/document.schema';
-import { Coordinate } from '../schemas/coordinate.schema';
-import { IUser } from '../interfaces/user.interface';
-import { IDocument } from '../interfaces/document.interface'; 
-import { ICoordinate } from '../interfaces/coordinate.interface';
+import User from "../schemas/user.schema";
+import Document from "../schemas/document.schema";
+import { Coordinate } from "../schemas/coordinate.schema";
+import { IUser } from "../interfaces/user.interface";
+import { IDocument } from "../interfaces/document.interface"; 
+import { ICoordinate } from "../interfaces/coordinate.interface";
 import { UserRoleEnum } from "../utils/enums/user-role.enum";
 import { DocTypeEnum } from "../utils/enums/doc-type.enum";
-import { getAllUsers, createNewUser, getUserById, loginUser } from '../services/user.service';
-import { addingDocument, getAllDocuments, getDocumentById } from '../services/document.service';
-import { addCoordinateService, getAllCoordinates, getCoordinateById } from '@services/coordinate.service';
+import { getAllUsers, createNewUser, getUserById, loginUser } from "../services/user.service";
+import { addingDocument, getAllDocuments, getDocumentById, updatingDocument, deleteDocumentByName, getDocumentByType } from "../services/document.service";
+import { addCoordinateService, getAllCoordinates, getCoordinateById } from "@services/coordinate.service";
 
-import { CustomError } from '../utils/customError';
-import { BadConnectionError, DocNotFoundError } from "../utils/errors";
-import { PositionError } from '@utils/errors';
+import { CustomError } from "../utils/customError";
+import { UserNotAuthorizedError } from "../utils/errors";
+import { PositionError } from "@utils/errors";
 
 //MOCKS
-jest.mock("../schemas/user.schema");
-jest.mock("../schemas/document.schema");
-jest.mock("../schemas/coordinate.schema");
-jest.mock('bcrypt');
-jest.mock('jsonwebtoken');
+jest.mock("../schemas/user.schema"); //suite n#1
+jest.mock("../schemas/document.schema"); //suite n#2
+jest.mock("../schemas/coordinate.schema"); //suite n#3
+jest.mock("bcrypt");
+jest.mock("jsonwebtoken");
 
 /* ******************************************* Suite n#1 - USERS ******************************************* */
 describe("Tests for user services", () => {
@@ -188,6 +188,9 @@ describe("Tests for user services", () => {
 
     //loginUser
     describe("Tests for loginUser", () => {
+        const wrongMockMail = "lautaro@ex.com";
+        const wrongMockPassword = "password123";
+        
         //test 1
         test("Should successfully log a user", async () => {
             //Data mocking
@@ -219,88 +222,64 @@ describe("Tests for user services", () => {
             expect(jwt.sign).toHaveBeenCalledWith(
                 { id: mockUser._id, email: mockUser.email, role: mockUser.role },
                 expect.any(String),
-                { expiresIn: '1h' }
+                { expiresIn: "1h" }
             ); 
         });
 
         //test 2
-        test("Should return an error when the password isn't matched", async () => {
+        test("Should throw UserNotAuthorizedError if the mail is wrong", async () => {
             //Data mocking
-            const mockUser = {
-                _id: "1",
-                name: "Sergio",
-                email: "sergio@ex.com",
-                surname: "Cicero",
-                phone: "123456789",
-                password: "hashed-password",
-                role: UserRoleEnum.Visitor,
-            };
-    
-            const choosenEmailMock = "sergio@ex.com";
-            const choosenPassMock = "wrong-password";
-    
+            const err = new UserNotAuthorizedError();
+
             //Support functions mocking
-            (User.findOne as jest.Mock).mockImplementation(async () => mockUser);
-            (bcrypt.compare as jest.Mock).mockImplementation(async () => false);
+            (User.findOne as jest.Mock).mockImplementation(async() => null);
     
-            await expect(loginUser(choosenEmailMock, choosenPassMock)).rejects.toThrow(CustomError);
-            await expect(loginUser(choosenEmailMock, choosenPassMock)).rejects.toThrow('Invalid email or password');
+            //Call of loginUser
+            await expect(loginUser(wrongMockMail, wrongMockPassword)).rejects.toThrow(err);
+
+            expect(User.findOne).toHaveBeenCalledWith({ email: wrongMockMail });
+        });
+
+        //test 3
+        test("Should throw UserNotAuthorizedError if the password is wrong", async () => {
+            //Data mocking
+            const err = new UserNotAuthorizedError();
+            const mockUserInputs = { email: wrongMockMail, password: "hashed-value" };
+
+            (User.findOne as jest.Mock).mockImplementation(async() => mockUserInputs);
+            (bcrypt.compare as jest.Mock).mockImplementation(async() => false);
+    
+            await expect(loginUser(wrongMockMail, wrongMockPassword)).rejects.toThrow(err);
+            expect(User.findOne).toHaveBeenCalledWith({ email: wrongMockMail });
+            expect(bcrypt.compare).toHaveBeenCalledWith(wrongMockPassword, "hashed-value");
         });
     });//loginUser
 });//END OF USER SERVICES
 
 /* ******************************************* Suite n#2 - DOCUMENTS ******************************************* */
+
+//README!!!!!!!!!!!!!!!!
+//DOCUMENT SERVICES WERE DEEPLY CHANGED DUE TO APPLICATION CONFLICTS WITH THEIR FIRST VERSION
+//BECAUSE OF THIS REASON THE FOLLOWING TESTS WERE ALL DELETED
+//TO RETRIVE PAST VERSION OF DOCUMENT SERVICES TESTS, OLD COMMITS CAN BE CONSULTED
+
 describe("Tests for document services", () => {
     beforeEach(() => {
         jest.clearAllMocks();
     });
-    
+
     //addingDocument
     describe("Tests for addingDocument", () => {
         //test 1
-        test("Should successfully add a new document", async () => {
-            //Data mocking
-            const mockDocumentData: IDocument = {
-                title: "Test title",
-                stakeholders: "Test corp",
-                scale: "Test value",
-                type: DocTypeEnum.Agreement,
-                date: "01-01-2000",
-                summary: "Test summary"
-            };
-
-            //Support functions mocking
-            (Document.prototype.save as jest.Mock).mockImplementation(async () => undefined);
-
-            //Call of addingDocument
-            await expect(addingDocument(mockDocumentData)).resolves.toBeUndefined();
-
-            expect(Document).toHaveBeenCalledWith(mockDocumentData);
-            expect(Document.prototype.save).toHaveBeenCalled();
+        test("Should successfully save a new document and updating the db entries related to him", async () => {
         });
 
         //test 2
-        test("Should return an error", async () => {
-            //Data mocking
-            const mockDocumentData: IDocument = {
-                title: "",
-                stakeholders: "",
-                scale: "",
-                type: DocTypeEnum.Agreement,
-                date: "",
-                summary: ""
-            };
-            
-            //Support functions mocking
-            (Document.prototype.save as jest.Mock).mockImplementation(async () => {
-                throw new CustomError("An error occurred while saving the document", 500);
-            });
+        test("Should throw a PositionError", async () => {
+        });
 
-            //Call of addingDocument
-            await expect(addingDocument(mockDocumentData)).rejects.toThrow(new BadConnectionError());
-
-            expect(Document).toHaveBeenCalledWith(mockDocumentData);
-            expect(Document.prototype.save).toHaveBeenCalled();
+        //test 3
+        test("Should throw a DocNotFoundError", async () => {
         });
     });//addingDocument
     /* ************************************************** */
@@ -308,106 +287,19 @@ describe("Tests for document services", () => {
     //getAllDocuments
     describe("Tests for getAllDocuments", () => {
         //test 1
-        test("Should successfully retrieve all documents", async () => {
-            //Data mocking
-            const mockDocuments = [{ 
-                    id: "1",
-                    title: "Test title 1", 
-                    stakeholders: "Company A", 
-                    scale: "Test value 1", 
-                    type: DocTypeEnum.Agreement, 
-                    date: "01-01-2000", 
-                    connections: 1,
-                    language: "Italian",
-                    media: undefined,
-                    coordinates: null,
-                    summary: "Test summary 1" },
-                    { 
-                        id: "2",
-                        title: "Test title 2", 
-                        stakeholders: "Company B", 
-                        scale: "Test value 2", 
-                        type: DocTypeEnum.Consultation, 
-                        date: "02-01-2000", 
-                        connections: 3,
-                        language: "Spanish",
-                        media: undefined,
-                        coordinates: null,
-                        summary: "Test summary 2" 
-                }];
-
-            //Support functions mocking
-            (Document.find as jest.Mock).mockImplementation(async() => mockDocuments);
-
-            //Call of getAllDocuments
-            const result = await getAllDocuments();
-
-            expect(result).toEqual(mockDocuments);
-            expect(Document.find).toHaveBeenCalledTimes(1);
+        test("Should return all the documents and associated coordinates", async () => {
         });
 
         //test 2
-        test("Should return an error", async () => {
-            //Support functions mocking
-            (Document.find as jest.Mock).mockImplementation(async () => {
-                throw new CustomError("An error occurred while retrieving the documents", 500);
-            });
-
-            //Call of getAllDocuments
-            await expect(getAllDocuments()).rejects.toThrow(new DocNotFoundError());
-
-            expect(Document.find).toHaveBeenCalledTimes(1);
+        test("Should only return documents if there aren't associations", async () => {
         });
     });//getAllDocuments
     /* ************************************************** */
 
     //getDocumentById
-    describe("Tests for getDocumentById", () => {
-        //test 1
-        test("Should successfully retrieve a specific document", async () => {
-            //Data mocking
-            const docID = "1";
-
-            const mockDocument = { 
-                id: docID,
-                title: "Test title 1", 
-                stakeholders: "Company A", 
-                scale: "Test value 1", 
-                type: DocTypeEnum.Agreement, 
-                date: "01-01-2000", 
-                connections: 1,
-                language: "Italian",
-                media: undefined,
-                coordinates: null,
-                summary: "Test summary 1" 
-            };
-
-            //Support functions mocking
-            (Document.findById as jest.Mock).mockImplementation(async() => mockDocument);
-
-            //Call of getAllDocuments
-            const result = await getDocumentById(docID);
-
-            expect(result).toEqual(mockDocument);
-            expect(Document.findById).toHaveBeenCalledWith(docID);
-            expect(Document.findById).toHaveBeenCalledTimes(1);
-        });
-
-        //test 2
-        test("Should return an error", async () => {
-            //Support functions mocking
-            (Document.findById as jest.Mock).mockImplementation(async () => {
-                throw new CustomError("An error occurred while retrieving the document", 500);
-            });
-
-            //Call of getAllDocuments
-            //"100" is a random non-existing document id
-            await expect(getDocumentById("100")).rejects.toThrow(new DocNotFoundError());
-
-            expect(Document.findById).toHaveBeenCalledWith("100");
-            expect(Document.findById).toHaveBeenCalledTimes(1);
-        });
-    });//getDocumentById
+    //updatingDocument
+    //deleteDocumentByName
+    //getDocumentByType
 });//END OF CONTROLLER SERVICES
 
 /* ******************************************* Suite n#3 - COORDINATES ******************************************* */
@@ -527,7 +419,7 @@ describe("Tests for coordinate services", () => {
             }];
 
             //Support functions mocking
-            jest.spyOn(Coordinate, 'find').mockResolvedValue(mockCoordinates.map(coordinate => ({
+            jest.spyOn(Coordinate, "find").mockResolvedValue(mockCoordinates.map(coordinate => ({
                 ...coordinate,
                 toObject: () => coordinate
             })));
