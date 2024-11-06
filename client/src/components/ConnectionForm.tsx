@@ -6,8 +6,6 @@ import { ButtonRounded } from './Button';
 import InputComponent from './atoms/input/input';
 import API from '../API'; // Importa l'API
 
-import API from '../API';
-
 
 export interface ConnectionFormProps {
   closeModal: () => void;

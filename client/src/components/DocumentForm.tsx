@@ -2,7 +2,7 @@ import { useState } from 'react';
 import ConnectionList from './ConnectionList';
 import ConnectionForm from './ConnectionForm';
 import Modal from 'react-modal';
-import { kirunaLatLngCoords, modalStyles } from './Map';
+import { kirunaLatLngCoords } from './Map';
 import {
   MapContainer,
   Marker,
@@ -16,7 +16,6 @@ import {
 import { LatLng } from 'leaflet';
 import InputComponent from './atoms/input/input';
 import { ButtonRounded } from './Button';
-import { getTypeIcon } from './typeIcon'; // Imports getTypeIcon function
 import AgreementIcon from '../assets/icons/agreement-icon';
 import ConflictIcon from '../assets/icons/conflict-icon';
 import ConsultationIcon from '../assets/icons/consultation-icon';
@@ -29,8 +28,6 @@ import { createDocument } from '../API';
 import { FaCheckCircle } from 'react-icons/fa'; // Imports success icon from react-icons
 import Toast from './Toast';
 
-import API from '../API';
-
 Modal.setAppElement('#root');
 
 export interface Connection {
@@ -42,6 +39,7 @@ interface DocumentFormProps {
   positionProp?: LatLng;
   selectedCoordIdProp?: string;
   coordinates: any;
+  showCoordNamePopup?: boolean;
   modalOpen: boolean;
   setModalOpen: (open: boolean) => void;
 }
@@ -106,15 +104,6 @@ const DocumentForm = ({
     },
   ];
 
-  const scaleTypeOptions = [
-    { value: 'blueprints / effects', label: 'blueprints / effects' },
-    { value: '1:1,000', label: '1:1,000' },
-    { value: '1:7,500', label: '1:7,500' },
-    { value: '1:8,000', label: '1:8,000' },
-    { value: '1:12,000', label: '1:12,000' },
-    { value: 'Text', label: 'Text' },
-  ];
-
   // Document information
   const [title, setTitle] = useState('');
   const [stakeholders, setStakeholders] = useState<string | undefined>(
@@ -125,7 +114,7 @@ const DocumentForm = ({
     new Date().toISOString().split('T')[0],
   );
   const [docType, setDocType] = useState<string | undefined>(undefined);
-  const [numPages, setNumPages] = useState(0);
+  //const [numPages, setNumPages] = useState(0);
   const [connections, setConnections] = useState<Connection[]>([]);
   const [language, setLanguage] = useState('');
   const [description, setDescription] = useState('');
@@ -143,16 +132,7 @@ const DocumentForm = ({
 
   // Connection modal : To enter a new connection
   const [connectionModalOpen, setConnectionModalOpen] = useState(false);
-  const [editIndex, setEditIndex] = useState<number | null>(null);
-  const [mode, setMode] = useState<'add' | 'edit'>('add');
-  const [connectionToEdit, setConnectionToEdit] = useState<Connection | null>(null);
-  const [toastMsg, setToastMsg] = useState({
-    isShown: false,
-    type: "success",
-    message: "",
-  });
-
-  const modalStyles = {
+  const connectionModalStyles = {
     content: {
       top: '50%',
       left: '50%',
@@ -163,8 +143,8 @@ const DocumentForm = ({
       width: '80%',
       maxWidth: '700px',
     },
-    overlay: { zIndex: '1000' },
-  }
+    overlay: { zIndex: 1000 },
+  };
 
   const handleAddConnection = (connection: Connection) => {
     setConnections([...connections, connection]);
@@ -174,27 +154,36 @@ const DocumentForm = ({
   const handleDeleteConnection = (index: number) => {
     const updatedConnections = connections.filter((_, i) => i !== index);
     setConnections(updatedConnections);
-  };  
+  };
     
-  const handleEditConnection = (index : number, updatedConnection: Connection) => {
+  /*const handleEditConnection = (index : number, updatedConnection: Connection) => {
     const updatedConnections = connections.map((conn, i) =>
     i === index ? updatedConnection : conn
   );
     setConnections(updatedConnections);
-  }
+  }*/
 
-  const openEditForm = (index: number) => {
-    setConnectionToEdit(connections[index]);
-    setEditIndex(index);
-    setMode('edit');
-    setConnectionModalOpen(true);
+  //Toast
+  const [toastMsg, setToastMsg] = useState<{isShown: boolean, type: "success" | "error", message: string}>({
+    isShown: false,
+    type: "success",
+    message: "",
+  });
+
+  const showToastMessage = (message: string, type: "success" | "error") => {
+    setToastMsg({
+      isShown: true,
+      message,
+      type,
+    });
   };
 
-  const openAddForm = () => {
-    setConnectionToEdit(null);
-    setEditIndex(null);
-    setMode('add');
-    setConnectionModalOpen(true);
+  const hideToastMessage = () => {
+    setToastMsg({
+      isShown: false,
+      message: "",
+      type: "error",
+    });
   };
 
   const validateStep = () => {
@@ -243,48 +232,21 @@ const DocumentForm = ({
       const response = await createDocument(documentData);
       if (response.success) {
         console.log('Document created successfully:', response.document);
+        showToastMessage("Document created successfully", "success");
         // Puoi aggiungere ulteriori azioni qui, come la navigazione a un'altra pagina o la visualizzazione di un messaggio di successo
         setIsDocumentSaved(true);
         setCurrentStep(5);
       } else {
         console.log('Failed to create document');
+        showToastMessage("Failed to create document", "error");
         // Puoi aggiungere ulteriori azioni qui, come la visualizzazione di un messaggio di errore
       }
     } catch (error) {
       console.error('Error creating document:', error);
+      showToastMessage("Error creating document:" + error, "error");
       // Puoi aggiungere ulteriori azioni qui, come la visualizzazione di un messaggio di errore
     }
   };
-
-  const handleSubmit = (e: any) => {
-    e.preventDefault();
-    if (!title || !docType || !stakeholders || !scale || !issuanceDate || !description) {
-      showToastMessage("Please fill all required fields", "error");
-      return;
-    }
-
-    const document = {
-      title,
-      stakeholders: stakeholders.value,
-      scale: scale.value,
-      type: docType.value,
-      date: issuanceDate,
-      connections,
-      language,
-      numPages,
-      summary: description
-    };
-
-    API.addDocument(document)
-      .then((response) => {
-        if (response && response.data) {
-          showToastMessage(response.data.message, "success");
-        }
-      })
-      .catch((error : any) => {
-        showToastMessage(error.message, "error");
-      });
-  }
 
   // Handle document position
   function MapClickHandler() {
@@ -298,7 +260,6 @@ const DocumentForm = ({
     return null;
   }
 
-  // console.log(showCoordNamePopup);
 
   const renderStep = () => {
     switch (currentStep) {
@@ -488,7 +449,7 @@ const DocumentForm = ({
                 className="w-full grid md:text-center"
                 style={{ height: '50vh' }}
               >
-                <div className="w-80 justify-self-end" style={{ zIndex: 1000 }}>
+                <div className="w-80 justify-self-end h-auto" style={{ zIndex: 1000 }}>
                   <InputComponent
                     label="Select an area or point that already exists"
                     type="select"
@@ -672,18 +633,23 @@ const DocumentForm = ({
         </form>
       </div>
 
-      <Modal style={modalStyles} isOpen={modalOpen} onRequestClose={() => setModalOpen(false)}>
+      <Modal
+        style={connectionModalStyles}
+        isOpen={connectionModalOpen}
+        onRequestClose={() => setConnectionModalOpen(false)}
+      >
         <div className="relative">
-          <button onClick={() => setConnectionModalOpen(false)} className="absolute top-0 right-0 p-2 text-xl text-gray-500 hover:text-gray-700">
+          <button
+            onClick={() => setConnectionModalOpen(false)}
+            className="absolute top-0 right-0 p-2 text-xl text-gray-500 hover:text-gray-700"
+          >
             &times;
           </button>
 
-          <ConnectionForm closeModal={() => setConnectionModalOpen(false)} 
-            handleAdd={handleAddConnection }
-            handleEdit={handleEditConnection} 
-            mode={mode}
-            connectionToEdit={connectionToEdit}
-            editIndex={editIndex} />
+          <ConnectionForm
+            setModalOpen={setConnectionModalOpen}
+            handleAddConnection={handleAddConnection}
+          />
         </div>
       </Modal>
 

@@ -2,7 +2,6 @@ import { useState, useEffect, useContext, useRef } from 'react';
 import {
   MapContainer,
   TileLayer,
-  ZoomControl,
   Popup,
   useMapEvents,
 } from 'react-leaflet';

@@ -22,7 +22,7 @@ const Toast = ({ isShown, message, type, onClose }: ToastProps) => {
 
     return (
         <div className={`absolute bottom-6 right-6 transition-all duration-400
-        ${isShown ? "opacity-100" : "opacity-0"}`}>
+        ${isShown ? "block" : "hidden"}`}>
 
             <div className={`min-w-52 bg-white border shadow-2xl 
             rounded-md after:w-[5px] after:h-full 
