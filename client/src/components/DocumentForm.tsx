@@ -50,12 +50,6 @@ const DocumentForm = ({
   coordinates,
   showCoordNamePopup = false,
 }: DocumentFormProps) => {
-  console.log('DocumentForm props:', {
-    positionProp,
-    selectedCoordIdProp,
-    coordinates,
-    showCoordNamePopup,
-  });
   const [currentStep, setCurrentStep] = useState(1);
   const [connectToMap, setConnectToMap] = useState(
     !!positionProp || !!selectedCoordIdProp,
@@ -233,18 +227,16 @@ const DocumentForm = ({
       if (response.success) {
         console.log('Document created successfully:', response.document);
         showToastMessage("Document created successfully", "success");
-        // Puoi aggiungere ulteriori azioni qui, come la navigazione a un'altra pagina o la visualizzazione di un messaggio di successo
+        
         setIsDocumentSaved(true);
         setCurrentStep(5);
       } else {
         console.log('Failed to create document');
         showToastMessage("Failed to create document", "error");
-        // Puoi aggiungere ulteriori azioni qui, come la visualizzazione di un messaggio di errore
       }
     } catch (error) {
       console.error('Error creating document:', error);
       showToastMessage("Error creating document:" + error, "error");
-      // Puoi aggiungere ulteriori azioni qui, come la visualizzazione di un messaggio di errore
     }
   };
 
@@ -254,13 +246,12 @@ const DocumentForm = ({
       dblclick(e) {
         setSelectedCoordId(undefined);
         setPosition(e.latlng);
-        // setCoordNamePopupOpen(true);
+        setCoordNamePopupOpen(true);
       },
     });
     return null;
   }
-
-
+  
   const renderStep = () => {
     switch (currentStep) {
       case 1:
@@ -446,28 +437,31 @@ const DocumentForm = ({
             <div className="col-span-2">
               <h4>Document position:</h4>
               <div
-                className="w-full grid md:text-center"
+                className="w-full grid grid-rows-[auto_1fr] md:text-center"
                 style={{ height: '50vh' }}
               >
-                <div className="w-80 justify-self-end h-auto" style={{ zIndex: 1000 }}>
+                <div className="w-80 justify-self-end" style={{ zIndex: 1000 }}>
                   <InputComponent
                     label="Select an area or point that already exists"
                     type="select"
                     options={Object.entries(coordinates).map(
                       ([areaId, info]: [string, any]) => {
+                        console.log("value: " + areaId);
+                        console.log("name: " + info["name"]);
                         return { value: areaId, label: info['name'] };
                       },
                     )}
                     defaultValue={selectedCoordIdProp}
                     value={selectedCoordId}
-                    onChange={(v: React.ChangeEvent<HTMLSelectElement>) => {
+                    onChange={(v: any) => {
                       setSelectedCoordId(v.target.value);
+                      setCoordNamePopupOpen(false);
                       if (
                         selectedCoordId &&
-                        coordinates[selectedCoordId]['type'] == 'Point'
+                        coordinates[v.target.value]['type'] == 'Point'      //I don't use selectedCoordId directly, but I use v.target.value (the selected value in the select). Due to some delay in updating selectedCoordId, if I used selectedCoordId I would have the previously selected area/point, and not the current one
                       ) {
                         setPosition(
-                          coordinates[selectedCoordId]['coordinates'],
+                          coordinates[v.target.value]['coordinates'],
                         );
                       } else {
                         setPosition(undefined);
@@ -475,7 +469,6 @@ const DocumentForm = ({
                     }}
                   />
                 </div>
-
                 <MapContainer
                   style={{ width: '100%', height: '100%', zIndex: 10 }}
                   center={position ? position : kirunaLatLngCoords} //The map is centered on the document's position, if exists. Otherwise it is centered on Kiruna
@@ -503,9 +496,6 @@ const DocumentForm = ({
                         (selectedCoordId &&
                           coordinates[selectedCoordId]['coordinates'])
                       }
-                      ref={(r) => {
-                        r?.openPopup();
-                      }}
                     >
                       <Tooltip permanent>
                         {' '}
@@ -653,11 +643,13 @@ const DocumentForm = ({
         </div>
       </Modal>
 
-      <Toast
-        isShown={toastMsg.isShown}
-        message={toastMsg.message}
-        type={toastMsg.type}
-        onClose={hideToastMessage}/>
+      {toastMsg.isShown && 
+        <Toast
+          isShown={toastMsg.isShown}
+          message={toastMsg.message}
+          type={toastMsg.type}
+          onClose={hideToastMessage}/>
+      }
     </>
   );
 };
