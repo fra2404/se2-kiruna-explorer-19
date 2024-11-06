@@ -5,6 +5,7 @@ import { FaEye, FaEyeSlash } from 'react-icons/fa';
 interface Option {
   value: string;
   label: string;
+  icon?: React.ReactNode;
   code?: string;
   prefix?: string;
 }
@@ -12,18 +13,31 @@ interface Option {
 interface InputComponentProps {
   label: string;
   placeholder?: string;
-  type: 'text' | 'select' | 'radio' | 'password' | 'email' | 'textarea';
+  type:
+    | 'text'
+    | 'select'
+    | 'radio'
+    | 'password'
+    | 'email'
+    | 'textarea'
+    | 'date'
+    | 'checkbox';
   options?: Option[];
   required?: boolean;
   name?: string;
-  value?: string;
+  value?: string | Option;
+  defaultValue?: string;
+  checked?: boolean;
   onChange?: (
-    event: ChangeEvent<
-      HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement
-    >,
+    event:
+      | ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>
+      | Option,
   ) => void;
   onValidityChange?: (isValid: boolean) => void;
   disabled?: boolean;
+  max?: string;
+  maxLength?: number;
+  returnObject?: boolean; // Aggiungi questa proprietà
 }
 
 const mockFlags = {
@@ -35,6 +49,11 @@ const mockFlags = {
 const CustomSingleValue = React.memo(({ data }: { data: Option }) => {
   return (
     <div className="flex items-center">
+      {data.icon && (
+        <span className="mr-2" style={{ maxWidth: '20px', maxHeight: '20px' }}>
+          {data.icon}
+        </span>
+      )}
       {data.code && (
         <span>{mockFlags[data.code as keyof typeof mockFlags]}</span>
       )}
@@ -54,13 +73,20 @@ const InputComponent: React.FC<InputComponentProps> = ({
   required = false,
   name,
   value,
+  defaultValue,
+  checked,
   onChange,
   onValidityChange,
   disabled = false,
+  max,
+  maxLength,
+  returnObject = false, // Aggiungi questa proprietà
 }) => {
   const [isEmailValid, setIsEmailValid] = useState<boolean>(true);
   const [isFieldEmpty, setIsFieldEmpty] = useState<boolean>(false);
-  const [selectedOption, setSelectedOption] = useState<Option | null>(null);
+  const [selectedOption, setSelectedOption] = useState<Option | null>(
+    options.find((option) => option.value === defaultValue) || null,
+  );
   const [isTouched, setIsTouched] = useState<boolean>(false);
   const [showPassword, setShowPassword] = useState(false);
 
@@ -91,9 +117,14 @@ const InputComponent: React.FC<InputComponentProps> = ({
 
   useEffect(() => {
     if (type === 'email') {
-      validateEmail(value || '');
-    } else if (type === 'text' || type === 'password' || type === 'textarea') {
-      validateField(value || '');
+      validateEmail((value as string) || '');
+    } else if (
+      type === 'text' ||
+      type === 'password' ||
+      type === 'textarea' ||
+      type === 'date'
+    ) {
+      validateField((value as string) || '');
     }
   }, [value, type, validateEmail, validateField]);
 
@@ -102,6 +133,14 @@ const InputComponent: React.FC<InputComponentProps> = ({
       const { data, innerRef, innerProps } = props;
       return (
         <div ref={innerRef} {...innerProps} className="flex items-center p-2">
+          {data.icon && (
+            <span
+              className="mr-2"
+              style={{ maxWidth: '20px', maxHeight: '20px' }}
+            >
+              {data.icon}
+            </span>
+          )}
           {data.code && (
             <span>{mockFlags[data.code as keyof typeof mockFlags]}</span>
           )}
@@ -117,10 +156,10 @@ const InputComponent: React.FC<InputComponentProps> = ({
   const handleBlur = useCallback(() => {
     setIsTouched(true);
     if (type === 'email') {
-      validateEmail(value || '');
+      validateEmail((value as string) || '');
     }
     if (required) {
-      validateField(value || '');
+      validateField((value as string) || '');
     }
   }, [type, required, validateEmail, validateField, value]);
 
@@ -135,12 +174,18 @@ const InputComponent: React.FC<InputComponentProps> = ({
   const handleSelectChange = (selectedOption: Option | null) => {
     setSelectedOption(selectedOption);
     if (onChange) {
-      onChange({
-        target: {
-          value: selectedOption ? selectedOption.value : '',
-          name,
-        } as any,
-      } as ChangeEvent<HTMLSelectElement>);
+      if (returnObject) {
+        if (selectedOption) {
+          onChange(selectedOption); // Passa l'intero oggetto selezionato
+        }
+      } else {
+        onChange({
+          target: {
+            value: selectedOption ? selectedOption.value : '',
+            name,
+          } as any,
+        } as ChangeEvent<HTMLSelectElement>);
+      }
     }
   };
 
@@ -153,7 +198,10 @@ const InputComponent: React.FC<InputComponentProps> = ({
       <label className="block text-gray-700 text-sm font-bold mb-2">
         {label} {required && <span className="text-red-500">*</span>}
       </label>
-      {(type === 'text' || type === 'password' || type === 'email') && (
+      {(type === 'text' ||
+        type === 'password' ||
+        type === 'email' ||
+        type === 'date') && (
         <div className="relative">
           <input
             className={inputClassName}
@@ -163,10 +211,11 @@ const InputComponent: React.FC<InputComponentProps> = ({
             placeholder={placeholder}
             required={required}
             name={name}
-            value={value}
+            value={value as string}
             onChange={onChange}
             onBlur={handleBlur}
             disabled={disabled}
+            max={type === 'date' ? max : undefined}
           />
           {type === 'password' && (
             <button
@@ -185,10 +234,11 @@ const InputComponent: React.FC<InputComponentProps> = ({
           placeholder={placeholder}
           required={required}
           name={name}
-          value={value}
+          value={value as string}
           onChange={onChange}
           onBlur={handleBlur}
           disabled={disabled}
+          maxLength={maxLength}
         />
       )}
       {type === 'select' && (
@@ -199,9 +249,11 @@ const InputComponent: React.FC<InputComponentProps> = ({
           components={{ SingleValue: CustomSingleValue, Option: customOption }}
           name={name}
           value={selectedOption}
+          defaultValue={options.find((option) => option.value === defaultValue)}
           isDisabled={disabled}
           getOptionLabel={(option) => option.label}
           getOptionValue={(option) => option.value}
+          menuPortalTarget={document.body}
           styles={{
             control: (provided) => ({
               ...provided,
@@ -225,6 +277,7 @@ const InputComponent: React.FC<InputComponentProps> = ({
               display: 'flex',
               alignItems: 'center',
             }),
+            menuPortal: (provided) => ({ ...provided, zIndex: 9999 }),
           }}
         />
       )}
@@ -245,6 +298,19 @@ const InputComponent: React.FC<InputComponentProps> = ({
               <span className="ml-2">{option.label}</span>
             </label>
           ))}
+        </div>
+      )}
+      {type === 'checkbox' && (
+        <div className="flex items-center">
+          <input
+            type="checkbox"
+            name={name}
+            checked={checked}
+            onChange={onChange}
+            disabled={disabled}
+            className="form-checkbox h-4 w-4 text-blue-600"
+          />
+          <span className="ml-2">{label}</span>
         </div>
       )}
       {isFieldEmpty && required && isTouched && (

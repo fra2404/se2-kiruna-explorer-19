@@ -4,6 +4,7 @@ import './App.css';
 import { AuthProvider } from './context/AuthContext.tsx';
 import { ModalProvider } from './context/ModalContext.tsx';
 import API from './API.ts';
+import DocumentForm from './components/DocumentForm.tsx';
 
 function App() {
   return (
@@ -11,7 +12,6 @@ function App() {
       <ModalProvider>
         <Routes>
           <Route path="/" element={<KirunaMap></KirunaMap>} />
-
         </Routes>
       </ModalProvider>
     </AuthProvider>
