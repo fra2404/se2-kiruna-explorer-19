@@ -1,17 +1,15 @@
 import { Button } from '@material-tailwind/react';
 import { variant } from '@material-tailwind/react/types/components/button';
-
-//const { isLoggedIn, user } = useAuth();   // Retrieve this information from the context created by FAL
 import { Col, Row } from 'react-bootstrap';
 //import Logo from '../assets/icons/logo'; // The SVG is not rendered correctly
 
 interface ButtonRoundedProps {
-    img: string;
-    className: string;
+    img?: string;
+    className?: string;
     variant: variant;
-    text: string;
-    onClick: () => void;
-
+    text?: string;
+    style?: React.CSSProperties;
+    onClick?: () => void;
 }
 
 
@@ -24,6 +22,10 @@ export function ButtonRounded(props: ButtonRoundedProps) {
                     variant={props.variant}
                     onClick={props.onClick}
                     className={className}
+                    style={props.style}
+                    placeholder={undefined}
+                    onPointerEnterCapture={undefined}
+                    onPointerLeaveCapture={undefined}
                 >
                     <Row>
                         <Col xs="auto" className="p-0">
@@ -43,6 +45,9 @@ export function ButtonRounded(props: ButtonRoundedProps) {
                     variant={props.variant}
                     onClick={props.onClick}
                     className={className}
+                    placeholder={undefined}
+                    onPointerEnterCapture={undefined}
+                    onPointerLeaveCapture={undefined}
                 >
                     {props.text}
                 </Button>
