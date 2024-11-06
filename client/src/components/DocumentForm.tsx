@@ -469,10 +469,11 @@ const DocumentForm = ({
                     }}
                   />
                 </div>
+                
                 <MapContainer
                   style={{ width: '100%', height: '100%', zIndex: 10 }}
                   center={position ? position : kirunaLatLngCoords} //The map is centered on the document's position, if exists. Otherwise it is centered on Kiruna
-                  zoom={15}
+                  zoom={13}
                   doubleClickZoom={false}
                   scrollWheelZoom={true} // Enable the scroll wheel zoom
                   zoomControl={false} // Disable the zoom control, we will use a custom one
@@ -571,10 +572,9 @@ const DocumentForm = ({
         );
       case 5:
         return (
-          <div className="flex flex-col items-center justify-center h-full w-full">
+          <div className="flex flex-col items-center justify-center h-full w-full col-span-full">
             <FaCheckCircle className="w-24 h-24 text-green-500" />
             <h2 className="text-2xl font-bold mt-4">Document Saved</h2>
-            <p className="text-sm text-gray-500">PLS, centered this</p>
           </div>
         );
       default:
