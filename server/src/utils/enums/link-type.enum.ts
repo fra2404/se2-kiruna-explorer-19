@@ -1,4 +1,6 @@
 export enum LinkTypeEnum {
-    Link1 = 'LINK1',
-    Link2 = 'LINK2',
+    Direct = 'DIRECT',
+    Collateral = 'COLLATERAL',
+    Projection = 'PROJECTION',
+    Update = 'UPDATE',
 }

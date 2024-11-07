@@ -1,7 +1,7 @@
 export default function ConflictIcon({fillColor}: any) {
 	return (
 		<svg version="1.1" id="Layer_1" xmlns="http://www.w3.org/2000/svg" xmlnsXlink="http://www.w3.org/1999/xlink" x="0px" y="0px"
-			width="100%" viewBox="0 0 1024 896" enable-background="new 0 0 1024 896" xmlSpace="preserve">
+			width="100%" viewBox="0 0 1024 896" enableBackground="new 0 0 1024 896" xmlSpace="preserve">
 		<path fill={fillColor} opacity="1.000000" stroke="none" 
 			d="
 		M685.208374,591.152832 

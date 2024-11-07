@@ -1,12 +1,44 @@
-import { Button } from "@material-tailwind/react";
+import { Button } from '@material-tailwind/react';
+import { ButtonProps } from '@material-tailwind/react';
+import { Col, Row } from 'react-bootstrap';
 
-//const { isLoggedIn, user } = useAuth();   // Retrieve this information from the context created by FAL
+interface ButtonRoundedProps {
+  img?: string;
+  className?: string;
+  variant: ButtonProps['variant'];
+  text: string;
+  onClick: (e: React.MouseEvent<HTMLButtonElement>) => void;
+}
 
+export function ButtonRounded({
+  img,
+  className = '',
+  variant,
+  text,
+  onClick,
+}: ButtonRoundedProps) {
+  const buttonClassName = `${className} rounded-full`;
 
-export function ButtonRounded() {
-    return (
-        <div className="flex items-center gap-4">
-            <Button className="rounded-full">Welcome</Button>
-        </div>
-    );
+  return (
+    <div>
+      {img ? (
+        <Button variant={variant} onClick={onClick} className={buttonClassName}>
+          <Row>
+            <Col xs="auto" className="p-0">
+              <img
+                src={img}
+                alt={text}
+                style={{ width: '2.5rem', height: '2.5rem' }}
+              />
+            </Col>
+            <Col className="d-flex align-items-center">{text}</Col>
+          </Row>
+        </Button>
+      ) : (
+        <Button variant={variant} onClick={onClick} className={buttonClassName}>
+          {text}
+        </Button>
+      )}
+    </div>
+  );
 }

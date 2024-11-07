@@ -1,144 +1,86 @@
-/**
- * Component for displaying all the markers on the map
- */
-
-import { useState, useEffect } from "react";
-import { Marker, Popup } from "react-leaflet";
+import { useRef, useState } from 'react';
+import { Marker, Popup } from 'react-leaflet';
 import 'leaflet/dist/leaflet.css';
-import { Icon } from 'leaflet';
+import { LatLng } from 'leaflet';
+import { ButtonRounded } from './Button';
+import Modal from 'react-modal';
+import DocumentForm from './DocumentForm';
+import { modalStyles } from './Map';
 
-//Define custom icons for different categories
-const agreementIcon = new Icon({
-    iconUrl: 'path/to/icon.png',
-    iconSize: [35, 35], // size of the icon
-    iconAnchor: [22, 94], // point of the icon which will correspond to marker's location
-    popupAnchor: [-3, -76] // point from which the popup should open relative to the iconAnchor
-
-})
-const conflictIcon = new Icon({
-    iconUrl: 'path/to/icon.png',
-    iconSize: [35, 35], // size of the icon
-    iconAnchor: [22, 94], // point of the icon which will correspond to marker's location
-    popupAnchor: [-3, -76] // point from which the popup should open relative to the iconAnchor
-})
-const consultationIcon = new Icon({
-    iconUrl: 'path/to/icon.png',
-    iconSize: [35, 35], // size of the icon
-    iconAnchor: [22, 94], // point of the icon which will correspond to marker's location
-    popupAnchor: [-3, -76] // point from which the popup should open relative to the iconAnchor
-})
-
-const designDocIcon = new Icon({
-    iconUrl: 'path/to/icon.png',
-    iconSize: [38, 45], // size of the icon
-    iconAnchor: [22, 94], // point of the icon which will correspond to marker's location
-    popupAnchor: [-3, -76] // point from which the popup should open relative to the iconAnchor
-})
-
-const informativeDocIcon = new Icon({
-    iconUrl: 'path/to/icon.png',
-    iconSize: [38, 45], // size of the icon
-    iconAnchor: [22, 94], // point of the icon which will correspond to marker's location
-    popupAnchor: [-3, -76] // point from which the popup should open relative to the iconAnchor
-})
-
-const materialEffectsIcon = new Icon({
-    iconUrl: 'path/to/icon.png',
-    iconSize: [38, 45], // size of the icon
-    iconAnchor: [22, 94], // point of the icon which will correspond to marker's location
-    popupAnchor: [-3, -76] // point from which the popup should open relative to the iconAnchor
-})
-
-const prescriptiveDocIcon = new Icon({
-    iconUrl: 'path/to/icon.png',
-    iconSize: [38, 45], // size of the icon
-    iconAnchor: [22, 94], // point of the icon which will correspond to marker's location
-    popupAnchor: [-3, -76] // point from which the popup should open relative to the iconAnchor
-})
-
-const technicalDocIcon = new Icon({
-    iconUrl: 'path/to/icon.png',
-    iconSize: [38, 45], // size of the icon
-    iconAnchor: [22, 94], // point of the icon which will correspond to marker's location
-    popupAnchor: [-3, -76] // point from which the popup should open relative to the iconAnchor
-})
-
-const defaultIcon = new Icon({
-    iconUrl: 'path/to/icon.png',
-    iconSize: [38, 45], // size of the icon
-    iconAnchor: [22, 94], // point of the icon which will correspond to marker's location
-    popupAnchor: [-3, -76] // point from which the popup should open relative to the iconAnchor
-})
-
-
-// Function to get the appropriate icon for a category
-const getCategoryIcon = category => {
-    if (category === 'agreement') {
-        return agreementIcon;
-    } else if (category === 'conflict') {
-        return conflictIcon;
-    } else if (category === 'consultation') {
-        return consultationIcon;
-    } else if (category === 'designDoc') {
-        return designDocIcon;
-    } else if (category === 'informativeDoc') {
-        return informativeDocIcon;
-    } else if (category === 'materialEffects') {
-        return materialEffectsIcon;
-    } else if (category === 'prescriptiveDoc') {
-        return prescriptiveDocIcon;
-    } else if (category === 'technicalDoc') {
-        return technicalDocIcon;
-    } else {
-        // Default icon if category doesn't match any of the above
-        return defaultIcon; // Or another default icon
-    }
-};
-
-
-
-
-
-
-export default function Markers() {
-    const [documents, setDocuments] = useState([]);
-
-    useEffect(() => {
-        // Fetch agency data from the server
-        fetch('/documents') // TODO: example of endpoint. I don't know yet the real one.
-            .then(response => response.json())
-            .then(documents => setDocuments(documents));
-    }, []);
-
-
-    // Create an array of document coordinates with additional information
-    const documentsCoordinates = documents.map(document => ({
-        latitude: document.latitude,
-        longitude: document.longitude,
-        title: document.title,
-        category: document.category,
-        icon: getCategoryIcon(document.category),
-    }));
-
-
-    return (
-        <>
-            {documentsCoordinates.map((document, index) => (
-                <Marker
-                    key={index}
-                    position={[document.latitude, document.longitude]}
-                    icon={document.icon} // Use the selected icon
-                >
-                    <Popup>
-                        <b>{document.title}</b><br />
-                        Category: {document.category}<br />
-                    </Popup>
-                </Marker>
-            ))}
-        </>
-    )
+interface MarkersProps {
+  id: string;
+  pointCoordinates: LatLng;
+  name: string;
+  coordinates: any;
+  isLoggedIn: boolean;
 }
 
+export default function Markers({
+  id,
+  pointCoordinates,
+  name,
+  coordinates,
+  isLoggedIn,
+}: MarkersProps) {
+  const [modalOpen, setModalOpen] = useState(false);
+  const [selectedPointId, setSelectedPointId] = useState('');
+  const markerRef = useRef<L.Marker>(null);
 
+  return (
+    <>
+      <Marker
+        key={id}
+        position={pointCoordinates}
+        ref={markerRef}
+        //icon={document.icon} // Use the selected icon
+      >
+        <Popup>
+          <span className="text-lg font-bold">{name}</span>
+          <br />
+          {isLoggedIn && (
+            <>
+              <span className="text-base">
+                Do you want to add a document in this point?
+              </span>
+              <br />
+              <br />
+              <div className="flex justify-between">
+                <ButtonRounded
+                  variant="filled"
+                  text="Yes"
+                  className="bg-black text-white text-base pt-2 pb-2 pl-3 pr-3"
+                  onClick={() => {
+                    markerRef.current?.closePopup();
+                    setSelectedPointId(id);
+                    if (!modalOpen) setModalOpen(true);
+                  }}
+                />
+                <ButtonRounded
+                  variant="outlined"
+                  text="Cancel"
+                  className="text-base pt-2 pb-2 pl-3 pr-3"
+                  onClick={() => {
+                    markerRef.current?.closePopup();
+                  }}
+                />
+              </div>
+            </>
+          )}
+        </Popup>
+      </Marker>
 
-
+      <Modal
+        style={modalStyles}
+        isOpen={modalOpen}
+        onRequestClose={() => setModalOpen(false)}
+      >
+        <DocumentForm
+          coordinates={coordinates}
+          selectedCoordIdProp={selectedPointId}
+          modalOpen={modalOpen}
+          setModalOpen={setModalOpen}
+        />
+      </Modal>
+    </>
+  );
+}

@@ -13,9 +13,14 @@ export interface IDocument {
     stakeholders: string;
     scale: string;
     type: DocTypeEnum;
-    connections?: [IConnection];
+    date: string;
+    connections?: IConnection[];
     language?: string;
     media?: [ObjectId];
     coordinates?: ObjectId;
     summary: string;
+
+    createdAt?: Date;
+    updatedAt?: Date;
+    __v?: number;
 }
