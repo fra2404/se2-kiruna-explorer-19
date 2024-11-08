@@ -19,7 +19,7 @@ function CustomZoomControl() {
   return (
     <div
       className="leaflet-bottom leaflet-left flex flex-col mb-4 ml-4"
-      style={{ zIndex: 9999, position: 'fixed', pointerEvents: 'auto' }}
+      style={{ position: 'fixed', pointerEvents: 'auto' }}
     >
       <ButtonRounded
         variant="filled"
