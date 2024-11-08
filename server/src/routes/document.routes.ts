@@ -25,7 +25,7 @@ router.get('/', authenticateUser, getAllDocumentsController); //Get All Document
 router.get('/:id', authenticateUser, authorizeRoles('PLANNER', 'DEVELOPER'), validateDocumentId, getDocumentByIdController); // Get Document by ID
 router.put('/:id', authenticateUser, authorizeRoles('PLANNER', 'DEVELOPER'), validateDocumentId, validateUpdateDocument, handleValidationErrors, updateDocumentController);
 //router.get('/types', authenticateUser, authorizeRoles('PLANNER', 'DEVELOPER'), getTypesController); //Get All Types
-router.get('/types/:type', authenticateUser, authorizeRoles('PLANNER', 'DEVELOPER'), validateDocumentType, getDocumentsByTypeController); //Get Document based On Type
+router.get('/types/:type', authenticateUser, authorizeRoles('PLANNER', 'DEVELOPER'), validateDocumentType, handleValidationErrors, getDocumentsByTypeController); //Get Document based On Type
 router.delete('/', deleteDocumentController);
 
 export const documentRoutes = router;
