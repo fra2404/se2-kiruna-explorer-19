@@ -1,29 +1,19 @@
-
-import Select from 'react-select';
-import { useState, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
+import { ConnectionFormFields } from '../molecules/ConnectionFormFields';
 import { Connection } from './DocumentForm';
-import { ButtonRounded } from './Button';
-import InputComponent from './atoms/input/input';
-import API from '../API'; // Importa l'API
+import API from '../../API';
+import ButtonRounded from '../atoms/button/ButtonRounded';
 
-
-export interface ConnectionFormProps {
-  closeModal: () => void;
-  handleAdd: (connection: Connection) => void;
-  handleEdit: (index: number, updatedConnection: Connection) => void;
-  mode: 'add' | 'edit';
-  connectionToEdit?: Connection;
-  editIndex?: number;
+interface ConnectionFormProps {
+  setModalOpen: (open: boolean) => void;
+  handleAddConnection: (connection: Connection) => void;
+  connection: Connection;
 }
 
-const ConnectionForm = ({
+const ConnectionForm: React.FC<ConnectionFormProps> = ({
   setModalOpen,
   handleAddConnection,
   connection,
-}: {
-  setModalOpen: any;
-  handleAddConnection: any;
-  connection: Connection;
 }) => {
   const connectionTypeOptions = [
     { value: 'DIRECT', label: 'Direct' },
@@ -70,42 +60,22 @@ const ConnectionForm = ({
       relatedDocument: targetDocument,
     };
 
-    console.log('New Connection:', newConnection); // Stampa newConnection per debug
+    console.log('New Connection:', newConnection);
 
     handleAddConnection(newConnection);
-    setModalOpen(false); // Chiudi il modal dopo l'aggiunta
+    setModalOpen(false);
   };
 
   return (
     <div className="my-4 w-full max-w-[600px] md:mx-auto p-8">
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
-        <div className="w-full">
-          <InputComponent
-            label="Connection type"
-            type="select"
-            options={connectionTypeOptions}
-            value={type}
-            onChange={(selectedOption: any) => setType(selectedOption)}
-            required={true}
-            placeholder="Select a type..."
-          />
-        </div>
-
-        <div className="w-full">
-          <InputComponent
-            label="Target document"
-            type="select"
-            options={targetDocumentOptions}
-            value={targetDocument}
-            onChange={(selectedOption: any) =>
-              setTargetDocument(selectedOption)
-            }
-            required={true}
-            placeholder="Select a document..."
-            returnObject={true} // Passa l'intero oggetto selezionato
-          />
-        </div>
-      </div>
+      <ConnectionFormFields
+        connectionTypeOptions={connectionTypeOptions}
+        targetDocumentOptions={targetDocumentOptions}
+        type={type}
+        setType={setType}
+        targetDocument={targetDocument}
+        setTargetDocument={setTargetDocument}
+      />
 
       <div className="w-full flex justify-center gap-4">
         <ButtonRounded

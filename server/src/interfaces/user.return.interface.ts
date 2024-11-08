@@ -1,4 +1,4 @@
-import { UserRoleEnum } from "@utils/enums/user-role.enum";
+import { UserRoleEnum } from '@utils/enums/user-role.enum';
 
 export interface IUserResponse {
   id: string;

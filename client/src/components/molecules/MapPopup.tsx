@@ -1,0 +1,48 @@
+import React, { useRef } from 'react';
+import { Popup } from 'react-leaflet';
+import ButtonRounded from '../atoms/button/ButtonRounded';
+
+interface MapPopupProps {
+  name: string;
+  isLoggedIn: boolean;
+  message: string;
+  onYesClick: () => void;
+  onCancelClick: () => void;
+}
+
+export const MapPopup: React.FC<MapPopupProps> = ({
+  name,
+  isLoggedIn,
+  message,
+  onYesClick,
+  onCancelClick,
+}) => {
+  const popupRef = useRef<L.Popup>(null);
+
+  return (
+    <Popup ref={popupRef}>
+      <span className="text-lg font-bold">{name}</span>
+      <br />
+      {isLoggedIn && (
+        <>
+          <span className="text-base">{message}</span>
+          <br />
+          <div className="flex justify-between">
+            <ButtonRounded
+              variant="filled"
+              text="Yes"
+              className="bg-black text-white text-base pt-2 pb-2 pl-3 pr-3"
+              onClick={onYesClick}
+            />
+            <ButtonRounded
+              variant="outlined"
+              text="Cancel"
+              className="text-base pt-2 pb-2 pl-3 pr-3"
+              onClick={onCancelClick}
+            />
+          </div>
+        </>
+      )}
+    </Popup>
+  );
+};

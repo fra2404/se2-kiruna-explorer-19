@@ -5,67 +5,70 @@ import mongoose, { Document, Schema } from 'mongoose';
 
 export type DocumentDocument = IDocument & Document;
 
-const connectionSchema = new Schema<IConnection>({
+const connectionSchema = new Schema<IConnection>(
+  {
     document: {
-        type: Schema.Types.ObjectId,
-        ref: 'Document',
-        required: true,
+      type: Schema.Types.ObjectId,
+      ref: 'Document',
+      required: true,
     },
     type: {
-        type: String,
-        enum: LinkTypeEnum,
-        required: true,
+      type: String,
+      enum: LinkTypeEnum,
+      required: true,
     },
-}, { _id: false });
+  },
+  { _id: false },
+);
 
 const documentSchema = new Schema<DocumentDocument>(
-    {
-        title: {
-            type: String,
-            required: true,
-        },
-        stakeholders: {
-            type: String,
-            required: true,
-        },
-        scale: {
-            type: String,
-            required: true,
-        },
-        type: {
-            type: String,
-            required: true,
-            enum: DocTypeEnum,
-        },
-        date: {
-            type: String,
-            required: true,
-        },
-        connections: [connectionSchema],
-        language: {
-            type: String,
-            required: false,
-        },
-        media: [
-            {
-                type: Schema.Types.ObjectId,
-                ref: 'Media',
-                required: false,
-            },
-        ],
-        coordinates: {
-            type: Schema.Types.ObjectId,
-            ref: 'Coordinate',
-            required: false,
-        },
-        summary: {
-            type: String,
-            required: false,
-        },
+  {
+    title: {
+      type: String,
+      required: true,
     },
-    {
-        timestamps: true,
+    stakeholders: {
+      type: String,
+      required: true,
     },
+    scale: {
+      type: String,
+      required: true,
+    },
+    type: {
+      type: String,
+      required: true,
+      enum: DocTypeEnum,
+    },
+    date: {
+      type: String,
+      required: true,
+    },
+    connections: [connectionSchema],
+    language: {
+      type: String,
+      required: false,
+    },
+    media: [
+      {
+        type: Schema.Types.ObjectId,
+        ref: 'Media',
+        required: false,
+      },
+    ],
+    coordinates: {
+      type: Schema.Types.ObjectId,
+      ref: 'Coordinate',
+      required: false,
+    },
+    summary: {
+      type: String,
+      required: false,
+    },
+  },
+  {
+    timestamps: true,
+  },
 );
 
 documentSchema.index({ title: 1 });

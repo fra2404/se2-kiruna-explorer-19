@@ -60,7 +60,7 @@ export const getUserById = async (
     email: user.email,
     surname: user.surname,
     phone: user.phone,
-    role: user.role
+    role: user.role,
   };
 
   return userResponse;
@@ -95,5 +95,4 @@ export const loginUser = async (
 export const deleteUserByEmail = async (email: string): Promise<string> => {
   await User.findOneAndDelete({ email });
   return 'User deleted successfully';
-
 };

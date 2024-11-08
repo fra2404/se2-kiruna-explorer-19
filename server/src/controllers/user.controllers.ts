@@ -281,7 +281,11 @@ export const getMe = async (
  *             schema:
  *               $ref: '#/components/schemas/ErrorResponse'
  */
-export const logout = async (req: CustomRequest, res: Response, next: NextFunction): Promise<void> => {
+export const logout = async (
+  req: CustomRequest,
+  res: Response,
+  next: NextFunction,
+): Promise<void> => {
   try {
     res.clearCookie('auth-token', {
       httpOnly: true,
@@ -295,7 +299,11 @@ export const logout = async (req: CustomRequest, res: Response, next: NextFuncti
   }
 };
 
-export const deleteUser = async (req: CustomRequest, res: Response, next: NextFunction): Promise<void> => {
+export const deleteUser = async (
+  req: CustomRequest,
+  res: Response,
+  next: NextFunction,
+): Promise<void> => {
   try {
     const result: string = await deleteUserByEmail('testuser@example.com');
     res.json(result);

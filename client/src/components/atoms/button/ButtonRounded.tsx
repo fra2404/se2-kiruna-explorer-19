@@ -7,22 +7,29 @@ interface ButtonRoundedProps {
   className?: string;
   variant: ButtonProps['variant'];
   text: string;
-  onClick: (e: React.MouseEvent<HTMLButtonElement>) => void;
+  onClick?: (e: React.MouseEvent<HTMLButtonElement>) => void;
+  style?: React.CSSProperties;
 }
 
-export function ButtonRounded({
+const ButtonRounded: React.FC<ButtonRoundedProps> = ({
   img,
   className = '',
   variant,
   text,
   onClick,
-}: ButtonRoundedProps) {
+  style,
+}) => {
   const buttonClassName = `${className} rounded-full`;
 
   return (
     <div>
       {img ? (
-        <Button variant={variant} onClick={onClick} className={buttonClassName}>
+        <Button
+          variant={variant}
+          onClick={onClick}
+          className={buttonClassName}
+          style={style}
+        >
           <Row>
             <Col xs="auto" className="p-0">
               <img
@@ -31,14 +38,23 @@ export function ButtonRounded({
                 style={{ width: '2.5rem', height: '2.5rem' }}
               />
             </Col>
-            <Col className="d-flex align-items-center">{text}</Col>
+            <Col className="d-flex align-items-center justify-content-center">
+              {text}
+            </Col>
           </Row>
         </Button>
       ) : (
-        <Button variant={variant} onClick={onClick} className={buttonClassName}>
+        <Button
+          variant={variant}
+          onClick={onClick}
+          className={buttonClassName}
+          style={style}
+        >
           {text}
         </Button>
       )}
     </div>
   );
-}
+};
+
+export default ButtonRounded;

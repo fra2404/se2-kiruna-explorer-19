@@ -1,4 +1,4 @@
-import { ButtonRounded } from './Button';
+import ButtonRounded from '../atoms/button/ButtonRounded';
 
 interface FloatingButtonProps {
   className?: string;
@@ -25,6 +25,7 @@ export default function FloatingButton({
         text={text}
         onClick={onClick}
         className="bg-black text-white text-base font-bold py-2 px-4 rounded-full"
+        variant={undefined}
       ></ButtonRounded>
     </div>
   );

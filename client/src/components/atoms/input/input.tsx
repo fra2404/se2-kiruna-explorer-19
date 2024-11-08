@@ -37,7 +37,8 @@ interface InputComponentProps {
   disabled?: boolean;
   max?: string;
   maxLength?: number;
-  returnObject?: boolean; // Aggiungi questa proprietà
+  returnObject?: boolean;
+  onKeyDown?: (event: React.KeyboardEvent<HTMLInputElement>) => void; // Aggiungi questa proprietà
 }
 
 const mockFlags = {
@@ -80,7 +81,8 @@ const InputComponent: React.FC<InputComponentProps> = ({
   disabled = false,
   max,
   maxLength,
-  returnObject = false, // Aggiungi questa proprietà
+  returnObject = false,
+  onKeyDown, // Aggiungi questa proprietà
 }) => {
   const [isEmailValid, setIsEmailValid] = useState<boolean>(true);
   const [isFieldEmpty, setIsFieldEmpty] = useState<boolean>(false);
@@ -216,6 +218,7 @@ const InputComponent: React.FC<InputComponentProps> = ({
             onBlur={handleBlur}
             disabled={disabled}
             max={type === 'date' ? max : undefined}
+            onKeyDown={onKeyDown} // Aggiungi questa proprietà
           />
           {type === 'password' && (
             <button

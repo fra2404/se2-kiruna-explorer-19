@@ -17,7 +17,12 @@ import express from 'express';
 
 const router = express.Router();
 
-router.get('/', authenticateUser, authorizeRoles('PLANNER', 'DEVELOPER'), getUsers);
+router.get(
+  '/',
+  authenticateUser,
+  authorizeRoles('PLANNER', 'DEVELOPER'),
+  getUsers,
+);
 router.post('/signup', validateUserSignUp, handleValidationErrors, createUser);
 router.post('/login', validateUserLogin, handleValidationErrors, login);
 router.post('/logout', authenticateUser, logout);

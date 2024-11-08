@@ -1,6 +1,6 @@
 import { useMap } from 'react-leaflet';
 import { useState } from 'react';
-import { ButtonRounded } from '../Button';
+import ButtonRounded from '../atoms/button/ButtonRounded';
 
 function CustomZoomControl() {
   const map = useMap();

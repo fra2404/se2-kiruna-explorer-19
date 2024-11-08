@@ -46,13 +46,20 @@ export const AuthProvider: FC<{ children: ReactNode }> = ({ children }) => {
     try {
       console.log('Attempting login with email:', email);
       const { isLoggedIn, user } = await loginAction(email, password);
+      if (!isLoggedIn) {
+        return { error: true, message: 'Login failed' };
+      }
       setUser(user);
       setIsLoggedIn(isLoggedIn);
       return { error: false };
-    } catch (error) {
+    } catch (error: any) {
       console.error('Login failed:', error);
       setIsLoggedIn(false);
-      return { error: true, message: 'Login failed' };
+      return {
+        error: true,
+        message: 'Login failed',
+        status: error.response?.status,
+      };
     }
   };
 

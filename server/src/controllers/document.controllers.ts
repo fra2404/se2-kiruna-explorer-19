@@ -1,18 +1,18 @@
 import { Request, Response, NextFunction } from 'express';
-import { 
-        addingDocument, 
-        getAllDocuments, 
-        getDocumentById, 
-        updatingDocument, 
-        deleteDocumentByName,
-       // getDocumentTypes,
-        getDocumentByType } from '../services/document.service';
+import {
+  addingDocument,
+  getAllDocuments,
+  getDocumentById,
+  updatingDocument,
+  deleteDocumentByName,
+  // getDocumentTypes,
+  getDocumentByType,
+} from '../services/document.service';
 // import { addingDocument, deleteDocumentByName, getAllDocuments, getDocumentById, updatingDocument } from '../services/document.service';
 import { IDocument } from '@interfaces/document.interface';
 import { IDocumentResponse } from '@interfaces/document.return.interface';
 import { ICoordinate } from '@interfaces/coordinate.interface';
 import { DocNotFoundError } from '@utils/errors';
-
 
 /**
  * @swagger
@@ -72,7 +72,7 @@ import { DocNotFoundError } from '@utils/errors';
  *         coordinates:
  *           type: object
  *           $ref: '#/components/schemas/Coordinate'
- *     
+ *
  */
 
 /**
@@ -100,13 +100,19 @@ import { DocNotFoundError } from '@utils/errors';
  *                 document:
  *                   $ref: '#/components/schemas/Document'
  */
-export const addDocumentController = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
-    try {
-        const newDocument = await addingDocument(req.body as IDocument);
-        res.status(201).json({ message: 'Document added successfully', document: newDocument });
-    } catch (error) {
-        next(error); // Pass the error to the error handler middleware
-    }
+export const addDocumentController = async (
+  req: Request,
+  res: Response,
+  next: NextFunction,
+): Promise<void> => {
+  try {
+    const newDocument = await addingDocument(req.body as IDocument);
+    res
+      .status(201)
+      .json({ message: 'Document added successfully', document: newDocument });
+  } catch (error) {
+    next(error); // Pass the error to the error handler middleware
+  }
 };
 
 /**
@@ -125,13 +131,17 @@ export const addDocumentController = async (req: Request, res: Response, next: N
  *               items:
  *                 $ref: '#/components/schemas/Document'
  */
-export const getAllDocumentsController = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
-    try {
-        const documents: IDocumentResponse[] = await getAllDocuments();
-        res.status(200).json(documents);
-    } catch (error) {
-        next(error); // Pass the error to the error handler middleware
-    }
+export const getAllDocumentsController = async (
+  req: Request,
+  res: Response,
+  next: NextFunction,
+): Promise<void> => {
+  try {
+    const documents: IDocumentResponse[] = await getAllDocuments();
+    res.status(200).json(documents);
+  } catch (error) {
+    next(error); // Pass the error to the error handler middleware
+  }
 };
 
 /**
@@ -157,16 +167,20 @@ export const getAllDocumentsController = async (req: Request, res: Response, nex
  *       404:
  *         description: Document not found
  */
-export const getDocumentByIdController = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
-    try {
-        const document = await getDocumentById(req.params.id);
-        if (!document) {
-            throw new DocNotFoundError();
-        }
-        res.status(200).json(document);
-    } catch (error) {
-        next(error); // Pass the error to the error handler middleware
+export const getDocumentByIdController = async (
+  req: Request,
+  res: Response,
+  next: NextFunction,
+): Promise<void> => {
+  try {
+    const document = await getDocumentById(req.params.id);
+    if (!document) {
+      throw new DocNotFoundError();
     }
+    res.status(200).json(document);
+  } catch (error) {
+    next(error); // Pass the error to the error handler middleware
+  }
 };
 
 /**
@@ -198,18 +212,21 @@ export const getDocumentByIdController = async (req: Request, res: Response, nex
  *       404:
  *         description: Document not found
  */
-export const updateDocumentController = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
-    try {
-        const updatedDocument = await updatingDocument(req.params.id, req.body);
-        if (!updatedDocument) {
-            throw new DocNotFoundError();
-        }
-        res.status(200).json(updatedDocument);
-    } catch (error) {
-        next(error); // Pass the error to the error handler middleware
+export const updateDocumentController = async (
+  req: Request,
+  res: Response,
+  next: NextFunction,
+): Promise<void> => {
+  try {
+    const updatedDocument = await updatingDocument(req.params.id, req.body);
+    if (!updatedDocument) {
+      throw new DocNotFoundError();
     }
+    res.status(200).json(updatedDocument);
+  } catch (error) {
+    next(error); // Pass the error to the error handler middleware
+  }
 };
-
 
 // export const getTypesController = (req: Request, res: Response, next: NextFunction): void => {
 //     try {
@@ -219,10 +236,6 @@ export const updateDocumentController = async (req: Request, res: Response, next
 //         next(error); // Pass the error to the error handler middleware
 //     }
 // };
-
-
-
-
 
 /**
  * @swagger
@@ -302,28 +315,36 @@ export const updateDocumentController = async (req: Request, res: Response, next
  *           example: 'This is a summary of the document.'
  */
 
-export const getDocumentsByTypeController = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
-    const { type } = req.params;
+export const getDocumentsByTypeController = async (
+  req: Request,
+  res: Response,
+  next: NextFunction,
+): Promise<void> => {
+  const { type } = req.params;
 
-    try {
-        const documents = await getDocumentByType(type);
+  try {
+    const documents = await getDocumentByType(type);
 
-        if (documents.length === 0) {
-            throw new DocNotFoundError();
-        }
-
-        res.status(200).json({ documents });
-    } catch (error) {
-        next(error); // Pass the error to the error handler middleware
+    if (documents.length === 0) {
+      throw new DocNotFoundError();
     }
+
+    res.status(200).json({ documents });
+  } catch (error) {
+    next(error); // Pass the error to the error handler middleware
+  }
 };
 
-export const deleteDocumentController = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
-    try {
-        const result: string = await deleteDocumentByName('TestDoc');
+export const deleteDocumentController = async (
+  req: Request,
+  res: Response,
+  next: NextFunction,
+): Promise<void> => {
+  try {
+    const result: string = await deleteDocumentByName('TestDoc');
 
-        res.json(result);
-    } catch (error) {
-        next(error); // Pass the error to the error handler middleware
-    }
+    res.json(result);
+  } catch (error) {
+    next(error); // Pass the error to the error handler middleware
+  }
 };
