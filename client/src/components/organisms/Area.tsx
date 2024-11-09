@@ -5,6 +5,7 @@ import Modal from 'react-modal';
 import { MapPopup } from '../molecules/MapPopup';
 import { modalStyles } from '../../pages/KirunaMap';
 import DocumentForm from './DocumentForm';
+import { IDocument } from '../../utils/interfaces/document.interface';
 
 interface AreaProps {
   isLoggedIn: boolean;
@@ -12,6 +13,7 @@ interface AreaProps {
   areaCoordinates: LatLng[];
   name: string;
   coordinates: any;
+  documents: IDocument[]
 }
 
 export const Area: React.FC<AreaProps> = ({
@@ -20,6 +22,7 @@ export const Area: React.FC<AreaProps> = ({
   name,
   coordinates,
   isLoggedIn,
+  documents
 }) => {
   const [selectedAreaId, setSelectedAreaId] = useState('');
   const [modalOpen, setModalOpen] = useState(false);
@@ -35,6 +38,7 @@ export const Area: React.FC<AreaProps> = ({
           name={name}
           isLoggedIn={isLoggedIn}
           message="Do you want to add a document in this area?"
+          documents={documents}
           onYesClick={() => {
             setSelectedAreaId(id);
             if (!modalOpen) setModalOpen(true);

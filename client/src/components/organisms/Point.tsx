@@ -5,6 +5,8 @@ import Modal from 'react-modal';
 import { MapPopup } from '../molecules/MapPopup';
 import { modalStyles } from '../../pages/KirunaMap';
 import DocumentForm from './DocumentForm';
+import { IDocument } from '../../utils/interfaces/document.interface';
+import { MarkerDocumentList } from '../molecules/documentsItems/MarkerDocumentList';
 
 interface PointProps {
   id: string;
@@ -12,6 +14,7 @@ interface PointProps {
   name: string;
   coordinates: any;
   isLoggedIn: boolean;
+  documents: IDocument[]
 }
 
 export const Point: React.FC<PointProps> = ({
@@ -20,6 +23,7 @@ export const Point: React.FC<PointProps> = ({
   name,
   coordinates,
   isLoggedIn,
+  documents
 }) => {
   const [modalOpen, setModalOpen] = useState(false);
   const [selectedPointId, setSelectedPointId] = useState('');
@@ -32,6 +36,7 @@ export const Point: React.FC<PointProps> = ({
           name={name}
           isLoggedIn={isLoggedIn}
           message="Do you want to add a document in this point?"
+          documents={documents}
           onYesClick={() => {
             markerRef.current?.closePopup();
             setSelectedPointId(id);

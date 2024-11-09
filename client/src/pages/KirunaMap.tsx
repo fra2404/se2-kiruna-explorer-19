@@ -115,6 +115,8 @@ export default function KirunaMap() {
             url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
           />
           {Object.entries(coordinates).map(([coordId, coordInfo]: any) => {
+            const filteredDocuments = documents.filter((d) => d["coordinates"]["_id"] == coordId);
+
             if (coordInfo.type == 'Point') {
               return (
                 <Point
@@ -124,6 +126,7 @@ export default function KirunaMap() {
                   name={coordInfo.name}
                   coordinates={coordinates}
                   isLoggedIn={isLoggedIn}
+                  documents={filteredDocuments}
                 />
               );
             } else {
@@ -135,6 +138,7 @@ export default function KirunaMap() {
                   name={coordInfo.name}
                   coordinates={coordinates}
                   isLoggedIn={isLoggedIn}
+                  documents={filteredDocuments}
                 />
               );
             }
