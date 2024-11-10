@@ -229,12 +229,12 @@ export const updateDocumentController = async (
 };
 
 export const getDocumentTypesController = (req: Request, res: Response, next: NextFunction): void => {
-    try {
-        const docTypes = getDocumentTypes();
-        res.status(200).json({ docTypes });
-    } catch (error) {
-        next(error); // Pass the error to the error handler middleware
-    }
+  try {
+    const docTypes = getDocumentTypes();
+    res.status(200).json({ docTypes });
+  } catch (error) {
+    next(error); // Pass the error to the error handler middleware
+  }
 };
 
 /**
@@ -323,10 +323,6 @@ export const getDocumentsByTypeController = async (
   const { type } = req.params;
   try {
     const documents = await getDocumentByType(type);
-
-    if (documents.length === 0) {
-      throw new DocNotFoundError();
-    }
 
     res.status(200).json({ documents });
   } catch (error) {

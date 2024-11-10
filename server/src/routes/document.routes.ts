@@ -51,16 +51,12 @@ router.put(
 );
 
 router.get(
-  '/types/all', 
-  authenticateUser, 
-  authorizeRoles('PLANNER', 'DEVELOPER'), 
+  '/types/all',
   getDocumentTypesController); //Get All Types
 
 
 router.get(
   '/types/:type',
-  authenticateUser,
-  authorizeRoles('PLANNER', 'DEVELOPER'),
   validateDocumentType,
   handleValidationErrors,
   getDocumentsByTypeController,
