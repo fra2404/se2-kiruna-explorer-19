@@ -20,8 +20,9 @@ interface IConnection {
   type: LinkTypeEnum;
 }
 
-interface ICoordinate {
-  id: string;
+export interface ICoordinate {
+  id?: string;
+  _id?: string;
   type: 'Point' | 'Area';
   coordinates: number[] | number[][];
   name: string;

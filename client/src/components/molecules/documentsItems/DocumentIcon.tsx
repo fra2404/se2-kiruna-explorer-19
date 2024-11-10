@@ -30,7 +30,7 @@ export const DocumentIcon: React.FC<DocumentIconProps> = ({
     return (<DesignDocIcon fillColor={fillColor} />)
   } else if (type.toUpperCase() === 'INFORMATIVE_DOC') {
     return (<InformativeDocIcon fillColor={fillColor} />)
-  } else if (type.toUpperCase() === 'MATERIAL EFFECTS') {
+  } else if (type.toUpperCase() === 'MATERIAL_EFFECTS') {
     return (<MaterialEffectsIcon fillColor={fillColor} />)
   } else if (type.toUpperCase() === 'PRESCRIPTIVE_DOC') {
     return (<PrescriptiveDocIcon fillColor={fillColor} />)

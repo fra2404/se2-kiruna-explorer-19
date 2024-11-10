@@ -13,13 +13,14 @@ import InformativeDocIcon from '../../assets/icons/informative-doc-icon';
 import MaterialEffectsIcon from '../../assets/icons/material-effects-icon';
 import PrescriptiveDocIcon from '../../assets/icons/prescriptive-doc-icon';
 import TechnicalDocIcon from '../../assets/icons/technical-doc-icon';
-import { createDocument } from '../../API';
+import { createCoordinate, createDocument } from '../../API';
 import Toast from './Toast';
 import Step1 from '../molecules/steps/Step1';
 import Step2 from '../molecules/steps/Step2';
 import Step3 from '../molecules/steps/Step3';
 import Step4 from '../molecules/steps/Step4';
 import Step5 from '../molecules/steps/Step5';
+import { ICoordinate, IDocument } from '../../utils/interfaces/document.interface';
 
 Modal.setAppElement('#root');
 
@@ -32,7 +33,10 @@ interface DocumentFormProps {
   positionProp?: LatLng;
   selectedCoordIdProp?: string;
   coordinates: any;
+  setCoordinates: (coordinates: any) => void;
   showCoordNamePopup?: boolean;
+  documents: IDocument[];
+  setDocuments: (documents: IDocument[]) => void;
   modalOpen: boolean;
   setModalOpen: (open: boolean) => void;
 }
@@ -41,6 +45,9 @@ const DocumentForm = ({
   positionProp,
   selectedCoordIdProp,
   coordinates,
+  setCoordinates,
+  documents,
+  setDocuments,
   showCoordNamePopup = false,
 }: DocumentFormProps) => {
   const [currentStep, setCurrentStep] = useState(1);
@@ -135,7 +142,6 @@ const DocumentForm = ({
 
   const handleAddConnection = (connection: Connection) => {
     setConnections([...connections, connection]);
-    console.log('sono qui', connections);
   };
 
   const handleDeleteConnection = (index: number) => {
@@ -203,6 +209,47 @@ const DocumentForm = ({
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    let coordId: string | undefined = undefined;
+
+    //If selectedCoordId is undefined, this means that we are adding the document into a new point. We need to save this point in the DB
+    if(!selectedCoordId && position) {
+      const coordData: ICoordinate = {
+        id: "",
+        name: coordName,
+        type: "Point",                              //TODO: will be changed at story 9, to give the possibility to also create areas
+        coordinates: [position.lat, position.lng],  //TODO: will be changed at story 9, to give the possibility to also create areas
+      }
+
+      try {
+        const response = await createCoordinate(coordData);
+        console.log(response);
+        if(response.success) {
+          coordId = response.coordinate?.coordinate._id;
+          if(coordId)
+            setCoordinates({
+              ...coordinates, 
+              [coordId]: {
+                type: response.coordinate?.coordinate.type, 
+                coordinates: response.coordinate?.coordinate.coordinates,
+                name: response.coordinate?.coordinate.name
+              }
+            });
+        }
+        else {
+          console.log('Failed to create coordinate');
+          showToastMessage('Failed to create coordinate', 'error');
+        }
+      }
+      catch (error) {
+        console.error('Error creating coordinate:', error);
+        showToastMessage('Error creating coordinate:' + error, 'error');
+      }
+    }
+    else {
+      coordId = selectedCoordId;
+      console.log(coordId)
+    }
+
     const documentData = {
       title,
       stakeholders: stakeholders || '',
@@ -211,7 +258,7 @@ const DocumentForm = ({
       language,
       summary: description,
       date: issuanceDate,
-      coordinates: selectedCoordId || '',
+      coordinates: coordId || '',
       connections: connections.map((conn) => ({
         document: conn.relatedDocument.value,
         type: conn.type,
@@ -221,12 +268,15 @@ const DocumentForm = ({
 
     try {
       const response = await createDocument(documentData);
+      console.log(response);
       if (response.success) {
         console.log('Document created successfully:', response.document);
         showToastMessage('Document created successfully', 'success');
 
         setIsDocumentSaved(true);
         setCurrentStep(5);
+        if(response.document)
+          setDocuments(documents.concat(response.document.document));
       } else {
         console.log('Failed to create document');
         showToastMessage('Failed to create document', 'error');

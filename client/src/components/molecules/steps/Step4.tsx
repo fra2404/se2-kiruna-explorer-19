@@ -56,8 +56,6 @@ const Step4: React.FC<Step4Props> = ({
               type="select"
               options={Object.entries(coordinates).map(
                 ([areaId, info]: [string, any]) => {
-                  console.log('value: ' + areaId);
-                  console.log('name: ' + info['name']);
                   return { value: areaId, label: info['name'] };
                 },
               )}

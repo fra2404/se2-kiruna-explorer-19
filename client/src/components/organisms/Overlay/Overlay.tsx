@@ -5,12 +5,21 @@ import { modalStyles } from '../../../pages/KirunaMap';
 import './Overlay.css';
 import FloatingButton from '../../molecules/FloatingButton';
 import DocumentForm from '../DocumentForm';
+import { IDocument } from '../../../utils/interfaces/document.interface';
 
 interface OverlayProps {
   coordinates: any; //Need to pass coordinates to the modal as parameter
+  setCoordinates: (coordinates: any) => void;
+  documents: IDocument[];
+  setDocuments: (documents: IDocument[]) => void;
 }
 
-const Overlay: React.FC<OverlayProps> = ({ coordinates }) => {
+const Overlay: React.FC<OverlayProps> = ({ 
+  coordinates, 
+  setCoordinates,
+  documents,
+  setDocuments
+}) => {
   const [modalOpen, setModalOpen] = useState(false);
   const [isHovered, setIsHovered] = useState(false);
 
@@ -42,6 +51,9 @@ const Overlay: React.FC<OverlayProps> = ({ coordinates }) => {
       >
         <DocumentForm
           coordinates={coordinates}
+          setCoordinates={setCoordinates}
+          documents={documents}
+          setDocuments={setDocuments}
           positionProp={undefined}
           modalOpen={modalOpen}
           setModalOpen={setModalOpen}

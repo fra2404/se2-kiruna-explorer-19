@@ -5,12 +5,21 @@ import ButtonRounded from '../atoms/button/ButtonRounded';
 import Modal from 'react-modal';
 import DocumentForm from './DocumentForm';
 import { modalStyles } from '../../pages/KirunaMap';
+import { IDocument } from '../../utils/interfaces/document.interface';
 
 interface ClickMarkerProps {
   coordinates: any;
+  setCoordinates: (coordinates: any) => void;
+  documents: IDocument[];
+  setDocuments: (documents: IDocument[]) => void;
 }
 
-const ClickMarker: React.FC<ClickMarkerProps> = ({ coordinates }) => {
+const ClickMarker: React.FC<ClickMarkerProps> = ({ 
+  coordinates,
+  setCoordinates,
+  documents,
+  setDocuments
+}) => {
   const [position, setPosition] = useState<LatLng | null>(null);
   useMapEvents({
     dblclick(e) {
@@ -59,6 +68,9 @@ const ClickMarker: React.FC<ClickMarkerProps> = ({ coordinates }) => {
       >
         <DocumentForm
           coordinates={coordinates}
+          setCoordinates={setCoordinates}
+          documents={documents}
+          setDocuments={setDocuments}
           positionProp={position}
           showCoordNamePopup={true}
           modalOpen={modalOpen}

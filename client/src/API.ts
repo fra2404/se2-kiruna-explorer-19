@@ -1,4 +1,4 @@
-import { IDocument } from './utils/interfaces/document.interface';
+import { ICoordinate, IDocument } from './utils/interfaces/document.interface';
 import { IUser } from './utils/interfaces/user.interface';
 
 const SERVER_URL = 'http://localhost:5001/api'; // endpoint of the server
@@ -104,7 +104,7 @@ async function createDocument(documentData: {
   date: string;
   coordinates: string;
   connections: { document: string; type: string }[];
-}): Promise<{ success: boolean; document?: IDocument | null }> {
+}): Promise<{ success: boolean; document?: {message: string, document: IDocument} }> {
   const response = await fetch(`${SERVER_URL}/documents/create`, {
     method: 'POST',
     credentials: 'include',
@@ -129,7 +129,7 @@ async function createDocument(documentData: {
  * @returns Promise<DocumentFile>
  */
 
-async function addDocument(document: DocumentFile) {
+async function addDocument(document: IDocument) {
   return await fetch(`${SERVER_URL}/documents/create`, {
     method: 'POST',
     credentials: 'include',
@@ -148,6 +148,23 @@ async function getCoordinates() {
   })
     .then(handleInvalidResponse)
     .then((response) => response.json());
+}
+
+async function createCoordinate(coord: ICoordinate): Promise<{ success: boolean; coordinate?: {message: string, coordinate: ICoordinate} }> {
+  const response = await fetch(`${SERVER_URL}/coordinates/create`, {
+    method: 'POST',
+    credentials: 'include',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify(coord),
+  })
+  if (!response.ok) {
+    return { success: false };
+  }
+
+  const coordinate: {message: string, coordinate: ICoordinate} = await response.json();
+  return { success: true, coordinate };
 }
 
 // Utility functions:
@@ -187,5 +204,5 @@ const API = {
   addDocument,
 };
 
-export { login, logout, getMe, checkAuth, createDocument, getDocuments };
+export { login, logout, getMe, checkAuth, createDocument, getDocuments, createCoordinate };
 export default API;

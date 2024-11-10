@@ -13,7 +13,9 @@ interface AreaProps {
   areaCoordinates: LatLng[];
   name: string;
   coordinates: any;
-  documents: IDocument[]
+  setCoordinates: (coordinates: any) => void;
+  documents: IDocument[];
+  setDocuments: (documents: IDocument[]) => void;
 }
 
 export const Area: React.FC<AreaProps> = ({
@@ -21,8 +23,10 @@ export const Area: React.FC<AreaProps> = ({
   areaCoordinates,
   name,
   coordinates,
+  setCoordinates,
   isLoggedIn,
-  documents
+  documents,
+  setDocuments
 }) => {
   const [selectedAreaId, setSelectedAreaId] = useState('');
   const [modalOpen, setModalOpen] = useState(false);
@@ -53,6 +57,9 @@ export const Area: React.FC<AreaProps> = ({
       >
         <DocumentForm
           coordinates={coordinates}
+          setCoordinates={setCoordinates}
+          documents={documents}
+          setDocuments={setDocuments}
           selectedCoordIdProp={selectedAreaId}
           modalOpen={modalOpen}
           setModalOpen={setModalOpen}
