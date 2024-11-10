@@ -186,12 +186,19 @@ export const deleteCoordinateByIdController = async (
 
     const result = await deleteCoordinateById(id);
 
-    if (!result) {
+    // coordinate was not found
+    if (result === null) {
       throw new PositionError();
     }
 
-       res.status(200).json({ message: 'Coordinate deleted successfully' });
-      } catch (error) {
-        next(error); // Pass the error to the error handler middleware
-      }
+    // coordinate is linked to a document
+    if (result === false) {
+       throw new CustomError('coordinate is linked to a document', 400);
+    }
+
+    // If coordinate is deleted, return success message
+    res.status(200).json({ message: 'Coordinate deleted successfully' });
+  } catch (error) {
+    next(error); // Pass the error to the error handler middleware
+  }
 };
