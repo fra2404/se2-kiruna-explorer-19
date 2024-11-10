@@ -4,7 +4,7 @@ import {
   getDocumentByIdController,
   updateDocumentController,
   deleteDocumentController,
-  //getTypesController,
+  getDocumentTypesController,
   getDocumentsByTypeController,
 } from '@controllers/document.controllers';
 //import { addDocumentController, deleteDocumentController, getAllDocumentsController, getDocumentByIdController, updateDocumentController } from '@controllers/document.controllers';
@@ -30,13 +30,16 @@ router.post(
   handleValidationErrors,
   addDocumentController,
 ); //Add Document
+
 router.get('/', getAllDocumentsController); //Get All Documents
+
 router.get(
   '/:id',
   authenticateUser,
   validateDocumentId,
   getDocumentByIdController,
 ); // Get Document by ID
+
 router.put(
   '/:id',
   authenticateUser,
@@ -46,14 +49,23 @@ router.put(
   handleValidationErrors,
   updateDocumentController,
 );
-//router.get('/types', authenticateUser, authorizeRoles('PLANNER', 'DEVELOPER'), getTypesController); //Get All Types
+
+router.get(
+  '/types/all', 
+  authenticateUser, 
+  authorizeRoles('PLANNER', 'DEVELOPER'), 
+  getDocumentTypesController); //Get All Types
+
+
 router.get(
   '/types/:type',
   authenticateUser,
   authorizeRoles('PLANNER', 'DEVELOPER'),
   validateDocumentType,
+  handleValidationErrors,
   getDocumentsByTypeController,
 ); //Get Document based On Type
+
 router.delete('/', deleteDocumentController);
 
 export const documentRoutes = router;
