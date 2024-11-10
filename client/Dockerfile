@@ -1,8 +1,8 @@
 # Usa un'immagine di base per Node.js
-FROM node:14
+FROM node:16
 
 # Imposta la directory di lavoro
-WORKDIR /usr/src/app
+WORKDIR /app
 
 # Copia i file package.json e package-lock.json
 COPY package*.json ./
@@ -17,5 +17,5 @@ COPY . .
 EXPOSE 5173
 
 # Comando per avviare l'app in modalità sviluppo con Vite
-CMD ["npm", "run", "dev"]  
+CMD ["npm", "run", "dev", "--host", "0.0.0.0"]  
 # Assicurati di avere lo script "dev" definito nel package.json
