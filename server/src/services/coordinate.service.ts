@@ -59,30 +59,26 @@ export const deleteCoordinatesByNames = async (
 };
 
 
-export const deleteCoordinateById = async (id: string): Promise<void | null | boolean> => {
-  try {
-    console.log("Start of delete method");
+export const deleteCoordinateById = async (id: string): Promise<boolean> => {
+  console.log("Start of delete method");
 
-    const coordinate = await Coordinate.findById(id);
-    
-    if (!coordinate) {
-      return null;
-    }
+  const coordinate = await Coordinate.findById(id);
 
-    console.log("Coordinate exists. Checking if it's linked to a document");
-    // Check if the coordinate is linked to any document
-    const document = await Document.findOne({ coordinates: coordinate._id });
-    
-    if (document) {
-      console.log("Coordinate is linked to a document");
-      return false; 
-    }
-
-    console.log("Coordinate is not linked to any document");
-    await Coordinate.deleteOne({ _id: coordinate._id });
-
-    return true; 
-  } catch (error) {
-    throw new CustomError('Internal Server Error', 500);
+  if (!coordinate) {
+    throw new PositionError();
   }
+
+  console.log("Coordinate exists. Checking if it's linked to a document");
+  // Check if the coordinate is linked to any document
+  const document = await Document.findOne({ coordinates: coordinate._id });
+
+  if (document) {
+    console.log("Coordinate is linked to a document");
+    throw new CustomError('Coordinate is linked to a document', 400);
+  }
+
+  console.log("Coordinate is not linked to any document");
+  await Coordinate.deleteOne({ _id: coordinate._id });
+
+  return true;
 };

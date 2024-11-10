@@ -184,17 +184,7 @@ export const deleteCoordinateByIdController = async (
   try {
     const { id } = req.params;
 
-    const result = await deleteCoordinateById(id);
-
-    // coordinate was not found
-    if (result === null) {
-      throw new PositionError();
-    }
-
-    // coordinate is linked to a document
-    if (result === false) {
-       throw new CustomError('coordinate is linked to a document', 400);
-    }
+    await deleteCoordinateById(id);
 
     // If coordinate is deleted, return success message
     res.status(200).json({ message: 'Coordinate deleted successfully' });
