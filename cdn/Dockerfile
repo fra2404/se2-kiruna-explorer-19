@@ -1,26 +1,20 @@
-# Usa una base Node.js
-FROM node:16
+# Usa l'immagine ufficiale di Node.js con supporto multi-architettura
+FROM node:18
 
 # Imposta la directory di lavoro
 WORKDIR /app
 
-# Copia i file di dipendenze
+# Copia solo i file di package per gestire correttamente la cache
 COPY package*.json ./
 
-# Installa le dipendenze
-RUN npm install
+# Installa le dipendenze, forzando la ricostruzione di bcrypt
+RUN npm install 
 
-# Copia il resto dei file dell’applicazione
+# Copia il resto del codice dell'applicazione
 COPY . .
 
-# Copia il file .env
-COPY .env .env
-
-# Costruisce l'applicazione
-#RUN npm run build
-
-# Espone la porta (assicurati che corrisponda a quella usata nell'app e nel docker-compose)
+# Esponi la porta usata dall'applicazione (5001)
 EXPOSE 3004
 
-# Comando per avviare il servizio CDN
+# Comando per avviare l'applicazione
 CMD ["npm", "run", "dev"]

@@ -7,7 +7,11 @@ import dotenv from 'dotenv';
 import pdfParse from 'pdf-parse';
 import NodeCache from 'node-cache';
 
-dotenv.config();
+// Determina quale file .env caricare
+const envFile = process.env.DOCKER_ENV ? '.env.docker' : '.env.local';
+
+// Carica le variabili d'ambiente dal file specificato
+dotenv.config({ path: envFile });
 
 const app = express();
 const PORT = process.env.PORT || 3005;

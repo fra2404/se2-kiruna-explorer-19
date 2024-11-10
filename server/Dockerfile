@@ -1,24 +1,23 @@
-# Usa una base Node.js
-FROM node:16
+# Usa l'immagine ufficiale di Node.js con supporto multi-architettura
+FROM node:18
 
 # Imposta la directory di lavoro
 WORKDIR /app
 
-# Copia i file di dipendenze
+# Copia solo i file di package per gestire correttamente la cache
 COPY package*.json ./
 
-# Installa le dipendenze
-RUN npm install
+# Installa strumenti di build per la compilazione dei moduli nativi
+RUN apt-get update && apt-get install -y python3 make g++
 
-# Copia il resto dei file
+# Installa le dipendenze, forzando la ricostruzione di bcrypt
+RUN npm install && npm rebuild bcrypt --build-from-source
+
+# Copia il resto del codice dell'applicazione
 COPY . .
 
-# Carica variabili di ambiente dal file .env del server
-COPY .env .env
-
-
-# Espone la porta
+# Esponi la porta usata dall'applicazione (5001)
 EXPOSE 5001
 
-# Comando per avviare il server
+# Comando per avviare l'applicazione
 CMD ["npm", "run", "dev"]

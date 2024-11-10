@@ -7,11 +7,11 @@ services:
     container_name: mongoDB
     ports:
       - "27017:27017"
-    volumes:
-      - mongo_data:/data/db
     environment:
-      MONGO_INITDB_ROOT_USERNAME: admin # Oppure specifica un file .env per mongo se preferisci
+      MONGO_INITDB_ROOT_USERNAME: admin
       MONGO_INITDB_ROOT_PASSWORD: secret
+    volumes:
+      - ./mongo_data:/data/db
     networks:
       - my-network
 
@@ -21,12 +21,12 @@ services:
       context: ./server
       dockerfile: Dockerfile
     container_name: server
-    ports:
-      - "5001:5001" # Assicurati che corrisponda alla porta usata dal server
     depends_on:
       - mongo
-    env_file:
-      - ./server/.env # Specifica il file .env per il server
+    ports:
+      - "5001:5001"
+    environment:
+      - DOCKER_ENV=true
     networks:
       - my-network
 
@@ -36,10 +36,10 @@ services:
       context: ./client
       dockerfile: Dockerfile
     container_name: client
-    ports:
-      - "5173:5173" # Porta per la versione buildata di Vite
     depends_on:
       - server
+    ports:
+      - "5173:5173"
     networks:
       - my-network
 
@@ -50,19 +50,14 @@ services:
       dockerfile: Dockerfile
     container_name: cdn
     ports:
-      - "3004:3004" # Assicurati che corrisponda alla porta usata dal cdn
+      - "3004:3004"
     depends_on:
       - server
-    env_file:
-      - ./cdn/.env # Specifica il file .env per il cdn
+    environment:
+      - DOCKER_ENV=true
     networks:
       - my-network
 
-volumes:
-  mongo_data:
-
-
 networks:
   my-network:
-    # Definisci la rete personalizzata
     driver: bridge
