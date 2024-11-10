@@ -2,6 +2,9 @@ import { Coordinate } from '../schemas/coordinate.schema';
 import { ICoordinate } from '../interfaces/coordinate.interface';
 import { CustomError } from '../utils/customError';
 import { PositionError } from '../utils/errors';
+import Document from '../schemas/document.schema';
+
+
 
 // Function to get a coordinate by its ID
 export const getCoordinateById = async (
@@ -52,5 +55,32 @@ export const deleteCoordinatesByNames = async (
   } catch (error) {
     console.error(`Error deleting coordinates with names ${names}:`, error);
     throw new CustomError('Internal Server Error', 500);
+  }
+};
+
+
+export const deleteCoordinateById = async (id: string): Promise<void | null> => {
+  try {
+    const coordinate = await Coordinate.findById(id);
+    
+    if (!coordinate) {
+      throw new PositionError;
+    }
+
+    // Check if the coordinate is linked to any document
+    const document = await Document.findOne({ coordinates: coordinate._id });
+    console.log("Document : " + JSON.stringify(document, null, 2));
+    
+    if (document) {
+      throw new CustomError('Coordinate is linked to a document and cannot be deleted', 400);
+    }
+
+    console.log("end of code");
+
+    // If not linked to any document, proceed to delete the coordinate
+    //await Coordinate.deleteOne({ _id: coordinate._id });
+
+  } catch (error) {
+    throw new PositionError();
   }
 };
