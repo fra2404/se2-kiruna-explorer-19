@@ -134,6 +134,10 @@ const DocumentForm = ({
   };
 
   const handleAddConnection = (connection: Connection) => {
+    if (connections.indexOf(connection) !== -1) {
+      showToastMessage('Connection already exists', 'error');
+      return;
+    }
     setConnections([...connections, connection]);
     console.log('sono qui', connections);
   };

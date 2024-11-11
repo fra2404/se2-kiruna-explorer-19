@@ -12,6 +12,7 @@ import { Area } from '../components/organisms/Area';
 import ClickMarker from '../components/organisms/ClickMarker';
 import CustomZoomControl from '../components/molecules/ZoomControl';
 import Header from '../components/organisms/Header';
+import { IDocument } from '../utils/interfaces/document.interface';
 
 export const kirunaLatLngCoords: LatLngExpression = [67.85572, 20.22513];
 

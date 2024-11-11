@@ -1,7 +1,11 @@
-import React from "react"
+import React, { useState } from "react"
 import { IDocument } from "../../../utils/interfaces/document.interface"
 import { DocumentIcon } from "./DocumentIcon"
 import { FaArrowRight } from "react-icons/fa"
+import Modal from "react-modal";
+import DocumentDetailsModal, { DocumentDetailsModalProps} from "../../organisms/DocumentDetailsModal";
+
+Modal.setAppElement("#root");
 
 interface DocumentItemProps {
   document: IDocument
@@ -10,13 +14,47 @@ interface DocumentItemProps {
 export const DocumentItem: React.FC<DocumentItemProps> = ({
   document
 }) => {
+
+  const documentDetails : DocumentDetailsModalProps = {
+    title: document.title,
+    stakeholders: document.stakeholders,
+    scale: document.scale,
+    summary: document.summary,
+    type: document.type,
+    date: document.date,
+    coordinates: document.coordinates,
+    numConnections: document.connections?.length || 0,
+  };
+
+  const modalStyles = {
+    content: {
+      top: '50%',
+      left: '50%',
+      right: 'auto',
+      bottom: 'auto',
+      margin: '0 auto',
+      transform: 'translate(-50%, -50%)',
+      width: '90%',
+      
+    },
+    overlay: { zIndex: 1000 },
+  };
+
+  const [showModal, setShowModal] = useState(false);
+
   return (
-    <div className="flex py-1 cursor-pointer hover:bg-gray-200 rounded-lg" onClick={() => {}}>
-      <div className="flex-none size-8 ml-1 mr-3 self-center">
-        <DocumentIcon type={document.type} stakeholders={document.stakeholders} />
+    <>
+      <div className="flex py-1 cursor-pointer hover:bg-gray-200 rounded-lg" onClick={() => {setShowModal(true)}}>
+        <div className="flex-none size-8 ml-1 mr-3 self-center">
+          <DocumentIcon type={document.type} stakeholders={document.stakeholders} />
+        </div>
+        <span className="flex-1 text-lg font-bold self-center mr-3" >{document.title}</span>
+        <FaArrowRight className="text-lg self-center font-bold mr-1" />
       </div>
-      <span className="flex-1 text-lg font-bold self-center mr-3" >{document.title}</span>
-      <FaArrowRight className="text-lg self-center font-bold mr-1" />
-    </div>
+
+      <Modal style={modalStyles} isOpen={showModal} onRequestClose={() => setShowModal(false)} >
+        <DocumentDetailsModal {...documentDetails} />
+      </Modal>
+    </>
   )
 }
