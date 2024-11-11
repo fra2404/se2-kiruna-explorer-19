@@ -5,7 +5,7 @@ import {
   getDocumentById,
   updatingDocument,
   deleteDocumentByName,
-  // getDocumentTypes,
+  getDocumentTypes,
   getDocumentByType,
 } from '../services/document.service';
 // import { addingDocument, deleteDocumentByName, getAllDocuments, getDocumentById, updatingDocument } from '../services/document.service';
@@ -228,14 +228,14 @@ export const updateDocumentController = async (
   }
 };
 
-// export const getTypesController = (req: Request, res: Response, next: NextFunction): void => {
-//     try {
-//         const docTypes = getDocumentTypes();
-//         res.status(200).json({ types: docTypes });
-//     } catch (error) {
-//         next(error); // Pass the error to the error handler middleware
-//     }
-// };
+export const getDocumentTypesController = (req: Request, res: Response, next: NextFunction): void => {
+  try {
+    const docTypes = getDocumentTypes();
+    res.status(200).json({ docTypes });
+  } catch (error) {
+    next(error); // Pass the error to the error handler middleware
+  }
+};
 
 /**
  * @swagger
@@ -321,13 +321,8 @@ export const getDocumentsByTypeController = async (
   next: NextFunction,
 ): Promise<void> => {
   const { type } = req.params;
-
   try {
     const documents = await getDocumentByType(type);
-
-    if (documents.length === 0) {
-      throw new DocNotFoundError();
-    }
 
     res.status(200).json({ documents });
   } catch (error) {

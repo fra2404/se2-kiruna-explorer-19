@@ -6,6 +6,7 @@ import { DocNotFoundError, PositionError } from '../utils/errors';
 import { ICoordinate } from '@interfaces/coordinate.interface';
 import { getCoordinateById } from './coordinate.service';
 import { DocTypeEnum } from '@utils/enums/doc-type.enum';
+import { CustomError } from '@utils/customError';
 
 //addDocument(Story 1)
 export const addingDocument = async (
@@ -230,9 +231,18 @@ export const deleteDocumentByName = async (name: string): Promise<string> => {
   return 'Documents deleted successfully';
 };
 
-// export const getDocumentTypes = (): string[] => {
-//     return Object.values(DocTypeEnum);
-// };
+export const getDocumentTypes = () => {
+  const docTypes = Object.entries(DocTypeEnum).map(([key, value]) => ({
+    label: key,
+    value: value,
+  }));
+
+  if (docTypes.length === 0) {
+    throw new CustomError('No document types available', 404);
+  }
+
+  return docTypes;
+};
 
 export const getDocumentByType = async (
   type: string,
@@ -269,3 +279,5 @@ export const getDocumentByType = async (
     }),
   );
 };
+
+
