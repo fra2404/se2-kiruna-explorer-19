@@ -3,14 +3,23 @@ import { useMapEvents, Popup } from 'react-leaflet';
 import { LatLng } from 'leaflet';
 import ButtonRounded from '../../atoms/button/ButtonRounded';
 import Modal from 'react-modal';
+import { IDocument } from '../../../utils/interfaces/document.interface';
 import DocumentForm from '../DocumentForm';
 import { modalStyles } from '../../../pages/KirunaMap';
 
 interface ClickMarkerProps {
   coordinates: any;
+  setCoordinates: (coordinates: any) => void;
+  documents: IDocument[];
+  setDocuments: (documents: IDocument[]) => void;
 }
 
-const ClickMarker: React.FC<ClickMarkerProps> = ({ coordinates }) => {
+const ClickMarker: React.FC<ClickMarkerProps> = ({ 
+  coordinates,
+  setCoordinates,
+  documents,
+  setDocuments
+}) => {
   const [position, setPosition] = useState<LatLng | null>(null);
   useMapEvents({
     dblclick(e) {
@@ -59,6 +68,9 @@ const ClickMarker: React.FC<ClickMarkerProps> = ({ coordinates }) => {
       >
         <DocumentForm
           coordinates={coordinates}
+          setCoordinates={setCoordinates}
+          documents={documents}
+          setDocuments={setDocuments}
           positionProp={position}
           showCoordNamePopup={true}
           modalOpen={modalOpen}

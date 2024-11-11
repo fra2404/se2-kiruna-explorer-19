@@ -2,6 +2,7 @@ import React, { useRef, useState } from 'react';
 import { Marker } from 'react-leaflet';
 import { LatLng } from 'leaflet';
 import Modal from 'react-modal';
+import { IDocument } from '../../../utils/interfaces/document.interface';
 import { MapPopup } from '../../molecules/popups/MapPopup';
 import { modalStyles } from '../../../pages/KirunaMap';
 import DocumentForm from '../DocumentForm';
@@ -11,7 +12,10 @@ interface PointProps {
   pointCoordinates: LatLng;
   name: string;
   coordinates: any;
+  setCoordinates: (coordinates: any) => void;
   isLoggedIn: boolean;
+  documents: IDocument[];
+  setDocuments: (documents: IDocument[]) => void;
 }
 
 export const Point: React.FC<PointProps> = ({
@@ -19,7 +23,10 @@ export const Point: React.FC<PointProps> = ({
   pointCoordinates,
   name,
   coordinates,
+  setCoordinates,
   isLoggedIn,
+  documents,
+  setDocuments
 }) => {
   const [modalOpen, setModalOpen] = useState(false);
   const [selectedPointId, setSelectedPointId] = useState('');
@@ -32,6 +39,7 @@ export const Point: React.FC<PointProps> = ({
           name={name}
           isLoggedIn={isLoggedIn}
           message="Do you want to add a document in this point?"
+          documents={documents}
           onYesClick={() => {
             markerRef.current?.closePopup();
             setSelectedPointId(id);
@@ -50,6 +58,9 @@ export const Point: React.FC<PointProps> = ({
       >
         <DocumentForm
           coordinates={coordinates}
+          setCoordinates={setCoordinates}
+          documents={documents}
+          setDocuments={setDocuments}
           selectedCoordIdProp={selectedPointId}
           modalOpen={modalOpen}
           setModalOpen={setModalOpen}

@@ -13,6 +13,7 @@ import { Area } from '../components/organisms/coordsOverlay/Area';
 import ClickMarker from '../components/organisms/coordsOverlay/ClickMarker';
 import CustomZoomControl from '../components/molecules/ZoomControl';
 import Header from '../components/organisms/Header';
+import { IDocument } from '../utils/interfaces/document.interface';
 
 
 export const kirunaLatLngCoords: LatLngExpression = [67.85572, 20.22513];
@@ -37,7 +38,7 @@ export default function KirunaMap() {
   const { setFeedbackFromError } = useContext(FeedbackContext);
   const { mapType } = useContext(MapStyleContext);
 
-  const [documents, setDocuments] = useState([]);
+  const [documents, setDocuments] = useState<IDocument[]>([]);
   const [coordinates, setCoordinates] = useState({});
   const [shouldRefresh, setShouldRefresh] = useState(true);
 
@@ -98,7 +99,14 @@ export default function KirunaMap() {
     <>
       <div style={{ width: width, height: height }}>
         <Header />
-        {isLoggedIn && <Overlay coordinates={coordinates} />}
+        {isLoggedIn && 
+          <Overlay 
+            coordinates={coordinates}
+            setCoordinates={setCoordinates}
+            documents={documents}
+            setDocuments={setDocuments}
+          />
+        }
         <MapContainer
           style={{ width: '100%', height: '100%' }}
           center={kirunaLatLngCoords}
@@ -127,6 +135,8 @@ export default function KirunaMap() {
           )}
 
           {Object.entries(coordinates).map(([coordId, coordInfo]: any) => {
+            const filteredDocuments = documents.filter((d) => d.coordinates?._id == coordId);
+
             if (coordInfo.type == 'Point') {
               return (
                 <Point
@@ -135,7 +145,10 @@ export default function KirunaMap() {
                   pointCoordinates={coordInfo.coordinates}
                   name={coordInfo.name}
                   coordinates={coordinates}
+                  setCoordinates={setCoordinates}
                   isLoggedIn={isLoggedIn}
+                  documents={filteredDocuments}
+                  setDocuments={setDocuments}
                 />
               );
             } else {
@@ -146,12 +159,22 @@ export default function KirunaMap() {
                   areaCoordinates={coordInfo.coordinates}
                   name={coordInfo.name}
                   coordinates={coordinates}
+                  setCoordinates={setCoordinates}
                   isLoggedIn={isLoggedIn}
+                  documents={filteredDocuments}
+                  setDocuments={setDocuments}
                 />
               );
             }
           })}
-          {isLoggedIn && <ClickMarker coordinates={coordinates} />}
+          {isLoggedIn && 
+            <ClickMarker 
+              coordinates={coordinates}
+              setCoordinates={setCoordinates} 
+              documents={documents}
+              setDocuments={setDocuments}
+            />
+          }
           <CustomZoomControl />
         </MapContainer>
       </div>
