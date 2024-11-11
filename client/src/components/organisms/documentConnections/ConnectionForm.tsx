@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from 'react';
-import { ConnectionFormFields } from '../molecules/ConnectionFormFields';
-import { Connection } from './DocumentForm';
-import API from '../../API';
-import ButtonRounded from '../atoms/button/ButtonRounded';
+import { ConnectionFormFields } from '../../molecules/documentConnections/ConnectionFormFields';
+import { Connection } from '../DocumentForm';
+import API from '../../../API';
+import ButtonRounded from '../../atoms/button/ButtonRounded';
 
 interface ConnectionFormProps {
   setModalOpen: (open: boolean) => void;

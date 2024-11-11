@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import ConnectionForm from './ConnectionForm';
+import ConnectionForm from './documentConnections/ConnectionForm';
 import Modal from 'react-modal';
 import { kirunaLatLngCoords } from '../../pages/KirunaMap';
 import { useMapEvents } from 'react-leaflet';

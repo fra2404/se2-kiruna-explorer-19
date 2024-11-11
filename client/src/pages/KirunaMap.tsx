@@ -3,16 +3,18 @@ import { MapContainer, TileLayer } from 'react-leaflet';
 import { LatLng, LatLngExpression } from 'leaflet';
 import API from '../API';
 import FeedbackContext from '../context/FeedbackContext';
+import MapStyleContext from '../context/MapStyleContext';
 
 import { useAuth } from '../context/AuthContext';
 import 'leaflet/dist/leaflet.css';
 import Overlay from '../components/organisms/Overlay/Overlay';
-import { Point } from '../components/organisms/Point';
-import { Area } from '../components/organisms/Area';
-import ClickMarker from '../components/organisms/ClickMarker';
+import { Point } from '../components/organisms/coordsOverlay/Point';
+import { Area } from '../components/organisms/coordsOverlay/Area';
+import ClickMarker from '../components/organisms/coordsOverlay/ClickMarker';
 import CustomZoomControl from '../components/molecules/ZoomControl';
 import Header from '../components/organisms/Header';
 import { IDocument } from '../utils/interfaces/document.interface';
+
 
 export const kirunaLatLngCoords: LatLngExpression = [67.85572, 20.22513];
 
@@ -34,6 +36,7 @@ export const modalStyles = {
 export default function KirunaMap() {
   const { isLoggedIn } = useAuth();
   const { setFeedbackFromError } = useContext(FeedbackContext);
+  const { mapType } = useContext(MapStyleContext);
 
   const [documents, setDocuments] = useState<IDocument[]>([]);
   const [coordinates, setCoordinates] = useState({});
@@ -110,6 +113,7 @@ export default function KirunaMap() {
           zoom={13}
           doubleClickZoom={false}
           scrollWheelZoom={true}
+          minZoom={9}
           zoomControl={false}
           touchZoom={true}
           maxBounds={[
@@ -118,10 +122,18 @@ export default function KirunaMap() {
           ]}
           maxBoundsViscosity={0.9}
         >
-          <TileLayer
-            attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-            url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
-          />
+          {mapType === 'osm' ? (
+            <TileLayer
+              attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+              url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+            />
+          ) : (
+            <TileLayer
+              attribution='ArcGIS'
+              url="https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}"
+            />
+          )}
+
           {Object.entries(coordinates).map(([coordId, coordInfo]: any) => {
             const filteredDocuments = documents.filter((d) => d.coordinates?._id == coordId);
 
