@@ -3,6 +3,7 @@ import { MapContainer, TileLayer } from 'react-leaflet';
 import { LatLng, LatLngExpression } from 'leaflet';
 import API from '../API';
 import FeedbackContext from '../context/FeedbackContext';
+import MapStyleContext from '../context/MapStyleContext';
 
 import { useAuth } from '../context/AuthContext';
 import 'leaflet/dist/leaflet.css';
@@ -12,6 +13,7 @@ import { Area } from '../components/organisms/Area';
 import ClickMarker from '../components/organisms/ClickMarker';
 import CustomZoomControl from '../components/molecules/ZoomControl';
 import Header from '../components/organisms/Header';
+
 
 export const kirunaLatLngCoords: LatLngExpression = [67.85572, 20.22513];
 
@@ -33,6 +35,7 @@ export const modalStyles = {
 export default function KirunaMap() {
   const { isLoggedIn } = useAuth();
   const { setFeedbackFromError } = useContext(FeedbackContext);
+  const { mapType } = useContext(MapStyleContext);
 
   const [documents, setDocuments] = useState([]);
   const [coordinates, setCoordinates] = useState({});
@@ -110,10 +113,18 @@ export default function KirunaMap() {
           ]}
           maxBoundsViscosity={0.9}
         >
-          <TileLayer
-            attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-            url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
-          />
+          {mapType === 'osm' ? (
+            <TileLayer
+              attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+              url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+            />
+          ) : (
+            <TileLayer
+              attribution='ArcGIS'
+              url="https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}"
+            />
+          )}
+
           {Object.entries(coordinates).map(([coordId, coordInfo]: any) => {
             if (coordInfo.type == 'Point') {
               return (
