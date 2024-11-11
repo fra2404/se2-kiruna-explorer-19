@@ -92,6 +92,7 @@ const Step4: React.FC<Step4Props> = ({
             doubleClickZoom={false}
             scrollWheelZoom={true}
             zoomControl={false}
+            minZoom={9}
             touchZoom={true}
             maxBounds={[
               [67.8, 19.9],

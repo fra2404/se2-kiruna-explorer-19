@@ -105,6 +105,7 @@ export default function KirunaMap() {
           zoom={13}
           doubleClickZoom={false}
           scrollWheelZoom={true}
+          minZoom={9}
           zoomControl={false}
           touchZoom={true}
           maxBounds={[
