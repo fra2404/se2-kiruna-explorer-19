@@ -4,6 +4,7 @@ import {
   deleteCoordinatesByNames,
   getAllCoordinates,
   getCoordinateById,
+  deleteCoordinateById,
 } from '@services/coordinate.service';
 import { CustomError } from '@utils/customError';
 import { PositionError } from '@utils/errors';
@@ -171,5 +172,23 @@ export const deleteCoordinateController = async (
     res.status(200).json({ message: 'Coordinates deleted successfully' });
   } catch (error) {
     next(new CustomError('Internal Server Error', 500));
+  }
+};
+
+
+export const deleteCoordinateByIdController = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+): Promise<void> => {
+  try {
+    const { id } = req.params;
+
+    await deleteCoordinateById(id);
+
+    // If coordinate is deleted, return success message
+    res.status(200).json({ message: 'Coordinate deleted successfully' });
+  } catch (error) {
+    next(error); // Pass the error to the error handler middleware
   }
 };
