@@ -1,5 +1,5 @@
 import React from 'react';
-import InputComponent from '../atoms/input/input';
+import InputComponent from '../../atoms/input/input';
 
 interface ConnectionFormFieldsProps {
   connectionTypeOptions: any[];

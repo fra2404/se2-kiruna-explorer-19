@@ -2,9 +2,9 @@ import React, { useRef, useState } from 'react';
 import { Marker } from 'react-leaflet';
 import { LatLng } from 'leaflet';
 import Modal from 'react-modal';
-import { MapPopup } from '../molecules/MapPopup';
-import { modalStyles } from '../../pages/KirunaMap';
-import DocumentForm from './DocumentForm';
+import { MapPopup } from '../../molecules/popups/MapPopup';
+import { modalStyles } from '../../../pages/KirunaMap';
+import DocumentForm from '../DocumentForm';
 
 interface PointProps {
   id: string;

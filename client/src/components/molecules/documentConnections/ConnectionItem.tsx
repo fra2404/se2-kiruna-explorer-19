@@ -1,6 +1,6 @@
 import React from 'react';
-import { Connection } from '../organisms/DocumentForm';
-import { DeleteButton } from '../atoms/button/DeleteButton';
+import { Connection } from '../../organisms/DocumentForm';
+import { DeleteButton } from '../../atoms/button/DeleteButton';
 
 interface ConnectionItemProps {
   connection: Connection;

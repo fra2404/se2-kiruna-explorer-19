@@ -1,6 +1,6 @@
 import React, { useRef } from 'react';
 import { Popup } from 'react-leaflet';
-import ButtonRounded from '../atoms/button/ButtonRounded';
+import ButtonRounded from '../../atoms/button/ButtonRounded';
 
 interface MapPopupProps {
   name: string;

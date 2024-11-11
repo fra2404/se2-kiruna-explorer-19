@@ -8,9 +8,9 @@ import MapStyleContext from '../context/MapStyleContext';
 import { useAuth } from '../context/AuthContext';
 import 'leaflet/dist/leaflet.css';
 import Overlay from '../components/organisms/Overlay/Overlay';
-import { Point } from '../components/organisms/Point';
-import { Area } from '../components/organisms/Area';
-import ClickMarker from '../components/organisms/ClickMarker';
+import { Point } from '../components/organisms/coordsOverlay/Point';
+import { Area } from '../components/organisms/coordsOverlay/Area';
+import ClickMarker from '../components/organisms/coordsOverlay/ClickMarker';
 import CustomZoomControl from '../components/molecules/ZoomControl';
 import Header from '../components/organisms/Header';
 

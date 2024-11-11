@@ -1,5 +1,5 @@
 import React from 'react';
-import ConnectionList from '../../organisms/ConnectionList';
+import ConnectionList from '../../organisms/documentConnections/ConnectionList';
 import ButtonRounded from '../../atoms/button/ButtonRounded';
 import InputComponent from '../../atoms/input/input';
 
