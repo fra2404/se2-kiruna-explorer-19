@@ -495,7 +495,7 @@ describe('Tests for document controllers', () => {
       title: 'Test Document',
       stakeholders: 'Company A',
       scale: 'Test value',
-      type: 'Type A', // Specifica il tipo corretto
+      type: DocTypeEnum.Agreement,
       date: '2023-01-01',
       summary: 'Test summary',
       connections: [],
@@ -715,7 +715,11 @@ describe('Tests for document controllers', () => {
       const err = new DocNotFoundError();
 
       //Support functions mocking
-      (getDocumentByType as jest.Mock).mockImplementation(async () => []);
+      jest
+        .spyOn(require('../services/document.service'), 'getDocumentByType')
+        .mockImplementation(async () => {
+          throw err;
+        });
 
       //Call of getDocumentsByTypeController
       await getDocumentsByTypeController(req as Request, res as Response, next);
