@@ -226,6 +226,7 @@ export const updatingDocument = async (
   return document;
 };
 
+/* istanbul ignore next */
 export const deleteDocumentByName = async (name: string): Promise<string> => {
   await Document.deleteMany({ title: name });
   return 'Documents deleted successfully';

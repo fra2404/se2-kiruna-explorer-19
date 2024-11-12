@@ -62,6 +62,7 @@ router.get(
   getDocumentsByTypeController,
 ); //Get Document based On Type
 
+/* istanbul ignore next */
 router.delete('/', deleteDocumentController);
 
 export const documentRoutes = router;

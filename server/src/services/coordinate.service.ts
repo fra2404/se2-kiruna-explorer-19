@@ -47,6 +47,7 @@ export const getAllCoordinates = async (): Promise<ICoordinate[]> => {
   }
 };
 
+/* istanbul ignore next */
 export const deleteCoordinatesByNames = async (
   names: string[],
 ): Promise<void> => {

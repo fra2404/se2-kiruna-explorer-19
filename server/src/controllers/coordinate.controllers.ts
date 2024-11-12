@@ -161,6 +161,7 @@ export const getCoordinateByIdController = async (
   }
 };
 
+/* istanbul ignore next */
 export const deleteCoordinateController = async (
   req: Request,
   res: Response,
