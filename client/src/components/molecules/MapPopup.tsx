@@ -3,12 +3,13 @@ import { Popup } from 'react-leaflet';
 import ButtonRounded from '../atoms/button/ButtonRounded';
 import { IDocument } from '../../utils/interfaces/document.interface';
 import { MarkerDocumentList } from './documentsItems/MarkerDocumentList';
+import { IDocumentResponse } from '../../../../server/src/interfaces/document.return.interface';
 
 interface MapPopupProps {
   name: string;
   isLoggedIn: boolean;
   message: string;
-  documents: IDocument[];
+  documents: IDocumentResponse[];
   onYesClick: () => void;
   onCancelClick: () => void;
 }

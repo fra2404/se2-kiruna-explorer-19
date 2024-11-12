@@ -1,30 +1,19 @@
 import React, { useState } from "react"
-import { IDocument } from "../../../utils/interfaces/document.interface"
 import { DocumentIcon } from "./DocumentIcon"
 import { FaArrowRight } from "react-icons/fa"
 import Modal from "react-modal";
-import DocumentDetailsModal, { DocumentDetailsModalProps} from "../../organisms/DocumentDetailsModal";
+import DocumentDetailsModal from "../../organisms/DocumentDetailsModal";
+import { IDocumentResponse } from "../../../../../server/src/interfaces/document.return.interface"
 
 Modal.setAppElement("#root");
 
 interface DocumentItemProps {
-  document: IDocument
+  document: IDocumentResponse
 }
 
 export const DocumentItem: React.FC<DocumentItemProps> = ({
   document
 }) => {
-
-  const documentDetails : DocumentDetailsModalProps = {
-    title: document.title,
-    stakeholders: document.stakeholders,
-    scale: document.scale,
-    summary: document.summary,
-    type: document.type,
-    date: document.date,
-    coordinates: document.coordinates,
-    numConnections: document.connections?.length || 0,
-  };
 
   const modalStyles = {
     content: {
@@ -46,14 +35,14 @@ export const DocumentItem: React.FC<DocumentItemProps> = ({
     <>
       <div className="flex py-1 cursor-pointer hover:bg-gray-200 rounded-lg" onClick={() => {setShowModal(true)}}>
         <div className="flex-none size-8 ml-1 mr-3 self-center">
-          <DocumentIcon type={document.type} stakeholders={document.stakeholders} />
+          <DocumentIcon type={document.type} />
         </div>
         <span className="flex-1 text-lg font-bold self-center mr-3" >{document.title}</span>
         <FaArrowRight className="text-lg self-center font-bold mr-1" />
       </div>
 
       <Modal style={modalStyles} isOpen={showModal} onRequestClose={() => setShowModal(false)} >
-        <DocumentDetailsModal {...documentDetails} />
+        <DocumentDetailsModal document={document} />
       </Modal>
     </>
   )

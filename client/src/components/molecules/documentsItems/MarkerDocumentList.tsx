@@ -1,9 +1,9 @@
 import React from "react"
-import { IDocument } from "../../../utils/interfaces/document.interface"
 import { DocumentItem } from "./DocumentItem"
+import { IDocumentResponse } from "../../../../../server/src/interfaces/document.return.interface";
 
 interface DocumentProps {
-  documents: IDocument[]
+  documents: IDocumentResponse[]
 }
 
 export const MarkerDocumentList: React.FC<DocumentProps> = ({

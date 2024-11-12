@@ -1,23 +1,8 @@
-import React from 'react';
 import { DocumentIcon } from '../molecules/documentsItems/DocumentIcon';
-import DocumentDetailsMiddle from '../molecules/DocumentDetailsMiddle';
 
-export interface DocumentDetailsModalProps {
-    title: string;
-    stakeholders: string;
-    scale: string;
-    summary: string;
-    type: string;
-    date: string;
-    coordinates: number[] | number[][];
-    numConnections: number;
-    language?: string;
-}
+const DocumentDetailsModal = ( {document} : any ) => {
 
-const DocumentDetailsModal = ({ 
-    title, stakeholders, scale, summary, 
-    type, date, coordinates, numConnections, 
-    language }: DocumentDetailsModalProps) => {
+    console.log(document);
 
     const matchType = (type: string) => {
         switch (type) {
@@ -43,14 +28,14 @@ const DocumentDetailsModal = ({
     }
 
     const list = [
-        { label: "Title", content: title },
-        { label: "Stakeholders", content: stakeholders },
-        { label: "Scale", content: scale },
-        { label: "Issuance Date", content: date },
-        { label: "Type", content: matchType(type) },
-        { label: "Connections", content: numConnections.toString() },
-        { label: "Language", content: language },
-        { label: "Coordinates", content: coordinates.coordinates.toString() }
+        { label: "Title", content: document.title },
+        { label: "Stakeholders", content: document.stakeholders },
+        { label: "Scale", content: document.scale },
+        { label: "Issuance Date", content: document.date },
+        { label: "Type", content: matchType(document.type) },
+        { label: "Connections", content: document.connections?.length.toString() },
+        { label: "Language", content: document.language },
+        { label: "Coordinates", content: document.coordinates?.coordinates.toString() }
     ]
 
     return (
@@ -58,18 +43,20 @@ const DocumentDetailsModal = ({
             <div className="w-full p-8 grid grid-cols-12 text-sm">
                 {/* Icon container */}
                 <div className="col-span-2 px-2">
-                    <DocumentIcon type={type} />
+                    <DocumentIcon type={document.type} stakeholders={document.stakeholders} />
                 </div>
 
                 {/* Middle section */}
                 <div className="col-start-3 col-span-5 border-r border-l px-2">
-                    <DocumentDetailsMiddle list={list} />
+                    {list.map((item, index) => (
+                        <div key={index}>{item.label}: <span className="font-bold">{item.content}</span></div>
+                    ))}
                 </div>
 
                 {/* Description / Summary container */}
                 <div className="col-start-8 col-span-5 px-2">
                     <h1>Description:</h1>
-                    <p>{summary}</p>
+                    <p>{document.summary}</p>
                 </div>
             </div>
         </>

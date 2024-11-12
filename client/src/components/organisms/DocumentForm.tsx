@@ -134,12 +134,12 @@ const DocumentForm = ({
   };
 
   const handleAddConnection = (connection: Connection) => {
-    if (connections.indexOf(connection) !== -1) {
-      showToastMessage('Connection already exists', 'error');
+    if (!connections.some(conn => conn.type === connection.type && conn.relatedDocument.value === connection.relatedDocument.value)) {
+      setConnections([...connections, connection]);
+      console.log('sono qui', connections);
       return;
     }
-    setConnections([...connections, connection]);
-    console.log('sono qui', connections);
+    showToastMessage('Connection already exists', 'error');
   };
 
   const handleDeleteConnection = (index: number) => {
