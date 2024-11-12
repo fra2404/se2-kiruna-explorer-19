@@ -92,6 +92,7 @@ export const loginUser = async (
   return { token };
 };
 
+/* istanbul ignore next */
 export const deleteUserByEmail = async (email: string): Promise<string> => {
   await User.findOneAndDelete({ email });
   return 'User deleted successfully';

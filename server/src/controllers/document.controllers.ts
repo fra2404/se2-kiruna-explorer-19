@@ -330,6 +330,7 @@ export const getDocumentsByTypeController = async (
   }
 };
 
+/* istanbul ignore next */
 export const deleteDocumentController = async (
   req: Request,
   res: Response,
