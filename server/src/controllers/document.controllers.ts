@@ -351,13 +351,13 @@ export const deleteDocumentController = async (
  * @swagger
  * /documents/search:
  *   get:
- *     summary: Search documents by keyword
- *     description: Retrieve all documents that match the specified keyword in the title or summary.
+ *     summary: Search documents by multiple keywords
+ *     description: Retrieve all documents that match the specified keywords in the title or summary.
  *     parameters:
  *       - in: query
- *         name: keyword
+ *         name: keywords
  *         required: true
- *         description: The keyword to search for in the title or summary of the document.
+ *         description: An array of keywords to search for in the title or summary of the document. Ex: ["lorem", "ipsum"]
  *         schema:
  *           type: string
  *     responses:
@@ -431,10 +431,9 @@ export const searchDocumentsController = async (
   res: Response,
   next: NextFunction,): Promise<void> => {
   try {
-    const keyword = req.query.keyword as string;
-    console.log(keyword);
 
-    const documents = await searchDocuments(keyword);
+    const keywords = JSON.parse(req.query.keywords as string);  // Parse the input query string into an array of keywords
+    const documents = await searchDocuments(keywords);
     res.status(200).json(documents);
   } catch (error) {
     next(error); // Pass the error to the error handler middleware

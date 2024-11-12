@@ -139,8 +139,20 @@ export const getDocumentById = async (
   };
 };
 
-export const searchDocuments = async ( keyword : string) : Promise<IDocumentResponse[] | null> => {
-  const documents = await Document.find({$or: [{title: {$regex: keyword, $options: 'i'}}, {summary: {$regex: keyword, $options: 'i'}}]});
+export const searchDocuments = async ( keywords : string[]) : Promise<IDocumentResponse[] | null> => {
+  console.log(typeof keywords);
+  // With the operator $and we combine the keywords
+    const query = {
+      $and: keywords.map(keyword => ({
+        $or: [
+          { title: { $regex: keyword, $options: 'i' } },
+          { summary: { $regex: keyword, $options: 'i' } }
+        ]
+      }))
+    };
+  
+  
+  const documents = await Document.find(query);
   if (documents.length === 0) {
     throw new DocNotFoundError();
   }
