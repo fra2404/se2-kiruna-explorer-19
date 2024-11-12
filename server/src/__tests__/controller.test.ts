@@ -134,7 +134,7 @@ describe('Tests for user controllers', () => {
           password: 'password123',
           surname: 'Martinez',
           phone: '123456789',
-          role: UserRoleEnum.Visitor,
+          role: UserRoleEnum.Visitor
         },
       };
 
