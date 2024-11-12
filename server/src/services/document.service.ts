@@ -139,6 +139,37 @@ export const getDocumentById = async (
   };
 };
 
+export const searchDocuments = async ( keyword : string) : Promise<IDocumentResponse[] | null> => {
+  const documents = await Document.find({$or: [{title: {$regex: keyword, $options: 'i'}}, {summary: {$regex: keyword, $options: 'i'}}]});
+  if (documents.length === 0) {
+    throw new DocNotFoundError();
+  }
+  return Promise.all(
+    documents.map(async (document) => {
+      const documentObject = document.toObject();
+      delete documentObject._id;
+      delete documentObject.createdAt;
+      delete documentObject.updatedAt;
+      delete documentObject.__v;
+
+      let coordinate: ICoordinate | null = null;
+      const coordinateId = document.coordinates;
+
+      if (coordinateId) {
+        coordinate = await getCoordinateById(coordinateId.toString());
+      }
+
+      return {
+        id: document.id,
+        ...documentObject,
+        coordinates: coordinate || null,
+      } as IDocumentResponse;
+    }),
+  );
+
+}
+
+
 // Update document
 export const updatingDocument = async (
   id: string,
