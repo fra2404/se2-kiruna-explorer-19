@@ -38,25 +38,31 @@ export const Point: React.FC<PointProps> = ({
     <>
       <Marker key={id} position={pointCoordinates} ref={markerRef} icon={
         new DivIcon({
-          iconSize: [35, 35],
+          iconSize: [45, 45],
           className: "pointIcon",
           html: renderToString(
-            documents.length == 1 ? 
-            <DocumentIcon type={documents[0].type} stakeholders={documents[0].stakeholders} /> 
-            :
             <div style={{
               display: "flex",
               justifyContent: "center",
               alignItems: "center",
-              width: "35px",
-              height: "35px",
-              backgroundColor: "#007bff",
+              width: "40px",
+              height: "40px",
+              backgroundColor: documents.length == 1 ? "white" : "#006AA7",   //TODO: is it better like this or with only the document icon?
               color: "white",
-              borderRadius: "50%",
+              borderRadius: "50% 50% 50% 0",
+              transform: "rotate(-45deg)",
               fontSize: "20px",
-              fontWeight: "bold" 
+              fontWeight: "bold",
+              border: "2px solid black",
+              padding: documents.length == 1 ? "1px" : "0px"
             }}>
-              {documents.length}
+              <span style={{transform: "rotate(45deg)"}}>
+              {documents.length == 1 ? 
+                <DocumentIcon type={documents[0].type} stakeholders={documents[0].stakeholders} /> 
+                :
+                documents.length
+              }
+              </span>
            </div>
           ),
         })

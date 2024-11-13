@@ -1,6 +1,6 @@
 import { useState, useEffect, useContext } from 'react';
 import { MapContainer, TileLayer } from 'react-leaflet';
-import { LatLng, LatLngExpression } from 'leaflet';
+import { DivIcon, LatLng, LatLngExpression } from 'leaflet';
 import API from '../API';
 import FeedbackContext from '../context/FeedbackContext';
 import MapStyleContext from '../context/MapStyleContext';
@@ -15,6 +15,7 @@ import CustomZoomControl from '../components/molecules/ZoomControl';
 import Header from '../components/organisms/Header';
 import { IDocument } from '../utils/interfaces/document.interface';
 import MarkerClusterGroup from 'react-leaflet-markercluster';
+import { renderToString } from 'react-dom/server';
 
 
 export const kirunaLatLngCoords: LatLngExpression = [67.85572, 20.22513];
@@ -135,7 +136,26 @@ export default function KirunaMap() {
             />
           )}
 
-          <MarkerClusterGroup>
+          <MarkerClusterGroup iconCreateFunction={(cluster: any) => {
+            return new DivIcon({
+              iconSize: [45, 45],
+              className: "pointIcon",
+              html: renderToString(<div style={{
+                display: "flex",
+                justifyContent: "center",
+                alignItems: "center",
+                width: "40px",
+                height: "40px",
+                backgroundColor: "#FECC02",
+                color: "white",
+                borderRadius: "50%",
+                fontSize: "20px",
+                fontWeight: "bold"
+              }}>
+                {cluster.getChildCount()}
+              </div>)
+            })
+          }}>
             {Object.entries(coordinates).map(([coordId, coordInfo]: any) => {
               const filteredDocuments = documents.filter((d) => d.coordinates?._id == coordId);
 

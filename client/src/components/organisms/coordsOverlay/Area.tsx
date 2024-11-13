@@ -35,7 +35,7 @@ export const Area: React.FC<AreaProps> = ({
     <>
       <Polygon
         key={id}
-        pathOptions={{ color: 'blue' }}
+        pathOptions={{ color: '#006AA7' }}
         positions={areaCoordinates as unknown as LatLng[]}
       >
         <MapPopup
