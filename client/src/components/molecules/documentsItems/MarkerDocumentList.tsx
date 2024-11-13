@@ -1,6 +1,6 @@
 import React from "react"
 import { DocumentItem } from "./DocumentItem"
-import { IDocumentResponse } from "../../../../../server/src/interfaces/document.return.interface";
+import { IDocumentResponse } from "../../../utils/interfaces/document.interface";
 
 interface DocumentProps {
   documents: IDocumentResponse[]
