@@ -14,6 +14,7 @@ import ClickMarker from '../components/organisms/coordsOverlay/ClickMarker';
 import CustomZoomControl from '../components/molecules/ZoomControl';
 import Header from '../components/organisms/Header';
 import { IDocument } from '../utils/interfaces/document.interface';
+import MarkerClusterGroup from 'react-leaflet-markercluster';
 
 
 export const kirunaLatLngCoords: LatLngExpression = [67.85572, 20.22513];
@@ -134,39 +135,41 @@ export default function KirunaMap() {
             />
           )}
 
-          {Object.entries(coordinates).map(([coordId, coordInfo]: any) => {
-            const filteredDocuments = documents.filter((d) => d.coordinates?._id == coordId);
+          <MarkerClusterGroup>
+            {Object.entries(coordinates).map(([coordId, coordInfo]: any) => {
+              const filteredDocuments = documents.filter((d) => d.coordinates?._id == coordId);
 
-            if (coordInfo.type == 'Point') {
-              return (
-                <Point
-                  key={coordId}
-                  id={coordId}
-                  pointCoordinates={coordInfo.coordinates}
-                  name={coordInfo.name}
-                  coordinates={coordinates}
-                  setCoordinates={setCoordinates}
-                  isLoggedIn={isLoggedIn}
-                  documents={filteredDocuments}
-                  setDocuments={setDocuments}
-                />
-              );
-            } else {
-              return (
-                <Area
-                  key={coordId}
-                  id={coordId}
-                  areaCoordinates={coordInfo.coordinates}
-                  name={coordInfo.name}
-                  coordinates={coordinates}
-                  setCoordinates={setCoordinates}
-                  isLoggedIn={isLoggedIn}
-                  documents={filteredDocuments}
-                  setDocuments={setDocuments}
-                />
-              );
-            }
-          })}
+              if (coordInfo.type == 'Point') {
+                return (
+                  <Point
+                    key={coordId}
+                    id={coordId}
+                    pointCoordinates={coordInfo.coordinates}
+                    name={coordInfo.name}
+                    coordinates={coordinates}
+                    setCoordinates={setCoordinates}
+                    isLoggedIn={isLoggedIn}
+                    documents={filteredDocuments}
+                    setDocuments={setDocuments}
+                  />
+                );
+              } else {
+                return (
+                  <Area
+                    key={coordId}
+                    id={coordId}
+                    areaCoordinates={coordInfo.coordinates}
+                    name={coordInfo.name}
+                    coordinates={coordinates}
+                    setCoordinates={setCoordinates}
+                    isLoggedIn={isLoggedIn}
+                    documents={filteredDocuments}
+                    setDocuments={setDocuments}
+                  />
+                );
+              }
+            })}
+          </MarkerClusterGroup>
           {isLoggedIn && 
             <ClickMarker 
               coordinates={coordinates}

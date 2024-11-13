@@ -44,7 +44,20 @@ export const Point: React.FC<PointProps> = ({
             documents.length == 1 ? 
             <DocumentIcon type={documents[0].type} stakeholders={documents[0].stakeholders} /> 
             :
-            <DocumentIcon type="" stakeholders='' />
+            <div style={{
+              display: "flex",
+              justifyContent: "center",
+              alignItems: "center",
+              width: "35px",
+              height: "35px",
+              backgroundColor: "#007bff",
+              color: "white",
+              borderRadius: "50%",
+              fontSize: "20px",
+              fontWeight: "bold" 
+            }}>
+              {documents.length}
+           </div>
           ),
         })
       }>
