@@ -154,7 +154,7 @@ export const searchDocuments = async ( keywords : string[]) : Promise<IDocumentR
   
   const documents = await Document.find(query);
   if (documents.length === 0) {
-    throw new DocNotFoundError();
+    return [] as IDocumentResponse[];
   }
   return Promise.all(
     documents.map(async (document) => {
