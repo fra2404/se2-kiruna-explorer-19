@@ -1,11 +1,13 @@
 import React, { useRef, useState } from 'react';
 import { Marker } from 'react-leaflet';
-import { LatLng } from 'leaflet';
+import { DivIcon, LatLng } from 'leaflet';
 import Modal from 'react-modal';
 import { IDocument } from '../../../utils/interfaces/document.interface';
 import { MapPopup } from '../../molecules/popups/MapPopup';
 import { modalStyles } from '../../../pages/KirunaMap';
 import DocumentForm from '../DocumentForm';
+import { DocumentIcon } from '../../molecules/documentsItems/DocumentIcon';
+import { renderToString } from 'react-dom/server';
 
 interface PointProps {
   id: string;
@@ -34,7 +36,18 @@ export const Point: React.FC<PointProps> = ({
 
   return (
     <>
-      <Marker key={id} position={pointCoordinates} ref={markerRef}>
+      <Marker key={id} position={pointCoordinates} ref={markerRef} icon={
+        new DivIcon({
+          iconSize: [35, 35],
+          className: "pointIcon",
+          html: renderToString(
+            documents.length == 1 ? 
+            <DocumentIcon type={documents[0].type} stakeholders={documents[0].stakeholders} /> 
+            :
+            <DocumentIcon type="" stakeholders='' />
+          ),
+        })
+      }>
         <MapPopup
           name={name}
           isLoggedIn={isLoggedIn}
