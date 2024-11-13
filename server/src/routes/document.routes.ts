@@ -6,6 +6,7 @@ import {
   deleteDocumentController,
   getDocumentTypesController,
   getDocumentsByTypeController,
+  searchDocumentsController
 } from '@controllers/document.controllers';
 /* import { 
   addDocumentController, 
@@ -38,6 +39,12 @@ router.post(
 ); //Add Document
 
 router.get('/', getAllDocumentsController); //Get All Documents
+
+router.get(
+  '/search',
+  searchDocumentsController,
+); //Search Document
+
 
 router.get(
   '/:id',
