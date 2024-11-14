@@ -5,3 +5,7 @@ export interface IReturnMedia {
     mimetype: string;
     pages?: number;
 }
+
+export interface IReturnPresignedUrl {
+    url: string;
+}

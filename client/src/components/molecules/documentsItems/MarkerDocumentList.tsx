@@ -1,6 +1,6 @@
 import React from "react"
-import { IDocument } from "../../../utils/interfaces/document.interface"
 import { DocumentItem } from "./DocumentItem"
+import { IDocument } from "../../../utils/interfaces/document.interface";
 
 interface DocumentProps {
   documents: IDocument[]

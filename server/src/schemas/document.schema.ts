@@ -72,5 +72,7 @@ const documentSchema = new Schema<DocumentDocument>(
 );
 
 documentSchema.index({ title: 1 });
+documentSchema.index({ summary: 1 });
+documentSchema.index({ title: 1, summary: 1 });
 
 export default mongoose.model<DocumentDocument>('Document', documentSchema);

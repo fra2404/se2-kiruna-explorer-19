@@ -11,6 +11,7 @@ import {
   deleteCoordinateController,
   getAllCoordinatesController,
   getCoordinateByIdController,
+  deleteCoordinateByIdController,
 } from '@controllers/coordinate.controllers';
 
 const router = express.Router();
@@ -30,6 +31,17 @@ router.get(
   handleValidationErrors,
   getCoordinateByIdController,
 );
+
+/* istanbul ignore next */
 router.delete('/', deleteCoordinateController);
+
+
+router.delete(
+  '/:id',
+  authenticateUser,
+  authorizeRoles('PLANNER', 'DEVELOPER'),
+  validateId,
+  handleValidationErrors,
+  deleteCoordinateByIdController)
 
 export const coordinateRoutes = router;

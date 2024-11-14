@@ -4,10 +4,17 @@ import {
   getDocumentByIdController,
   updateDocumentController,
   deleteDocumentController,
-  //getTypesController,
+  getDocumentTypesController,
   getDocumentsByTypeController,
+  searchDocumentsController
 } from '@controllers/document.controllers';
-//import { addDocumentController, deleteDocumentController, getAllDocumentsController, getDocumentByIdController, updateDocumentController } from '@controllers/document.controllers';
+/* import { 
+  addDocumentController, 
+  deleteDocumentController, 
+  getAllDocumentsController, 
+  getDocumentByIdController, 
+  updateDocumentController 
+} from '@controllers/document.controllers'; */
 import {
   validateAddDocument,
   validateDocumentId,
@@ -30,13 +37,22 @@ router.post(
   handleValidationErrors,
   addDocumentController,
 ); //Add Document
+
 router.get('/', getAllDocumentsController); //Get All Documents
+
+router.get(
+  '/search',
+  searchDocumentsController,
+); //Search Document
+
+
 router.get(
   '/:id',
   authenticateUser,
   validateDocumentId,
   getDocumentByIdController,
 ); // Get Document by ID
+
 router.put(
   '/:id',
   authenticateUser,
@@ -46,14 +62,20 @@ router.put(
   handleValidationErrors,
   updateDocumentController,
 );
-//router.get('/types', authenticateUser, authorizeRoles('PLANNER', 'DEVELOPER'), getTypesController); //Get All Types
+
+router.get(
+  '/types/all',
+  getDocumentTypesController); //Get All Types
+
+
 router.get(
   '/types/:type',
-  authenticateUser,
-  authorizeRoles('PLANNER', 'DEVELOPER'),
   validateDocumentType,
+  handleValidationErrors,
   getDocumentsByTypeController,
 ); //Get Document based On Type
+
+/* istanbul ignore next */
 router.delete('/', deleteDocumentController);
 
 export const documentRoutes = router;

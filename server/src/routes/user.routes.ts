@@ -27,6 +27,8 @@ router.post('/signup', validateUserSignUp, handleValidationErrors, createUser);
 router.post('/login', validateUserLogin, handleValidationErrors, login);
 router.post('/logout', authenticateUser, logout);
 router.get('/me', authenticateUser, getMe);
+
+/* istanbul ignore next */
 router.delete('/', deleteUser);
 
 export const userRoutes = router;

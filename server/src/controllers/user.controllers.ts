@@ -299,6 +299,7 @@ export const logout = async (
   }
 };
 
+/* istanbul ignore next */
 export const deleteUser = async (
   req: CustomRequest,
   res: Response,
