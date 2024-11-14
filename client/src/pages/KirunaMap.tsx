@@ -36,7 +36,7 @@ export default function KirunaMap() {
   const { isLoggedIn } = useAuth();
   const { setFeedbackFromError } = useContext(FeedbackContext);
 
-  const [documents, setDocuments] = useState<IDocumentResponse[]>([]);
+  const [documents, setDocuments] = useState<IDocument[]>([]);
   const [coordinates, setCoordinates] = useState({});
   const [shouldRefresh, setShouldRefresh] = useState(true);
 

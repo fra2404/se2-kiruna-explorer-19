@@ -8,7 +8,7 @@ import { IDocumentResponse } from "../../../utils/interfaces/document.interface"
 Modal.setAppElement("#root");
 
 interface DocumentItemProps {
-  document: IDocumentResponse
+  document: IDocument
 }
 
 export const DocumentItem: React.FC<DocumentItemProps> = ({
