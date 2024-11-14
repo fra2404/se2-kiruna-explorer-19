@@ -3,7 +3,6 @@ import { DocumentIcon } from "./DocumentIcon"
 import { FaArrowRight } from "react-icons/fa"
 import Modal from "react-modal";
 import DocumentDetailsModal from "../../organisms/DocumentDetailsModal";
-import { IDocumentResponse } from "../../../utils/interfaces/document.interface"
 
 Modal.setAppElement("#root");
 

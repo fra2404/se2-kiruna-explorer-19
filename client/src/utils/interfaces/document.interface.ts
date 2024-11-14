@@ -14,20 +14,6 @@ export interface IDocument {
   coordinates?: ICoordinate | null;
 }
 
-export interface IDocumentResponse {
-  id: string;
-  title: string;
-  stakeholders?: string;
-  scale?: string;
-  type: DocTypeEnum;
-  date: string;
-  summary: string;
-  connections?: IConnection[];
-  language?: string;
-  media?: [ObjectId];
-  coordinates?: ICoordinate | null;
-}
-
 interface IConnection {
   _id?: ObjectId;
   document: ObjectId;

@@ -37,7 +37,7 @@ const DocumentDetailsModal = ( {document} : any ) => {
         { label: "Language", content: document.language },
         { label: "Coordinates", content: document.coordinates?.coordinates.toString() }
     ]
-
+    
     return (
         <>
             <div className="w-full p-8 grid grid-cols-12 text-sm">
