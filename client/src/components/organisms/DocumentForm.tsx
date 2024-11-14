@@ -1,7 +1,6 @@
 import { useState } from 'react';
 import ConnectionForm from './documentConnections/ConnectionForm';
 import Modal from 'react-modal';
-import { kirunaLatLngCoords } from '../../pages/KirunaMap';
 import { useMapEvents } from 'react-leaflet';
 import { LatLng } from 'leaflet';
 import ButtonRounded from '../atoms/button/ButtonRounded';
@@ -121,8 +120,6 @@ const DocumentForm = ({
   const [coordName, setCoordName] = useState('');
   const [coordNamePopupOpen, setCoordNamePopupOpen] =
     useState(showCoordNamePopup);
-
-  const [isDocumentSaved, setIsDocumentSaved] = useState(false);
 
   // Connection modal : To enter a new connection
   const [connectionModalOpen, setConnectionModalOpen] = useState(false);
@@ -273,10 +270,11 @@ const DocumentForm = ({
         console.log('Document created successfully:', response.document);
         showToastMessage('Document created successfully', 'success');
 
-        setIsDocumentSaved(true);
         setCurrentStep(5);
-        if(response.document)
+        if(response.document) {
+          console.log(documents.concat(response.document.document));
           setDocuments(documents.concat(response.document.document));
+        }
       } else {
         console.log('Failed to create document');
         showToastMessage('Failed to create document', 'error');
@@ -349,7 +347,6 @@ const DocumentForm = ({
             coordNamePopupOpen={coordNamePopupOpen}
             coordName={coordName}
             setCoordName={setCoordName}
-            kirunaLatLngCoords={kirunaLatLngCoords}
             MapClickHandler={MapClickHandler}
           />
         );

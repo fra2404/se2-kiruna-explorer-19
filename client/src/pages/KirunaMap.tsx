@@ -38,7 +38,7 @@ export const modalStyles = {
 export default function KirunaMap() {
   const { isLoggedIn } = useAuth();
   const { setFeedbackFromError } = useContext(FeedbackContext);
-  const { mapType } = useContext(MapStyleContext);
+  const { swedishFlagBlue, swedishFlagYellow, mapType } = useContext(MapStyleContext);
 
   const [documents, setDocuments] = useState<IDocument[]>([]);
   const [coordinates, setCoordinates] = useState({});
@@ -146,8 +146,8 @@ export default function KirunaMap() {
                 alignItems: "center",
                 width: "40px",
                 height: "40px",
-                backgroundColor: "#FECC02",
-                color: "white",
+                backgroundColor: swedishFlagYellow,
+                color: swedishFlagBlue,
                 borderRadius: "50%",
                 fontSize: "20px",
                 fontWeight: "bold"
@@ -160,19 +160,22 @@ export default function KirunaMap() {
               const filteredDocuments = documents.filter((d) => d.coordinates?._id == coordId);
 
               if (coordInfo.type == 'Point') {
-                return (
-                  <Point
-                    key={coordId}
-                    id={coordId}
-                    pointCoordinates={coordInfo.coordinates}
-                    name={coordInfo.name}
-                    coordinates={coordinates}
-                    setCoordinates={setCoordinates}
-                    isLoggedIn={isLoggedIn}
-                    documents={filteredDocuments}
-                    setDocuments={setDocuments}
-                  />
-                );
+                if(filteredDocuments.length > 0) {
+                  return (
+                    <Point
+                      key={coordId}
+                      id={coordId}
+                      pointCoordinates={coordInfo.coordinates}
+                      name={coordInfo.name}
+                      coordinates={coordinates}
+                      setCoordinates={setCoordinates}
+                      isLoggedIn={isLoggedIn}
+                      pointDocuments={filteredDocuments}
+                      allDocuments={documents}
+                      setDocuments={setDocuments}
+                    />
+                  );
+                }
               } else {
                 return (
                   <Area
@@ -183,7 +186,8 @@ export default function KirunaMap() {
                     coordinates={coordinates}
                     setCoordinates={setCoordinates}
                     isLoggedIn={isLoggedIn}
-                    documents={filteredDocuments}
+                    areaDocuments={filteredDocuments}
+                    allDocuments={documents}
                     setDocuments={setDocuments}
                   />
                 );

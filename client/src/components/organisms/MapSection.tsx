@@ -1,15 +1,17 @@
-import React from 'react';
+import React, { useContext } from 'react';
 import {
   MapContainer,
   TileLayer,
   Marker,
   Tooltip,
   Polygon,
-  ZoomControl,
 } from 'react-leaflet';
-import { LatLng, LatLngExpression } from 'leaflet';
+import { LatLng } from 'leaflet';
 import InputComponent from '../atoms/input/input';
-import NamePopup from '../molecules/NamePopup';
+import NamePopup from '../molecules/popups/NamePopup';
+import MapStyleContext from '../../context/MapStyleContext';
+import { kirunaLatLngCoords } from '../../pages/KirunaMap';
+import CustomZoomControl from '../molecules/ZoomControl';
 
 interface MapSectionProps {
   coordinates: any;
@@ -22,7 +24,6 @@ interface MapSectionProps {
   coordNamePopupOpen: boolean;
   coordName: string;
   setCoordName: (name: string) => void;
-  kirunaLatLngCoords: LatLngExpression;
   MapClickHandler: React.FC;
 }
 
@@ -37,9 +38,10 @@ const MapSection: React.FC<MapSectionProps> = ({
   coordNamePopupOpen,
   coordName,
   setCoordName,
-  kirunaLatLngCoords,
   MapClickHandler,
 }) => {
+  const {swedishFlagBlue, satMapMainColor, mapType} = useContext(MapStyleContext);
+
   return (
     <div className="col-span-2">
       <h4>Document position:</h4>
@@ -53,8 +55,6 @@ const MapSection: React.FC<MapSectionProps> = ({
             type="select"
             options={Object.entries(coordinates).map(
               ([areaId, info]: [string, any]) => {
-                console.log('value: ' + areaId);
-                console.log('name: ' + info['name']);
                 return { value: areaId, label: info['name'] };
               },
             )}
@@ -94,10 +94,18 @@ const MapSection: React.FC<MapSectionProps> = ({
           ]}
           maxBoundsViscosity={0.9}
         >
-          <TileLayer
-            attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-            url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
-          />
+          {mapType === 'osm' ? (
+            <TileLayer
+              attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+              url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+            />
+          ) : (
+            <TileLayer
+              attribution='ArcGIS'
+              url="https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}"
+            />
+          )}
+
           {(position ||
             (selectedCoordId &&
               coordinates[selectedCoordId]['type'] == 'Point')) && (
@@ -131,14 +139,14 @@ const MapSection: React.FC<MapSectionProps> = ({
           {selectedCoordId &&
             coordinates[selectedCoordId]['type'] == 'Polygon' && (
               <Polygon
-                pathOptions={{ color: 'blue' }}
+                pathOptions={{ color: mapType == "sat" ? satMapMainColor : swedishFlagBlue }}
                 positions={coordinates[selectedCoordId]['coordinates']}
               ></Polygon>
             )}
 
           <MapClickHandler />
 
-          <ZoomControl position="bottomleft" />
+          <CustomZoomControl />
         </MapContainer>
       </div>
     </div>
