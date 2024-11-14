@@ -3,12 +3,18 @@ import { Container, Row, Col } from 'react-bootstrap';
 import { useNavigate } from 'react-router-dom';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import { useAuth } from '../../context/AuthContext';
-import { LoginModal } from './LoginModal';
+import { LoginModal } from './modals/LoginModal';
 import DropdownModal from '../molecules/DropdownModal';
 import ButtonRounded from '../atoms/button/ButtonRounded';
 import MapStyleContext from '../../context/MapStyleContext';
 
-export default function Header() {
+interface HeaderProps {
+  setManageCoordsModalOpen: (manageCoordsModalOpen: boolean) => void
+}
+
+export const Header: React.FC<HeaderProps> = ({
+  setManageCoordsModalOpen
+}) => {
   const [dateTime, setDateTime] = useState(new Date().toLocaleString());
   const navigate = useNavigate();
   const { isLoggedIn, user, logout } = useAuth();
@@ -99,6 +105,7 @@ export default function Header() {
         navigate={navigate}
         handleLogout={handleLogout}
         dropdownRef={dropdownRef}
+        setManageCoordsModalOpen={setManageCoordsModalOpen}
       />
     </Container>
   );

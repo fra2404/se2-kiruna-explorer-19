@@ -1,6 +1,6 @@
 import React from 'react';
 import Modal from 'react-modal';
-import LoginForm from '../molecules/LoginForm';
+import LoginForm from '../../molecules/LoginForm';
 
 interface LoginModalProps {
   isOpen: boolean;

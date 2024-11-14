@@ -2,7 +2,7 @@ import React, { useState } from "react"
 import { DocumentIcon } from "./DocumentIcon"
 import { FaArrowRight } from "react-icons/fa"
 import Modal from "react-modal";
-import DocumentDetailsModal from "../../organisms/DocumentDetailsModal";
+import DocumentDetailsModal from "../../organisms/modals/DocumentDetailsModal";
 import { IDocument } from "../../../utils/interfaces/document.interface";
 
 Modal.setAppElement("#root");
