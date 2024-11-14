@@ -1,8 +1,8 @@
 import React, { useRef } from 'react';
 import { Popup } from 'react-leaflet';
-import ButtonRounded from '../atoms/button/ButtonRounded';
-import { IDocument } from '../../utils/interfaces/document.interface';
-import { MarkerDocumentList } from './documentsItems/MarkerDocumentList';
+import ButtonRounded from '../../atoms/button/ButtonRounded';
+import { IDocument } from '../../../utils/interfaces/document.interface';
+import { MarkerDocumentList } from '../documentsItems/MarkerDocumentList';
 
 interface MapPopupProps {
   name: string;

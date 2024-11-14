@@ -7,7 +7,11 @@ import dotenv from 'dotenv';
 import pdfParse from 'pdf-parse';
 import NodeCache from 'node-cache';
 
-dotenv.config();
+// Determina quale file .env caricare
+const envFile = process.env.DOCKER_ENV ? '.env.docker' : '.env.local';
+
+// Carica le variabili d'ambiente dal file specificato
+dotenv.config({ path: envFile });
 
 const app = express();
 const PORT = process.env.PORT || 3005;
@@ -30,13 +34,17 @@ const storage = multer.diskStorage({
             cb(error as Error, 'error');
         }
     },
-    filename: (_req, file, cb) => {
-        cb(null, `${file.originalname}`);
+    filename: (req, file, cb) => {
+        const token = req.query.token as string;
+        const payload = jwt.verify(token, SECRET_KEY) as JwtPayload & { id: string };
+        const extension = path.extname(file.originalname); // Ottieni l'estensione del file
+        cb(null, `${payload.id}${extension}`); // Usa l'ID passato come nome del file
     },
 });
 const upload = multer({ storage });
 
 interface JwtPayload {
+    id: string;
     filename: string;
     contentType: string;
     userId: string;
@@ -80,10 +88,10 @@ const authenticateApiKey = (req: Request, res: Response, next: NextFunction) => 
 
 // Endpoint to generate the presigned URL (protected)
 app.post('/generate-presigned-url', authenticateApiKey, async (req: Request, res: Response): Promise<void> => {
-    const { title, filename, contentType, userId, folder } = req.body;
+    const { id, filename, contentType, userId, folder } = req.body;
 
-    if (!title || !filename || !contentType || !userId) {
-        res.status(400).json({ error: 'Filename, Content-Type, and userId are required' });
+    if (!id || !filename || !contentType || !userId) {
+        res.status(400).json({ error: 'Id, Filename, Content-Type, and userId are required' });
         return;
     }
 
@@ -91,15 +99,15 @@ app.post('/generate-presigned-url', authenticateApiKey, async (req: Request, res
 
     // Create a JWT token to authenticate the upload, valid for 5 minutes
     const token = jwt.sign(
-        { title, filename, contentType, userId, folder: targetFolder, exp: Math.floor(Date.now() / 1000) + 60 * 5 },
+        { id, filename, contentType, userId, folder: targetFolder, exp: Math.floor(Date.now() / 1000) + 60 * 5 },
         SECRET_KEY
     );
 
     // Save the file metadata in the database (or a simulated data structure)
     const fileMetadata = {
         filename,
-        title,
-        url: `${req.protocol}://${req.get('host')}/cdn/${targetFolder ? targetFolder + '/' : ''}${filename}`,
+        id,
+        relativeUrl: `/cdn/${targetFolder ? targetFolder + '/' : ''}${id}`,
         contentType,
         uploadDate: new Date(),
         userId,
@@ -112,7 +120,7 @@ app.post('/generate-presigned-url', authenticateApiKey, async (req: Request, res
 
     // Create the presigned URL for the upload
     const presignedUrl = `${req.protocol}://${req.get('host')}/upload-file?token=${token}`;
-    const finalUrl = `${req.protocol}://${req.get('host')}/cdn/${targetFolder ? targetFolder + '/' : ''}${filename}`;
+    const finalUrl = `${req.protocol}://${req.get('host')}/cdn/${targetFolder ? targetFolder + '/' : ''}${id}`;
     res.json({ presignedUrl, finalUrl, fileMetadata });
 });
 
@@ -152,8 +160,11 @@ app.post('/upload-file', checkTokenBlacklist, upload.single('file'), async (req:
         // Example: await database.updateFileMetadata(payload.filename, { pages: numberOfPages });
         console.log('File metadata updated with number of pages:', numberOfPages);
 
+        // Get the filename without extension
+        const fileNameWithoutExt = path.parse(req.file.filename).name;
+
         // Confirm successful upload
-        res.status(200).json({ message: 'File uploaded successfully', url: `${req.protocol}://${req.get('host')}/cdn/${payload.folder ? payload.folder + '/' : ''}${req.file.filename}` });
+        res.status(200).json({ message: 'File uploaded successfully', url: `${req.protocol}://${req.get('host')}/cdn/${payload.folder ? payload.folder + '/' : ''}${fileNameWithoutExt}` });
     } catch (error) {
         res.status(403).json({ error: 'Token is invalid or expired' });
     }

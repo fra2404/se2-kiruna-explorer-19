@@ -2,10 +2,10 @@ import React, { useState } from 'react';
 import { LatLng } from 'leaflet';
 import { Polygon } from 'react-leaflet';
 import Modal from 'react-modal';
-import { MapPopup } from '../molecules/MapPopup';
-import { modalStyles } from '../../pages/KirunaMap';
-import DocumentForm from './DocumentForm';
-import { IDocument } from '../../utils/interfaces/document.interface';
+import { IDocument } from '../../../utils/interfaces/document.interface';
+import { MapPopup } from '../../molecules/popups/MapPopup';
+import { modalStyles } from '../../../pages/KirunaMap';
+import DocumentForm from '../DocumentForm';
 
 interface AreaProps {
   isLoggedIn: boolean;
@@ -13,7 +13,9 @@ interface AreaProps {
   areaCoordinates: LatLng[];
   name: string;
   coordinates: any;
-  documents: IDocument[]
+  setCoordinates: (coordinates: any) => void;
+  documents: IDocument[];
+  setDocuments: (documents: IDocument[]) => void;
 }
 
 export const Area: React.FC<AreaProps> = ({
@@ -21,8 +23,10 @@ export const Area: React.FC<AreaProps> = ({
   areaCoordinates,
   name,
   coordinates,
+  setCoordinates,
   isLoggedIn,
-  documents
+  documents,
+  setDocuments
 }) => {
   const [selectedAreaId, setSelectedAreaId] = useState('');
   const [modalOpen, setModalOpen] = useState(false);
@@ -53,6 +57,9 @@ export const Area: React.FC<AreaProps> = ({
       >
         <DocumentForm
           coordinates={coordinates}
+          setCoordinates={setCoordinates}
+          documents={documents}
+          setDocuments={setDocuments}
           selectedCoordIdProp={selectedAreaId}
           modalOpen={modalOpen}
           setModalOpen={setModalOpen}

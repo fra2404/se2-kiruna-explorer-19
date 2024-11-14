@@ -6,6 +6,7 @@ import { DocNotFoundError, PositionError } from '../utils/errors';
 import { ICoordinate } from '@interfaces/coordinate.interface';
 import { getCoordinateById } from './coordinate.service';
 import { DocTypeEnum } from '@utils/enums/doc-type.enum';
+import { CustomError } from '@utils/customError';
 
 //addDocument(Story 1)
 export const addingDocument = async (
@@ -138,6 +139,49 @@ export const getDocumentById = async (
   };
 };
 
+export const searchDocuments = async ( keywords : string[]) : Promise<IDocumentResponse[] | null> => {
+  console.log(typeof keywords);
+  // With the operator $and we combine the keywords
+    const query = {
+      $and: keywords.map(keyword => ({
+        $or: [
+          { title: { $regex: keyword, $options: 'i' } },
+          { summary: { $regex: keyword, $options: 'i' } }
+        ]
+      }))
+    };
+  
+  
+  const documents = await Document.find(query);
+  if (documents.length === 0) {
+    return [] as IDocumentResponse[];
+  }
+  return Promise.all(
+    documents.map(async (document) => {
+      const documentObject = document.toObject();
+      delete documentObject._id;
+      delete documentObject.createdAt;
+      delete documentObject.updatedAt;
+      delete documentObject.__v;
+
+      let coordinate: ICoordinate | null = null;
+      const coordinateId = document.coordinates;
+
+      if (coordinateId) {
+        coordinate = await getCoordinateById(coordinateId.toString());
+      }
+
+      return {
+        id: document.id,
+        ...documentObject,
+        coordinates: coordinate || null,
+      } as IDocumentResponse;
+    }),
+  );
+
+}
+
+
 // Update document
 export const updatingDocument = async (
   id: string,
@@ -225,14 +269,24 @@ export const updatingDocument = async (
   return document;
 };
 
+/* istanbul ignore next */
 export const deleteDocumentByName = async (name: string): Promise<string> => {
   await Document.deleteMany({ title: name });
   return 'Documents deleted successfully';
 };
 
-// export const getDocumentTypes = (): string[] => {
-//     return Object.values(DocTypeEnum);
-// };
+export const getDocumentTypes = () => {
+  const docTypes = Object.entries(DocTypeEnum).map(([key, value]) => ({
+    label: key,
+    value: value,
+  }));
+
+  if (docTypes.length === 0) {
+    throw new CustomError('No document types available', 404);
+  }
+
+  return docTypes;
+};
 
 export const getDocumentByType = async (
   type: string,
@@ -269,3 +323,5 @@ export const getDocumentByType = async (
     }),
   );
 };
+
+

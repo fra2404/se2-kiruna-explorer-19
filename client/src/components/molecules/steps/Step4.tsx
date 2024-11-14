@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useContext } from 'react';
 import {
   MapContainer,
   TileLayer,
@@ -6,11 +6,12 @@ import {
   Tooltip,
   Popup,
   Polygon,
-  ZoomControl,
 } from 'react-leaflet';
 import { LatLng, LatLngExpression } from 'leaflet';
 import InputComponent from '../../atoms/input/input';
 import ButtonRounded from '../../atoms/button/ButtonRounded';
+import CustomZoomControl from '../ZoomControl'
+import MapStyleContext from '../../../context/MapStyleContext'
 
 interface Step4Props {
   coordinates: any;
@@ -41,6 +42,7 @@ const Step4: React.FC<Step4Props> = ({
   kirunaLatLngCoords,
   MapClickHandler,
 }) => {
+  const { mapType, setMapType } = useContext(MapStyleContext);
   return (
     <>
       {/* Document position */}
@@ -56,8 +58,6 @@ const Step4: React.FC<Step4Props> = ({
               type="select"
               options={Object.entries(coordinates).map(
                 ([areaId, info]: [string, any]) => {
-                  console.log('value: ' + areaId);
-                  console.log('name: ' + info['name']);
                   return { value: areaId, label: info['name'] };
                 },
               )}
@@ -90,6 +90,7 @@ const Step4: React.FC<Step4Props> = ({
             doubleClickZoom={false}
             scrollWheelZoom={true}
             zoomControl={false}
+            minZoom={9}
             touchZoom={true}
             maxBounds={[
               [67.8, 19.9],
@@ -97,29 +98,36 @@ const Step4: React.FC<Step4Props> = ({
             ]}
             maxBoundsViscosity={0.9}
           >
-            <TileLayer
-              attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-              url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
-            />
+            {mapType === 'osm' ? (
+              <TileLayer
+                attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+                url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+              />
+            ) : (
+              <TileLayer
+                attribution='ArcGIS'
+                url="https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}"
+              />
+            )}
             {(position ||
               (selectedCoordId &&
                 coordinates[selectedCoordId]['type'] == 'Point')) && (
-              <Marker
-                position={
-                  position ||
-                  new LatLng(
-                    coordinates[selectedCoordId]['coordinates'][0],
-                    coordinates[selectedCoordId]['coordinates'][1],
-                  )
-                }
-              >
-                <Tooltip permanent>
-                  {selectedCoordId
-                    ? coordinates[selectedCoordId]['name']
-                    : coordName}
-                </Tooltip>
-              </Marker>
-            )}
+                <Marker
+                  position={
+                    position ||
+                    new LatLng(
+                      coordinates[selectedCoordId]['coordinates'][0],
+                      coordinates[selectedCoordId]['coordinates'][1],
+                    )
+                  }
+                >
+                  <Tooltip permanent>
+                    {selectedCoordId
+                      ? coordinates[selectedCoordId]['name']
+                      : coordName}
+                  </Tooltip>
+                </Marker>
+              )}
 
             {coordNamePopupOpen && position && (
               <Popup
@@ -177,8 +185,7 @@ const Step4: React.FC<Step4Props> = ({
               )}
 
             <MapClickHandler />
-
-            <ZoomControl position="bottomleft" />
+            <CustomZoomControl />
           </MapContainer>
         </div>
       </div>

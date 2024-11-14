@@ -102,6 +102,8 @@ export const validateDocumentId = [
 
 export const validateDocumentType = [
   param('type')
+    .trim()
+    .toUpperCase()
     .isIn([
       'AGREEMENT',
       'CONFLICT',

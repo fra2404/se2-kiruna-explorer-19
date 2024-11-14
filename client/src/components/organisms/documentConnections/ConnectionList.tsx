@@ -1,6 +1,6 @@
 import React from 'react';
-import { ConnectionItem } from '../molecules/ConnectionItem';
-import { Connection } from './DocumentForm';
+import { ConnectionItem } from '../../molecules/documentConnections/ConnectionItem';
+import { Connection } from '../DocumentForm';
 
 interface ConnectionListProps {
   connections: Connection[];
