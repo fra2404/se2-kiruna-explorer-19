@@ -1,6 +1,7 @@
 import { jest, describe, expect } from '@jest/globals';
 import jwt from 'jsonwebtoken';
 import bcrypt from 'bcrypt';
+import mongoose, { Connection, ObjectId } from 'mongoose';
 
 import User from '../schemas/user.schema';
 import Document from '../schemas/document.schema';
@@ -31,8 +32,9 @@ import {
 } from '@services/coordinate.service';
 
 import { CustomError } from '../utils/customError';
-import { UserNotAuthorizedError } from '../utils/errors';
+import { DocNotFoundError, UserNotAuthorizedError } from '../utils/errors';
 import { PositionError } from '@utils/errors';
+import { LinkTypeEnum } from '@utils/enums/link-type.enum';
 
 //MOCKS
 jest.mock('../schemas/user.schema'); //suite n#1
@@ -296,48 +298,7 @@ describe('Tests for user services', () => {
   }); //loginUser
 }); //END OF USER SERVICES
 
-/* ******************************************* Suite n#2 - DOCUMENTS ******************************************* */
-
-//README!!!!!!!!!!!!!!!!
-//DOCUMENT SERVICES WERE DEEPLY CHANGED DUE TO APPLICATION CONFLICTS WITH THEIR FIRST VERSION
-//BECAUSE OF THIS REASON THE FOLLOWING TESTS WERE ALL DELETED
-//TO RETRIVE PAST VERSION OF DOCUMENT SERVICES TESTS, OLD COMMITS CAN BE CONSULTED
-
-describe('Tests for document services', () => {
-  beforeEach(() => {
-    jest.clearAllMocks();
-  });
-
-  //addingDocument
-  describe('Tests for addingDocument', () => {
-    //test 1
-    test('Should successfully save a new document and updating the db entries related to him', async () => {});
-
-    //test 2
-    test('Should throw a PositionError', async () => {});
-
-    //test 3
-    test('Should throw a DocNotFoundError', async () => {});
-  }); //addingDocument
-  /* ************************************************** */
-
-  //getAllDocuments
-  describe('Tests for getAllDocuments', () => {
-    //test 1
-    test('Should return all the documents and associated coordinates', async () => {});
-
-    //test 2
-    test("Should only return documents if there aren't associations", async () => {});
-  }); //getAllDocuments
-  /* ************************************************** */
-
-  //getDocumentById
-  //updatingDocument
-  //deleteDocumentByName
-  //getDocumentByType
-}); //END OF CONTROLLER SERVICES
-
-/* ******************************************* Suite n#3 - COORDINATES ******************************************* */
+/* ******************************************* Suite n#2 - COORDINATES ******************************************* */
 describe('Tests for coordinate services', () => {
   beforeEach(() => {
     jest.clearAllMocks();
@@ -359,9 +320,7 @@ describe('Tests for coordinate services', () => {
       };
 
       //Support functions mocking
-      jest
-        .spyOn(Coordinate, 'findById')
-        .mockResolvedValue({ toObject: () => mockCoordinate });
+      jest.spyOn(Coordinate, 'findById').mockResolvedValue({ toObject: () => mockCoordinate });
 
       //Call of getCoordinateById
       const result = await getCoordinateById(coordinateId);
@@ -410,12 +369,8 @@ describe('Tests for coordinate services', () => {
     //test 1
     test('Should successfully save a new coordinate', async () => {
       //Support functions mocking
-      (Coordinate.prototype.save as jest.Mock).mockImplementation(
-        async () => mockCoordinate,
-      );
-      (Coordinate.prototype.toObject as jest.Mock).mockReturnValueOnce(
-        mockCoordinate,
-      );
+      (Coordinate.prototype.save as jest.Mock).mockImplementation(async () => mockCoordinate);
+      (Coordinate.prototype.toObject as jest.Mock).mockReturnValueOnce(mockCoordinate);
 
       //Call of addCoordinateService
       const result = await addCoordinateService(mockCoordinate);
@@ -494,3 +449,168 @@ describe('Tests for coordinate services', () => {
     });
   }); //getAllCoordinates
 }); //END OF COORDINATE SERVICES
+
+/* ******************************************* Suite n#3 - DOCUMENTS ******************************************* */
+
+//README!!!!!!!!!!!!!!!!
+//DOCUMENT SERVICES WERE DEEPLY CHANGED DUE TO APPLICATION CONFLICTS WITH THEIR FIRST VERSION
+//BECAUSE OF THIS REASON THE FOLLOWING TESTS WERE ALL DELETED
+//TO RETRIVE PAST VERSION OF DOCUMENT SERVICES TESTS, OLD COMMITS CAN BE CONSULTED
+
+describe('Tests for document services', () => {
+  afterEach(() => {
+    jest.clearAllMocks();
+  });
+
+  //addingDocument
+  describe('Tests for addingDocument', () => {
+    //Mocked input  
+    const mockDocumentData: IDocument = {
+      title: "Test title",
+      stakeholders: "Company A",
+      scale: "1:1000",
+      type: DocTypeEnum.Agreement,
+      date: "2000-01-01",
+      connections: [
+        {
+          document: new mongoose.Schema.Types.ObjectId("6456e8f9f1e99e2d8c8e84b0"),
+          type: LinkTypeEnum.Collateral,
+        }
+      ],
+      language: "EN",
+      media: [new mongoose.Schema.Types.ObjectId("6456e8f9f1e99e2d8c8e84b2")],
+      coordinates: new mongoose.Schema.Types.ObjectId("6456e8f9f1e99e2d8c8e84b3"),
+      summary: "Test summary"
+    };
+
+    //test 1
+    test("Should throw PositionError if coordinates are not found", async () => {
+      //Data mocking
+      const err = new PositionError();
+      
+      //Support functions mocking
+      (Coordinate.findById as jest.Mock).mockImplementation(async() => null);
+
+      //Call of addingDocument
+      await expect(addingDocument(mockDocumentData)).rejects.toThrow(err);
+
+      expect(Coordinate.findById).toHaveBeenCalledWith(mockDocumentData.coordinates);
+    });
+
+    //test 2
+    test("Should throw DocNotFoundError if the document specified in the connection doesn't exist", async () => {
+      //Data mocking
+      const err = new DocNotFoundError();
+      
+      //Support functions mocking
+      (Coordinate.findById as jest.Mock).mockImplementation(async() => "6456e8f9f1e99e2d8c8e84b3");
+      (Document.findById as jest.Mock).mockImplementation(async() => null);
+
+      //Call of addingDocument
+      await expect(addingDocument(mockDocumentData)).rejects.toThrow(err);
+
+      expect(Document.findById).toHaveBeenCalledWith(mockDocumentData.connections![0].document);
+    });
+
+    //TODO: Success case test (test 3)
+  }); //addingDocument
+  /* ************************************************** */
+
+  //getAllDocuments
+  describe('Tests for getAllDocuments', () => {
+    //Data mock
+    const mockCoordinate = {
+      _id: new mongoose.Types.ObjectId(),
+      type: 'Point',
+      coordinates: [45.123, 7.123],
+      name: 'Test coordinate',
+    };
+  
+    const mockDocuments = [
+      {
+        _id: new mongoose.Types.ObjectId(),
+        title: 'Document 1',
+        coordinates: mockCoordinate._id,
+        stakeholders: 'Stakeholder 1',
+        scale: '1:1000',
+        type: DocTypeEnum.Agreement,
+        date: '2024-01-01',
+        language: 'EN',
+        media: [],
+        summary: 'Summary 1',
+        save: jest.fn(),
+        toObject: jest.fn().mockReturnValue({
+          title: 'Document 1',
+          stakeholders: 'Stakeholder 1',
+          scale: '1:1000',
+          type: DocTypeEnum.Agreement,
+          date: '2024-01-01',
+          language: 'EN',
+          media: [],
+          summary: 'Summary 1',
+        }),
+      },
+    ];
+
+    //test 1
+    test("Should return all documents with coordinates", async () => {
+      //Support functions mocking
+      (Document.find as jest.Mock).mockImplementation(async() => mockDocuments);
+      jest.spyOn(require("../services/coordinate.service.ts"), 'getCoordinateById').mockResolvedValue(mockCoordinate);
+      
+      //Call of getAllDocuments
+      const result = await getAllDocuments();
+      
+      expect(result).toHaveLength(1);
+      expect(result[0]).toHaveProperty('id');
+      expect(result[0]).toHaveProperty('coordinates');
+      expect(result[0].coordinates).toEqual(mockCoordinate);
+    });
+  });//getAllDocuments
+
+  //getDocumentById
+  describe('Tests for getDocumentById', () => {
+    //Data mock
+    const mockDocument = {
+      _id: '1',
+      title: 'Test Document',
+      stakeholders: 'Company A',
+      scale: '1:1000',
+      type: 'AGREEMENT',
+      date: '2024-01-01',
+      connections: [],
+      language: 'EN',
+      media: [],
+      coordinates: null,
+      summary: 'Test summary',
+    };
+
+    //test 1
+    test("Should return document and its coordinates (if it has any)", async () => {
+      //Support functions mocking
+      jest.spyOn(Document, 'findById').mockResolvedValue({ toObject: () => mockDocument });
+
+      //Call of getDocumentById
+      const result = await getDocumentById("1");
+
+      expect(result).toHaveProperty('id', mockDocument._id);
+      expect(result).toHaveProperty('title', mockDocument.title);
+      expect(result).toHaveProperty('coordinates', null);
+      expect(Document.findById).toHaveBeenCalledWith("1");
+    });
+
+    //test2
+    test("Should throw a DocNotFoundError", async () => {
+      //Data mocking
+      const err = new DocNotFoundError();
+
+      //Support functions mocking
+      (Document.findById as jest.Mock).mockImplementation(async () => null);
+
+      //Call of getDocumentById
+      await expect(getDocumentById("2")).rejects.toThrow(err);
+
+      expect(Document.findById).toHaveBeenCalledWith("2");
+    });
+  });//getDocumentById
+}); //END OF DOCUMENT SERVICES
