@@ -1,4 +1,3 @@
-import React from "react";
 import AgreementIcon from "../../../assets/icons/agreement-icon";
 import ConflictIcon from "../../../assets/icons/conflict-icon";
 import ConsultationIcon from "../../../assets/icons/consultation-icon";
@@ -7,19 +6,13 @@ import InformativeDocIcon from "../../../assets/icons/informative-doc-icon";
 import MaterialEffectsIcon from "../../../assets/icons/material-effects-icon";
 import PrescriptiveDocIcon from "../../../assets/icons/prescriptive-doc-icon";
 import TechnicalDocIcon from "../../../assets/icons/technical-doc-icon";
+import { FaQuestion } from "react-icons/fa";
 
-interface DocumentIconProps {
-  type: string,
-  stakeholders: string | undefined
-}
 
-export const DocumentIcon: React.FC<DocumentIconProps> = ({
-  type,
-  stakeholders
-}) => {
+export const DocumentIcon = ({ type } : {type: string }) => {
   const fillColor = "black";          //TODO: fillColor will depend on stakeholder(s)
-
   //Define custom icons for different categories
+  if (!type) return (<FaQuestion size={20} />);
   if (type.toUpperCase() === 'AGREEMENT') {
     return (<AgreementIcon fillColor={fillColor} />)
   } else if (type.toUpperCase() === 'CONFLICT') {
@@ -38,6 +31,6 @@ export const DocumentIcon: React.FC<DocumentIconProps> = ({
     return (<TechnicalDocIcon fillColor={fillColor} />)
   } else {
     // Default icon if type doesn't match any of the above
-    return (<></>);
+    return (<FaQuestion size={20} />);
   }
 }
