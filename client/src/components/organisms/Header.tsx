@@ -58,6 +58,9 @@ export default function Header() {
             }}
           />
         </Col>
+        <Col className="d-flex align-items-center">
+            <h1 className='font-bold text-black'>Kiruna eXplorer</h1>
+        </Col>
         <Col className="d-flex justify-content-end">
           {!isLoggedIn && !user ? (
             <ButtonRounded
