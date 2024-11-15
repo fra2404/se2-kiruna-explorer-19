@@ -4,6 +4,7 @@ import ButtonRounded from '../../atoms/button/ButtonRounded';
 import { IDocument } from '../../../utils/interfaces/document.interface';
 import { MarkerDocumentList } from '../documentsItems/MarkerDocumentList';
 import { useAuth } from '../../../context/AuthContext';
+import { UserRoleEnum } from '../../../utils/interfaces/user.interface';
 
 interface MapPopupProps {
   name: string;
@@ -31,7 +32,7 @@ export const MapPopup: React.FC<MapPopupProps> = ({
 
       <hr />
 
-      {isLoggedIn && (
+      {(isLoggedIn && user && user.role === UserRoleEnum.Uplanner) && (
         <>
           <span className="text-base">{message}</span>
           <br />
