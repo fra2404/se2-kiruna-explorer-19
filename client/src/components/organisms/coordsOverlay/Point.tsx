@@ -15,8 +15,8 @@ interface PointProps {
   id: string;
   pointCoordinates: LatLng;
   name: string;
-  coordinates: any;
-  setCoordinates: (coordinates: any) => void;
+  coordinates: LatLng;
+  setCoordinates: (coordinates: LatLng) => void;
   pointDocuments: IDocument[];
   allDocuments: IDocument[];
   setDocuments: (documents: IDocument[]) => void;
