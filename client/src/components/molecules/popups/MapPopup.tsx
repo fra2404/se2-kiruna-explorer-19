@@ -3,10 +3,10 @@ import { Popup } from 'react-leaflet';
 import ButtonRounded from '../../atoms/button/ButtonRounded';
 import { IDocument } from '../../../utils/interfaces/document.interface';
 import { MarkerDocumentList } from '../documentsItems/MarkerDocumentList';
+import { useAuth } from '../../../context/AuthContext';
 
 interface MapPopupProps {
   name: string;
-  isLoggedIn: boolean;
   message: string;
   documents: IDocument[];
   onYesClick: () => void;
@@ -15,19 +15,19 @@ interface MapPopupProps {
 
 export const MapPopup: React.FC<MapPopupProps> = ({
   name,
-  isLoggedIn,
   message,
   documents,
   onYesClick,
   onCancelClick,
 }) => {
   const popupRef = useRef<L.Popup>(null);
+  const { isLoggedIn, user } = useAuth();
 
   return (
     <Popup ref={popupRef}>
       <span className="text-lg font-bold">{name}</span>
       <br />
-      <MarkerDocumentList documents={documents}/>
+      <MarkerDocumentList documents={documents} />
 
       <hr />
 
