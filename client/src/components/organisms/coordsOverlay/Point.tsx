@@ -10,8 +10,6 @@ import { DocumentIcon } from '../../molecules/documentsItems/DocumentIcon';
 import { renderToString } from 'react-dom/server';
 import MapStyleContext from '../../../context/MapStyleContext';
 import { useContext } from 'react';
-import { useAuth } from '../../../context/AuthContext';
-import { UserRoleEnum } from '../../../utils/interfaces/user.interface';
 
 interface PointProps {
   id: string;
