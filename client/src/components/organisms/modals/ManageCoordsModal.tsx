@@ -1,18 +1,21 @@
 import Modal from 'react-modal';
 import { kirunaLatLngCoords } from '../../../pages/KirunaMap';
 import { MapContainer, Marker, Polygon, TileLayer } from 'react-leaflet';
-import { useContext } from 'react';
+import { useContext, useRef } from 'react';
 import MapStyleContext from '../../../context/MapStyleContext';
 import CustomZoomControl from '../../molecules/ZoomControl';
 import MarkerClusterGroup from 'react-leaflet-markercluster';
 import { IDocument } from '../../../utils/interfaces/document.interface';
 import { renderToString } from 'react-dom/server';
 import { DivIcon } from 'leaflet';
+import { DeleteCoordPopup } from '../../molecules/popups/DeleteCoordPopup';
+import API from '../../../API';
 
 interface ManageCoordsModalProps {
   manageCoordsModalOpen: boolean,
   setManageCoordsModalOpen: (manageCoordsModalOpen: boolean) => void,
   coordinates: any,
+  setCoordinates: (coordinates: any) => void,
   documents: IDocument[]
 }
 
@@ -20,6 +23,7 @@ export const ManageCoordsModal: React.FC<ManageCoordsModalProps> = ({
   manageCoordsModalOpen,
   setManageCoordsModalOpen,
   coordinates,
+  setCoordinates,
   documents
 }) => {
   const manageCoordsModalStyles = {
@@ -37,6 +41,8 @@ export const ManageCoordsModal: React.FC<ManageCoordsModalProps> = ({
   }
 
   const {swedishFlagBlue, swedishFlagYellow, satMapMainColor, mapType} = useContext(MapStyleContext);
+  const markerRef = useRef<L.Marker>(null);
+  const polygonRef = useRef<L.Polygon>(null);
 
   return(
     <Modal
@@ -103,17 +109,47 @@ export const ManageCoordsModal: React.FC<ManageCoordsModalProps> = ({
               if (coordInfo.type == 'Point') {
                 return (
                   <Marker
+                    key={coordId}
                     position={ coordInfo.coordinates }
+                    ref={markerRef}
                   >
-                    
+                    <DeleteCoordPopup 
+                      name={coordInfo.name}
+                      message={
+                        filteredDocuments.length == 0 ?
+                          "Do you want to delete this point?"
+                        : "There are documents associated to this point, you cannot delete it"
+                      }
+                      showButtons={filteredDocuments.length == 0}
+                      onYesClick={async () => await onYesClick(markerRef, coordId, coordinates, setCoordinates)}
+                      onCancelClick={() => {
+                        markerRef.current?.closePopup();
+                      }}
+                    />
                   </Marker>
                 );
               } else {
                 return (
                   <Polygon
+                    key={coordId}
                     pathOptions={{ color: mapType == "sat" ? satMapMainColor : swedishFlagBlue }}
                     positions={ coordInfo.coordinates }
-                  ></Polygon>
+                    ref={polygonRef}
+                  >
+                    <DeleteCoordPopup 
+                      name={coordInfo.name}
+                      message={
+                        filteredDocuments.length == 0 ?
+                          "Do you want to delete this area?"
+                        : "There are documents associated to this area, you cannot delete it"
+                      }
+                      showButtons={filteredDocuments.length == 0}
+                      onYesClick={async () => await onYesClick(polygonRef, coordId, coordinates, setCoordinates)}
+                      onCancelClick={() => {
+                        polygonRef.current?.closePopup();
+                      }}
+                    />
+                  </Polygon>
                 );
               }
             })}
@@ -125,4 +161,19 @@ export const ManageCoordsModal: React.FC<ManageCoordsModalProps> = ({
       </div>
     </Modal>
   );
+}
+
+async function onYesClick(
+  ref: any,
+  coordToDelete: string,
+  coordinates: any,
+  setCoordinates: (coordinates: any) => void
+) {
+  ref.current?.closePopup();
+  const response = await API.deleteCoordinate(coordToDelete);
+  if(response.success) {
+    const {[coordToDelete]: _, ...coordinatesUpdated} = coordinates;
+    console.log(coordinatesUpdated);
+    setCoordinates(coordinatesUpdated);
+  }
 }

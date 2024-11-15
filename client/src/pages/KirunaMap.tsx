@@ -114,7 +114,7 @@ export default function KirunaMap() {
           />
         }
         <MapContainer
-          style={{ width: '100%', height: '100%' }}
+          style={{ width: '100%', height: '100%', zIndex: 0 }}
           center={kirunaLatLngCoords}
           zoom={13}
           doubleClickZoom={false}
@@ -216,6 +216,7 @@ export default function KirunaMap() {
             manageCoordsModalOpen={manageCoordsModalOpen}
             setManageCoordsModalOpen={setManageCoordsModalOpen}
             coordinates={coordinates}
+            setCoordinates={setCoordinates}
             documents={documents} />
         </MapContainer>
       </div>

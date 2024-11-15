@@ -1,4 +1,4 @@
-import React, { useContext, useState } from 'react';
+import React, { useContext, useRef, useState } from 'react';
 import { LatLng } from 'leaflet';
 import { Polygon } from 'react-leaflet';
 import Modal from 'react-modal';
@@ -34,6 +34,7 @@ export const Area: React.FC<AreaProps> = ({
   const [selectedAreaId, setSelectedAreaId] = useState('');
   const [modalOpen, setModalOpen] = useState(false);
   const {swedishFlagBlue, satMapMainColor, mapType} = useContext(MapStyleContext);
+  const polygonRef = useRef<L.Polygon>(null);
 
   return (
     <>
@@ -41,6 +42,7 @@ export const Area: React.FC<AreaProps> = ({
         key={id}
         pathOptions={{ color: mapType == "sat" ? satMapMainColor : swedishFlagBlue }}
         positions={areaCoordinates as unknown as LatLng[]}
+        ref={polygonRef}
       >
         <MapPopup
           name={name}
@@ -48,10 +50,13 @@ export const Area: React.FC<AreaProps> = ({
           message="Do you want to add a document in this area?"
           documents={areaDocuments}
           onYesClick={() => {
+            polygonRef.current?.closePopup();
             setSelectedAreaId(id);
             if (!modalOpen) setModalOpen(true);
           }}
-          onCancelClick={() => {}}
+          onCancelClick={() => {
+            polygonRef.current?.closePopup();
+          }}
         />
       </Polygon>
       <Modal
