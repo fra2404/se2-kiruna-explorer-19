@@ -13,6 +13,7 @@ import { IDocument } from '@interfaces/document.interface';
 import { IDocumentResponse } from '@interfaces/document.return.interface';
 import { ICoordinate } from '@interfaces/coordinate.interface';
 import { DocNotFoundError } from '@utils/errors';
+import { CustomRequest } from '@interfaces/customRequest.interface';
 
 /**
  * @swagger

@@ -7,7 +7,7 @@ import {
   getDocumentTypesController,
   getDocumentsByTypeController,
 } from '@controllers/document.controllers';
-//import { addDocumentController, deleteDocumentController, getAllDocumentsController, getDocumentByIdController, updateDocumentController } from '@controllers/document.controllers';
+
 import {
   validateAddDocument,
   validateDocumentId,

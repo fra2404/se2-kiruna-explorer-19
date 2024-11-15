@@ -8,6 +8,7 @@ import { getCoordinateById } from './coordinate.service';
 import { DocTypeEnum } from '@utils/enums/doc-type.enum';
 import { CustomError } from '@utils/customError';
 
+
 //addDocument(Story 1)
 export const addingDocument = async (
   documentData: IDocument,
@@ -280,5 +281,6 @@ export const getDocumentByType = async (
     }),
   );
 };
+
 
 
