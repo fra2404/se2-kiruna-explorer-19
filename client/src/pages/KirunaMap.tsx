@@ -185,20 +185,22 @@ export default function KirunaMap() {
                   );
                 }
               } else {
-                return (
-                  <Area
-                    key={coordId}
-                    id={coordId}
-                    areaCoordinates={coordInfo.coordinates}
-                    name={coordInfo.name}
-                    coordinates={coordinates}
-                    setCoordinates={setCoordinates}
-                    isLoggedIn={isLoggedIn}
-                    areaDocuments={filteredDocuments}
-                    allDocuments={documents}
-                    setDocuments={setDocuments}
-                  />
-                );
+                if(filteredDocuments.length > 0) {
+                  return (
+                    <Area
+                      key={coordId}
+                      id={coordId}
+                      areaCoordinates={coordInfo.coordinates}
+                      name={coordInfo.name}
+                      coordinates={coordinates}
+                      setCoordinates={setCoordinates}
+                      isLoggedIn={isLoggedIn}
+                      areaDocuments={filteredDocuments}
+                      allDocuments={documents}
+                      setDocuments={setDocuments}
+                    />
+                  );
+                }
               }
             })}
           </MarkerClusterGroup>
