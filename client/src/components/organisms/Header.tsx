@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef, useContext } from 'react';
 import { Container, Row, Col } from 'react-bootstrap';
 import { useNavigate } from 'react-router-dom';
 import 'bootstrap/dist/css/bootstrap.min.css';
@@ -6,6 +6,7 @@ import { useAuth } from '../../context/AuthContext';
 import { LoginModal } from './LoginModal';
 import DropdownModal from '../molecules/DropdownModal';
 import ButtonRounded from '../atoms/button/ButtonRounded';
+import MapStyleContext from '../../context/MapStyleContext';
 
 export default function Header() {
   const [dateTime, setDateTime] = useState(new Date().toLocaleString());
@@ -15,6 +16,8 @@ export default function Header() {
   const [loginModalOpen, setLoginModalOpen] = useState(false);
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
+
+  const {mapType} = useContext(MapStyleContext);
 
   useEffect(() => {
     const interval = setInterval(() => {
@@ -59,7 +62,7 @@ export default function Header() {
           />
         </Col>
         <Col className="d-flex align-items-center">
-            <h1 className='font-bold text-black'>Kiruna eXplorer</h1>
+            <h1  className={mapType == "osm" ? 'font-bold text-black' : "font-bold text-white"}>Kiruna eXplorer</h1>
         </Col>
         <Col className="d-flex justify-content-end">
           {!isLoggedIn && !user ? (
