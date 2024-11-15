@@ -23,30 +23,30 @@
         <div class='clearfix'>
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">37.41% </span>
+                <span class="strong">42.58% </span>
                 <span class="quiet">Statements</span>
-                <span class='fraction'>58/155</span>
+                <span class='fraction'>66/155</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">19.6% </span>
+                <span class="strong">23.52% </span>
                 <span class="quiet">Branches</span>
-                <span class='fraction'>10/51</span>
+                <span class='fraction'>12/51</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">36.36% </span>
+                <span class="strong">50% </span>
                 <span class="quiet">Functions</span>
-                <span class='fraction'>8/22</span>
+                <span class='fraction'>11/22</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">34.48% </span>
+                <span class="strong">39.31% </span>
                 <span class="quiet">Lines</span>
-                <span class='fraction'>50/145</span>
+                <span class='fraction'>57/145</span>
             </div>
         
             
@@ -389,8 +389,7 @@
 <a name='L324'></a><a href='#L324'>324</a>
 <a name='L325'></a><a href='#L325'>325</a>
 <a name='L326'></a><a href='#L326'>326</a>
-<a name='L327'></a><a href='#L327'>327</a>
-<a name='L328'></a><a href='#L328'>328</a></td><td class="line-coverage quiet"><span class="cline-any cline-yes">2x</span>
+<a name='L327'></a><a href='#L327'>327</a></td><td class="line-coverage quiet"><span class="cline-any cline-yes">2x</span>
 <span class="cline-any cline-yes">2x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -501,12 +500,12 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-yes">2x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">1x</span>
-<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">2x</span>
+<span class="cline-any cline-yes">2x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">2x</span>
 <span class="cline-any cline-yes">1x</span>
-<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -532,21 +531,21 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-yes">2x</span>
-<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
@@ -564,7 +563,6 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -832,8 +830,8 @@ export const getDocumentById = async (
   const document = await Document.findById(id);
 &nbsp;
   // If document does not exist
-  <span class="missing-if-branch" title="if path not taken" >I</span>if (!document) {
-<span class="cstat-no" title="statement not covered" >    throw new DocNotFoundError();</span>
+  if (!document) {
+    throw new DocNotFoundError();
   }
 &nbsp;
   // Fetch the coordinate if it exists
@@ -858,11 +856,11 @@ export const getDocumentById = async (
   };
 };
 &nbsp;
-export const searchDocuments = <span class="fstat-no" title="function not covered" >async ( k</span>eywords : string[]) : Promise&lt;IDocumentResponse[] | null&gt; =&gt;<span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" > {</span></span>
-<span class="cstat-no" title="statement not covered" >  console.log(typeof keywords);</span>
+export const searchDocuments = async ( keywords : string[]) : Promise&lt;IDocumentResponse[] | null&gt; =&gt; {
+  console.log(typeof keywords);
   // With the operator $and we combine the keywords
-    const query = <span class="cstat-no" title="statement not covered" >{</span>
-      $and: keywords.map(<span class="fstat-no" title="function not covered" >keyword </span>=&gt; (<span class="cstat-no" title="statement not covered" >{</span>
+    const query = {
+      $and: keywords.map(keyword =&gt; ({
         $or: [
           { title: { $regex: keyword, $options: 'i' } },
           { summary: { $regex: keyword, $options: 'i' } }
@@ -871,9 +869,9 @@ export const searchDocuments = <span class="fstat-no" title="function not covere
     };
   
   
-  const documents = <span class="cstat-no" title="statement not covered" >await Document.find(query);</span>
-<span class="cstat-no" title="statement not covered" >  <span class="missing-if-branch" title="if path not taken" >I</span>if (documents.length === 0) {</span>
-<span class="cstat-no" title="statement not covered" >    return [] as IDocumentResponse[];</span>
+  const documents = await Document.find(query);
+  if (documents.length === 0) {
+    return [] as IDocumentResponse[];
   }
 <span class="cstat-no" title="statement not covered" >  return Promise.all(</span>
     documents.map(<span class="fstat-no" title="function not covered" >async (d</span>ocument) =&gt;<span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" > {</span></span>
@@ -897,7 +895,6 @@ export const searchDocuments = <span class="fstat-no" title="function not covere
       } as IDocumentResponse;
     }),
   );
-&nbsp;
 }
 &nbsp;
 &nbsp;
@@ -1051,7 +1048,7 @@ export const getDocumentByType = <span class="fstat-no" title="function not cove
             <div class='footer quiet pad2 space-top1 center small'>
                 Code coverage generated by
                 <a href="https://istanbul.js.org/" target="_blank" rel="noopener noreferrer">istanbul</a>
-                at 2024-11-14T13:27:11.133Z
+                at 2024-11-15T16:38:13.528Z
             </div>
         <script src="../../prettify.js"></script>
         <script>
