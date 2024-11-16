@@ -8,11 +8,19 @@ import { IDocument } from "../../../utils/interfaces/document.interface";
 Modal.setAppElement("#root");
 
 interface DocumentItemProps {
-  document: IDocument
+  document: IDocument,
+  coordinates: any;
+  setCoordinates: (coordinates: any) => void;
+  allDocuments: IDocument[];
+  setDocuments: (documents: IDocument[]) => void;
 }
 
 export const DocumentItem: React.FC<DocumentItemProps> = ({
-  document
+  document,
+  coordinates,
+  setCoordinates,
+  allDocuments,
+  setDocuments
 }) => {
 
   const modalStyles = {
@@ -42,7 +50,13 @@ export const DocumentItem: React.FC<DocumentItemProps> = ({
       </div>
 
       <Modal style={modalStyles} isOpen={showModal} onRequestClose={() => setShowModal(false)} >
-        <DocumentDetailsModal document={document} />
+        <DocumentDetailsModal 
+          document={document} 
+          coordinates={coordinates}
+          setCoordinates={setCoordinates}
+          allDocuments={allDocuments}
+          setDocuments={setDocuments}
+        />
       </Modal>
     </>
   )

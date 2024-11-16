@@ -1,8 +1,33 @@
+import { useAuth } from '../../../context/AuthContext';
+import { modalStyles } from '../../../pages/KirunaMap';
+import { UserRoleEnum } from '../../../utils/interfaces/user.interface';
+import ButtonRounded from '../../atoms/button/ButtonRounded';
 import { DocumentIcon } from '../../molecules/documentsItems/DocumentIcon';
+import Modal from 'react-modal';
+import DocumentForm from '../DocumentForm';
+import { IDocument } from '../../../utils/interfaces/document.interface';
+import { useState } from 'react';
 
-const DocumentDetailsModal = ( {document} : any ) => {
+interface DocumentDetailsModalProps {
+    document: IDocument;
+    coordinates: any;
+    setCoordinates: (coordinates: any) => void;
+    allDocuments: IDocument[];
+    setDocuments: (documents: IDocument[]) => void;
+}
+
+const DocumentDetailsModal: React.FC<DocumentDetailsModalProps> = ({
+    document,
+    coordinates,
+    setCoordinates,
+    allDocuments,
+    setDocuments
+}) => {
 
     console.log(document);
+
+    const { isLoggedIn, user } = useAuth();
+    const [modalOpen, setModalOpen] = useState(false);
 
     const matchType = (type: string) => {
         switch (type) {
@@ -59,6 +84,34 @@ const DocumentDetailsModal = ( {document} : any ) => {
                     <p>{document.summary}</p>
                 </div>
             </div>
+
+            {
+                /* Button to edit the document */
+                (isLoggedIn && user && user.role === UserRoleEnum.Uplanner) &&
+                <ButtonRounded
+                    text="Edit"
+                    variant="filled" 
+                    className="bg-black text-white text-base px-4 py-2"
+                    onClick={() => {setModalOpen(true)}}
+                />
+            }
+
+            <Modal
+                style={modalStyles}
+                isOpen={modalOpen}
+                onRequestClose={() => setModalOpen(false)}
+            >
+                <DocumentForm
+                    coordinates={coordinates}
+                    setCoordinates={setCoordinates}
+                    documents={allDocuments}
+                    setDocuments={setDocuments}
+                    selectedCoordIdProp={document.coordinates?.id}
+                    modalOpen={modalOpen}
+                    setModalOpen={setModalOpen}
+                    selectedDocument={document}
+                />
+            </Modal>
         </>
     );
 };

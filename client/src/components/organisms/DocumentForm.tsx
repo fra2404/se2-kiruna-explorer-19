@@ -12,7 +12,7 @@ import InformativeDocIcon from '../../assets/icons/informative-doc-icon';
 import MaterialEffectsIcon from '../../assets/icons/material-effects-icon';
 import PrescriptiveDocIcon from '../../assets/icons/prescriptive-doc-icon';
 import TechnicalDocIcon from '../../assets/icons/technical-doc-icon';
-import { createCoordinate, createDocument } from '../../API';
+import { createCoordinate, createDocument, editDocument } from '../../API';
 import Toast from './Toast';
 import Step1 from '../molecules/steps/Step1';
 import Step2 from '../molecules/steps/Step2';
@@ -38,6 +38,7 @@ interface DocumentFormProps {
   setDocuments: (documents: IDocument[]) => void;
   modalOpen: boolean;
   setModalOpen: (open: boolean) => void;
+  selectedDocument?: IDocument
 }
 
 const DocumentForm = ({
@@ -48,6 +49,7 @@ const DocumentForm = ({
   documents,
   setDocuments,
   showCoordNamePopup = false,
+  selectedDocument
 }: DocumentFormProps) => {
   const [currentStep, setCurrentStep] = useState(1);
   const [connectToMap, setConnectToMap] = useState(
@@ -98,19 +100,19 @@ const DocumentForm = ({
   ];
 
   // Document information
-  const [title, setTitle] = useState('');
+  const [title, setTitle] = useState(selectedDocument?.title || '');
   const [stakeholders, setStakeholders] = useState<string | undefined>(
-    undefined,
+    selectedDocument?.stakeholders || undefined,
   );
-  const [scale, setScale] = useState<string | undefined>('');
+  const [scale, setScale] = useState<string | undefined>(selectedDocument?.scale || '');
   const [issuanceDate, setIssuanceDate] = useState(
-    new Date().toISOString().split('T')[0],
+    selectedDocument?.date ? new Date(selectedDocument.date).toISOString().split('T')[0] : new Date().toISOString().split('T')[0],
   );
-  const [docType, setDocType] = useState<string | undefined>(undefined);
+  const [docType, setDocType] = useState<string | undefined>(selectedDocument?.type || undefined);
   //const [numPages, setNumPages] = useState(0);
-  const [connections, setConnections] = useState<Connection[]>([]);
-  const [language, setLanguage] = useState('');
-  const [description, setDescription] = useState('');
+  const [connections, setConnections] = useState<Connection[]>(selectedDocument?.connections?.map((c) => {return {type: c.type, relatedDocument: c.document}}) || []);
+  const [language, setLanguage] = useState(selectedDocument?.language || '');
+  const [description, setDescription] = useState(selectedDocument?.summary || '');
 
   // Georeferencing information
   const [position, setPosition] = useState<LatLng | undefined>(positionProp);
@@ -248,6 +250,7 @@ const DocumentForm = ({
     }
 
     const documentData = {
+      id: selectedDocument?.id || '',
       title,
       stakeholders: stakeholders || '',
       scale: scale || '',
@@ -264,16 +267,31 @@ const DocumentForm = ({
     console.log('Document Data:', documentData);
 
     try {
-      const response = await createDocument(documentData);
+      let response;
+      if(!selectedDocument) {
+        response = await createDocument(documentData);
+      }
+      else {
+        response = await editDocument(documentData);
+      }
       console.log(response);
       if (response.success) {
-        console.log('Document created successfully:', response.document);
-        showToastMessage('Document created successfully', 'success');
+        console.log('Document saved successfully:', response.document);
+        showToastMessage('Document saved successfully', 'success');
 
         setCurrentStep(5);
         if(response.document) {
-          console.log(documents.concat(response.document.document));
-          setDocuments(documents.concat(response.document.document));
+          const responseDocument = response.document.document;    //Typescript is not able to detect that the value response.document will still be defined in the "else" branch. So, we have to put it in a variable
+          if(!selectedDocument) {
+            setDocuments(documents.concat(responseDocument));
+          }
+          else {
+            setDocuments(
+              documents.map((doc: IDocument) => {
+                return doc.id == selectedDocument.id ? responseDocument : doc
+              })
+            );
+          }
         }
       } else {
         console.log('Failed to create document');
