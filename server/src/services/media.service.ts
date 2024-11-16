@@ -81,7 +81,9 @@ export const uploadMediaService = async (mediaData: any): Promise<IReturnPresign
     try {
         // Only update if pages is not null or undefined
         const updateFields: any = {};
-    
+    console.log("hereee");
+    console.log("metadata : ", metadata);
+    console.log("id ", mediaId);
         if (metadata.pages != null) { 
           updateFields.pages = metadata.pages;
         }
@@ -91,6 +93,9 @@ export const uploadMediaService = async (mediaData: any): Promise<IReturnPresign
           return;
         }
     
+        updateFields.size = metadata.size;
+        console.log("Update fields ", updateFields);
+        console.log("metadata size ", metadata.size);
         const updatedMedia = await Media.findByIdAndUpdate(
           mediaId,
           { $set: updateFields },

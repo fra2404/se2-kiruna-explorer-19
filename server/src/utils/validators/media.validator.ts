@@ -25,10 +25,21 @@ export const validateUploadedMedia = [
     .withMessage('mediaId is required.')
     .isMongoId().withMessage('Invalid media ID format'),
 
-    body('page')
-    .optional()
+    body('metadata.page')
+    .custom((value) => {
+      if (value && !Number.isInteger(Number(value))) {
+        throw new Error('Page must be a number.');
+      }
+      return true;
+    }),
+
+    body('metadata.size')
+    .notEmpty()
+    .withMessage('Size is required')
     .isNumeric()
-    .withMessage('page must be a number.')
+    .withMessage('Size must be a number.')
+    .custom((value) => value > 0)
+    .withMessage('Size must be greater than 0.'),
   ];
   
   export const validateMediaId = [
