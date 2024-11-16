@@ -16,7 +16,6 @@ interface PointProps {
   name: string;
   coordinates: any;
   setCoordinates: (coordinates: any) => void;
-  isLoggedIn: boolean;
   pointDocuments: IDocument[];
   allDocuments: IDocument[];
   setDocuments: (documents: IDocument[]) => void;
@@ -28,7 +27,6 @@ export const Point: React.FC<PointProps> = ({
   name,
   coordinates,
   setCoordinates,
-  isLoggedIn,
   pointDocuments,
   allDocuments,
   setDocuments
@@ -54,13 +52,12 @@ export const Point: React.FC<PointProps> = ({
                 pointDocuments.length
               }
               </span>
-           </div>
+            </div>
           ),
         })
       }>
         <MapPopup
           name={name}
-          isLoggedIn={isLoggedIn}
           message="Do you want to add a document in this point?"
           documents={pointDocuments}
           onYesClick={() => {

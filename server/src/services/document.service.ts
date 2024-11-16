@@ -178,9 +178,7 @@ export const searchDocuments = async ( keywords : string[]) : Promise<IDocumentR
       } as IDocumentResponse;
     }),
   );
-
 }
-
 
 // Update document
 export const updatingDocument = async (
