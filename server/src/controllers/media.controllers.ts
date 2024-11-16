@@ -3,43 +3,60 @@ import { CustomRequest } from '@interfaces/customRequest.interface';
 import { updateMediaMetadata, uploadMediaService } from '@services/media.service';
 
 /**
-@swagger
-  /api/media/upload:
-    post:
-      summary: Upload media file
-      description: This endpoint handles getting metadata of a file from FE and returns them to the CDN, finally
-      save metadata including relativeUrl in DB, also returns presigned URL to FE.
-      parameters:
-        - in: body
-          name: body
-          description: Media file data for uploading
-          required: true
-          schema:
-            type: object
-            properties:
-              filename:
-                type: string
-                description: The name of the file to be uploaded
-                example: "example-file.pdf"
-              size:
-                type: integer
-                description: The size of the file
-                example: 204800
-              mimetype:
-                type: string
-                description: The MIME type of the file
-                example: "application/pdf"
-      responses:
-        200:
-          description: Media uploaded and metadata saved successfully, with presigned URL
-        400:
-          description: Bad Request - Invalid input data
-        401:
-          description: Unauthorized - User not authenticated
-        500:
-          description: Internal Server Error - Failed to upload media
-
-**/
+ * @swagger
+ * /api/media/upload:
+ *   post:
+ *     summary: Upload a media file
+ *     tags: [Media]
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               filename:
+ *                 type: string
+ *                 description: Name of the file
+ *                 example: example.pdf
+ *               size:
+ *                 type: number
+ *                 description: Size of the file
+ *                 example: 1048
+ *               mimetype:
+ *                 type: string
+ *                 description: MIME type of the file
+ *                 example: application/pdf
+ *     responses:
+ *       200:
+ *         description: Media file uploaded successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   description: Success message
+ *                   example: File validated and metadata saved successfully
+ *                 data:
+ *                   type: object
+ *                   description: Metadata of the uploaded media
+ *                   properties:
+ *                     filename:
+ *                       type: string
+ *                       example: example.pdf
+ *                     url:
+ *                       type: string
+ *                       description: URL for the uploaded file
+ *                     type:
+ *                       type: string
+ *                       description: Type of the media based on its mimetype
+ *                       example: document
+ *                     mimetype:
+ *                       type: string
+ *                       example: application/pdf
+ */
 
 //upload media
 export const uploadMediaController = async (
@@ -77,46 +94,65 @@ export const uploadMediaController = async (
   };
   
 
-/**  
-  @swagger
-    /api/media/update:
-      put:
-        summary: Update media metadata from CDN output
-        description: Endpoint to update media metadata like pages from CDN.
-        parameters:
-          - in: body
-            name: body
-            description: Media data to update
-            required: true
-            schema:
-              type: object
-              properties:
-                mediaId:
-                  type: string
-                  description: The ID of the media to update
-                metadata:
-                  type: object
-                  properties:
-                    pages:
-                      type: integer
-                      description: Number of pages in the media (optional)
-        responses:
-          200:
-            description: Media metadata updated successfully
-            schema:
-              type: object
-              properties:
-                message:
-                  type: string
-                  example: 'Media metadata updated successfully'
-                updatedMedia:
-                  type: object
-                  description: The updated media object
-          400:
-            description: Bad Request - Invalid input
-          500:
-            description: Internal Server Error - Failed to update media metadata
-**/
+
+
+  /**
+ * @swagger
+ * /api/media/update:
+ *   put:
+ *     summary: Update media metadata based on CDN response
+ *     tags: [Media]
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               mediaId:
+ *                 type: string
+ *                 description: ID of the media to update
+ *                 example: 64bfad3f4b5d2c001c8e4f2e
+ *               metadata:
+ *                 type: object
+ *                 description: Metadata to update for the media
+ *                 properties:
+ *                   pages:
+ *                     type: number
+ *                     description: Number of pages (if applicable)
+ *                     example: 10
+ *     responses:
+ *       200:
+ *         description: Media metadata updated successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   description: Success message
+ *                   example: Media metadata updated successfully
+ *                 updatedMedia:
+ *                   type: object
+ *                   description: Updated media details
+ *                   properties:
+ *                     filename:
+ *                       type: string
+ *                       example: example.pdf
+ *                     url:
+ *                       type: string
+ *                       description: Media URL
+ *                     type:
+ *                       type: string
+ *                       example: document
+ *                     mimetype:
+ *                       type: string
+ *                       example: application/pdf
+ *                     pages:
+ *                       type: number
+ *                       example: 10
+ */
   //Update media from CDN
   export const UpdateMediaController = async (req: Request, res: Response, next: NextFunction,): Promise<void> => {
     try {
