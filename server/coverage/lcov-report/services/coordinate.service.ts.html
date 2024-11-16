@@ -23,30 +23,30 @@
         <div class='clearfix'>
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">78.04% </span>
+                <span class="strong">100% </span>
                 <span class="quiet">Statements</span>
-                <span class='fraction'>32/41</span>
+                <span class='fraction'>41/41</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">33.33% </span>
+                <span class="strong">100% </span>
                 <span class="quiet">Branches</span>
-                <span class='fraction'>1/3</span>
+                <span class='fraction'>3/3</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">77.77% </span>
+                <span class="strong">100% </span>
                 <span class="quiet">Functions</span>
-                <span class='fraction'>7/9</span>
+                <span class='fraction'>9/9</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">77.14% </span>
+                <span class="strong">100% </span>
                 <span class="quiet">Lines</span>
-                <span class='fraction'>27/35</span>
+                <span class='fraction'>35/35</span>
             </div>
         
             
@@ -61,7 +61,7 @@
             </div>
         </template>
     </div>
-    <div class='status-line medium'></div>
+    <div class='status-line high'></div>
     <pre><table class="coverage">
 <tr><td class="line-count quiet"><a name='L1'></a><a href='#L1'>1</a>
 <a name='L2'></a><a href='#L2'>2</a>
@@ -209,28 +209,28 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">3x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">3x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">3x</span>
 <span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">2x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">2x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-neutral">&nbsp;</span></td><td class="text"><pre class="prettyprint lang-js">import { Coordinate } from '../schemas/coordinate.schema';
 import { ICoordinate } from '../interfaces/coordinate.interface';
 import { CustomError } from '../utils/customError';
@@ -293,28 +293,28 @@ export const deleteCoordinatesByNames = async (
 };
 &nbsp;
 &nbsp;
-export const deleteCoordinateById = <span class="fstat-no" title="function not covered" >async (i</span>d: string): Promise&lt;boolean&gt; =&gt;<span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" > {</span></span>
+export const deleteCoordinateById = async (id: string): Promise&lt;boolean&gt; =&gt; {
   //console.log("Start of delete method");
 &nbsp;
-  const coordinate = <span class="cstat-no" title="statement not covered" >await Coordinate.findById(id);</span>
+  const coordinate = await Coordinate.findById(id);
 &nbsp;
-<span class="cstat-no" title="statement not covered" >  <span class="missing-if-branch" title="if path not taken" >I</span>if (!coordinate) {</span>
-<span class="cstat-no" title="statement not covered" >    throw new PositionError();</span>
+  if (!coordinate) {
+    throw new PositionError();
   }
 &nbsp;
   //console.log("Coordinate exists. Checking if it's linked to a document");
   // Check if the coordinate is linked to any document
-  const document = <span class="cstat-no" title="statement not covered" >await Document.findOne({ coordinates: coordinate._id });</span>
+  const document = await Document.findOne({ coordinates: coordinate._id });
 &nbsp;
-<span class="cstat-no" title="statement not covered" >  <span class="missing-if-branch" title="if path not taken" >I</span>if (document) {</span>
+  if (document) {
     //console.log("Coordinate is linked to a document");
-<span class="cstat-no" title="statement not covered" >    throw new CustomError('Coordinate is linked to a document', 400);</span>
+    throw new CustomError('Coordinate is linked to a document', 400);
   }
 &nbsp;
   //console.log("Coordinate is not linked to any document");
-<span class="cstat-no" title="statement not covered" >  await Coordinate.deleteOne({ _id: coordinate._id });</span>
+  await Coordinate.deleteOne({ _id: coordinate._id });
 &nbsp;
-<span class="cstat-no" title="statement not covered" >  return true;</span>
+  return true;
 };</pre></td></tr></table></pre>
 
                 <div class='push'></div><!-- for sticky footer -->
@@ -322,7 +322,7 @@ export const deleteCoordinateById = <span class="fstat-no" title="function not c
             <div class='footer quiet pad2 space-top1 center small'>
                 Code coverage generated by
                 <a href="https://istanbul.js.org/" target="_blank" rel="noopener noreferrer">istanbul</a>
-                at 2024-11-15T17:56:22.972Z
+                at 2024-11-16T17:52:46.113Z
             </div>
         <script src="../prettify.js"></script>
         <script>
