@@ -12,7 +12,7 @@ import { handleValidationErrors } from '@middlewares/validation.middleware';
 import express from 'express';
 import { authenticateUser } from '@middlewares/auth.middleware';
 import { authorizeRoles } from '@middlewares/role.middleware';
-import checkHeader from '@middlewares/checkheader.middleware';
+import checkHeader from '@middlewares/checkHeader.middleware';
 
 const router = express.Router();
 

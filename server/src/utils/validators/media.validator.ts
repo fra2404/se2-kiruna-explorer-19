@@ -25,9 +25,9 @@ export const validateUpdateMedia = [
     .withMessage('mediaId is required.')
     .isMongoId().withMessage('Invalid media ID format'),
 
-    body('metadata.page')
+    body('metadata.pages')
     .custom((value) => {
-      if (value && !Number.isInteger(Number(value))) {
+      if (value && !Number.isFinite(Number(value))) {
         throw new Error('Page must be a number.');
       }
       return true;
