@@ -1,6 +1,9 @@
 import { Request, Response, NextFunction } from 'express';
 import { CustomRequest } from '@interfaces/customRequest.interface';
-import { updateMediaMetadata, uploadMediaService } from '@services/media.service';
+import { getMediaMetadataById, 
+         updateMediaMetadata, 
+         uploadMediaService } from '@services/media.service';
+import { MediaNotFoundError } from '@utils/errors';
 
 /**
  * @swagger
@@ -163,6 +166,30 @@ export const uploadMediaController = async (
         res.status(200).json({
         message: 'Media metadata updated successfully',
         updatedMedia,
+      });
+    } catch (error) {
+      next(error); // Pass any errors to the global error handler
+    }
+  };
+
+
+
+  //get Media by Id
+  export const getMediaMetadataController = async (
+    req: Request, 
+    res: Response, 
+    next: NextFunction
+  ): Promise<void> => {
+    try {  
+      const mediaMetadata = await getMediaMetadataById(req.params.mediaId);
+  
+      if (!mediaMetadata) {
+        throw new MediaNotFoundError();
+      }
+  
+      res.status(200).json({
+        message: 'Media metadata retrieved successfully',
+        data: mediaMetadata, 
       });
     } catch (error) {
       next(error); // Pass any errors to the global error handler

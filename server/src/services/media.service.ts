@@ -1,5 +1,5 @@
 import Media from '@schemas/media.schema';
-import { IReturnPresignedUrl } from '@interfaces/media.return.interface';
+import { IReturnMedia, IReturnPresignedUrl } from '@interfaces/media.return.interface';
 import { Types } from 'mongoose';
 import { IMedia } from '@interfaces/media.interface';
 
@@ -106,3 +106,21 @@ export const updateMediaMetadata = async (mediaId: string, metadata: any): Promi
     }
   };
 
+
+  export const getMediaMetadataById = async (mediaId: string): Promise<IReturnMedia | null> => {
+      const media = await Media.findById(mediaId);
+      
+      if (!media) {
+        throw new Error('Media not found');
+      }
+  
+      const mediaMetadata: IReturnMedia = {
+        filename: media.filename,
+        url: media.relativeUrl,  
+        type: media.type,
+        mimetype: media.mimetype,
+        pages: media.pages,  
+      };
+  
+      return mediaMetadata;
+  };

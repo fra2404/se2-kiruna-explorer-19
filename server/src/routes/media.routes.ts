@@ -1,11 +1,13 @@
 import {
   uploadMediaController,
   UpdateMediaController,
+  getMediaMetadataController,
 } from '@controllers/media.controllers';
 
 import {
   validateUploadedMedia,
-  validateUpdateMedia
+  validateUpdateMedia,
+  validateMediaId
 } from '@utils/validators/media.validator';
 import { handleValidationErrors } from '@middlewares/validation.middleware';
 
@@ -34,5 +36,13 @@ router.put(
   handleValidationErrors,
   UpdateMediaController
 )
+
+router.get(
+  '/:mediaId',
+  authenticateUser,
+  authorizeRoles('PLANNER', 'DEVELOPER'),
+  validateMediaId,
+  handleValidationErrors,
+  getMediaMetadataController);
 
 export const mediaRoutes = router;
