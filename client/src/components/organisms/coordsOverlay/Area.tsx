@@ -1,12 +1,14 @@
-import React, { useContext, useState } from 'react';
+import React, { useContext, useRef, useState } from 'react';
 import { LatLng } from 'leaflet';
-import { Polygon } from 'react-leaflet';
+import { Polygon, Tooltip } from 'react-leaflet';
 import Modal from 'react-modal';
 import { IDocument } from '../../../utils/interfaces/document.interface';
 import { MapPopup } from '../../molecules/popups/MapPopup';
 import { modalStyles } from '../../../pages/KirunaMap';
 import DocumentForm from '../DocumentForm';
 import MapStyleContext from '../../../context/MapStyleContext';
+import { CoordsIconStyle } from '../../molecules/MapIconsStyles';
+import { DocumentIcon } from '../../molecules/documentsItems/DocumentIcon';
 
 interface AreaProps {
   isLoggedIn: boolean;
@@ -34,6 +36,7 @@ export const Area: React.FC<AreaProps> = ({
   const [selectedAreaId, setSelectedAreaId] = useState('');
   const [modalOpen, setModalOpen] = useState(false);
   const {swedishFlagBlue, satMapMainColor, mapType} = useContext(MapStyleContext);
+  const polygonRef = useRef<L.Polygon>(null);
 
   return (
     <>
@@ -41,17 +44,35 @@ export const Area: React.FC<AreaProps> = ({
         key={id}
         pathOptions={{ color: mapType == "sat" ? satMapMainColor : swedishFlagBlue }}
         positions={areaCoordinates as unknown as LatLng[]}
+        ref={polygonRef}
       >
+        <Tooltip direction="center" permanent className='pointIcon'>
+          <div style={
+            CoordsIconStyle(areaDocuments, false)
+            }>
+            <span style={{transform: "rotate(45deg)"}}>
+            {areaDocuments.length == 1 ? 
+              <DocumentIcon type={areaDocuments[0].type} stakeholders={areaDocuments[0].stakeholders} /> 
+              :
+              areaDocuments.length
+            }
+            </span>
+          </div>
+        </Tooltip>
+        
         <MapPopup
           name={name}
           isLoggedIn={isLoggedIn}
           message="Do you want to add a document in this area?"
           documents={areaDocuments}
           onYesClick={() => {
+            polygonRef.current?.closePopup();
             setSelectedAreaId(id);
             if (!modalOpen) setModalOpen(true);
           }}
-          onCancelClick={() => {}}
+          onCancelClick={() => {
+            polygonRef.current?.closePopup();
+          }}
         />
       </Polygon>
       <Modal
