@@ -16,6 +16,8 @@ import Header from '../components/organisms/Header';
 import { IDocument } from '../utils/interfaces/document.interface';
 import MarkerClusterGroup from 'react-leaflet-markercluster';
 import { renderToString } from 'react-dom/server';
+import { UserRoleEnum } from '../utils/interfaces/user.interface';
+
 
 
 export const kirunaLatLngCoords: LatLngExpression = [67.85572, 20.22513];
@@ -36,7 +38,7 @@ export const modalStyles = {
 };
 
 export default function KirunaMap() {
-  const { isLoggedIn } = useAuth();
+  const { isLoggedIn, user } = useAuth();
   const { setFeedbackFromError } = useContext(FeedbackContext);
   const { swedishFlagBlue, swedishFlagYellow, mapType } = useContext(MapStyleContext);
 
@@ -101,8 +103,8 @@ export default function KirunaMap() {
     <>
       <div style={{ width: width, height: height }}>
         <Header />
-        {isLoggedIn && 
-          <Overlay 
+        {(isLoggedIn && user && user.role === UserRoleEnum.Uplanner) &&
+          <Overlay
             coordinates={coordinates}
             setCoordinates={setCoordinates}
             documents={documents}
@@ -160,7 +162,7 @@ export default function KirunaMap() {
               const filteredDocuments = documents.filter((d) => d.coordinates?._id == coordId);
 
               if (coordInfo.type == 'Point') {
-                if(filteredDocuments.length > 0) {
+                if (filteredDocuments.length > 0) {
                   return (
                     <Point
                       key={coordId}
@@ -169,7 +171,6 @@ export default function KirunaMap() {
                       name={coordInfo.name}
                       coordinates={coordinates}
                       setCoordinates={setCoordinates}
-                      isLoggedIn={isLoggedIn}
                       pointDocuments={filteredDocuments}
                       allDocuments={documents}
                       setDocuments={setDocuments}
@@ -194,7 +195,7 @@ export default function KirunaMap() {
               }
             })}
           </MarkerClusterGroup>
-          {isLoggedIn && 
+          {(isLoggedIn && user && user.role === UserRoleEnum.Uplanner) &&
             <ClickMarker 
               coordinates={coordinates}
               setCoordinates={setCoordinates} 

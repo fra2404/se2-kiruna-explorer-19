@@ -17,7 +17,6 @@ interface PointProps {
   name: string;
   coordinates: any;
   setCoordinates: (coordinates: any) => void;
-  isLoggedIn: boolean;
   pointDocuments: IDocument[];
   allDocuments: IDocument[];
   setDocuments: (documents: IDocument[]) => void;
@@ -29,7 +28,6 @@ export const Point: React.FC<PointProps> = ({
   name,
   coordinates,
   setCoordinates,
-  isLoggedIn,
   pointDocuments,
   allDocuments,
   setDocuments
@@ -37,7 +35,7 @@ export const Point: React.FC<PointProps> = ({
   const [modalOpen, setModalOpen] = useState(false);
   const [selectedPointId, setSelectedPointId] = useState('');
   const markerRef = useRef<L.Marker>(null);
-  const {swedishFlagBlue, satMapMainColor, mapType} = useContext(MapStyleContext);
+  const { swedishFlagBlue, satMapMainColor, mapType } = useContext(MapStyleContext);
 
   return (
     <>
@@ -61,20 +59,19 @@ export const Point: React.FC<PointProps> = ({
               border: "2px solid black",
               padding: pointDocuments.length == 1 ? "1px" : "0px"
             }}>
-              <span style={{transform: "rotate(45deg)"}}>
-              {pointDocuments.length == 1 ? 
-                <DocumentIcon type={pointDocuments[0].type} stakeholders={pointDocuments[0].stakeholders} /> 
-                :
-                pointDocuments.length
-              }
+              <span style={{ transform: "rotate(45deg)" }}>
+                {pointDocuments.length == 1 ?
+                  <DocumentIcon type={pointDocuments[0].type} stakeholders={pointDocuments[0].stakeholders} />
+                  :
+                  pointDocuments.length
+                }
               </span>
-           </div>
+            </div>
           ),
         })
       }>
         <MapPopup
           name={name}
-          isLoggedIn={isLoggedIn}
           message="Do you want to add a document in this point?"
           documents={pointDocuments}
           onYesClick={() => {
