@@ -380,7 +380,7 @@ const DocumentForm = ({
     <>
       <div className="w-full rounded shadow-md border">
         <h2 className="text-center text-2xl font-bold mt-6">
-          Create a new document
+          {selectedDocument ? "Edit document" : "Create a new document"}
         </h2>
         <form className="m-6" onSubmit={handleSubmit}>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-x-4 gap-y-2">
