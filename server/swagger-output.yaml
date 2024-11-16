@@ -319,15 +319,17 @@ paths:
           description: Internal server error.
   /documents/search:
     get:
-      summary: Search documents by keyword
+      summary: Search documents by multiple keywords
       description: >-
-        Retrieve all documents that match the specified keyword in the title or
+        Retrieve all documents that match the specified keywords in the title or
         summary.
       parameters:
         - in: query
-          name: keyword
+          name: keywords
           required: true
-          description: The keyword to search for in the title or summary of the document.
+          description: >-
+            An array of keywords to search for in the title or summary of the
+            document.
           schema:
             type: string
       responses:
