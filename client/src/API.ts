@@ -105,7 +105,7 @@ async function createDocument(documentData: {
   date: string;
   coordinates: string;
   connections: { document: string; type: string }[];
-}): Promise<{ success: boolean; document?: {message: string, document: IDocument} }> {
+}): Promise<{ success: boolean; document?: IDocument} > {
   const response = await fetch(`${SERVER_URL}/documents/create`, {
     method: 'POST',
     credentials: 'include',
@@ -154,7 +154,7 @@ async function editDocument(documentData: {
   date: string;
   coordinates: string;
   connections: { document: string; type: string }[];
-}): Promise<{ success: boolean; document?: {message: string, document: IDocument} }> {
+}): Promise<{ success: boolean; document?: IDocument} > {
   const response = await fetch(`${SERVER_URL}/documents/${documentData.id}`, {
     method: 'PUT',
     credentials: 'include',
@@ -169,6 +169,7 @@ async function editDocument(documentData: {
   }
 
   const document = await response.json();
+  console.log(document);
   return { success: true, document };
 }
 

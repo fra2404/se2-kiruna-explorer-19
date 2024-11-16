@@ -260,7 +260,7 @@ const DocumentForm = ({
       date: issuanceDate,
       coordinates: coordId || '',
       connections: connections.map((conn) => ({
-        document: conn.relatedDocument.value,
+        document: conn.relatedDocument,
         type: conn.type,
       })),
     };
@@ -281,7 +281,8 @@ const DocumentForm = ({
 
         setCurrentStep(5);
         if(response.document) {
-          const responseDocument = response.document.document;    //Typescript is not able to detect that the value response.document will still be defined in the "else" branch. So, we have to put it in a variable
+          const responseDocument = response.document;    //Typescript is not able to detect that the value response.document will still be defined in the "else" branch. So, we have to put it in a variable
+          console.log(response.document);
           if(!selectedDocument) {
             setDocuments(documents.concat(responseDocument));
           }

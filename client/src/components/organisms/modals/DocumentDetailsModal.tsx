@@ -102,11 +102,11 @@ const DocumentDetailsModal: React.FC<DocumentDetailsModalProps> = ({
                 onRequestClose={() => setModalOpen(false)}
             >
                 <DocumentForm
+                    selectedCoordIdProp={document.coordinates?._id}
                     coordinates={coordinates}
                     setCoordinates={setCoordinates}
                     documents={allDocuments}
                     setDocuments={setDocuments}
-                    selectedCoordIdProp={document.coordinates?.id}
                     modalOpen={modalOpen}
                     setModalOpen={setModalOpen}
                     selectedDocument={document}
