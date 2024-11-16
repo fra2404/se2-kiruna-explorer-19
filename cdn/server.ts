@@ -6,6 +6,7 @@ import fs from 'fs/promises';
 import dotenv from 'dotenv';
 import pdfParse from 'pdf-parse';
 import NodeCache from 'node-cache';
+import axios from 'axios';
 
 // Determina quale file .env caricare
 const envFile = process.env.DOCKER_ENV ? '.env.docker' : '.env.local';
@@ -163,8 +164,38 @@ app.post('/upload-file', checkTokenBlacklist, upload.single('file'), async (req:
         // Get the filename without extension
         const fileNameWithoutExt = path.parse(req.file.filename).name;
 
+        // Prepare the metadata to send to the external API
+        const fileMetadata = {
+            mediaId: fileNameWithoutExt,
+            size: req.file.size,
+            page: numberOfPages,
+            url: `${req.protocol}://${req.get('host')}/cdn/${payload.folder ? payload.folder + '/' : ''}${fileNameWithoutExt}`
+        };
+
+        console.log('File metadata to send to the external API:', fileMetadata);
+
+        // Call the external API with the metadata
+        try {
+            const apiResponse = await axios.put('http://localhost:5001/api/media/update', fileMetadata, {
+                headers: {
+                    'Content-Type': 'application/json',
+                    'x-api-key': process.env.API_KEY || 'my-api-key'
+                }
+            });
+
+            if (apiResponse.status !== 200) {
+                throw new Error('Failed to call external API');
+            }
+
+            console.log('External API response:', apiResponse.data);
+        } catch (apiError) {
+            console.error('Error calling external API:', apiError);
+            res.status(500).json({ error: 'Error calling external API' });
+            return;
+        }
+
         // Confirm successful upload
-        res.status(200).json({ message: 'File uploaded successfully', url: `${req.protocol}://${req.get('host')}/cdn/${payload.folder ? payload.folder + '/' : ''}${fileNameWithoutExt}` });
+        res.status(200).json({ message: 'File uploaded successfully', url: fileMetadata.url });
     } catch (error) {
         res.status(403).json({ error: 'Token is invalid or expired' });
     }
