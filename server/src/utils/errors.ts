@@ -4,6 +4,7 @@ const BAD_CONNECTION = 'The connection with the database failed';
 const NOT_FOUND = 'Document not found';
 const NOT_AUTH = 'The user is not authorized';
 const NO_POSITION = "The given position doesn't exist";
+const MEDIA_NOT_FOUND = 'Media not found';
 
 class BadConnectionError extends CustomError {
   constructor(errors?: any[]) {
@@ -29,9 +30,16 @@ class PositionError extends CustomError {
   }
 }
 
+class MediaNotFoundError extends CustomError {
+  constructor(errors?: any[]) {
+    super(MEDIA_NOT_FOUND, 404, errors);
+  }
+}
+
 export {
   BadConnectionError,
   DocNotFoundError,
   UserNotAuthorizedError,
   PositionError,
+  MediaNotFoundError,
 };

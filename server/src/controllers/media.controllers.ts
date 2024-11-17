@@ -1,6 +1,8 @@
 import { Request, Response, NextFunction } from 'express';
 import { CustomRequest } from '@interfaces/customRequest.interface';
 import { updateMediaMetadata, uploadMediaService } from '@services/media.service';
+import { MediaNotFoundError } from '@utils/errors';
+import { CustomError } from '@utils/customError';
 
 /**
  * @swagger
@@ -95,8 +97,7 @@ export const uploadMediaController = async (
   
 
 
-
-  /**
+/**
  * @swagger
  * /api/media/update:
  *   put:
@@ -119,8 +120,14 @@ export const uploadMediaController = async (
  *                 properties:
  *                   pages:
  *                     type: number
- *                     description: Number of pages (if applicable)
+ *                     description: Number of pages (if applicable). This is optional.
  *                     example: 10
+ *                   size:
+ *                     type: number
+ *                     description: The size of the media. This is required.
+ *                     example: 2048
+ *                 required:
+ *                   - size  # 'size' is mandatory, 'pages' is optional
  *     responses:
  *       200:
  *         description: Media metadata updated successfully
@@ -133,38 +140,62 @@ export const uploadMediaController = async (
  *                   type: string
  *                   description: Success message
  *                   example: Media metadata updated successfully
- *                 updatedMedia:
- *                   type: object
- *                   description: Updated media details
- *                   properties:
- *                     filename:
- *                       type: string
- *                       example: example.pdf
- *                     url:
- *                       type: string
- *                       description: Media URL
- *                     type:
- *                       type: string
- *                       example: document
- *                     mimetype:
- *                       type: string
- *                       example: application/pdf
- *                     pages:
- *                       type: number
- *                       example: 10
+ *       400:
+ *         description: Bad Request (No fields to update or invalid data)
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   description: Error message
+ *                   example: No fields to update
+ *       404:
+ *         description: Media not found
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   description: Error message
+ *                   example: Media not found
+ *       500:
+ *         description: Internal Server Error (unexpected error)
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   description: Error message
+ *                   example: Internal Server Error
  */
-  //Update media from CDN
-  export const UpdateMediaController = async (req: Request, res: Response, next: NextFunction,): Promise<void> => {
+ 
+  export const UpdateMediaController = async (
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ): Promise<void> => {
     try {
       const { mediaId, metadata } = req.body;
   
-       const updatedMedia = await updateMediaMetadata(mediaId, metadata);
+      await updateMediaMetadata(mediaId, metadata);
   
-        res.status(200).json({
+      res.status(200).json({
         message: 'Media metadata updated successfully',
-        updatedMedia,
       });
-    } catch (error) {
-      next(error); // Pass any errors to the global error handler
+    } catch (error: any) {
+      // Handle known errors
+      if (error instanceof MediaNotFoundError || error instanceof CustomError) {
+        res.status(error.status).json({ message: error.message });
+        return;
+      }
+  
+      // Pass unexpected errors to global error handler
+      next(error);
     }
   };

@@ -392,8 +392,14 @@ paths:
                   properties:
                     pages:
                       type: number
-                      description: Number of pages (if applicable)
+                      description: Number of pages (if applicable). This is optional.
                       example: 10
+                    size:
+                      type: number
+                      description: The size of the media. This is required.
+                      example: 2048
+                  required:
+                    - size
       responses:
         '200':
           description: Media metadata updated successfully
@@ -406,25 +412,39 @@ paths:
                     type: string
                     description: Success message
                     example: Media metadata updated successfully
-                  updatedMedia:
-                    type: object
-                    description: Updated media details
-                    properties:
-                      filename:
-                        type: string
-                        example: example.pdf
-                      url:
-                        type: string
-                        description: Media URL
-                      type:
-                        type: string
-                        example: document
-                      mimetype:
-                        type: string
-                        example: application/pdf
-                      pages:
-                        type: number
-                        example: 10
+        '400':
+          description: Bad Request (No fields to update or invalid data)
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    description: Error message
+                    example: No fields to update
+        '404':
+          description: Media not found
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    description: Error message
+                    example: Media not found
+        '500':
+          description: Internal Server Error (unexpected error)
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    description: Error message
+                    example: Internal Server Error
   /api/users:
     get:
       summary: Get all users
