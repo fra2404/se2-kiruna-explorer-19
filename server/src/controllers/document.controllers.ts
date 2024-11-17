@@ -357,7 +357,7 @@ export const deleteDocumentController = async (
  *       - in: query
  *         name: keywords
  *         required: true
- *         description: An array of keywords to search for in the title or summary of the document. Ex: ["lorem", "ipsum"]
+ *         description: An array of keywords to search for in the title or summary of the document. 
  *         schema:
  *           type: string
  *     responses:
@@ -438,4 +438,4 @@ export const searchDocumentsController = async (
   } catch (error) {
     next(error); // Pass the error to the error handler middleware
   }
-  }
+}
