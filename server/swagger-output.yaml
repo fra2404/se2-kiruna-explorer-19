@@ -317,35 +317,6 @@ paths:
           description: No documents found for the specified type.
         '500':
           description: Internal server error.
-  /documents/search:
-    get:
-      summary: Search documents by keyword
-      description: >-
-        Retrieve all documents that match the specified keyword in the title or
-        summary.
-      parameters:
-        - in: query
-          name: keyword
-          required: true
-          description: The keyword to search for in the title or summary of the document.
-          schema:
-            type: string
-      responses:
-        '200':
-          description: A list of documents that match the specified keyword.
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  documents:
-                    type: array
-                    items:
-                      $ref: '#/components/schemas/Document'
-        '404':
-          description: No documents found for the specified keyword.
-        '500':
-          description: Internal server error.
   /api/users:
     get:
       summary: Get all users
