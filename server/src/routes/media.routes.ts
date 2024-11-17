@@ -1,7 +1,7 @@
 import {
   uploadMediaController,
   UpdateMediaController,
-  getMediaMetadataController,
+  getMediaMetadataByIdController,
 } from '@controllers/media.controllers';
 
 import {
@@ -43,6 +43,6 @@ router.get(
   authorizeRoles('PLANNER', 'DEVELOPER'),
   validateMediaId,
   handleValidationErrors,
-  getMediaMetadataController);
+  getMediaMetadataByIdController);
 
 export const mediaRoutes = router;
