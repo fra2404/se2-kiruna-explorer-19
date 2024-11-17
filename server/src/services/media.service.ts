@@ -2,6 +2,8 @@ import Media from '@schemas/media.schema';
 import { IReturnMedia, IReturnPresignedUrl } from '@interfaces/media.return.interface';
 import { Types } from 'mongoose';
 import { IMedia } from '@interfaces/media.interface';
+import { CustomError } from '@utils/customError';
+import { MediaNotFoundError } from '@utils/errors';
 
 
 //get type from mimtype
@@ -43,7 +45,7 @@ export const uploadMediaService = async (mediaData: any): Promise<IReturnPresign
     });
 
     if (!response.ok) {
-      throw new Error("Failed to obtain presigned URL from CDN");
+      throw new CustomError("Failed to obtain presigned URL from CDN",400);
     }
 
     // Step 4: Parse the CDN response 
@@ -70,44 +72,37 @@ export const uploadMediaService = async (mediaData: any): Promise<IReturnPresign
 
   } catch (error) {
     console.error("Error in uploadMediaService:", error);
-    throw new Error("Failed to upload media");
+    throw new CustomError('Internal Server Error', 500);
   }
 };
 
 
-//Update Medida From What CDN Will Send
+//update metadata of media
 export const updateMediaMetadata = async (mediaId: string, metadata: any): Promise<void> => {
-  try {
-      // Only update if pages is not null or undefined
-      const updateFields: any = {};
+  const updateFields: any = {};
 
-      if (metadata.pages != null) { 
-        updateFields.pages = metadata.pages;
-      }
-  
-      if (Object.keys(updateFields).length === 0) {
-        // If there are no fields to update, exit
-        return;
-      }
-  
-      updateFields.size = metadata.size;
-      const updatedMedia = await Media.findByIdAndUpdate(
-        mediaId,
-        { $set: updateFields },
-        { new: true }
-      );
-  
-      if (!updatedMedia) {
-        throw new Error('Media not found');
-      }
-    } catch (error) {
-      console.error('Error in updating media metadata:', error);
-      throw new Error('Failed to update metadata');
-    }
-  };
+  if (metadata.pages != null) {
+    updateFields.pages = metadata.pages;
+  }
+  updateFields.size = metadata.size;
+
+  if (Object.keys(updateFields).length === 0) {
+    throw new CustomError('No fields to update', 400); // Custom error for no updates
+  }
+
+  const updatedMedia = await Media.findByIdAndUpdate(
+    mediaId,
+    { $set: updateFields },
+    { new: true }
+  );
+
+  if (!updatedMedia) {
+    throw new MediaNotFoundError();
+  }
+};
 
 
-  export const getMediaMetadataById = async (mediaId: string): Promise<IReturnMedia | null> => {
+export const getMediaMetadataById = async (mediaId: string): Promise<IReturnMedia | null> => {
       const media = await Media.findById(mediaId);
       
       if (!media) {
@@ -124,3 +119,4 @@ export const updateMediaMetadata = async (mediaId: string, metadata: any): Promi
   
       return mediaMetadata;
   };
+
