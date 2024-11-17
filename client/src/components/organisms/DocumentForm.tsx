@@ -59,6 +59,7 @@ const DocumentForm = ({
   setDocuments,
   showCoordNamePopup = false,
 }: DocumentFormProps) => {
+
   const [currentStep, setCurrentStep] = useState(1);
   const [connectToMap, setConnectToMap] = useState(
     !!positionProp || !!selectedCoordIdProp,
@@ -129,8 +130,6 @@ const DocumentForm = ({
   const [coordName, setCoordName] = useState('');
   const [coordNamePopupOpen, setCoordNamePopupOpen] =
     useState(showCoordNamePopup);
-
-  const [isDocumentSaved, setIsDocumentSaved] = useState(false);
 
   // Connection modal : To enter a new connection
   const [connectionModalOpen, setConnectionModalOpen] = useState(false);
@@ -213,16 +212,10 @@ const DocumentForm = ({
     }
   };
 
-  // const incrementStep = () => {
-  //   if (currentStep === 4 && !connectToMap) setCurrentStep(currentStep + 2);
-  //   else setCurrentStep(currentStep + 1);
-  // };
-
   const handleNextStep = () => {
     if (validateStep()) {
       console.log(currentStep);
       setCurrentStep(currentStep + 1);
-      // incrementStep();
     } else {
       showToastMessage('Please fill in all required fields', 'error');
     }
@@ -291,15 +284,14 @@ const DocumentForm = ({
         console.log('Document created successfully:', response.document);
         showToastMessage('Document created successfully', 'success');
 
-        setIsDocumentSaved(true);
+        // setIsDocumentSaved(true);
         setCurrentStep(6);
-        if (response.document)
-          setDocuments(documents.concat(response.document.document));
+        if (response.document) setDocuments(documents.concat(response.document.document));
       } else {
         console.log('Failed to create document');
         showToastMessage('Failed to create document', 'error');
       }
-    } catch (error) {
+    }catch (error) {
       console.error('Error creating document:', error);
       showToastMessage('Error creating document:' + error, 'error');
     }
@@ -369,7 +361,6 @@ const DocumentForm = ({
             coordNamePopupOpen={coordNamePopupOpen}
             coordName={coordName}
             setCoordName={setCoordName}
-            kirunaLatLngCoords={kirunaLatLngCoords}
             MapClickHandler={MapClickHandler}
           />
         );

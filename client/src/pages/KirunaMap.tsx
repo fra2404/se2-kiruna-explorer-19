@@ -1,6 +1,6 @@
 import { useState, useEffect, useContext } from 'react';
 import { MapContainer, TileLayer } from 'react-leaflet';
-import { LatLng, LatLngExpression } from 'leaflet';
+import { DivIcon, LatLng, LatLngExpression } from 'leaflet';
 import API from '../API';
 import FeedbackContext from '../context/FeedbackContext';
 import MapStyleContext from '../context/MapStyleContext';
@@ -12,9 +12,12 @@ import { Point } from '../components/organisms/coordsOverlay/Point';
 import { Area } from '../components/organisms/coordsOverlay/Area';
 import ClickMarker from '../components/organisms/coordsOverlay/ClickMarker';
 import CustomZoomControl from '../components/molecules/ZoomControl';
-import Header from '../components/organisms/Header';
+import { Header } from '../components/organisms/Header';
 import { IDocument } from '../utils/interfaces/document.interface';
-
+import MarkerClusterGroup from 'react-leaflet-markercluster';
+import { ManageCoordsModal } from '../components/organisms/modals/ManageCoordsModal';
+import { renderToString } from 'react-dom/server';
+import { UserRoleEnum } from '../utils/interfaces/user.interface';
 
 export const kirunaLatLngCoords: LatLngExpression = [67.85572, 20.22513];
 
@@ -34,13 +37,16 @@ export const modalStyles = {
 };
 
 export default function KirunaMap() {
-  const { isLoggedIn } = useAuth();
+  const { isLoggedIn, user } = useAuth();
   const { setFeedbackFromError } = useContext(FeedbackContext);
-  const { mapType } = useContext(MapStyleContext);
+  const { swedishFlagBlue, swedishFlagYellow, mapType } = useContext(MapStyleContext);
 
   const [documents, setDocuments] = useState<IDocument[]>([]);
   const [coordinates, setCoordinates] = useState({});
   const [shouldRefresh, setShouldRefresh] = useState(true);
+
+  //Manages the coords modal
+  const [manageCoordsModalOpen, setManageCoordsModalOpen] = useState(false);
 
   useEffect(() => {
     API.getCoordinates()
@@ -98,8 +104,8 @@ export default function KirunaMap() {
   return (
     <>
       <div style={{ width: width, height: height }}>
-        <Header />
-        {isLoggedIn && 
+        <Header setManageCoordsModalOpen={setManageCoordsModalOpen} />
+        {(isLoggedIn && user && user.role === UserRoleEnum.Uplanner) &&
           <Overlay 
             coordinates={coordinates}
             setCoordinates={setCoordinates}
@@ -108,7 +114,7 @@ export default function KirunaMap() {
           />
         }
         <MapContainer
-          style={{ width: '100%', height: '100%' }}
+          style={{ width: '100%', height: '100%', zIndex: 0 }}
           center={kirunaLatLngCoords}
           zoom={13}
           doubleClickZoom={false}
@@ -134,40 +140,70 @@ export default function KirunaMap() {
             />
           )}
 
-          {Object.entries(coordinates).map(([coordId, coordInfo]: any) => {
-            const filteredDocuments = documents.filter((d) => d.coordinates?._id == coordId);
+          <MarkerClusterGroup iconCreateFunction={(cluster: any) => {
+            return new DivIcon({
+              iconSize: [45, 45],
+              className: "pointIcon",
+              html: renderToString(
+                <div
+                  style={{
+                    display: "flex",
+                    justifyContent: "center",
+                    alignItems: "center",
+                    width: "40px",
+                    height: "40px",
+                    backgroundColor: swedishFlagYellow,
+                    color: swedishFlagBlue,
+                    borderRadius: "50%",
+                    fontSize: "20px",
+                    fontWeight: "bold",
+                  }}
+                >
+                  {cluster.getChildCount()}
+                </div>
+              ),
+            });
+          }}>
+            {Object.entries(coordinates).map(([coordId, coordInfo]: any) => {
+              const filteredDocuments = documents.filter((d) => d.coordinates?._id == coordId);
 
-            if (coordInfo.type == 'Point') {
-              return (
-                <Point
-                  key={coordId}
-                  id={coordId}
-                  pointCoordinates={coordInfo.coordinates}
-                  name={coordInfo.name}
-                  coordinates={coordinates}
-                  setCoordinates={setCoordinates}
-                  isLoggedIn={isLoggedIn}
-                  documents={filteredDocuments}
-                  setDocuments={setDocuments}
-                />
-              );
-            } else {
-              return (
-                <Area
-                  key={coordId}
-                  id={coordId}
-                  areaCoordinates={coordInfo.coordinates}
-                  name={coordInfo.name}
-                  coordinates={coordinates}
-                  setCoordinates={setCoordinates}
-                  isLoggedIn={isLoggedIn}
-                  documents={filteredDocuments}
-                  setDocuments={setDocuments}
-                />
-              );
-            }
-          })}
-          {isLoggedIn && 
+              if (coordInfo.type == 'Point') {
+                if (filteredDocuments.length > 0) {
+                  return (
+                    <Point
+                      key={coordId}
+                      id={coordId}
+                      pointCoordinates={coordInfo.coordinates}
+                      name={coordInfo.name}
+                      coordinates={coordinates}
+                      setCoordinates={setCoordinates}
+                      pointDocuments={filteredDocuments}
+                      allDocuments={documents}
+                      setDocuments={setDocuments}
+                    />
+                  );
+                }
+              } else {
+                if(filteredDocuments.length > 0) {
+                  return (
+                    <Area
+                      key={coordId}
+                      id={coordId}
+                      areaCoordinates={coordInfo.coordinates}
+                      name={coordInfo.name}
+                      coordinates={coordinates}
+                      setCoordinates={setCoordinates}
+                      isLoggedIn={isLoggedIn}
+                      areaDocuments={filteredDocuments}
+                      allDocuments={documents}
+                      setDocuments={setDocuments}
+                    />
+                  );
+                }
+              }
+            })}
+          </MarkerClusterGroup>
+          {(isLoggedIn && user && user.role === UserRoleEnum.Uplanner) &&
             <ClickMarker 
               coordinates={coordinates}
               setCoordinates={setCoordinates} 
@@ -176,6 +212,13 @@ export default function KirunaMap() {
             />
           }
           <CustomZoomControl />
+
+          <ManageCoordsModal 
+            manageCoordsModalOpen={manageCoordsModalOpen}
+            setManageCoordsModalOpen={setManageCoordsModalOpen}
+            coordinates={coordinates}
+            setCoordinates={setCoordinates}
+            documents={documents} />
         </MapContainer>
       </div>
     </>

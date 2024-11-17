@@ -2,7 +2,8 @@ import React, { useState } from "react"
 import { DocumentIcon } from "./DocumentIcon"
 import { FaArrowRight } from "react-icons/fa"
 import Modal from "react-modal";
-import DocumentDetailsModal from "../../organisms/DocumentDetailsModal";
+import DocumentDetailsModal from "../../organisms/modals/DocumentDetailsModal";
+import { IDocument } from "../../../utils/interfaces/document.interface";
 
 Modal.setAppElement("#root");
 
@@ -34,7 +35,7 @@ export const DocumentItem: React.FC<DocumentItemProps> = ({
     <>
       <div className="flex py-1 cursor-pointer hover:bg-gray-200 rounded-lg" onClick={() => {setShowModal(true)}}>
         <div className="flex-none size-8 ml-1 mr-3 self-center">
-          <DocumentIcon type={document.type} />
+          <DocumentIcon type={document.type} stakeholders={document.stakeholders} />
         </div>
         <span className="flex-1 text-lg font-bold self-center mr-3" >{document.title}</span>
         <FaArrowRight className="text-lg self-center font-bold mr-1" />
