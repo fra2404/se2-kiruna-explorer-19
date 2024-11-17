@@ -105,14 +105,15 @@ export default function KirunaMap() {
     <>
       <div style={{ width: width, height: height }}>
         <Header setManageCoordsModalOpen={setManageCoordsModalOpen} />
+
         {(isLoggedIn && user && user.role === UserRoleEnum.Uplanner) &&
           <Overlay 
             coordinates={coordinates}
             setCoordinates={setCoordinates}
             documents={documents}
-            setDocuments={setDocuments}
-          />
+            setDocuments={setDocuments} />
         }
+
         <MapContainer
           style={{ width: '100%', height: '100%', zIndex: 0 }}
           center={kirunaLatLngCoords}
@@ -126,8 +127,7 @@ export default function KirunaMap() {
             [67.8, 19.9],
             [67.9, 20.5],
           ]}
-          maxBoundsViscosity={0.9}
-        >
+          maxBoundsViscosity={0.9}>
           {mapType === 'osm' ? (
             <TileLayer
               attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
@@ -157,8 +157,7 @@ export default function KirunaMap() {
                     borderRadius: "50%",
                     fontSize: "20px",
                     fontWeight: "bold",
-                  }}
-                >
+                  }}>
                   {cluster.getChildCount()}
                 </div>
               ),
@@ -203,14 +202,15 @@ export default function KirunaMap() {
               }
             })}
           </MarkerClusterGroup>
+
           {(isLoggedIn && user && user.role === UserRoleEnum.Uplanner) &&
             <ClickMarker 
               coordinates={coordinates}
               setCoordinates={setCoordinates} 
               documents={documents}
-              setDocuments={setDocuments}
-            />
+              setDocuments={setDocuments} />
           }
+
           <CustomZoomControl />
 
           <ManageCoordsModal 

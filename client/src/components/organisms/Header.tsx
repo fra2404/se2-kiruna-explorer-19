@@ -6,6 +6,7 @@ import { LoginModal } from './modals/LoginModal';
 import DropdownModal from '../molecules/DropdownModal';
 import ButtonRounded from '../atoms/button/ButtonRounded';
 import MapStyleContext from '../../context/MapStyleContext';
+import Searchbar from '../molecules/Searchbar';
 
 interface HeaderProps {
   setManageCoordsModalOpen: (manageCoordsModalOpen: boolean) => void
@@ -68,6 +69,10 @@ export const Header: React.FC<HeaderProps> = ({
         />
 
         <h1 className={mapType == "osm" ? 'font-bold text-black ml-3' : "font-bold text-white ml-3"}>Kiruna eXplorer</h1>
+
+        <div className='w-[500px] ml-10'>
+          <Searchbar />
+        </div>
 
         <div className='ml-auto' style={{pointerEvents: "auto"}}>
           {!isLoggedIn && !user ? (

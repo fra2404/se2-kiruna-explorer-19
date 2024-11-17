@@ -6,6 +6,7 @@ import './Overlay.css';
 import FloatingButton from '../../molecules/FloatingButton';
 import DocumentForm from '../DocumentForm';
 import { IDocument } from '../../../utils/interfaces/document.interface';
+import AllDocumentsModal from '../modals/AllDocumentsModal';
 
 interface OverlayProps {
   coordinates: any; //Need to pass coordinates to the modal as parameter
@@ -13,6 +14,11 @@ interface OverlayProps {
   documents: IDocument[];
   setDocuments: (documents: IDocument[]) => void;
 }
+
+// <div key={index} className='border-b p-2 pb-1 cursor-pointer hover:bg-gray-100 rounded last:border-none'>
+//   <h1 className='text-sm font-bold'>{doc.title}</h1>
+//   <p className='text-sm mt-1'>{doc.summary?.slice(0, 200)}...</p>
+// </div>
 
 const Overlay: React.FC<OverlayProps> = ({ 
   coordinates, 
@@ -23,17 +29,18 @@ const Overlay: React.FC<OverlayProps> = ({
   const [modalOpen, setModalOpen] = useState(false);
   const [isHovered, setIsHovered] = useState(false);
 
+  const [showAllDocuments, setShowAllDocuments] = useState(false);
+
   return (
-    <Container
-      fluid
+    <Container fluid
       style={{
         position: 'absolute',
         top: '50vh',
         left: 0,
         width: '100%',
         zIndex: 1000,
-      }}
-    >
+      }}>
+
       <FloatingButton
         text={isHovered ? '+ New Document' : '+'}
         onMouseEnter={() => setIsHovered(true)}
@@ -42,13 +49,20 @@ const Overlay: React.FC<OverlayProps> = ({
           if (!modalOpen) {
             setModalOpen(true);
           }
-        }}
-      />
+        }}/>
+
+      <FloatingButton onMouseEnter={()=>{}} 
+      onMouseLeave={()=>{}} onClick={()=>{
+        if (!showAllDocuments) {
+          setShowAllDocuments(true);
+        }
+      }} text='See All Documents' className='mt-20' />
+      
+
       <Modal
         style={modalStyles}
         isOpen={modalOpen}
-        onRequestClose={() => setModalOpen(false)}
-      >
+        onRequestClose={() => setModalOpen(false)}>
         <DocumentForm
           coordinates={coordinates}
           setCoordinates={setCoordinates}
@@ -56,8 +70,12 @@ const Overlay: React.FC<OverlayProps> = ({
           setDocuments={setDocuments}
           positionProp={undefined}
           modalOpen={modalOpen}
-          setModalOpen={setModalOpen}
-        />
+          setModalOpen={setModalOpen}/>
+      </Modal>
+
+      <Modal style={modalStyles} isOpen={showAllDocuments}
+      onRequestClose={()=>setShowAllDocuments(false)}>
+        <AllDocumentsModal setShowAllDocuments={setShowAllDocuments} documents={documents} />
       </Modal>
     </Container>
   );

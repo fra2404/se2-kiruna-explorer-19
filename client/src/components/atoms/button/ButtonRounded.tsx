@@ -28,8 +28,7 @@ const ButtonRounded: React.FC<ButtonRoundedProps> = ({
           variant={variant}
           onClick={onClick}
           className={buttonClassName}
-          style={style}
-        >
+          style={style}>
           <Row>
             <Col xs="auto" className="p-0">
               <img
@@ -48,8 +47,7 @@ const ButtonRounded: React.FC<ButtonRoundedProps> = ({
           variant={variant}
           onClick={onClick}
           className={buttonClassName}
-          style={style}
-        >
+          style={style}>
           {text}
         </Button>
       )}

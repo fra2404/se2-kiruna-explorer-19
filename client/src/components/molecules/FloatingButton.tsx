@@ -19,14 +19,12 @@ export default function FloatingButton({
     <div
       className={`floating-button ${className}`}
       onMouseEnter={onMouseEnter}
-      onMouseLeave={onMouseLeave}
-    >
+      onMouseLeave={onMouseLeave}>
       <ButtonRounded
         text={text}
         onClick={onClick}
         className="bg-black text-white text-base font-bold py-2 px-4 rounded-full"
-        variant={undefined}
-      ></ButtonRounded>
+        variant={undefined}></ButtonRounded>
     </div>
   );
 }
