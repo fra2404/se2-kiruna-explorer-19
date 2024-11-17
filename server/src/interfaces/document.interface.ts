@@ -8,6 +8,14 @@ export interface IConnection {
   type: LinkTypeEnum;
 }
 
+export interface IDocumentFilters {
+  stakeholders?: string;
+  scale?: string;
+  type?: DocTypeEnum;
+  date?: string;
+  language?: string;
+}
+
 export interface IDocument {
   title: string;
   stakeholders: string;
