@@ -54,7 +54,7 @@ const FileUploader = ({
                 {
                     isDragActive ? 
                     <p>Drop the files here...</p> : 
-                    <p>Drag & drop PDF files or click to upload</p>
+                    <p>Drag & drop files or click to upload</p>
                 }
             </div>
             <p className='text-sm mt-1'>(.pdf, .txt, .csv, .md)</p>
@@ -74,7 +74,7 @@ const FileUploader = ({
 
             {/* Uploaded Files */}
             <div className="mt-4">
-                <h4 className="text-lg font-semibold mb-2">Uploaded PDFs:</h4>
+                <h4 className="text-lg font-semibold mb-2">Uploaded files:</h4>
                 <ul className="list-disc pl-6 text-gray-700">
                     {files.map((file, index) => (
                         <li key={index}>
