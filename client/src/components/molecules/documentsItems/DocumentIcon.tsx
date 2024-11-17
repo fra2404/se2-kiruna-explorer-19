@@ -1,12 +1,33 @@
 import React from "react";
-import AgreementIcon from "../../../assets/icons/agreement-icon";
-import ConflictIcon from "../../../assets/icons/conflict-icon";
-import ConsultationIcon from "../../../assets/icons/consultation-icon";
-import DesignDocIcon from "../../../assets/icons/design-doc-icon";
-import InformativeDocIcon from "../../../assets/icons/informative-doc-icon";
-import MaterialEffectsIcon from "../../../assets/icons/material-effects-icon";
-import PrescriptiveDocIcon from "../../../assets/icons/prescriptive-doc-icon";
-import TechnicalDocIcon from "../../../assets/icons/technical-doc-icon";
+import { FaQuestion } from "react-icons/fa";
+
+import {
+  AgreementIcon,
+  ConflictIcon,
+  ConsultationIcon,
+  DesignDocIcon,
+  InformativeDocIcon,
+  MaterialEffectsIcon,
+  PrescriptiveDocIcon,
+  TechnicalDocIcon,
+} from "../../../assets/icons";
+
+export const stakeholdersColors = (stakeholder: string | undefined): string => {
+  switch (stakeholder? stakeholder.toLowerCase() : undefined) {
+    case "lkab": 
+      return "#1b1c1f";
+    case "municipality": 
+      return "#82605c";
+    case "regional authority":
+      return "#64242e";
+    case "architecture firms":
+      return "#aca596";
+    case "citizens":
+      return "#a7cbce";
+    default: 
+      return "#829c9f";
+  }
+}
 
 interface DocumentIconProps {
   type: string,
@@ -17,9 +38,10 @@ export const DocumentIcon: React.FC<DocumentIconProps> = ({
   type,
   stakeholders
 }) => {
-  const fillColor = "black";          //TODO: fillColor will depend on stakeholder(s)
+  const fillColor = stakeholdersColors(stakeholders);
 
   //Define custom icons for different categories
+  if (!type) return (<FaQuestion size={20} />);
   if (type.toUpperCase() === 'AGREEMENT') {
     return (<AgreementIcon fillColor={fillColor} />)
   } else if (type.toUpperCase() === 'CONFLICT') {
@@ -38,6 +60,6 @@ export const DocumentIcon: React.FC<DocumentIconProps> = ({
     return (<TechnicalDocIcon fillColor={fillColor} />)
   } else {
     // Default icon if type doesn't match any of the above
-    return (<></>);
+    return (<FaQuestion size={20} />);
   }
 }
