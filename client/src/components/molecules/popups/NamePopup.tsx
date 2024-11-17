@@ -1,8 +1,9 @@
 import React, { useState, useRef } from 'react';
 import { Popup } from 'react-leaflet';
 import { LatLng } from 'leaflet';
-import ButtonRounded from '../../atoms/button/ButtonRounded';
 import Modal from 'react-modal';
+
+import ButtonRounded from '../../atoms/button/ButtonRounded';
 import { modalStyles } from '../../../pages/KirunaMap';
 import InputComponent from '../../atoms/input/input';
 

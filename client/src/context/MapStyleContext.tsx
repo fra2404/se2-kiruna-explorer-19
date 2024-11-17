@@ -9,13 +9,10 @@ interface MapStyleContextType {
     setMapType: (arg0: string) => void;
 }
 
-
-
 const MapStyleContext = createContext<MapStyleContextType | undefined>(undefined);
 
 export const MapStyleProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
     const [mapType, setMapType] = useState('osm'); // State for map type
-
 
     return (
         <MapStyleContext.Provider value={{ mapType, setMapType }}>

@@ -1,4 +1,5 @@
 import React, { useContext } from 'react';
+import { LatLng, LatLngExpression } from 'leaflet';
 import {
   MapContainer,
   TileLayer,
@@ -7,7 +8,7 @@ import {
   Popup,
   Polygon,
 } from 'react-leaflet';
-import { LatLng, LatLngExpression } from 'leaflet';
+
 import InputComponent from '../../atoms/input/input';
 import ButtonRounded from '../../atoms/button/ButtonRounded';
 import CustomZoomControl from '../ZoomControl'

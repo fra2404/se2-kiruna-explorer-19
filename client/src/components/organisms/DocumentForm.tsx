@@ -20,14 +20,12 @@ import {
 
 import { createCoordinate, createDocument } from '../../API';
 import Toast from './Toast';
-import {
-  Step1,
-  Step2,
-  Step3,
-  Step4,
-  Step5,
-  Step6,
-} from '../molecules/molecules';
+import Step1 from '../molecules/steps/Step1';
+import Step2 from '../molecules/steps/Step2';
+import Step3 from '../molecules/steps/Step3';
+import Step4 from '../molecules/steps/Step4';
+import Step5 from '../molecules/steps/Step5';
+import Step6 from '../molecules/steps/Step6';
 import {
   ICoordinate,
   IDocument,
@@ -215,16 +213,16 @@ const DocumentForm = ({
     }
   };
 
-  const incrementStep = () => {
-    if (currentStep === 4 && !connectToMap) setCurrentStep(currentStep + 2);
-    else setCurrentStep(currentStep + 1);
-  };
+  // const incrementStep = () => {
+  //   if (currentStep === 4 && !connectToMap) setCurrentStep(currentStep + 2);
+  //   else setCurrentStep(currentStep + 1);
+  // };
 
   const handleNextStep = () => {
     if (validateStep()) {
       console.log(currentStep);
-      // setCurrentStep(currentStep + 1);
-      incrementStep();
+      setCurrentStep(currentStep + 1);
+      // incrementStep();
     } else {
       showToastMessage('Please fill in all required fields', 'error');
     }
@@ -401,7 +399,7 @@ const DocumentForm = ({
                   className="text-base pt-2 pb-2 pl-4 pr-4"
                   onClick={() => setCurrentStep(currentStep - 1)}
                 />
-              )}{' '}
+              )}
               {/** (connectToMap ? 5 : 4) */}
               {currentStep < (connectToMap ? 5 : 4) && (
                 <ButtonRounded

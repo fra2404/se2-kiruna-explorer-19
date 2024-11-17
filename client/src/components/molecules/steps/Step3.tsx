@@ -1,4 +1,4 @@
-import { FileUploader } from '../../atoms/atoms';
+import FileUploader from '../../atoms/FileUploader';
 
 interface Step3Props {
     files: File[];
