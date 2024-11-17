@@ -12,18 +12,11 @@ import {
   TechnicalDocIcon,
 } from "../../../assets/icons";
 
-interface DocumentIconProps {
-  type: string,
-  stakeholders: string | undefined
-}
 
-export const DocumentIcon: React.FC<DocumentIconProps> = ({
-  type,
-  stakeholders
-}) => {
-  const fillColor = "black";          // TODO: fillColor will depend on stakeholder(s)
-
+export const DocumentIcon = ({ type } : {type: string }) => {
+  const fillColor = "black";          //TODO: fillColor will depend on stakeholder(s)
   //Define custom icons for different categories
+  if (!type) return (<FaQuestion size={20} />);
   if (type.toUpperCase() === 'AGREEMENT') {
     return (<AgreementIcon fillColor={fillColor} />)
   } else if (type.toUpperCase() === 'CONFLICT') {
@@ -42,6 +35,6 @@ export const DocumentIcon: React.FC<DocumentIconProps> = ({
     return (<TechnicalDocIcon fillColor={fillColor} />)
   } else {
     // Default icon if type doesn't match any of the above
-    return (<FaQuestion size={22} />);
+    return (<FaQuestion size={20} />);
   }
 }
