@@ -78,31 +78,33 @@ export const uploadMediaService = async (mediaData: any): Promise<IReturnPresign
 //Update Medida From What CDN Will Send
 export const updateMediaMetadata = async (mediaId: string, metadata: any): Promise<void> => {
   try {
-      // Only update if pages is not null or undefined
-      const updateFields: any = {};
+    console.log('Updating media metadata:', metadata);
+    // TODO: problem here, 
+    // Only update if pages is not null or undefined
+    const updateFields: any = {};
 
-      if (metadata.pages != null) { 
-        updateFields.pages = metadata.pages;
-      }
-  
-      if (Object.keys(updateFields).length === 0) {
-        // If there are no fields to update, exit
-        return;
-      }
-  
-      updateFields.size = metadata.size;
-      const updatedMedia = await Media.findByIdAndUpdate(
-        mediaId,
-        { $set: updateFields },
-        { new: true }
-      );
-  
-      if (!updatedMedia) {
-        throw new Error('Media not found');
-      }
-    } catch (error) {
-      console.error('Error in updating media metadata:', error);
-      throw new Error('Failed to update metadata');
+    if (metadata.pages != null) {
+      updateFields.pages = metadata.pages;
     }
-  };
+
+    if (Object.keys(updateFields).length === 0) {
+      // If there are no fields to update, exit
+      return;
+    }
+
+    updateFields.size = metadata.size;
+    const updatedMedia = await Media.findByIdAndUpdate(
+      mediaId,
+      { $set: updateFields },
+      { new: true }
+    );
+
+    if (!updatedMedia) {
+      throw new Error('Media not found');
+    }
+  } catch (error) {
+    console.error('Error in updating media metadata:', error);
+    throw new Error('Failed to update metadata');
+  }
+};
 

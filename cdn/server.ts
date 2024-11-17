@@ -167,9 +167,11 @@ app.post('/upload-file', checkTokenBlacklist, upload.single('file'), async (req:
         // Prepare the metadata to send to the external API
         const fileMetadata = {
             mediaId: fileNameWithoutExt,
-            size: req.file.size,
-            page: numberOfPages,
-            url: `${req.protocol}://${req.get('host')}/cdn/${payload.folder ? payload.folder + '/' : ''}${fileNameWithoutExt}`
+            metadata: {
+                size: req.file.size,
+                page: numberOfPages
+            },
+            url: `${req.protocol}://${req.get('host')}/cdn/${payload.folder ? payload.folder + '/' : ''}${fileNameWithoutExt} `
         };
 
         console.log('File metadata to send to the external API:', fileMetadata);
@@ -195,7 +197,7 @@ app.post('/upload-file', checkTokenBlacklist, upload.single('file'), async (req:
         }
 
         // Confirm successful upload
-        res.status(200).json({ message: 'File uploaded successfully', url: fileMetadata.url });
+        res.status(200).json({ message: 'File uploaded successfully', url: fileMetadata.url, id: fileNameWithoutExt });
     } catch (error) {
         res.status(403).json({ error: 'Token is invalid or expired' });
     }
@@ -225,7 +227,7 @@ app.get('/cdn/*', async (req: Request, res: Response): Promise<void> => {
             res.status(404).json({ error: 'File not found' });
         }
     } catch (error) {
-        console.error(`Error retrieving file: ${filePathWithoutExt}`, error);
+        console.error(`Error retrieving file: ${filePathWithoutExt} `, error);
         res.status(404).json({ error: 'File not found' });
     }
 });
@@ -238,5 +240,5 @@ app.use((err: Error, _req: Request, res: Response, _next: NextFunction) => {
 
 // Start the server
 app.listen(PORT, () => {
-    console.log(`Server listening on port ${PORT}`);
+    console.log(`Server listening on port ${PORT} `);
 });
