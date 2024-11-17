@@ -8,6 +8,7 @@ import { getCoordinateById } from './coordinate.service';
 import { DocTypeEnum } from '@utils/enums/doc-type.enum';
 import { CustomError } from '@utils/customError';
 
+
 //addDocument(Story 1)
 export const addingDocument = async (
   documentData: IDocument,
@@ -139,19 +140,19 @@ export const getDocumentById = async (
   };
 };
 
-export const searchDocuments = async ( keywords : string[]) : Promise<IDocumentResponse[] | null> => {
+export const searchDocuments = async (keywords: string[]): Promise<IDocumentResponse[] | null> => {
   console.log(typeof keywords);
   // With the operator $and we combine the keywords
-    const query = {
-      $and: keywords.map(keyword => ({
-        $or: [
-          { title: { $regex: keyword, $options: 'i' } },
-          { summary: { $regex: keyword, $options: 'i' } }
-        ]
-      }))
-    };
-  
-  
+  const query = {
+    $and: keywords.map(keyword => ({
+      $or: [
+        { title: { $regex: keyword, $options: 'i' } },
+        { summary: { $regex: keyword, $options: 'i' } }
+      ]
+    }))
+  };
+
+
   const documents = await Document.find(query);
   if (documents.length === 0) {
     return [] as IDocumentResponse[];
@@ -321,3 +322,5 @@ export const getDocumentByType = async (
     }),
   );
 };
+
+
