@@ -31,7 +31,7 @@ export const modalStyles = {
     transform: 'translate(-50%, -50%)',
     width: '80%',
     maxWidth: '95vh',
-    maxHeight: '90vh',
+    maxHeight: '90vh'
   },
   overlay: { zIndex: 1000 },
 };

@@ -31,7 +31,12 @@ const FileUploader = ({
 
     const { getRootProps, getInputProps, isDragActive, fileRejections } = useDropzone({
         onDrop,
-        accept: { 'application/pdf': ['.pdf'] },
+        accept: { 
+            'application/pdf': ['.pdf'], 
+            'text/plain': ['.txt'],
+            'text/csv': ['.csv'], 
+            'text/markdown': ['.md'],
+        },
         multiple: true,
     });
 
@@ -44,10 +49,15 @@ const FileUploader = ({
                     isDragActive ? 'border-blue-500 bg-blue-50' : 'border-[#005293]'
                 } text-[#005293] group cursor-pointer transition-all`}>
 
-                <HiOutlineViewGridAdd className="text-2xl group-hover:text-3xl transition-all duration-500 ease-in-out" />
+                <HiOutlineViewGridAdd className="text-2xl" />
                 <input {...getInputProps()} />
-                {isDragActive ? <p>Drop the PDFs here...</p> : <p>Drag & drop PDF files or click to upload</p>}
+                {
+                    isDragActive ? 
+                    <p>Drop the files here...</p> : 
+                    <p>Drag & drop PDF files or click to upload</p>
+                }
             </div>
+            <p className='text-sm mt-1'>(.pdf, .txt, .csv, .md)</p>
 
             {/* Error Messages */}
             {
@@ -58,7 +68,7 @@ const FileUploader = ({
             {/* File Rejections */}
             {fileRejections.length > 0 && (
                 <div className="text-red-500 mt-2">
-                    Only PDF files are allowed. Please upload valid PDFs.
+                    Only pdf, text, csv and markdown files are allowed.
                 </div>
             )}
 
