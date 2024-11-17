@@ -167,6 +167,19 @@ async function createCoordinate(coord: ICoordinate): Promise<{ success: boolean;
   return { success: true, coordinate };
 }
 
+async function deleteCoordinate(coordId: string): Promise<{success: boolean}> {
+  const response = await fetch(`${SERVER_URL}/coordinates/` + coordId, {
+    method: 'DELETE',
+    credentials: 'include'
+  })
+  if(!response.ok) {
+    return {success: false};
+  }
+  else {
+    return {success: true};
+  }
+}
+
 // Utility functions:
 function handleInvalidResponse(response: any) {
   if (!response.ok) {
@@ -202,6 +215,7 @@ const API = {
   getDocuments,
   getCoordinates,
   addDocument,
+  deleteCoordinate
 };
 
 export { login, logout, getMe, checkAuth, createDocument, getDocuments, createCoordinate };

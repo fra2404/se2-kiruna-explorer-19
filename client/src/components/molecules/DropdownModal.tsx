@@ -7,6 +7,7 @@ interface DropdownModalProps {
   navigate: (path: string) => void;
   handleLogout: () => void;
   dropdownRef: React.RefObject<HTMLDivElement>;
+  setManageCoordsModalOpen: (manageCoordsModalOpen: boolean) => void
 }
 
 const DropdownModal: React.FC<DropdownModalProps> = ({
@@ -15,6 +16,7 @@ const DropdownModal: React.FC<DropdownModalProps> = ({
   navigate,
   handleLogout,
   dropdownRef,
+  setManageCoordsModalOpen
 }) => {
   const dropdownModalStyles = {
     content: {
@@ -59,6 +61,14 @@ const DropdownModal: React.FC<DropdownModalProps> = ({
         >
           Home
         </div>
+
+        <div
+          onClick={() => setManageCoordsModalOpen(true)}
+          style={{ padding: '10px', cursor: 'pointer' }}
+        >
+          Manage points&areas
+        </div>
+
         <div
           onClick={handleLogoutClick}
           style={{ padding: '10px', cursor: 'pointer' }}

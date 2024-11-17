@@ -23,6 +23,7 @@
     "@types/jsonwebtoken": "^9.0.7",
     "@types/mongoose": "^5.11.97",
     "@types/node": "^22.8.1",
+    "@types/react-leaflet-markercluster": "^3.0.4",
     "husky": "^8.0.3",
     "lint-staged": "^12.5.0",
     "nodemon": "^3.1.7",
