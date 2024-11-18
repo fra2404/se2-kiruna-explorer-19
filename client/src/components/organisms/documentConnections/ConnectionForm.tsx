@@ -57,7 +57,7 @@ const ConnectionForm: React.FC<ConnectionFormProps> = ({
 
     const newConnection: Connection = {
       type: type.target.value || '',
-      relatedDocument: targetDocument,
+      relatedDocument: targetDocument.value,
     };
 
     console.log('New Connection:', newConnection);

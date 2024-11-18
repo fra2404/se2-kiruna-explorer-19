@@ -59,7 +59,7 @@ export const Point: React.FC<PointProps> = ({
         <MapPopup
           name={name}
           message="Do you want to add a document in this point?"
-          documents={pointDocuments}
+          markerDocuments={pointDocuments}
           onYesClick={() => {
             markerRef.current?.closePopup();
             setSelectedPointId(id);
@@ -68,6 +68,10 @@ export const Point: React.FC<PointProps> = ({
           onCancelClick={() => {
             markerRef.current?.closePopup();
           }}
+          coordinates={coordinates}
+          setCoordinates={setCoordinates}
+          allDocuments={allDocuments}
+          setDocuments={setDocuments}
         />
       </Marker>
 

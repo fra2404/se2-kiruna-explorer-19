@@ -110,7 +110,7 @@ export const addDocumentController = async (
     const newDocument = await addingDocument(req.body as IDocument);
     res
       .status(201)
-      .json({ message: 'Document added successfully', document: newDocument });
+      .json({ document: newDocument });
   } catch (error) {
     next(error); // Pass the error to the error handler middleware
   }
