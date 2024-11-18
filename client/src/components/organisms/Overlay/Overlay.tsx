@@ -75,7 +75,7 @@ const Overlay: React.FC<OverlayProps> = ({
 
       <Modal style={modalStyles} isOpen={showAllDocuments}
       onRequestClose={()=>setShowAllDocuments(false)}>
-        <AllDocumentsModal setShowAllDocuments={setShowAllDocuments} documents={documents} />
+        <AllDocumentsModal setShowAllDocuments={setShowAllDocuments} />
       </Modal>
     </Container>
   );

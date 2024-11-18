@@ -6,7 +6,11 @@ import { LoginModal } from './modals/LoginModal';
 import DropdownModal from '../molecules/DropdownModal';
 import ButtonRounded from '../atoms/button/ButtonRounded';
 import MapStyleContext from '../../context/MapStyleContext';
-import Searchbar from '../molecules/Searchbar';
+// import Searchbar from '../molecules/Searchbar';
+
+// <div className='w-[500px] ml-5'>
+//   <Searchbar />
+// </div>
 
 interface HeaderProps {
   setManageCoordsModalOpen: (manageCoordsModalOpen: boolean) => void
@@ -54,7 +58,7 @@ export const Header: React.FC<HeaderProps> = ({
       <div className="align-items-center flex" style={{background: "transparent"}}>
         <ButtonRounded
           variant="filled"
-          className="bg-black pr-4 pl-4"
+          className="bg-black p-2"
           img="./src/assets/logo.png"
           text={dateTime}
           style={{
@@ -68,11 +72,7 @@ export const Header: React.FC<HeaderProps> = ({
           }}
         />
 
-        <h1 className={mapType == "osm" ? 'font-bold text-black ml-3' : "font-bold text-white ml-3"}>Kiruna eXplorer</h1>
-
-        <div className='w-[500px] ml-10'>
-          <Searchbar />
-        </div>
+        <h1 className={mapType == "osm" ? 'font-bold text-black ml-2 text-2xl' : "font-bold text-white ml-2 text-2xl"}>Kiruna eXplorer</h1>
 
         <div className='ml-auto' style={{pointerEvents: "auto"}}>
           {!isLoggedIn && !user ? (

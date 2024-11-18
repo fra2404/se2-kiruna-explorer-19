@@ -1,17 +1,16 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { IDocument } from '../../../utils/interfaces/document.interface';
 import { DocumentItem } from '../../molecules/documentsItems/DocumentItem';
 import Searchbar from '../../molecules/Searchbar';
-import InputComponent from '../../atoms/input/input';
+import Filters from '../../molecules/Filters';
+import API from '../../../API';
 
 interface AllDocumentsModalProps {
     setShowAllDocuments: (showAllDocuments: boolean) => void;
-    documents: IDocument[];
 }
 
 const AllDocumentsModal: React.FC<AllDocumentsModalProps> = ({
     setShowAllDocuments,
-    documents
 }) => {
 
     const [filters, setFilters] = useState({
@@ -19,44 +18,22 @@ const AllDocumentsModal: React.FC<AllDocumentsModalProps> = ({
         scale: '',
         stakeholders: '',
         language: ''
-    })
-
+    });
     const [searchQuery, setSearchQuery] = useState('');
+    const [documents, setDocuments] = useState<IDocument[]>([]);
 
-    const documentTypeOptions = [
-        {
-          value: 'AGREEMENT',
-          label: 'Agreement',
-        },
-        {
-          value: 'CONFLICT',
-          label: 'Conflict',
-        },
-        {
-          value: 'CONSULTATION',
-          label: 'Consultation',
-        },
-        {
-          value: 'DESIGN_DOC',
-          label: 'Design document',
-        },
-        {
-          value: 'INFORMATIVE_DOC',
-          label: 'Informative document',
-        },
-        {
-          value: 'MATERIAL_EFFECTS',
-          label: 'Material effects',
-        },
-        {
-          value: 'PRESCRIPTIVE_DOC',
-          label: 'Prescriptive document',
-        },
-        {
-          value: 'TECHNICAL_DOC',
-          label: 'Technical document',
-        },
-    ];
+    useEffect(() => {
+        const fetchDocuments = async () => {
+            const documents = await API.getDocuments();
+            setDocuments(documents);
+        }
+        fetchDocuments();
+    }, []);
+
+    const handleSearch = async () => {
+        const documents = await API.searchDocuments(searchQuery, filters);
+        setDocuments(documents);
+    };
 
     return (
         <div className='flex flex-col'>
@@ -68,65 +45,19 @@ const AllDocumentsModal: React.FC<AllDocumentsModalProps> = ({
 
             <h2 className='text-xl'>Filters</h2>
             <div className="grid grid-cols-2 grid-rows-2 gap-4">
-                {/* Filter by Type */}
-                <InputComponent
-                    label="Type"
-                    type="select"
-                    options={documentTypeOptions}
-                    value={filters.type}
-                    onChange={(e) => {
-                        if ('target' in e) {
-                            setfilters({...filters, type: e.target.value});
-                        }
-                    }}
-                    required={false}/>
-                
-                {/* Filter by Scale */}
-                <InputComponent
-                    label="Scale"
-                    type="text"
-                    value={filters.scale}
-                    onChange={(e) => {
-                        if ('target' in e) {
-                            setFilters({...filters, scale: e.target.value});
-                        }
-                    }}
-                    required={false}
-                    placeholder="Enter scale..."/>
-                
-                {/* Filter by Stakeholders */}
-                <InputComponent
-                    label="Stakeholders"
-                    type="text"
-                    value={filters.stakeholders}
-                    onChange={(e) => {
-                        if ('target' in e) {
-                            setFilters({...filters, stakeholders: e.target.value});
-                        }
-                    }}
-                    required={false}
-                    placeholder="Enter stakeholders..."/>
-
-                {/* Filter by Language */}
-                <InputComponent
-                    label="Language"
-                    type="text"
-                    value={filters.language}
-                    onChange={(e) => {
-                        if ('target' in e) {
-                            setFilters({...filters, language: e.target.value});
-                        }
-                    }}
-                    required={false}
-                    placeholder="Enter language..."/>
+                <Filters filters={filters} setFilters={setFilters} />
             </div>
             
-            <Searchbar searchQuery={searchQuery} setSearchQuery={setSearchQuery} />
+            <Searchbar searchQuery={searchQuery} setSearchQuery={setSearchQuery}
+            handleSearch={handleSearch} />
             
             <div className=''>
-                {documents.map((doc, index) => (
-                <DocumentItem key={index} document={doc} />
-                ))}
+                {
+                    documents.length === 0 ? <h1 className='text-sm text-gray-400'>No documents</h1> :
+                    documents.map((doc, index) => (
+                    <DocumentItem key={index} document={doc} />
+                    ))
+                }
             </div>
         </div>  
     )

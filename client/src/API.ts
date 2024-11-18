@@ -211,12 +211,40 @@ function mapApiDocumentsToDocuments(apiDocuments: any) {
   );
 }
 
+async function searchDocuments(
+  searchQuery: string, 
+  filters: {
+    type: string,
+    scale: string,
+    stakeholders: string,
+    language: string
+  }
+): Promise<IDocument[]> {
+
+  const searchURL = searchQuery === '' ? `${SERVER_URL}/documents/search` : `${SERVER_URL}/documents/search?keywords=[${searchQuery.split(" ")}]`;
+
+  const response = await fetch(searchURL, {
+    method: 'POST',
+    credentials: 'include',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({ filters }),
+  });
+
+  if (!response.ok) throw new Error('Failed to fetch documents');
+
+  const documents = await response.json();
+  return documents;
+}
+
 const API = {
   getDocuments,
   getCoordinates,
   addDocument,
-  deleteCoordinate
+  deleteCoordinate,
+  searchDocuments
 };
 
-export { login, logout, getMe, checkAuth, createDocument, getDocuments, createCoordinate };
+export { login, logout, getMe, checkAuth, createDocument, getDocuments, createCoordinate, searchDocuments };
 export default API;
