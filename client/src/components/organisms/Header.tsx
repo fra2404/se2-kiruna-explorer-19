@@ -6,11 +6,8 @@ import { LoginModal } from './modals/LoginModal';
 import DropdownModal from '../molecules/DropdownModal';
 import ButtonRounded from '../atoms/button/ButtonRounded';
 import MapStyleContext from '../../context/MapStyleContext';
+// import { FaSearch } from 'react-icons/fa';
 // import Searchbar from '../molecules/Searchbar';
-
-// <div className='w-[500px] ml-5'>
-//   <Searchbar />
-// </div>
 
 interface HeaderProps {
   setManageCoordsModalOpen: (manageCoordsModalOpen: boolean) => void
@@ -25,6 +22,7 @@ export const Header: React.FC<HeaderProps> = ({
 
   const [loginModalOpen, setLoginModalOpen] = useState(false);
   const [dropdownOpen, setDropdownOpen] = useState(false);
+  // const [showSearchBar, setShowSearchBar] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
 
   const {mapType} = useContext(MapStyleContext);
@@ -43,8 +41,7 @@ export const Header: React.FC<HeaderProps> = ({
   };
 
   return (
-    <div
-      className="p-3"
+    <div className="p-3"
       style={{
         position: 'absolute',
         top: 0,
@@ -53,48 +50,47 @@ export const Header: React.FC<HeaderProps> = ({
         zIndex: 10,
         background: "transparent",
         pointerEvents: "none"
-      }}
-    >
-      <div className="align-items-center flex" style={{background: "transparent"}}>
-        <ButtonRounded
-          variant="filled"
-          className="bg-black p-2"
-          img="./src/assets/logo.png"
-          text={dateTime}
-          style={{
-            width: '220px',
-            minWidth: '220px',
-            maxWidth: '220px',
-            display: 'flex',
-            justifyContent: 'center',
-            alignItems: 'center',
-            pointerEvents: "auto"
-          }}
-        />
+      }}>
 
-        <h1 className={mapType == "osm" ? 'font-bold text-black ml-2 text-2xl' : "font-bold text-white ml-2 text-2xl"}>Kiruna eXplorer</h1>
-
-        <div className='ml-auto' style={{pointerEvents: "auto"}}>
-          {!isLoggedIn && !user ? (
-            <ButtonRounded
-              onClick={() => {
-                setLoginModalOpen(true);
-              }}
-              variant="filled"
-              className="bg-black pr-4 pl-4"
-              text="Login"
-            />
-          ) : (
-            <div ref={dropdownRef}>
-              <ButtonRounded
-                onClick={() => setDropdownOpen(!dropdownOpen)}
-                variant="filled"
-                className="bg-black pr-4 pl-4 d-flex align-items-center"
-                text={`Welcome, ${user?.name.charAt(0).toUpperCase()} ${dropdownOpen ? '▲' : '▼'}`}
-              />
-            </div>
-          )}
+      <div className="flex items-center justify-between" style={{background: "transparent"}}>
+        <div className='flex items-center'>
+          <ButtonRounded variant="filled" className="bg-black p-2"
+            img="./src/assets/logo.png" text={dateTime}
+            style={{
+              width: '220px',
+              minWidth: '220px',
+              maxWidth: '220px',
+              display: 'flex',
+              justifyContent: 'center',
+              alignItems: 'center',
+              pointerEvents: "auto"
+            }}/>
+          <h1 className={mapType == "osm" ? 'font-bold text-black ml-2 text-2xl' : "font-bold text-white ml-2 text-2xl"}>Kiruna eXplorer</h1>
         </div>
+        
+        <div className='flex items-center gap-4'>
+        
+          {/* Search Bar and Icon */}
+
+          <div className='ml-auto' style={{pointerEvents: "auto"}}>
+            {!isLoggedIn && !user ? (
+              <ButtonRounded variant="filled" text="Login"
+                onClick={() => {
+                  setLoginModalOpen(true);
+                }} className="bg-black pr-4 pl-4"
+              />
+            ) : (
+              <div ref={dropdownRef}>
+                <ButtonRounded
+                  onClick={() => setDropdownOpen(!dropdownOpen)}
+                  variant="filled"
+                  className="bg-black pr-4 pl-4 d-flex align-items-center"
+                  text={`Welcome, ${user?.name.charAt(0).toUpperCase()} ${dropdownOpen ? '▲' : '▼'}`}
+                />
+              </div>
+            )}
+          </div>
+        </div> 
       </div>
 
       <LoginModal

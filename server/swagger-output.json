@@ -477,6 +477,48 @@
         }
       }
     },
+    "/documents/search": {
+      "get": {
+        "summary": "Search documents by multiple keywords",
+        "description": "Retrieve all documents that match the specified keywords in the title or summary.",
+        "parameters": [
+          {
+            "in": "query",
+            "name": "keywords",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A list of documents that match the specified keyword.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "documents": {
+                      "type": "array",
+                      "items": {
+                        "$ref": "#/components/schemas/Document"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "No documents found for the specified keyword."
+          },
+          "500": {
+            "description": "Internal server error."
+          }
+        }
+      }
+    },
     "/api/media/upload": {
       "post": {
         "summary": "Upload a media file",

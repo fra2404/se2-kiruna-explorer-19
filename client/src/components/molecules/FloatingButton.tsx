@@ -16,13 +16,9 @@ export default function FloatingButton({
   onMouseLeave,
 }: FloatingButtonProps) {
   return (
-    <div
-      className={`floating-button ${className}`}
-      onMouseEnter={onMouseEnter}
-      onMouseLeave={onMouseLeave}>
-      <ButtonRounded
-        text={text}
-        onClick={onClick}
+    <div className={`floating-button ${className}`}
+      onMouseEnter={onMouseEnter} onMouseLeave={onMouseLeave}>
+      <ButtonRounded text={text} onClick={onClick}
         className="bg-black text-white text-base font-bold py-2 px-4 rounded-full"
         variant={undefined}></ButtonRounded>
     </div>

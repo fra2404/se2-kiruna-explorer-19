@@ -104,7 +104,10 @@ async function createDocument(documentData: {
   date: string;
   coordinates: string;
   connections: { document: string; type: string }[];
-}): Promise<{ success: boolean; document?: {message: string, document: IDocument} }> {
+}): Promise<{
+  success: boolean;
+  document?: { message: string; document: IDocument };
+}> {
   const response = await fetch(`${SERVER_URL}/documents/create`, {
     method: 'POST',
     credentials: 'include',
@@ -150,7 +153,10 @@ async function getCoordinates() {
     .then((response) => response.json());
 }
 
-async function createCoordinate(coord: ICoordinate): Promise<{ success: boolean; coordinate?: {message: string, coordinate: ICoordinate} }> {
+async function createCoordinate(coord: ICoordinate): Promise<{
+  success: boolean;
+  coordinate?: { message: string; coordinate: ICoordinate };
+}> {
   const response = await fetch(`${SERVER_URL}/coordinates/create`, {
     method: 'POST',
     credentials: 'include',
@@ -158,25 +164,27 @@ async function createCoordinate(coord: ICoordinate): Promise<{ success: boolean;
       'Content-Type': 'application/json',
     },
     body: JSON.stringify(coord),
-  })
+  });
   if (!response.ok) {
     return { success: false };
   }
 
-  const coordinate: {message: string, coordinate: ICoordinate} = await response.json();
+  const coordinate: { message: string; coordinate: ICoordinate } =
+    await response.json();
   return { success: true, coordinate };
 }
 
-async function deleteCoordinate(coordId: string): Promise<{success: boolean}> {
+async function deleteCoordinate(
+  coordId: string,
+): Promise<{ success: boolean }> {
   const response = await fetch(`${SERVER_URL}/coordinates/` + coordId, {
     method: 'DELETE',
-    credentials: 'include'
-  })
-  if(!response.ok) {
-    return {success: false};
-  }
-  else {
-    return {success: true};
+    credentials: 'include',
+  });
+  if (!response.ok) {
+    return { success: false };
+  } else {
+    return { success: true };
   }
 }
 
@@ -212,17 +220,21 @@ function mapApiDocumentsToDocuments(apiDocuments: any) {
 }
 
 async function searchDocuments(
-  searchQuery: string, 
+  searchQuery: string,
   filters: {
-    type: string,
-    scale: string,
-    stakeholders: string,
-    language: string
-  }
+    type: string;
+    scale: string;
+    stakeholders: string;
+    language: string;
+  },
 ): Promise<IDocument[]> {
+    const searchURL =
+    searchQuery.trim() === ''
+      ? `${SERVER_URL}/documents/search`
+      : `${SERVER_URL}/documents/search?keywords=[${searchQuery.split(' ').map(word => `"${encodeURIComponent(word)}"`).join(',')}]`;
 
-  const searchURL = searchQuery === '' ? `${SERVER_URL}/documents/search` : `${SERVER_URL}/documents/search?keywords=[${searchQuery.split(" ")}]`;
-
+  console.log('Search URL:', searchURL);
+  
   const response = await fetch(searchURL, {
     method: 'POST',
     credentials: 'include',
@@ -231,7 +243,6 @@ async function searchDocuments(
     },
     body: JSON.stringify({ filters }),
   });
-
   if (!response.ok) throw new Error('Failed to fetch documents');
 
   const documents = await response.json();
@@ -243,8 +254,17 @@ const API = {
   getCoordinates,
   addDocument,
   deleteCoordinate,
-  searchDocuments
+  searchDocuments,
 };
 
-export { login, logout, getMe, checkAuth, createDocument, getDocuments, createCoordinate, searchDocuments };
+export {
+  login,
+  logout,
+  getMe,
+  checkAuth,
+  createDocument,
+  getDocuments,
+  createCoordinate,
+  searchDocuments,
+};
 export default API;

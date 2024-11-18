@@ -43,8 +43,8 @@ const Overlay: React.FC<OverlayProps> = ({
 
       <FloatingButton
         text={isHovered ? '+ New Document' : '+'}
-        onMouseEnter={() => setIsHovered(true)}
-        onMouseLeave={() => setIsHovered(false)}
+        onMouseEnter={()=>setIsHovered(true)}
+        onMouseLeave={()=>setIsHovered(false)}
         onClick={() => {
           if (!modalOpen) {
             setModalOpen(true);
