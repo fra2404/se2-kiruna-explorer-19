@@ -14,7 +14,6 @@ import { IDocument } from '@interfaces/document.interface';
 import { IDocumentResponse } from '@interfaces/document.return.interface';
 import { ICoordinate } from '@interfaces/coordinate.interface';
 import { DocNotFoundError } from '@utils/errors';
-import { CustomRequest } from '@interfaces/customRequest.interface';
 
 /**
  * @swagger
@@ -358,7 +357,7 @@ export const deleteDocumentController = async (
  *       - in: query
  *         name: keywords
  *         required: true
- *         description: An array of keywords to search for in the title or summary of the document. 
+ *         description: An array of keywords to search for in the title or summary of the document. Ex: ["lorem", "ipsum"]
  *         schema:
  *           type: string
  *     responses:
@@ -432,11 +431,13 @@ export const searchDocumentsController = async (
   res: Response,
   next: NextFunction,): Promise<void> => {
   try {
-
-    const keywords = JSON.parse(req.query.keywords as string);  // Parse the input query string into an array of keywords
-    const documents = await searchDocuments(keywords);
+    let keywords: string[] = [];
+    if (req.query.keywords) {
+      keywords = JSON.parse(req.query.keywords as string);  // Parse the input query string into an array of keywords
+    }
+    const documents = await searchDocuments(keywords, req.body);
     res.status(200).json(documents);
   } catch (error) {
     next(error); // Pass the error to the error handler middleware
   }
-}
+};
