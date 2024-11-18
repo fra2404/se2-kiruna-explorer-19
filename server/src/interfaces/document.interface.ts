@@ -24,7 +24,7 @@ export interface IDocument {
   date: string;
   connections?: IConnection[];
   language?: string;
-  media?: [ObjectId];
+  media?: ObjectId[]; //changed By Mina
   coordinates?: ObjectId;
   summary: string;
 

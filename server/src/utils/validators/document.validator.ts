@@ -94,6 +94,10 @@ export const validateAddDocument = [
     .optional()
     .isMongoId()
     .withMessage('Coordinates must be a valid MongoDB ObjectId'),
+  body('media')
+    .optional()
+    .isMongoId()
+    .withMessage('Media must be a valid MongoDB ObjectId'),
 ];
 
 export const validateDocumentId = [
@@ -198,4 +202,8 @@ export const validateUpdateDocument = [
     .optional()
     .isMongoId()
     .withMessage('Coordinates must be a valid MongoDB ObjectId'),
+  body('media')
+    .optional()
+    .isMongoId()
+    .withMessage('Media must be a valid MongoDB ObjectId'),
 ];
