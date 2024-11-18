@@ -1,4 +1,4 @@
-import { DocumentIcon } from '../molecules/documentsItems/DocumentIcon';
+import { DocumentIcon } from '../../molecules/documentsItems/DocumentIcon';
 
 const DocumentDetailsModal = ( {document} : any ) => {
 
@@ -43,7 +43,7 @@ const DocumentDetailsModal = ( {document} : any ) => {
             <div className="w-full p-8 grid grid-cols-12 text-sm">
                 {/* Icon container */}
                 <div className="col-span-2 px-2">
-                    <DocumentIcon type={document.type} />
+                    <DocumentIcon type={document.type} stakeholders={document.stakeholders} />
                 </div>
 
                 {/* Middle section */}

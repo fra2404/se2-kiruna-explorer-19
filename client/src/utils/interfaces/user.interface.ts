@@ -7,7 +7,7 @@ export interface IUser {
   role: UserRoleEnum;
 }
 
-enum UserRoleEnum {
+export enum UserRoleEnum {
   Uplanner = 'PLANNER',
   Udeveloper = 'DEVELOPER',
   Visitor = 'VISITOR',

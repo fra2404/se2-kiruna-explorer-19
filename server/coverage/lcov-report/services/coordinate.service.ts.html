@@ -23,30 +23,30 @@
         <div class='clearfix'>
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">78.04% </span>
+                <span class="strong">31.7% </span>
                 <span class="quiet">Statements</span>
-                <span class='fraction'>32/41</span>
+                <span class='fraction'>13/41</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">33.33% </span>
+                <span class="strong">0% </span>
                 <span class="quiet">Branches</span>
-                <span class='fraction'>1/3</span>
+                <span class='fraction'>0/3</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">77.77% </span>
+                <span class="strong">0% </span>
                 <span class="quiet">Functions</span>
-                <span class='fraction'>7/9</span>
+                <span class='fraction'>0/9</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">77.14% </span>
+                <span class="strong">25.71% </span>
                 <span class="quiet">Lines</span>
-                <span class='fraction'>27/35</span>
+                <span class='fraction'>9/35</span>
             </div>
         
             
@@ -61,7 +61,7 @@
             </div>
         </template>
     </div>
-    <div class='status-line medium'></div>
+    <div class='status-line low'></div>
     <pre><table class="coverage">
 <tr><td class="line-count quiet"><a name='L1'></a><a href='#L1'>1</a>
 <a name='L2'></a><a href='#L2'>2</a>
@@ -158,41 +158,41 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">3x</span>
-<span class="cline-any cline-yes">3x</span>
-<span class="cline-any cline-yes">3x</span>
-<span class="cline-any cline-yes">3x</span>
-<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">2x</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">1x</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">2x</span>
-<span class="cline-any cline-yes">2x</span>
-<span class="cline-any cline-yes">2x</span>
-<span class="cline-any cline-yes">2x</span>
-<span class="cline-any cline-yes">1x</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">1x</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">2x</span>
-<span class="cline-any cline-yes">2x</span>
-<span class="cline-any cline-yes">2x</span>
-<span class="cline-any cline-yes">2x</span>
-<span class="cline-any cline-yes">2x</span>
+<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -240,43 +240,43 @@ import Document from '../schemas/document.schema';
 &nbsp;
 &nbsp;
 // Function to get a coordinate by its ID
-export const getCoordinateById = async (
+export const getCoordinateById = <span class="fstat-no" title="function not covered" >async (</span>
   id: string,
-): Promise&lt;ICoordinate | null&gt; =&gt; {
-  try {
-    const coordinate = await Coordinate.findById(id);
-    if (!coordinate) {
-      return null;
+): Promise&lt;ICoordinate | null&gt; =&gt;<span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" > {</span></span>
+<span class="cstat-no" title="statement not covered" >  try {</span>
+    const coordinate = <span class="cstat-no" title="statement not covered" >await Coordinate.findById(id);</span>
+<span class="cstat-no" title="statement not covered" >    <span class="missing-if-branch" title="if path not taken" >I</span>if (!coordinate) {</span>
+<span class="cstat-no" title="statement not covered" >      return null;</span>
     }
-    return coordinate.toObject() as ICoordinate;
+<span class="cstat-no" title="statement not covered" >    return coordinate.toObject() as ICoordinate;</span>
   } catch (error) {
     //console.error(`Error fetching coordinate with ID ${id}:`, error);
-    throw new CustomError('Internal Server Error', 500);
+<span class="cstat-no" title="statement not covered" >    throw new CustomError('Internal Server Error', 500);</span>
   }
 };
 &nbsp;
-export const addCoordinateService = async (
+export const addCoordinateService = <span class="fstat-no" title="function not covered" >async (</span>
   coordinateData: ICoordinate,
-): Promise&lt;ICoordinate&gt; =&gt; {
-  try {
-    const newCoordinate = new Coordinate(coordinateData);
-    await newCoordinate.save();
-    return newCoordinate.toObject() as ICoordinate;
+): Promise&lt;ICoordinate&gt; =&gt;<span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" > {</span></span>
+<span class="cstat-no" title="statement not covered" >  try {</span>
+    const newCoordinate = <span class="cstat-no" title="statement not covered" >new Coordinate(coordinateData);</span>
+<span class="cstat-no" title="statement not covered" >    await newCoordinate.save();</span>
+<span class="cstat-no" title="statement not covered" >    return newCoordinate.toObject() as ICoordinate;</span>
   } catch (error) {
     //console.error('Error adding coordinate:', error);
-    throw new CustomError('Internal Server Error', 500);
+<span class="cstat-no" title="statement not covered" >    throw new CustomError('Internal Server Error', 500);</span>
   }
 };
 &nbsp;
-export const getAllCoordinates = async (): Promise&lt;ICoordinate[]&gt; =&gt; {
-  try {
-    const coordinates = await Coordinate.find();
-    return coordinates.map(
-      (coordinate) =&gt; coordinate.toObject() as ICoordinate,
+export const getAllCoordinates = <span class="fstat-no" title="function not covered" >async (): Promise&lt;ICoordinate[]&gt; =</span>&gt;<span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" > {</span></span>
+<span class="cstat-no" title="statement not covered" >  try {</span>
+    const coordinates = <span class="cstat-no" title="statement not covered" >await Coordinate.find();</span>
+<span class="cstat-no" title="statement not covered" >    return coordinates.map(</span>
+<span class="fstat-no" title="function not covered" >      (c</span>oordinate) =&gt; <span class="cstat-no" title="statement not covered" >coordinate.toObject() as ICoordinate,</span>
     );
   } catch (error) {
     //console.error('Error fetching all coordinates:', error);
-    throw new PositionError();
+<span class="cstat-no" title="statement not covered" >    throw new PositionError();</span>
   }
 };
 &nbsp;
@@ -322,7 +322,7 @@ export const deleteCoordinateById = <span class="fstat-no" title="function not c
             <div class='footer quiet pad2 space-top1 center small'>
                 Code coverage generated by
                 <a href="https://istanbul.js.org/" target="_blank" rel="noopener noreferrer">istanbul</a>
-                at 2024-11-14T13:40:21.135Z
+                at 2024-11-17T19:25:12.941Z
             </div>
         <script src="../prettify.js"></script>
         <script>

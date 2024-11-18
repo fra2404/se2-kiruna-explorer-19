@@ -11,7 +11,7 @@ const envFile = process.env.DOCKER_ENV ? '.env.docker' : '.env.local';
 dotenv.config({ path: envFile });
 
 // Log per verificare il caricamento delle variabili d'ambiente
-console.log('MONGO_URI:', process.env.MONGO_URI);
+// console.log('MONGO_URI:', process.env.MONGO_URI);
 
 const PORT = process.env.PORT || 5000;
 

@@ -16,17 +16,20 @@ import {
   getDocumentById,
   updatingDocument,
   getDocumentByType,
+  getDocumentTypes
 } from '../services/document.service';
 import {
   addCoordinateService,
   getAllCoordinates,
   getCoordinateById,
+  deleteCoordinateById
 } from '../services/coordinate.service';
 import {
   getUsers,
   createUser,
   login,
   getMe,
+  logout
 } from '../controllers/user.controllers';
 import {
   addDocumentController,
@@ -34,11 +37,14 @@ import {
   getDocumentByIdController,
   updateDocumentController,
   getDocumentsByTypeController,
+  getDocumentTypesController,
+  searchDocumentsController
 } from '../controllers/document.controllers';
 import {
   addCoordinate,
   getAllCoordinatesController,
   getCoordinateByIdController,
+  deleteCoordinateByIdController
 } from '../controllers/coordinate.controllers';
 import { CustomError } from '../utils/customError';
 import {
@@ -307,7 +313,55 @@ describe('Tests for user controllers', () => {
       expect(next).toHaveBeenCalledWith(err);
       expect(res.json).not.toHaveBeenCalled();
     });
-  }); //getMe
+  });//getMe
+  /* ************************************************** */
+
+  //logout
+  describe('Tests for logout', () => {
+    //test 1
+    test("Should logout a logged user", async () => {
+      //Data mock
+      res = {
+        clearCookie: jest.fn(),
+        json: jest.fn(),
+        status: jest.fn(() => res)
+      } as unknown as Response;
+
+      //In the response "clearCookie" and "jest" were mocked
+
+      //Call of logout
+      await logout(req as CustomRequest, res as Response, next);
+  
+      //Here the auth-token is cleared, this process emulate the logout action
+      expect(res.clearCookie).toHaveBeenCalledWith("auth-token", {
+        httpOnly: true,
+        secure: process.env.NODE_ENV === "production",
+        sameSite: "strict",
+        path: "/",
+      });
+      expect(res.json).toHaveBeenCalledWith({
+        message: "User logged out successfully"
+      });
+    });
+
+    //test 2
+    test("Should throw an error", async () => {
+      //Data mock
+      const err = new Error();
+
+      //Here clearCookie is mocked in order to throw an error
+      //If this function fails it means that something went wrong during the logout (ex: doesn't have an active access cookie)
+      res.clearCookie = jest.fn(() => {
+        throw err;
+      });
+
+      //Call of logout
+      await logout(req as CustomRequest, res as Response, next);
+
+      expect(next).toHaveBeenCalledWith(err);
+    });
+  });//logout
+
 }); //END OF USER CONTROLLERS
 
 /* ******************************************* Suite n#2 - DOCUMENTS ******************************************* */
@@ -520,31 +574,40 @@ describe('Tests for document controllers', () => {
     });
 
     //test 2
+    //This test mocks the throw of a DocNotFoundError, but doesn't enter the conditional block were it is thronw
     test('Should return an error if the document is not found', async () => {
+      //Data mock
       const err = new DocNotFoundError();
 
-      jest
-        .spyOn(require('../services/document.service'), 'getDocumentById')
-        .mockImplementation(async () => {
-          throw err;
-        });
+      req = {
+        params: { id: "wrongId" }
+      };
+      
+      //Support functions mocking
+      (getDocumentById as jest.Mock).mockImplementation(async() => { throw err });
 
+      //Call of getDocumentByIdController
       await getDocumentByIdController(req as Request, res as Response, next);
 
-      expect(getDocumentById).toHaveBeenCalledWith('1');
+      expect(getDocumentById).toHaveBeenCalledWith("wrongId");
       expect(next).toHaveBeenCalledWith(err);
+      expect(res.status).not.toHaveBeenCalled();
+      expect(res.json).not.toHaveBeenCalled();
     });
 
     //test 3
     test('Should return an error if the connection to the DB fails', async () => {
+      //Data mock
       const err = new BadConnectionError();
 
+      //Support functions mocking
       jest
         .spyOn(require('../services/document.service'), 'getDocumentById')
         .mockImplementation(async () => {
           throw err;
         });
 
+      //Call of getDocumentByIdController
       await getDocumentByIdController(req as Request, res as Response, next);
 
       expect(getDocumentById).toHaveBeenCalledWith('1');
@@ -643,6 +706,7 @@ describe('Tests for document controllers', () => {
       expect(next).toHaveBeenCalledWith(err);
     });
   }); //updateDocumentController
+  /* ************************************************** */
 
   //getDocumentsByTypeController
   describe('Tests for getDocumentsByTypeController', () => {
@@ -695,7 +759,7 @@ describe('Tests for document controllers', () => {
     });
 
     //test 1
-    test('Should return the requested documents successfully', async () => {
+    test("Should return the requested documents successfully", async () => {
       //Support functions mocking
       (getDocumentByType as jest.Mock).mockImplementation(
         async () => mockDocuments[0],
@@ -710,7 +774,7 @@ describe('Tests for document controllers', () => {
     });
 
     //test 2
-    test('Should throw a DocNotFoundError when no documents found', async () => {
+    test("Should throw a DocNotFoundError", async () => {
       //Data mocking
       const err = new DocNotFoundError();
 
@@ -728,7 +792,7 @@ describe('Tests for document controllers', () => {
     });
 
     //test 3
-    test('Should throw an error if the connection fails', async () => {
+    test("Should throw an error if the connection fails", async () => {
       //Data mocking
       const err = new CustomError('Database Error', 500);
 
@@ -745,9 +809,60 @@ describe('Tests for document controllers', () => {
       expect(next).toHaveBeenCalledWith(err);
     });
   }); //getDocumentsByTypeController
+  /* ************************************************** */
 
   //"deleteDocumentController" is a test method, it isn't implemented in the application
   //due to this reason it is not tested
+  /* ************************************************** */
+
+  //getDocumentTypesController
+  describe('Tests for getDocumentTypesController', () => {
+    //test 1
+    test("Shoulde retrive all document types", () => {
+      //Data mock
+      const mockDocTypes = [
+        { label: 'Agreement', value: DocTypeEnum.Agreement },
+        { label: 'Conflict', value: DocTypeEnum.Conflict },
+        { label: 'Consultation', value: DocTypeEnum.Consultation },
+        { label: 'DesignDoc', value: DocTypeEnum.DesignDoc },
+        { label: 'InformativeDoc', value: DocTypeEnum.InformativeDoc },
+        { label: 'MaterialEffects', value: DocTypeEnum.MaterialEffects },
+        { label: 'PrescriptiveDoc', value: DocTypeEnum.PrescriptiveDoc },
+        { label: 'TechnicalDoc', value: DocTypeEnum.TechnicalDoc }
+      ];
+  
+      //Support functions mocking
+      (getDocumentTypes as jest.Mock).mockReturnValue(mockDocTypes);
+  
+      //Call of getDocumentTypesController
+      getDocumentTypesController(req as Request, res as Response, next);
+  
+      expect(res.status).toHaveBeenCalledWith(200);
+      expect(res.json).toHaveBeenCalledWith({ docTypes: mockDocTypes });
+      expect(next).not.toHaveBeenCalled();
+    });
+
+    //test 2
+    test("Should throw an error", () => {
+      //Data mock
+      const err = new Error();
+
+      //Support functions mocking
+      (getDocumentTypes as jest.Mock).mockImplementation(() => {
+        throw err;
+      });
+
+      //Call of getDocumentTypesController
+      getDocumentTypesController(req as Request, res as Response, next);
+
+      expect(next).toHaveBeenCalledWith(err);
+    });
+  });//getDocumentTypesController
+  /* ************************************************** */
+
+  //searchDocumentsController
+  describe("Tests for searchDocumentsController", () => {
+  });//searchDocumentsController
 }); //END OF DOCUMENT CONTROLLERS
 
 /* ******************************************* Suite n#3 - COORDINATES ******************************************* */
@@ -940,6 +1055,51 @@ describe('Tests for coordinate controllers', () => {
   }); //getCoordinateByIdController
   /* ************************************************** */
 
-  //"deleteCoordinateController" is a test method, it isn't implemented in the application
-  //due to this reason it is not tested
+  //"deleteCoordinateController" isn't tested because the application doesn't use it
+  /* ************************************************** */
+
+  //deleteCoordinateByIdController
+  describe("Tests for deleteCoordinateByIdController", () => {
+    //test 1
+    test("Should delete the choosen coordinate", async () => {
+      //Data mock
+      req = {
+        params: { id: "1" }
+      };
+
+      //Support functions mocking
+      (deleteCoordinateById as jest.Mock).mockImplementation(async() => true);
+
+      //Call of deleteCoordinateByIdController
+      await deleteCoordinateByIdController(req as Request, res as Response, next);
+
+      expect(deleteCoordinateById).toHaveBeenCalledWith("1");
+      expect(res.status).toHaveBeenCalledWith(200);
+      expect(res.json).toHaveBeenCalledWith({ message: 'Coordinate deleted successfully' });
+    });
+
+    //test 2
+    test("Should throw PositionError", async () => {
+      //Data mock
+      req = {
+        params: { id: "wrongId" }
+      };
+      
+      //Data mock
+      const err = new PositionError();
+
+      //Support functions mocking
+      jest
+        .spyOn(require('../services/coordinate.service'), 'deleteCoordinateById')
+        .mockImplementation(async () => {
+          throw err;
+        });
+
+      //Call of deleteCoordinateByIdController
+      await deleteCoordinateByIdController(req as Request, res as Response, next);
+
+      expect(deleteCoordinateById).toHaveBeenCalledWith("wrongId");
+      expect(next).toHaveBeenCalledWith(err);
+    });
+  });//deleteCoordinateByIdController
 }); //END OF COORDINATE CONTROLLERS

@@ -8,8 +8,7 @@ import { modalStyles } from '../../../pages/KirunaMap';
 import DocumentForm from '../DocumentForm';
 import { DocumentIcon } from '../../molecules/documentsItems/DocumentIcon';
 import { renderToString } from 'react-dom/server';
-import MapStyleContext from '../../../context/MapStyleContext';
-import { useContext } from 'react';
+import { CoordsIconStyle } from '../../molecules/MapIconsStyles';
 
 interface PointProps {
   id: string;
@@ -17,7 +16,6 @@ interface PointProps {
   name: string;
   coordinates: any;
   setCoordinates: (coordinates: any) => void;
-  isLoggedIn: boolean;
   pointDocuments: IDocument[];
   allDocuments: IDocument[];
   setDocuments: (documents: IDocument[]) => void;
@@ -29,7 +27,6 @@ export const Point: React.FC<PointProps> = ({
   name,
   coordinates,
   setCoordinates,
-  isLoggedIn,
   pointDocuments,
   allDocuments,
   setDocuments
@@ -37,7 +34,6 @@ export const Point: React.FC<PointProps> = ({
   const [modalOpen, setModalOpen] = useState(false);
   const [selectedPointId, setSelectedPointId] = useState('');
   const markerRef = useRef<L.Marker>(null);
-  const {swedishFlagBlue, satMapMainColor, mapType} = useContext(MapStyleContext);
 
   return (
     <>
@@ -46,21 +42,9 @@ export const Point: React.FC<PointProps> = ({
           iconSize: [45, 45],
           className: "pointIcon",
           html: renderToString(
-            <div style={{
-              display: "flex",
-              justifyContent: "center",
-              alignItems: "center",
-              width: "40px",
-              height: "40px",
-              backgroundColor: pointDocuments.length == 1 ? "white" : mapType == "sat" ? satMapMainColor : swedishFlagBlue,  //#ccdbdc
-              color: mapType == "sat" ? "black" : "white",
-              borderRadius: "50% 50% 50% 0",
-              transform: "rotate(-45deg)",
-              fontSize: "20px",
-              fontWeight: "bold",
-              border: "2px solid black",
-              padding: pointDocuments.length == 1 ? "1px" : "0px"
-            }}>
+            <div style={
+              CoordsIconStyle(pointDocuments, true)
+              }>
               <span style={{transform: "rotate(45deg)"}}>
               {pointDocuments.length == 1 ? 
                 <DocumentIcon type={pointDocuments[0].type} stakeholders={pointDocuments[0].stakeholders} /> 
@@ -68,13 +52,12 @@ export const Point: React.FC<PointProps> = ({
                 pointDocuments.length
               }
               </span>
-           </div>
+            </div>
           ),
         })
       }>
         <MapPopup
           name={name}
-          isLoggedIn={isLoggedIn}
           message="Do you want to add a document in this point?"
           documents={pointDocuments}
           onYesClick={() => {
