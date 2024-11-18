@@ -357,7 +357,6 @@ export const deleteDocumentController = async (
  *       - in: query
  *         name: keywords
  *         required: true
- *         description: An array of keywords to search for in the title or summary of the document. Ex: ["lorem", "ipsum"]
  *         schema:
  *           type: string
  *     responses:
