@@ -7,13 +7,13 @@ import {
   deleteDocumentByName,
   getDocumentTypes,
   getDocumentByType,
+  searchDocuments,
 } from '../services/document.service';
 // import { addingDocument, deleteDocumentByName, getAllDocuments, getDocumentById, updatingDocument } from '../services/document.service';
 import { IDocument } from '@interfaces/document.interface';
 import { IDocumentResponse } from '@interfaces/document.return.interface';
 import { ICoordinate } from '@interfaces/coordinate.interface';
 import { DocNotFoundError } from '@utils/errors';
-import { CustomRequest } from '@interfaces/customRequest.interface';
 
 /**
  * @swagger
@@ -341,6 +341,101 @@ export const deleteDocumentController = async (
     const result: string = await deleteDocumentByName('TestDoc');
 
     res.json(result);
+  } catch (error) {
+    next(error); // Pass the error to the error handler middleware
+  }
+};
+
+
+/**
+ * @swagger
+ * /documents/search:
+ *   get:
+ *     summary: Search documents by multiple keywords
+ *     description: Retrieve all documents that match the specified keywords in the title or summary.
+ *     parameters:
+ *       - in: query
+ *         name: keywords
+ *         required: true
+ *         schema:
+ *           type: string
+ *     responses:
+ *       200:
+ *         description: A list of documents that match the specified keyword.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 documents:
+ *                   type: array
+ *                   items:
+ *                     $ref: '#/components/schemas/Document'
+ *       404:
+ *         description: No documents found for the specified keyword.
+ *       500:
+ *         description: Internal server error.
+ *
+ * components:
+ *   schemas:
+ *     Document:
+ *       type: object
+ *       properties:
+ *         id:
+ *           type: string
+ *           example: '60d0fe4f5311236168a109ca'
+ *         title:
+ *           type: string
+ *           example: 'Sample Document'
+ *         stakeholders:
+ *           type: string
+ *           example: 'Stakeholder 1'
+ *         scale:
+ *           type: string
+ *           example: '1:1000'
+ *         type:
+ *           type: string
+ *           example: 'AGREEMENT'
+ *         date:
+ *           type: string
+ *           example: '2024-11-05'
+ *         connections:
+ *           type: array
+ *           items:
+ *             type: object
+ *             properties:
+ *               document:
+ *                 type: string
+ *                 example: '60d0fe4f5311236168a109ca'
+ *               type:
+ *                 type: string
+ *                 example: 'LINK1'
+ *         language:
+ *           type: string
+ *           example: 'English'
+ *         media:
+ *           type: array
+ *           items:
+ *             type: string
+ *         coordinates:
+ *           type: string
+ *         summary:
+ *           type: string
+ *           example: 'This is a summary of the document.'
+ */
+
+
+export const searchDocumentsController = async (
+  req: Request,
+  res: Response,
+  next: NextFunction,): Promise<void> => {
+  try {
+    let keywords: string[] = [];
+    if (req.query.keywords) {
+      keywords = JSON.parse(req.query.keywords as string);  // Parse the input query string into an array of keywords
+    }
+    const documents = await searchDocuments(keywords, req.body);
+    res.status(200).json(documents);
   } catch (error) {
     next(error); // Pass the error to the error handler middleware
   }
