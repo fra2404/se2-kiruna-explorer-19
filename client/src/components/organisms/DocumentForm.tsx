@@ -240,7 +240,7 @@ const DocumentForm = ({
     let coordId: string | undefined = undefined;
 
     //If selectedCoordId is undefined, this means that we are adding the document into a new point. We need to save this point in the DB
-    if (!selectedCoordId && position) {
+    if (!selectedCoordId && position && connectToMap) {
       const coordData: ICoordinate = {
         id: '',
         name: coordName,
@@ -271,8 +271,10 @@ const DocumentForm = ({
         showToastMessage('Error creating coordinate:' + error, 'error');
       }
     } else {
-      coordId = selectedCoordId;
-      console.log(coordId);
+      if(connectToMap)
+        coordId = selectedCoordId;
+      else
+        coordId = undefined;
     }
 
     const documentData = {
