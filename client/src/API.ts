@@ -2,6 +2,7 @@ import { ICoordinate, IDocument } from './utils/interfaces/document.interface';
 import { IUser } from './utils/interfaces/user.interface';
 
 const SERVER_URL = 'http://localhost:5001/api'; // endpoint of the server
+const CDN_URL = 'http://localhost:3004/'; // endpoint of the CDN
 
 async function login(
   email: string,
@@ -225,22 +226,32 @@ function handleInvalidResponse(response: any) {
 }
 
 /**
- * This method is used to parse the information coming from the backend and map it to an array of Document.
- * @param apiDocuments
- * @returns
+ * This method is used to post a resources to the cdn and backend.
  */
-function mapApiDocumentsToDocuments(apiDocuments: any) {
-  return apiDocuments.map(
-    (document: any) =>
-      new DocumentFile(
-        document.id,
-        document.description,
-        document.title,
-        document.file,
-        document.language,
-        document.issueDate,
-      ),
-  );
+async function addResource(file: File) {
+  return await fetch(`${SERVER_URL}/media/upload`, {
+    method: 'POST',
+    body: JSON.stringify({
+      filename: file.name,
+      size: file.size,
+      mimetype: file.type,
+    }),
+  })
+    .then(handleInvalidResponse)
+    .then(async (response) => {
+      if (response.status === 201) {
+        const body = new FormData();
+        body.append('file', file);
+        // Resource posted to the CDN
+        // use the token returned by the backend.
+        return await fetch(`${CDN_URL}/upload-file`, {
+          method: 'POST',
+          body: body,
+        })
+          .then(handleInvalidResponse)
+          .then((response) => response.json());
+      }
+    });
 }
 
 const API = {
@@ -250,5 +261,5 @@ const API = {
   deleteCoordinate
 };
 
-export { login, logout, getMe, checkAuth, createDocument, editDocument, getDocuments, createCoordinate };
+export { login, logout, getMe, checkAuth, createDocument, editDocument, getDocuments, addResource, createCoordinate };
 export default API;
