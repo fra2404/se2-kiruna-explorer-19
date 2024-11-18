@@ -11,7 +11,6 @@ import { CoordsIconStyle } from '../../molecules/MapIconsStyles';
 import { DocumentIcon } from '../../molecules/documentsItems/DocumentIcon';
 
 interface AreaProps {
-  isLoggedIn: boolean;
   id: string;
   areaCoordinates: LatLng[];
   name: string;
@@ -28,7 +27,6 @@ export const Area: React.FC<AreaProps> = ({
   name,
   coordinates,
   setCoordinates,
-  isLoggedIn,
   areaDocuments,
   allDocuments,
   setDocuments
@@ -62,9 +60,8 @@ export const Area: React.FC<AreaProps> = ({
         
         <MapPopup
           name={name}
-          isLoggedIn={isLoggedIn}
           message="Do you want to add a document in this area?"
-          documents={areaDocuments}
+          markerDocuments={areaDocuments}
           onYesClick={() => {
             polygonRef.current?.closePopup();
             setSelectedAreaId(id);
@@ -73,6 +70,10 @@ export const Area: React.FC<AreaProps> = ({
           onCancelClick={() => {
             polygonRef.current?.closePopup();
           }}
+          coordinates={coordinates}
+          setCoordinates={setCoordinates}
+          allDocuments={allDocuments}
+          setDocuments={setDocuments}
         />
       </Polygon>
       <Modal
