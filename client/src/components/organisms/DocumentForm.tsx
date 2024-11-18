@@ -361,6 +361,7 @@ const DocumentForm = ({
             setConnectionModalOpen={setConnectionModalOpen}
             connectToMap={connectToMap}
             setConnectToMap={setConnectToMap}
+            allDocuments={documents}
           />
         );
       case 4:

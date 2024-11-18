@@ -2,6 +2,7 @@ import React from 'react';
 import ConnectionList from '../../organisms/documentConnections/ConnectionList';
 import ButtonRounded from '../../atoms/button/ButtonRounded';
 import InputComponent from '../../atoms/input/input';
+import { IDocument } from '../../../utils/interfaces/document.interface';
 
 interface Step3Props {
   connections: any[];
@@ -9,6 +10,7 @@ interface Step3Props {
   setConnectionModalOpen: (open: boolean) => void;
   connectToMap: boolean;
   setConnectToMap: (connect: boolean) => void;
+  allDocuments: IDocument[];
 }
 
 const Step3: React.FC<Step3Props> = ({
@@ -17,6 +19,7 @@ const Step3: React.FC<Step3Props> = ({
   setConnectionModalOpen,
   connectToMap,
   setConnectToMap,
+  allDocuments
 }) => {
   return (
     <>
@@ -31,6 +34,7 @@ const Step3: React.FC<Step3Props> = ({
             <ConnectionList
               connections={connections}
               handleDelete={handleDeleteConnection}
+              allDocuments={allDocuments}
             />
           )
         )}
