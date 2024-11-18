@@ -19,8 +19,6 @@ import { ManageCoordsModal } from '../components/organisms/modals/ManageCoordsMo
 import { renderToString } from 'react-dom/server';
 import { UserRoleEnum } from '../utils/interfaces/user.interface';
 
-
-
 export const kirunaLatLngCoords: LatLngExpression = [67.85572, 20.22513];
 
 export const modalStyles = {
@@ -33,7 +31,7 @@ export const modalStyles = {
     transform: 'translate(-50%, -50%)',
     width: '80%',
     maxWidth: '95vh',
-    maxHeight: '90vh',
+    maxHeight: '90vh'
   },
   overlay: { zIndex: 1000 },
 };

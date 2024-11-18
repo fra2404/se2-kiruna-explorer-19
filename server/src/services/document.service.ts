@@ -1,6 +1,6 @@
 import Document from '../schemas/document.schema';
 import { Coordinate } from '../schemas/coordinate.schema';
-import { IDocument } from '@interfaces/document.interface';
+import { IDocument, IDocumentFilters } from '@interfaces/document.interface';
 import { IDocumentResponse } from '@interfaces/document.return.interface';
 import { DocNotFoundError, PositionError } from '../utils/errors';
 import { ICoordinate } from '@interfaces/coordinate.interface';
@@ -139,19 +139,52 @@ export const getDocumentById = async (
   };
 };
 
-export const searchDocuments = async ( keywords : string[]) : Promise<IDocumentResponse[] | null> => {
-  console.log(typeof keywords);
-  // With the operator $and we combine the keywords
-    const query = {
-      $and: keywords.map(keyword => ({
-        $or: [
-          { title: { $regex: keyword, $options: 'i' } },
-          { summary: { $regex: keyword, $options: 'i' } }
-        ]
-      }))
-    };
-  
-  
+export const searchDocuments = async (
+  keywords: string[],
+  filters?: IDocumentFilters,
+): Promise<IDocumentResponse[] | null> => {
+  // With the operator $and we combine the keywords to search for in the title and summary
+  const keywordQuery = {
+    $and: keywords.map((keyword) => ({
+      $or: [
+        { title: { $regex: keyword, $options: 'i' } },
+        { summary: { $regex: keyword, $options: 'i' } },
+      ],
+    })),
+  };
+
+  let filterQuery: { [key: string]: any } = {}; // Query to apply filters
+
+  if (filters) {
+    const filterConditions = []; // Array to store filter conditions, initially empty
+    if (filters.stakeholders) {
+      filterConditions.push({
+        stakeholders: { $regex: filters.stakeholders, $options: 'i' },
+      });
+    }
+    if (filters.scale) {
+      filterConditions.push({
+        scale: { $regex: filters.scale, $options: 'i' },
+      });
+    }
+    if (filters.type) {
+      filterConditions.push({ type: filters.type });
+    }
+    if (filters.date) {
+      filterConditions.push({ date: { $regex: filters.date, $options: 'i' } });
+    }
+    if (filters.language) {
+      filterConditions.push({
+        language: { $regex: filters.language, $options: 'i' },
+      });
+    }
+    // Ignore the filters that are not in the document schema
+    if (filterConditions.length > 0) {
+      filterQuery = { $and: filterConditions };
+    }
+  }
+  const query = { ...keywordQuery, ...filterQuery };
+
   const documents = await Document.find(query);
   if (documents.length === 0) {
     return [] as IDocumentResponse[];
@@ -178,7 +211,7 @@ export const searchDocuments = async ( keywords : string[]) : Promise<IDocumentR
       } as IDocumentResponse;
     }),
   );
-}
+};
 
 // Update document
 export const updatingDocument = async (
@@ -321,5 +354,3 @@ export const getDocumentByType = async (
     }),
   );
 };
-
-

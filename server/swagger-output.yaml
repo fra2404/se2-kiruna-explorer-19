@@ -317,35 +317,134 @@ paths:
           description: No documents found for the specified type.
         '500':
           description: Internal server error.
-  /documents/search:
-    get:
-      summary: Search documents by keyword
-      description: >-
-        Retrieve all documents that match the specified keyword in the title or
-        summary.
-      parameters:
-        - in: query
-          name: keyword
-          required: true
-          description: The keyword to search for in the title or summary of the document.
-          schema:
-            type: string
+  /api/media/upload:
+    post:
+      summary: Upload a media file
+      tags:
+        - Media
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                filename:
+                  type: string
+                  description: Name of the file
+                  example: example.pdf
+                size:
+                  type: number
+                  description: Size of the file
+                  example: 1048
+                mimetype:
+                  type: string
+                  description: MIME type of the file
+                  example: application/pdf
       responses:
         '200':
-          description: A list of documents that match the specified keyword.
+          description: Media file uploaded successfully
           content:
             application/json:
               schema:
                 type: object
                 properties:
-                  documents:
-                    type: array
-                    items:
-                      $ref: '#/components/schemas/Document'
+                  message:
+                    type: string
+                    description: Success message
+                    example: File validated and metadata saved successfully
+                  data:
+                    type: object
+                    description: Metadata of the uploaded media
+                    properties:
+                      filename:
+                        type: string
+                        example: example.pdf
+                      url:
+                        type: string
+                        description: URL for the uploaded file
+                      type:
+                        type: string
+                        description: Type of the media based on its mimetype
+                        example: document
+                      mimetype:
+                        type: string
+                        example: application/pdf
+  /api/media/update:
+    put:
+      summary: Update media metadata based on CDN response
+      tags:
+        - Media
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                mediaId:
+                  type: string
+                  description: ID of the media to update
+                  example: 64bfad3f4b5d2c001c8e4f2e
+                metadata:
+                  type: object
+                  description: Metadata to update for the media
+                  properties:
+                    pages:
+                      type: number
+                      description: Number of pages (if applicable). This is optional.
+                      example: 10
+                    size:
+                      type: number
+                      description: The size of the media. This is required.
+                      example: 2048
+                  required:
+                    - size
+      responses:
+        '200':
+          description: Media metadata updated successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    description: Success message
+                    example: Media metadata updated successfully
+        '400':
+          description: Bad Request (No fields to update or invalid data)
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    description: Error message
+                    example: No fields to update
         '404':
-          description: No documents found for the specified keyword.
+          description: Media not found
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    description: Error message
+                    example: Media not found
         '500':
-          description: Internal server error.
+          description: Internal Server Error (unexpected error)
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    description: Error message
+                    example: Internal Server Error
   /api/users:
     get:
       summary: Get all users
