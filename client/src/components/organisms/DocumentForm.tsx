@@ -286,7 +286,7 @@ const DocumentForm = ({
       date: issuanceDate,
       coordinates: coordId || undefined,
       connections: connections.map((conn) => ({
-        document: conn.relatedDocument.value,
+        document: conn.relatedDocument,
         type: conn.type,
       })),
     };

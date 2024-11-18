@@ -155,6 +155,7 @@ async function editDocument(documentData: {
   coordinates?: string;
   connections: { document: string; type: string }[];
 }): Promise<{ success: boolean; document?: IDocument }> {
+  console.log(documentData);
   const response = await fetch(`${SERVER_URL}/documents/${documentData.id}`, {
     method: 'PUT',
     credentials: 'include',
