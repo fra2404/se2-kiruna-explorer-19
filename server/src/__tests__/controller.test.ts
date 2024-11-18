@@ -1,10 +1,7 @@
 import { Request, Response, NextFunction } from 'express';
 import { jest, describe, expect, beforeEach } from '@jest/globals';
+import httpMocks from 'node-mocks-http';
 
-import { IUserResponse } from '../interfaces/user.return.interface';
-import { CustomRequest } from '../interfaces/customRequest.interface';
-import { UserRoleEnum } from '../utils/enums/user-role.enum';
-import { DocTypeEnum } from '../utils/enums/doc-type.enum';
 import {
   getAllUsers,
   createNewUser,
@@ -16,7 +13,8 @@ import {
   getDocumentById,
   updatingDocument,
   getDocumentByType,
-  getDocumentTypes
+  getDocumentTypes,
+  searchDocuments
 } from '../services/document.service';
 import {
   addCoordinateService,
@@ -24,6 +22,11 @@ import {
   getCoordinateById,
   deleteCoordinateById
 } from '../services/coordinate.service';
+import {
+  getTypeFromMimeType,
+  uploadMediaService,
+  updateMediaMetadata
+} from '@services/media.service';
 import {
   getUsers,
   createUser,
@@ -46,16 +49,22 @@ import {
   getCoordinateByIdController,
   deleteCoordinateByIdController
 } from '../controllers/coordinate.controllers';
-import { CustomError } from '../utils/customError';
 import {
-  BadConnectionError,
-  DocNotFoundError,
-  PositionError,
-} from '@utils/errors';
+  uploadMediaController,
+  UpdateMediaController
+} from '../controllers/media.controllers';
+
+import { IUserResponse } from '../interfaces/user.return.interface';
+import { CustomRequest } from '../interfaces/customRequest.interface';
+import { UserRoleEnum } from '../utils/enums/user-role.enum';
+import { DocTypeEnum } from '../utils/enums/doc-type.enum';
+import { CustomError } from '../utils/customError';
+import { BadConnectionError, DocNotFoundError, PositionError } from '@utils/errors';
 
 jest.mock('../services/user.service'); //For suite n#1
 jest.mock('../services/document.service'); //For suite n#2
 jest.mock('../services/coordinate.service'); //For suite n#3
+jest.mock('../services/media.service'); //For suite n#4
 
 /* ******************************************* Suite n#1 - USERS ******************************************* */
 describe('Tests for user controllers', () => {
@@ -862,6 +871,54 @@ describe('Tests for document controllers', () => {
 
   //searchDocumentsController
   describe("Tests for searchDocumentsController", () => {
+    //Data mock
+    const mockDocuments = [
+      { id: "1", title: "Title1", coordinates: null },
+      { id: "2", title: "Title2", coordinates: null }
+    ];
+
+    //test 1
+    test("Should response with the searched documents", async () => {
+      //Input mock
+      const mockKeywords = ["keyword1", "keyword2"];
+    
+      //Request mock
+      //With "httpMocks.createRequest" it was possible to create a mock for the right expected request
+      const req = httpMocks.createRequest({
+        method: 'GET',
+        url: '/api/documents',
+        query: {
+          keywords: JSON.stringify(mockKeywords)
+        },
+      });
+  
+      //Support functions mocking
+      (searchDocuments as jest.Mock).mockImplementation(async() => mockDocuments);
+  
+      //Call of searchDocumentsController
+      await searchDocumentsController(req as Request, res as Response, next);
+  
+      expect(res.status).toHaveBeenCalledWith(200);
+      expect(res.json).toHaveBeenCalledWith(mockDocuments);
+    });
+
+    //test 2
+    test("Should throw an error", async () => {
+      //Request mock
+      //The query input format is on purpose wrong (instead of a JSON, was given a string)  
+      const req = httpMocks.createRequest({
+          method: 'GET',
+          url: '/api/documents',
+          query: {
+            keywords: "wrongInput"
+          },
+        });
+    
+        //Call of searchDocumentsController
+        await searchDocumentsController(req as Request, res as Response, next);
+    
+        expect(next).toHaveBeenCalledWith(expect.any(Error));
+    });
   });//searchDocumentsController
 }); //END OF DOCUMENT CONTROLLERS
 
@@ -1103,3 +1160,7 @@ describe('Tests for coordinate controllers', () => {
     });
   });//deleteCoordinateByIdController
 }); //END OF COORDINATE CONTROLLERS
+
+/* ******************************************* Suite n#4 - MEDIA ******************************************* */
+describe('Tests for media controllers', () => {
+}); //END OF MEDIA CONTROLLERS

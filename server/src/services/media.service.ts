@@ -1,10 +1,9 @@
-import Media from '@schemas/media.schema';
+import Media from '../schemas/media.schema';
 import { IReturnPresignedUrl } from '@interfaces/media.return.interface';
 import { Types } from 'mongoose';
 import { IMedia } from '@interfaces/media.interface';
 import { CustomError } from '@utils/customError';
 import { MediaNotFoundError } from '@utils/errors';
-
 
 //get type from mimtype
 export const getTypeFromMimeType = (mimetype: string): string => {
@@ -18,7 +17,6 @@ export const getTypeFromMimeType = (mimetype: string): string => {
     return 'unknown';
   }
 };
-
 
 export const uploadMediaService = async (mediaData: any): Promise<IReturnPresignedUrl> => {
   try {
@@ -45,7 +43,7 @@ export const uploadMediaService = async (mediaData: any): Promise<IReturnPresign
     });
 
     if (!response.ok) {
-      throw new CustomError("Failed to obtain presigned URL from CDN",400);
+      throw new CustomError("Failed to obtain presigned URL from CDN", 400);
     }
 
     // Step 4: Parse the CDN response 
@@ -75,7 +73,6 @@ export const uploadMediaService = async (mediaData: any): Promise<IReturnPresign
     throw new CustomError('Internal Server Error', 500);
   }
 };
-
 
 //update metadata of media
 export const updateMediaMetadata = async (mediaId: string, metadata: any): Promise<void> => {
