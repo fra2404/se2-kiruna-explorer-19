@@ -17,7 +17,10 @@ services:
 
   # Server
   server:
-    image: fraalbi24/se2-kiruna-explorer-19-server:final
+    build:
+      context: ./server
+      dockerfile: Dockerfile
+    container_name: server
     depends_on:
       - mongo
     ports:
@@ -29,7 +32,9 @@ services:
 
   # Client (Vite con build)
   client:
-    image: fraalbi24/se2-kiruna-explorer-19-client:final
+    build:
+      context: ./client
+      dockerfile: Dockerfile
     container_name: client
     depends_on:
       - server
@@ -40,7 +45,9 @@ services:
 
   # CDN
   cdn:
-    image: fraalbi24/se2-kiruna-explorer-19-cdn:final
+    build:
+      context: ./cdn
+      dockerfile: Dockerfile
     container_name: cdn
     ports:
       - "3004:3004"
