@@ -1,15 +1,18 @@
 import React from 'react';
 import { ConnectionItem } from '../../molecules/documentConnections/ConnectionItem';
 import { Connection } from '../DocumentForm';
+import { IDocument } from '../../../utils/interfaces/document.interface';
 
 interface ConnectionListProps {
   connections: Connection[];
   handleDelete: (index: number) => void;
+  allDocuments: IDocument[];
 }
 
 const ConnectionList: React.FC<ConnectionListProps> = ({
   connections,
   handleDelete,
+  allDocuments
 }) => {
   console.log('connections:', connections);
   return (
@@ -28,6 +31,7 @@ const ConnectionList: React.FC<ConnectionListProps> = ({
             connection={connection}
             index={index}
             handleDelete={handleDelete}
+            allDocuments={allDocuments}
           />
         ))}
       </dl>

@@ -7,7 +7,7 @@ import FloatingButton from '../../molecules/FloatingButton';
 import DocumentForm from '../DocumentForm';
 import { IDocument } from '../../../utils/interfaces/document.interface';
 import AllDocumentsModal from '../modals/AllDocumentsModal';
-import { FaSearch } from 'react-icons/fa';
+import { FaFolder, FaPlus, FaSearch } from 'react-icons/fa';
 
 interface OverlayProps {
   coordinates: any; //Need to pass coordinates to the modal as parameter
@@ -45,7 +45,7 @@ const Overlay: React.FC<OverlayProps> = ({
       }}
     >
       <FloatingButton
-        text={isHovered ? '+ New Document' : '+'}
+        text={isHovered ? '+ New Document' : <FaPlus style={{ display: 'inline' }} />}
         onMouseEnter={() => setIsHovered(true)}
         onMouseLeave={() => setIsHovered(false)}
         onClick={() => {
@@ -67,7 +67,7 @@ const Overlay: React.FC<OverlayProps> = ({
           isHoveredSearch ? (
             'See All Documents'
           ) : (
-            <FaSearch style={{ display: 'inline' }} />
+            <FaFolder style={{ display: 'inline' }} />
           )
         }
         className="mt-20"

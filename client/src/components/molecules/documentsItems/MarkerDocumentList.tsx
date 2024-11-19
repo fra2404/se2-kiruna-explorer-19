@@ -3,16 +3,31 @@ import { DocumentItem } from "./DocumentItem"
 import { IDocument } from "../../../utils/interfaces/document.interface";
 
 interface DocumentProps {
-  documents: IDocument[]
+  markerDocuments: IDocument[];
+  coordinates: any;
+  setCoordinates: (coordinates: any) => void;
+  allDocuments: IDocument[];
+  setDocuments: (documents: IDocument[]) => void;
 }
 
 export const MarkerDocumentList: React.FC<DocumentProps> = ({
-  documents
+  markerDocuments,
+  coordinates,
+  setCoordinates,
+  allDocuments,
+  setDocuments
 }) => {
   let documentList;
-  documentList = Object.entries(documents).map(([id, d]) => {
+  documentList = Object.entries(markerDocuments).map(([id, d]) => {
     return (
-      <DocumentItem document={d} key={id} />
+      <DocumentItem 
+        key={id}
+        document={d} 
+        coordinates={coordinates}
+        setCoordinates={setCoordinates}
+        allDocuments={allDocuments}
+        setDocuments={setDocuments}
+      />
     )
   })
   return (

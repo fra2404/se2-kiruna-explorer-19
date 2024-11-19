@@ -1,16 +1,20 @@
 import { jest, describe, expect } from '@jest/globals';
 import jwt from 'jsonwebtoken';
 import bcrypt from 'bcrypt';
-import mongoose, { Connection, ObjectId } from 'mongoose';
+import mongoose from 'mongoose';
+import fetchMock from 'jest-fetch-mock';
 
 import User from '../schemas/user.schema';
 import Document from '../schemas/document.schema';
 import { Coordinate } from '../schemas/coordinate.schema';
+import Media from '../schemas/media.schema';
+
 import { IUser } from '../interfaces/user.interface';
 import { IDocument } from '../interfaces/document.interface';
 import { ICoordinate } from '../interfaces/coordinate.interface';
-import { UserRoleEnum } from '../utils/enums/user-role.enum';
-import { DocTypeEnum } from '../utils/enums/doc-type.enum';
+import { IMedia } from '@interfaces/media.interface';
+import { IReturnPresignedUrl } from '@interfaces/media.return.interface';
+
 import {
   getAllUsers,
   createNewUser,
@@ -32,18 +36,28 @@ import {
   getCoordinateById,
   deleteCoordinateById
 } from '@services/coordinate.service';
+import {
+  getTypeFromMimeType,
+  uploadMediaService,
+  updateMediaMetadata
+} from '@services/media.service';
 
-import { CustomError } from '../utils/customError';
-import { DocNotFoundError, UserNotAuthorizedError } from '../utils/errors';
-import { PositionError } from '@utils/errors';
+import { UserRoleEnum } from '../utils/enums/user-role.enum';
+import { DocTypeEnum } from '../utils/enums/doc-type.enum';
 import { LinkTypeEnum } from '@utils/enums/link-type.enum';
+import { CustomError } from '../utils/customError';
+import { DocNotFoundError, UserNotAuthorizedError, PositionError, MediaNotFoundError } from '../utils/errors';
 
 //MOCKS
 jest.mock('../schemas/user.schema'); //suite n#1
-jest.mock('../schemas/document.schema'); //suite n#2
-jest.mock('../schemas/coordinate.schema'); //suite n#3
+jest.mock('../schemas/coordinate.schema'); //suite n#2
+jest.mock('../schemas/document.schema'); //suite n#3
+jest.mock('../schemas/media.schema'); //suite n#4
+
 jest.mock('bcrypt');
 jest.mock('jsonwebtoken');
+jest.mock('node-fetch', () => jest.fn()); //Used in suite n#4
+fetchMock.enableMocks();
 
 /* ******************************************* Suite n#1 - USERS ******************************************* */
 describe('Tests for user services', () => {
@@ -453,6 +467,7 @@ describe('Tests for coordinate services', () => {
   /* ************************************************** */
 
   //deleteCoordinatesByNames won't be tested because the application doesn't use it (it was created for experiments purposes)
+  /* ************************************************** */
 
   //deleteCoordinatesById
   describe('Tests for deleteCoordinatesById', () => {
@@ -1107,3 +1122,120 @@ describe('Tests for document services', () => {
     });
   });//getDocumentByType
 });//END OF DOCUMENT SERVICES
+
+/* ******************************************* Suite n#4 - MEDIA ******************************************* */
+describe('Tests for media services', () => {
+  //getTypeFromMimeType
+  describe('Tests for getTypeFromMimeType', () => {
+    afterEach(() => {
+      jest.clearAllMocks();
+    });
+
+    //test 1
+    test('Should return "image" for all images mimetypes', async () => {
+      expect(getTypeFromMimeType('image/jpeg')).toBe('image');
+      expect(getTypeFromMimeType('image/png')).toBe('image');
+      expect(getTypeFromMimeType('image/gif')).toBe('image');
+    });
+
+    //test 2
+    test('Should return "document" for the mimetype application/pdf', () => {
+      expect(getTypeFromMimeType('application/pdf')).toBe('document');
+    });
+
+    //test 3
+    test('Should return "text" for all text/ mimetypes', () => {
+      expect(getTypeFromMimeType('text/plain')).toBe('text');
+      expect(getTypeFromMimeType('text/html')).toBe('text');
+      expect(getTypeFromMimeType('text/css')).toBe('text');
+    });
+  
+    //test 4
+    test('Should return "unknown" for unsupported, empty or invalid mimetypes', () => {
+      expect(getTypeFromMimeType('application/json')).toBe('unknown');
+      expect(getTypeFromMimeType('video/mp4')).toBe('unknown');
+      expect(getTypeFromMimeType('audio/mpeg')).toBe('unknown');
+      expect(getTypeFromMimeType('')).toBe('unknown');
+      expect(getTypeFromMimeType('invalid/mimetype')).toBe('unknown');
+    });
+  });//getTypeFromMimeType
+  /* ************************************************** */
+
+  //uploadMediaService
+  describe('Tests for uploadMediaService', () => {
+    afterEach(() => {
+      jest.clearAllMocks();
+    });
+
+    //Data mock
+    const mediaData = {
+      filename: "example.jpg",
+      mimeType: "image/jpeg",
+      size: 1024,
+      userId: "123",
+      folder: "test-folder"
+    };
+
+    const mockPresignedUrl: IReturnPresignedUrl = { url: 'https://cdn.example.com/presigned-url' };
+    const mockFileMetadata: Partial<IMedia> = { relativeUrl: '/uploads/example.jpg' };
+
+    //test 1
+    test("Should successfully upload a media", async () => {
+      //Data mock
+      const newMedia = {
+        _id: "1",
+        filename: mediaData.filename,
+        relativeUrl: mockFileMetadata.relativeUrl,
+        type: "image",
+        mimetype: mediaData.mimeType,
+        size: mediaData.size,
+        user: mediaData.userId,
+        createdAt: new Date(),
+        updatedAt: new Date()
+      };
+
+      const mockFetchedObj: Response = {
+        ok: true,
+        json: async () => ({ presignedUrl: mockPresignedUrl, fileMetadata: mockFileMetadata })
+      } as Response;
+
+      //Support functions mocking
+      (fetch as jest.Mock).mockImplementation(async() => mockFetchedObj);
+      jest.spyOn(require("@services/media.service"), "getTypeFromMimeType").mockResolvedValue("image");
+      (Media.prototype.save as jest.Mock).mockImplementation(async () => newMedia);
+
+      //Call of uploadMediaService
+      const result = await uploadMediaService(mediaData);
+
+      expect(result).toEqual(mockPresignedUrl);
+      expect(fetch).toHaveBeenCalled();
+      expect(getTypeFromMimeType).toBeCalled();
+      expect(Media.prototype.save).toHaveBeenCalled();
+    });
+
+    //test 2
+    test("Should throw an error", async () => {
+      //Data mock
+      const err = new CustomError("Internal Server Error", 400);
+
+      const mockFetchedObj: Response = {
+        ok: false
+      } as Response;
+
+      //Support functions mocking
+      (fetch as jest.Mock).mockImplementation(async() => mockFetchedObj);
+
+      //Call of uploadMediaService + error check
+      await expect(uploadMediaService(mediaData)).rejects.toThrow(err);
+
+      expect(fetch).toHaveBeenCalled();
+      expect(getTypeFromMimeType).not.toBeCalled();
+      expect(Media.prototype.save).not.toHaveBeenCalled();
+    });
+  });//uploadMediaService
+  /* ************************************************** */
+
+  //updateMediaMetadata
+  describe('Tests for updateMediaMetadata', () => {
+  });//updateMediaMetadata
+}); //END OF MEDIA SERVICES
