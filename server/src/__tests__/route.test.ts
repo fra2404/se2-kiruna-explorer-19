@@ -27,6 +27,21 @@ import {
   validateUserLogin,
   validateUserSignUp,
 } from '@utils/validators/user.validator';
+import { validateAddDocument } from "@utils/validators/document.validator";
+
+const testDocument = {
+    id: "1",
+    title: "test",
+    stakeholders: "LKAB",
+    scale: "1:1000",
+    type: "AGREEMENT",
+    connections: [],
+    language: "EN",
+    summary: "This is a summary of the document.",
+    date: "2024-11-16",
+    coordinates: "",
+    media: []
+}
 
 //Mocks of routes modules
 jest.mock("../routes/user.routes", () => {
@@ -39,11 +54,14 @@ jest.mock("../routes/user.routes", () => {
 
 jest.mock("../routes/document.routes", () => {
     const router = require("express").Router();
+    router.post("/create", (req: Request, res: Response) => res.status(200).send(testDocument));
     router.get("/", (req: Request, res: Response) => res.status(200).send("Document Route"));
+    router.get("/:id", (req: Request, res: Response) => res.status(200).send(testDocument));
+    router.put("/:id", (req: Request, res: Response) => res.status(200).send(testDocument));
     return {
         documentRoutes: router
     };
-}); //For suite n#0 
+}); //For suite n#0
 
 jest.mock("../routes/coordinate.routes", () => {
     const router = require("express").Router();
@@ -62,6 +80,17 @@ jest.mock('@controllers/user.controllers', () => ({
     deleteUser: jest.fn(),
 }));
 
+jest.mock('@controllers/document.controllers', () => ({
+    getAllDocumentsController: jest.fn(),
+    searchDocumentsController: jest.fn(),
+    getDocumentByIdController: jest.fn(),
+    updateDocumentController: jest.fn(),
+    getDocumentTypesController: jest.fn(),
+    getDocumentsByTypeController: jest.fn(),
+    deleteDocumentController: jest.fn(),
+    addDocumentController: jest.fn()
+}));
+
 jest.mock('@middlewares/auth.middleware', () => ({
     authenticateUser: jest.fn((req: Request, res: Response, next: NextFunction) => next()),
 }));
@@ -72,6 +101,10 @@ jest.mock('@middlewares/role.middleware', () => ({
 
 jest.mock('@middlewares/validation.middleware', () => ({
     handleValidationErrors: jest.fn((req: Request, res: Response, next: NextFunction) => next())
+}));
+
+jest.mock('@utils/validators/document.validator', () => ({
+    validateAddDocument: jest.fn()
 }));
 
 jest.mock('@utils/validators/user.validator', () => ({
@@ -161,4 +194,60 @@ describe("Tests for user routes", () => {
 });//END OF USER ROUTES
 
 /* ******************************************* Suite n#2 - DOCUMENT ******************************************* */
+describe("Tests for document routes", () => {
+    //Mock of the objects that will be use to test controllers
+    let req: Partial<CustomRequest>;
+    let res: Partial<Response>;
+    let next: NextFunction;
+
+    //Code to clear each mocked data used
+    beforeEach(() => {
+        jest.clearAllMocks();
+        app.use("/api/users", userRoutes);
+        app.use("/api/documents", documentRoutes);
+        app.use("/api/coordinates", coordinateRoutes);
+    });
+
+    //POST#1 - Add a new document
+    test("Should add a new document", async () => {
+        //http request mock
+        const response = await request(app)
+            .post("/api/documents/create")
+            .send(testDocument);
+
+        expect(response.status).toBe(200);
+        expect(response.body).toStrictEqual(testDocument);
+    });//POST#1
+
+    //GET#1 - Get all documents
+    test("Should return all documents", async () => {
+        //http request mock
+        const response = await request(app)
+            .get("/api/documents/")
+
+        expect(response.status).toBe(200);
+        expect(response.text).toBe("Document Route");
+    });//GET#1
+
+    //GET#2 - Get the document with the specified ID
+    test("Should return the document with the specified ID", async () => {
+        //http request mock
+        const response = await request(app)
+            .get("/api/documents/1")
+
+        expect(response.status).toBe(200);
+        expect(response.body).toStrictEqual(testDocument);
+    });//GET#2
+
+    //PUT#1 - Update a document
+    test("Should return the document with the specified ID", async () => {
+        //http request mock
+        const response = await request(app)
+            .put("/api/documents/1")
+
+        expect(response.status).toBe(200);
+        expect(response.body).toStrictEqual(testDocument);
+    });//PUT#1
+});//END OF DOCUMENT ROUTES
+
 /* ******************************************* Suite n#3 - COORDINATE ******************************************* */
