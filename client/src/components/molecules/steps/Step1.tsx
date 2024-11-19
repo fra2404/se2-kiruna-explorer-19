@@ -43,7 +43,7 @@ const Step1: React.FC<Step1Props> = ({
       {/* Stakeholders */}
       <div className="my-2">
         <InputComponent
-          label="Stakeholder"
+          label="Stakeholder(s)"
           type="text"
           value={stakeholders}
           onChange={(v) => {
@@ -52,7 +52,7 @@ const Step1: React.FC<Step1Props> = ({
             }
           }}
           required={true}
-          placeholder="Enter stakeholder"
+          placeholder="Enter stakeholder(s), comma separated"
         />
       </div>
 
