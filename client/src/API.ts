@@ -95,6 +95,7 @@ async function getDocuments(): Promise<IDocument[]> {
 }
 
 async function createDocument(documentData: {
+  id: string;
   title: string;
   stakeholders: string;
   scale: string;
@@ -102,9 +103,9 @@ async function createDocument(documentData: {
   language: string;
   summary: string;
   date: string;
-  coordinates: string;
+  coordinates?: string;
   connections: { document: string; type: string }[];
-}): Promise<{ success: boolean; document?: {message: string, document: IDocument} }> {
+}): Promise<{ success: boolean; document?: IDocument }> {
   const response = await fetch(`${SERVER_URL}/documents/create`, {
     method: 'POST',
     credentials: 'include',
@@ -142,6 +143,37 @@ async function addDocument(document: IDocument) {
     .then((response) => response.json());
 }
 
+async function editDocument(documentData: {
+  id: string;
+  title: string;
+  stakeholders: string;
+  scale: string;
+  type: string;
+  language: string;
+  summary: string;
+  date: string;
+  coordinates?: string;
+  connections: { document: string; type: string }[];
+}): Promise<{ success: boolean; document?: IDocument }> {
+  console.log(documentData);
+  const response = await fetch(`${SERVER_URL}/documents/${documentData.id}`, {
+    method: 'PUT',
+    credentials: 'include',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify(documentData),
+  })
+
+  if (!response.ok) {
+    return { success: false };
+  }
+
+  const document = await response.json();
+  console.log(document);
+  return { success: true, document };
+}
+
 async function getCoordinates() {
   return await fetch(`${SERVER_URL}/coordinates`, {
     method: 'GET',
@@ -150,7 +182,7 @@ async function getCoordinates() {
     .then((response) => response.json());
 }
 
-async function createCoordinate(coord: ICoordinate): Promise<{ success: boolean; coordinate?: {message: string, coordinate: ICoordinate} }> {
+async function createCoordinate(coord: ICoordinate): Promise<{ success: boolean; coordinate?: { message: string, coordinate: ICoordinate } }> {
   const response = await fetch(`${SERVER_URL}/coordinates/create`, {
     method: 'POST',
     credentials: 'include',
@@ -163,20 +195,20 @@ async function createCoordinate(coord: ICoordinate): Promise<{ success: boolean;
     return { success: false };
   }
 
-  const coordinate: {message: string, coordinate: ICoordinate} = await response.json();
+  const coordinate: { message: string, coordinate: ICoordinate } = await response.json();
   return { success: true, coordinate };
 }
 
-async function deleteCoordinate(coordId: string): Promise<{success: boolean}> {
+async function deleteCoordinate(coordId: string): Promise<{ success: boolean }> {
   const response = await fetch(`${SERVER_URL}/coordinates/` + coordId, {
     method: 'DELETE',
     credentials: 'include'
   })
-  if(!response.ok) {
-    return {success: false};
+  if (!response.ok) {
+    return { success: false };
   }
   else {
-    return {success: true};
+    return { success: true };
   }
 }
 
@@ -218,5 +250,5 @@ const API = {
   deleteCoordinate
 };
 
-export { login, logout, getMe, checkAuth, createDocument, getDocuments, createCoordinate };
+export { login, logout, getMe, checkAuth, createDocument, editDocument, getDocuments, createCoordinate };
 export default API;

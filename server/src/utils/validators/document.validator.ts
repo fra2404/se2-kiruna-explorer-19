@@ -178,7 +178,7 @@ export const validateUpdateDocument = [
     .matches(/^\d{4}-\d{2}-\d{2}$/)
     .withMessage('Date must be in the format yyyy-mm-dd')
     .custom((value) => {
-      const [day, month, year] = value.split('-').map(Number);
+      const [year, month, day] = value.split('-').map(Number);
       const isValidDate = (d: number, m: number, y: number) => {
         const date = new Date(y, m - 1, d);
         return (

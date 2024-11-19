@@ -193,7 +193,6 @@ export default function KirunaMap() {
                       name={coordInfo.name}
                       coordinates={coordinates}
                       setCoordinates={setCoordinates}
-                      isLoggedIn={isLoggedIn}
                       areaDocuments={filteredDocuments}
                       allDocuments={documents}
                       setDocuments={setDocuments}

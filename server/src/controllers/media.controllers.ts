@@ -98,7 +98,6 @@ export const uploadMediaController = async (
   };
   
 
-
 /**
  * @swagger
  * /api/media/update:

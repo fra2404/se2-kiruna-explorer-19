@@ -3,7 +3,6 @@ import { useMapEvents } from 'react-leaflet';
 import { LatLng } from 'leaflet';
 import Modal from 'react-modal';
 
-import { kirunaLatLngCoords } from '../../pages/KirunaMap';
 import ConnectionForm from './documentConnections/ConnectionForm';
 import ButtonRounded from '../atoms/button/ButtonRounded';
 
@@ -18,7 +17,7 @@ import {
   TechnicalDocIcon,
 } from '../../assets/icons';
 
-import { createCoordinate, createDocument } from '../../API';
+import { createCoordinate, createDocument, editDocument } from '../../API';
 import Toast from './Toast';
 import Step1 from '../molecules/steps/Step1';
 import Step2 from '../molecules/steps/Step2';
@@ -48,6 +47,7 @@ interface DocumentFormProps {
   setDocuments: (documents: IDocument[]) => void;
   modalOpen: boolean;
   setModalOpen: (open: boolean) => void;
+  selectedDocument?: IDocument;
 }
 
 const DocumentForm = ({
@@ -58,6 +58,7 @@ const DocumentForm = ({
   documents,
   setDocuments,
   showCoordNamePopup = false,
+  selectedDocument,
 }: DocumentFormProps) => {
 
   const [currentStep, setCurrentStep] = useState(1);
@@ -109,18 +110,31 @@ const DocumentForm = ({
   ];
 
   // Document information
-  const [title, setTitle] = useState('');
+  const [title, setTitle] = useState(selectedDocument?.title || '');
   const [stakeholders, setStakeholders] = useState<string | undefined>(
-    undefined,
+    selectedDocument?.stakeholders || undefined,
   );
-  const [scale, setScale] = useState<string | undefined>('');
+  const [scale, setScale] = useState<string | undefined>(
+    selectedDocument?.scale || '',
+  );
   const [issuanceDate, setIssuanceDate] = useState(
-    new Date().toISOString().split('T')[0],
+    selectedDocument?.date
+      ? new Date(selectedDocument.date).toISOString().split('T')[0]
+      : new Date().toISOString().split('T')[0],
   );
-  const [docType, setDocType] = useState<string | undefined>(undefined);
-  const [connections, setConnections] = useState<Connection[]>([]);
-  const [language, setLanguage] = useState('');
-  const [description, setDescription] = useState('');
+  const [docType, setDocType] = useState<string | undefined>(
+    selectedDocument?.type || undefined,
+  );
+  //const [numPages, setNumPages] = useState(0);
+  const [connections, setConnections] = useState<Connection[]>(
+    selectedDocument?.connections?.map((c) => {
+      return { type: c.type, relatedDocument: c.document };
+    }) || [],
+  );
+  const [language, setLanguage] = useState(selectedDocument?.language || '');
+  const [description, setDescription] = useState(
+    selectedDocument?.summary || '',
+  );
 
   // Georeferencing information
   const [position, setPosition] = useState<LatLng | undefined>(positionProp);
@@ -226,7 +240,7 @@ const DocumentForm = ({
     let coordId: string | undefined = undefined;
 
     //If selectedCoordId is undefined, this means that we are adding the document into a new point. We need to save this point in the DB
-    if (!selectedCoordId && position) {
+    if (!selectedCoordId && position && connectToMap) {
       const coordData: ICoordinate = {
         id: '',
         name: coordName,
@@ -257,11 +271,14 @@ const DocumentForm = ({
         showToastMessage('Error creating coordinate:' + error, 'error');
       }
     } else {
-      coordId = selectedCoordId;
-      console.log(coordId);
+      if(connectToMap)
+        coordId = selectedCoordId;
+      else
+        coordId = undefined;
     }
 
     const documentData = {
+      id: selectedDocument?.id || '',
       title,
       stakeholders: stakeholders || '',
       scale: scale || '',
@@ -269,24 +286,39 @@ const DocumentForm = ({
       language,
       summary: description,
       date: issuanceDate,
-      coordinates: coordId || '',
+      coordinates: coordId || undefined,
       connections: connections.map((conn) => ({
-        document: conn.relatedDocument.value,
+        document: conn.relatedDocument,
         type: conn.type,
       })),
     };
     console.log('Document Data:', documentData);
 
     try {
-      const response = await createDocument(documentData);
+      let response;
+      if (!selectedDocument) {
+        response = await createDocument(documentData);
+      } else {
+        response = await editDocument(documentData);
+      }
       console.log(response);
       if (response.success) {
-        console.log('Document created successfully:', response.document);
-        showToastMessage('Document created successfully', 'success');
+        console.log('Document saved successfully:', response.document);
+        showToastMessage('Document saved successfully', 'success');
 
-        // setIsDocumentSaved(true);
         setCurrentStep(6);
-        if (response.document) setDocuments(documents.concat(response.document.document));
+        if (response.document) {
+          const responseDocument = response.document; //Typescript is not able to detect that the value response.document will still be defined in the "else" branch. So, we have to put it in a variable
+          if (!selectedDocument) {
+            setDocuments(documents.concat(responseDocument));
+          } else {
+            setDocuments(
+              documents.map((doc: IDocument) => {
+                return doc.id == selectedDocument.id ? responseDocument : doc;
+              }),
+            );
+          }
+        }
       } else {
         console.log('Failed to create document');
         showToastMessage('Failed to create document', 'error');
@@ -346,6 +378,7 @@ const DocumentForm = ({
             setConnectionModalOpen={setConnectionModalOpen}
             connectToMap={connectToMap}
             setConnectToMap={setConnectToMap}
+            allDocuments={documents}
           />
         );
       case 5:
@@ -375,7 +408,7 @@ const DocumentForm = ({
     <>
       <div className="w-full rounded shadow-md border">
         <h2 className="text-center text-2xl font-bold mt-6">
-          Create a new document
+          {selectedDocument ? 'Edit document' : 'Create a new document'}
         </h2>
         <form className="m-6" onSubmit={handleSubmit}>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-x-4 gap-y-2">
