@@ -54,8 +54,8 @@ jest.mock('../schemas/coordinate.schema'); //suite n#2
 jest.mock('../schemas/document.schema'); //suite n#3
 jest.mock('../schemas/media.schema'); //suite n#4
 
-jest.mock('bcrypt');
-jest.mock('jsonwebtoken');
+jest.mock('bcrypt'); //Used in suite n#1
+jest.mock('jsonwebtoken'); //Used in suite n#1
 jest.mock('node-fetch', () => jest.fn()); //Used in suite n#4
 fetchMock.enableMocks();
 
@@ -1237,5 +1237,63 @@ describe('Tests for media services', () => {
 
   //updateMediaMetadata
   describe('Tests for updateMediaMetadata', () => {
+    afterEach(() => {
+      jest.clearAllMocks();
+    });
+
+    //test 1
+    test("Should successfully update a media", async () => {
+      //Data mock
+      const mediaId = "1";
+      const metadata = { pages: 10, size: 2048 };
+      const mockUpdatedMedia = { id: mediaId, ...metadata };
+  
+      //Support functions mocking
+      (Media.findByIdAndUpdate as jest.Mock).mockImplementation(async() => mockUpdatedMedia);
+  
+      //Call of updateMediaMetadata
+      await updateMediaMetadata(mediaId, metadata);
+
+      expect(Media.findByIdAndUpdate).toHaveBeenCalledWith(
+        mediaId,
+        { $set: { pages: 10, size: 2048 } },
+        { new: true }
+      );
+    });
+
+    //This stes will never work, because updateMediaMetadata will never throw a CustomError
+    //The condition to throw the error is that "updateFields" has got 0 as length
+    //But this won't ever happen because, in the method's code, updateFields.size is always assigned
+    /*
+    //test 2
+    test("Should throw a CustomError", async () => {
+      //Data mock
+      const mediaId = "1";
+      //An empty input will trigger the error
+      const metadata = { pages: null, size: null };
+      const err = new CustomError('No fields to update', 400);
+  
+      //Call of updateMediaMetadata + error throwing check
+      await expect(updateMediaMetadata(mediaId, metadata)).rejects.toThrow(err);
+  
+      expect(Media.findByIdAndUpdate).not.toHaveBeenCalled();
+    });
+    */
+
+    //test 3
+    test("Should throw a MediaNotFounderror", async () => {
+      //Data mock
+      const mediaId = "100";
+      const metadata = { pages: 10, size: 2048 };
+      const err = new MediaNotFoundError();
+
+      //Support functions mocking
+      (Media.findByIdAndUpdate as jest.Mock).mockImplementation(async() => null);
+  
+      //Call of updateMediaMetadata + error throwing check
+      await expect(updateMediaMetadata(mediaId, metadata)).rejects.toThrow(err);
+  
+      expect(Media.findByIdAndUpdate).toHaveBeenCalled();
+    });
   });//updateMediaMetadata
 }); //END OF MEDIA SERVICES

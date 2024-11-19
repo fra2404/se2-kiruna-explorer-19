@@ -84,7 +84,7 @@ export const uploadMediaController = async (
         mimetype,
         userId,
       });
-  
+
       // Step 4: Return response with metadata and presigned URL
       res.status(200).json({
         message: 'File validated and metadata saved successfully',
@@ -193,7 +193,7 @@ export const uploadMediaController = async (
         res.status(error.status).json({ message: error.message });
         return;
       }
-  
+
       // Pass unexpected errors to global error handler
       next(error);
     }
