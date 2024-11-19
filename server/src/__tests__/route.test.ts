@@ -61,7 +61,7 @@ jest.mock("../routes/document.routes", () => {
     return {
         documentRoutes: router
     };
-}); //For suite n#0 
+}); //For suite n#0
 
 jest.mock("../routes/coordinate.routes", () => {
     const router = require("express").Router();
@@ -78,6 +78,17 @@ jest.mock('@controllers/user.controllers', () => ({
     login: jest.fn(),
     logout: jest.fn(),
     deleteUser: jest.fn(),
+}));
+
+jest.mock('@controllers/document.controllers', () => ({
+    getAllDocumentsController: jest.fn(),
+    searchDocumentsController: jest.fn(),
+    getDocumentByIdController: jest.fn(),
+    updateDocumentController: jest.fn(),
+    getDocumentTypesController: jest.fn(),
+    getDocumentsByTypeController: jest.fn(),
+    deleteDocumentController: jest.fn(),
+    addDocumentController: jest.fn()
 }));
 
 jest.mock('@middlewares/auth.middleware', () => ({
@@ -183,7 +194,7 @@ describe("Tests for user routes", () => {
 });//END OF USER ROUTES
 
 /* ******************************************* Suite n#2 - DOCUMENT ******************************************* */
-describe("Tests for user routes", () => {
+describe("Tests for document routes", () => {
     //Mock of the objects that will be use to test controllers
     let req: Partial<CustomRequest>;
     let res: Partial<Response>;
@@ -192,6 +203,9 @@ describe("Tests for user routes", () => {
     //Code to clear each mocked data used
     beforeEach(() => {
         jest.clearAllMocks();
+        app.use("/api/users", userRoutes);
+        app.use("/api/documents", documentRoutes);
+        app.use("/api/coordinates", coordinateRoutes);
     });
 
     //POST#1 - Add a new document
