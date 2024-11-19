@@ -15,7 +15,7 @@ interface Step4Props {
   MapClickHandler: React.FC;
 }
 
-const Step4: React.FC<Step4Props> = ({
+const Step5: React.FC<Step4Props> = ({
   coordinates,
   selectedCoordIdProp,
   selectedCoordId,
@@ -30,7 +30,7 @@ const Step4: React.FC<Step4Props> = ({
 }) => {
   return (
     <>
-      <MapSection 
+      <MapSection
         coordinates={coordinates}
         selectedCoordIdProp={selectedCoordIdProp}
         selectedCoordId={selectedCoordId}
@@ -47,4 +47,4 @@ const Step4: React.FC<Step4Props> = ({
   );
 };
 
-export default Step4;
+export default Step5;
