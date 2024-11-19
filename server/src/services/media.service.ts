@@ -1,4 +1,4 @@
-import Media from '@schemas/media.schema';
+import Media from '../schemas/media.schema';
 import { IReturnMedia, IReturnPresignedUrl } from '@interfaces/media.return.interface';
 import { Types } from 'mongoose';
 import { IMedia } from '@interfaces/media.interface';

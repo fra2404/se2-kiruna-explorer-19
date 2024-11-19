@@ -165,8 +165,6 @@ export const getDocumentById = async (
         media = await fetchMedia(document.media);
    }
 
-
-
   const documentObject = document.toObject();
   delete documentObject._id;
   delete documentObject.createdAt;
@@ -304,7 +302,7 @@ export const updatingDocument = async (
 
     for (const mediaId of updateData.media) {
       if (!updatedDocument.media.includes(mediaId)) {
-        updatedDocument.media.push(mediaId); 
+        updatedDocument.media.push(mediaId);
       }
     }
 
@@ -457,7 +455,7 @@ export const getDocumentByType = async (
   );
 };
 
-const fetchMedia = async (mediaIds: ObjectId[]): Promise<IReturnMedia[] | null> => {
+export const fetchMedia = async (mediaIds: ObjectId[]): Promise<IReturnMedia[] | null> => {
   if (mediaIds.length > 0) {
     const mediaResults = await Promise.all(
       mediaIds.map((mediaId) => getMediaMetadataById(mediaId.toString()))

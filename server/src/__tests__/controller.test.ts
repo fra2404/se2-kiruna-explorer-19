@@ -23,7 +23,6 @@ import {
   deleteCoordinateById
 } from '../services/coordinate.service';
 import {
-  getTypeFromMimeType,
   uploadMediaService,
   updateMediaMetadata
 } from '@services/media.service';
