@@ -425,9 +425,7 @@ describe('Tests for document controllers', () => {
 
       expect(addingDocument).toHaveBeenCalledWith(req.body);
       expect(res.status).toHaveBeenCalledWith(201);
-      expect(res.json).toHaveBeenCalledWith({
-        document: mockNewDocument,
-      });
+      expect(res.json).toHaveBeenCalledWith(mockNewDocument);
     });
 
     //test 2
