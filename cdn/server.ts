@@ -6,6 +6,7 @@ import fs from 'fs/promises';
 import dotenv from 'dotenv';
 import pdfParse from 'pdf-parse';
 import NodeCache from 'node-cache';
+import cors from 'cors';
 import axios from 'axios';
 
 // Determina quale file .env caricare
@@ -19,6 +20,13 @@ const PORT = process.env.PORT || 3005;
 const UPLOAD_DIR = path.join(__dirname, 'uploads');
 const SECRET_KEY = process.env.SECRET_KEY || 'your_secret_key';
 const cache = new NodeCache({ stdTTL: 600 }); // Cache with a TTL of 10 minutes
+
+app.use(
+    cors({
+        origin: true,
+        credentials: true,
+    }),
+);
 
 app.use(express.json());
 
@@ -171,7 +179,7 @@ app.post('/upload-file', checkTokenBlacklist, upload.single('file'), async (req:
                 size: req.file.size,
                 page: numberOfPages
             },
-            url: `${req.protocol}://${req.get('host')}/cdn/${payload.folder ? payload.folder + '/' : ''}${fileNameWithoutExt} `
+            url: `${req.protocol}://${req.get('host')}/cdn/${payload.folder ? payload.folder + '/' : ''}${fileNameWithoutExt}`
         };
 
         console.log('File metadata to send to the external API:', fileMetadata);
