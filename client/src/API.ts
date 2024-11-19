@@ -103,9 +103,9 @@ async function createDocument(documentData: {
   language: string;
   summary: string;
   date: string;
-  coordinates: string;
+  coordinates?: string;
   connections: { document: string; type: string }[];
-}): Promise<{ success: boolean; document?: IDocument} > {
+}): Promise<{ success: boolean; document?: IDocument }> {
   const response = await fetch(`${SERVER_URL}/documents/create`, {
     method: 'POST',
     credentials: 'include',
@@ -152,9 +152,10 @@ async function editDocument(documentData: {
   language: string;
   summary: string;
   date: string;
-  coordinates: string;
+  coordinates?: string;
   connections: { document: string; type: string }[];
-}): Promise<{ success: boolean; document?: IDocument} > {
+}): Promise<{ success: boolean; document?: IDocument }> {
+  console.log(documentData);
   const response = await fetch(`${SERVER_URL}/documents/${documentData.id}`, {
     method: 'PUT',
     credentials: 'include',
@@ -163,7 +164,7 @@ async function editDocument(documentData: {
     },
     body: JSON.stringify(documentData),
   })
-  
+
   if (!response.ok) {
     return { success: false };
   }
@@ -181,7 +182,7 @@ async function getCoordinates() {
     .then((response) => response.json());
 }
 
-async function createCoordinate(coord: ICoordinate): Promise<{ success: boolean; coordinate?: {message: string, coordinate: ICoordinate} }> {
+async function createCoordinate(coord: ICoordinate): Promise<{ success: boolean; coordinate?: { message: string, coordinate: ICoordinate } }> {
   const response = await fetch(`${SERVER_URL}/coordinates/create`, {
     method: 'POST',
     credentials: 'include',
@@ -194,20 +195,20 @@ async function createCoordinate(coord: ICoordinate): Promise<{ success: boolean;
     return { success: false };
   }
 
-  const coordinate: {message: string, coordinate: ICoordinate} = await response.json();
+  const coordinate: { message: string, coordinate: ICoordinate } = await response.json();
   return { success: true, coordinate };
 }
 
-async function deleteCoordinate(coordId: string): Promise<{success: boolean}> {
+async function deleteCoordinate(coordId: string): Promise<{ success: boolean }> {
   const response = await fetch(`${SERVER_URL}/coordinates/` + coordId, {
     method: 'DELETE',
     credentials: 'include'
   })
-  if(!response.ok) {
-    return {success: false};
+  if (!response.ok) {
+    return { success: false };
   }
   else {
-    return {success: true};
+    return { success: true };
   }
 }
 

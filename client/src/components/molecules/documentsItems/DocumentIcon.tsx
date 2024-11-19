@@ -1,12 +1,16 @@
-import AgreementIcon from "../../../assets/icons/agreement-icon";
-import ConflictIcon from "../../../assets/icons/conflict-icon";
-import ConsultationIcon from "../../../assets/icons/consultation-icon";
-import DesignDocIcon from "../../../assets/icons/design-doc-icon";
-import InformativeDocIcon from "../../../assets/icons/informative-doc-icon";
-import MaterialEffectsIcon from "../../../assets/icons/material-effects-icon";
-import PrescriptiveDocIcon from "../../../assets/icons/prescriptive-doc-icon";
-import TechnicalDocIcon from "../../../assets/icons/technical-doc-icon";
+import React from "react";
 import { FaQuestion } from "react-icons/fa";
+
+import {
+  AgreementIcon,
+  ConflictIcon,
+  ConsultationIcon,
+  DesignDocIcon,
+  InformativeDocIcon,
+  MaterialEffectsIcon,
+  PrescriptiveDocIcon,
+  TechnicalDocIcon,
+} from "../../../assets/icons";
 
 export const stakeholdersColors = (stakeholder: string | undefined): string => {
   switch (stakeholder? stakeholder.toLowerCase() : undefined) {

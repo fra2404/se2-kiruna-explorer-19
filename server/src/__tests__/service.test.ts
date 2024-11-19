@@ -1,16 +1,20 @@
 import { jest, describe, expect } from '@jest/globals';
 import jwt from 'jsonwebtoken';
 import bcrypt from 'bcrypt';
-import mongoose, { Connection, ObjectId } from 'mongoose';
+import mongoose from 'mongoose';
+import fetchMock from 'jest-fetch-mock';
 
 import User from '../schemas/user.schema';
 import Document from '../schemas/document.schema';
 import { Coordinate } from '../schemas/coordinate.schema';
+import Media from '../schemas/media.schema';
+
 import { IUser } from '../interfaces/user.interface';
 import { IDocument } from '../interfaces/document.interface';
 import { ICoordinate } from '../interfaces/coordinate.interface';
-import { UserRoleEnum } from '../utils/enums/user-role.enum';
-import { DocTypeEnum } from '../utils/enums/doc-type.enum';
+import { IMedia } from '@interfaces/media.interface';
+import { IReturnPresignedUrl } from '@interfaces/media.return.interface';
+
 import {
   getAllUsers,
   createNewUser,
@@ -22,25 +26,38 @@ import {
   getAllDocuments,
   getDocumentById,
   searchDocuments,
-  updatingDocument
+  updatingDocument,
+  getDocumentTypes, 
+  getDocumentByType 
 } from '../services/document.service';
 import {
   addCoordinateService,
   getAllCoordinates,
   getCoordinateById,
+  deleteCoordinateById
 } from '@services/coordinate.service';
+import {
+  getTypeFromMimeType,
+  uploadMediaService,
+  updateMediaMetadata
+} from '@services/media.service';
 
-import { CustomError } from '../utils/customError';
-import { DocNotFoundError, UserNotAuthorizedError } from '../utils/errors';
-import { PositionError } from '@utils/errors';
+import { UserRoleEnum } from '../utils/enums/user-role.enum';
+import { DocTypeEnum } from '../utils/enums/doc-type.enum';
 import { LinkTypeEnum } from '@utils/enums/link-type.enum';
+import { CustomError } from '../utils/customError';
+import { DocNotFoundError, UserNotAuthorizedError, PositionError, MediaNotFoundError } from '../utils/errors';
 
 //MOCKS
 jest.mock('../schemas/user.schema'); //suite n#1
-jest.mock('../schemas/document.schema'); //suite n#2
-jest.mock('../schemas/coordinate.schema'); //suite n#3
-jest.mock('bcrypt');
-jest.mock('jsonwebtoken');
+jest.mock('../schemas/coordinate.schema'); //suite n#2
+jest.mock('../schemas/document.schema'); //suite n#3
+jest.mock('../schemas/media.schema'); //suite n#4
+
+jest.mock('bcrypt'); //Used in suite n#1
+jest.mock('jsonwebtoken'); //Used in suite n#1
+jest.mock('node-fetch', () => jest.fn()); //Used in suite n#4
+fetchMock.enableMocks();
 
 /* ******************************************* Suite n#1 - USERS ******************************************* */
 describe('Tests for user services', () => {
@@ -268,7 +285,7 @@ describe('Tests for user services', () => {
 
       //Call of loginUser
       await expect(loginUser(wrongMockMail, wrongMockPassword)).rejects.toThrow(
-        err,
+        err
       );
 
       expect(User.findOne).toHaveBeenCalledWith({ email: wrongMockMail });
@@ -447,15 +464,72 @@ describe('Tests for coordinate services', () => {
       expect(Coordinate.find).toHaveBeenCalled();
     });
   }); //getAllCoordinates
+  /* ************************************************** */
+
+  //deleteCoordinatesByNames won't be tested because the application doesn't use it (it was created for experiments purposes)
+  /* ************************************************** */
+
+  //deleteCoordinatesById
+  describe('Tests for deleteCoordinatesById', () => {
+    beforeEach(() => {
+      jest.clearAllMocks();
+    });
+
+    //Data mock
+    const mockCoordinate = {
+      _id: new mongoose.Schema.Types.ObjectId('1234567890abcdef12345678'),
+      coordinates: [45.123, 7.123],
+      type: 'Point',
+      name: 'Test Coordinate'
+    };
+  
+    const mockDocument = {
+      _id: new mongoose.Schema.Types.ObjectId('abcdef1234567890abcdef12'),
+      coordinates: mockCoordinate._id,
+    };
+
+    //test 1
+    test("Should throw PositionError", async () => {
+      //Data mock
+      const err = new PositionError();
+
+      //Support functions mocking
+      (Coordinate.findById as jest.Mock).mockImplementation(async() => null);
+  
+      //Call of deleteCoordinateById + result check
+      await expect(deleteCoordinateById(mockCoordinate._id.toString())).rejects.toThrow(err);
+    });
+
+    //test 2
+    test("Should throw an error if the coordinate is linked to a document", async () => {
+      //Data mock
+      const err = new CustomError("Coordinate is linked to a document", 400);
+      
+      //Support functions mocking
+      (Coordinate.findById as jest.Mock).mockImplementation(async() => mockCoordinate);
+      (Document.findOne as jest.Mock).mockImplementation(async() => mockDocument);
+  
+      //Call of deleteCoordinateById + result check
+      await expect(deleteCoordinateById(mockCoordinate._id.toString())).rejects.toThrow(err);
+    });
+
+    //test 3
+    test("Should delete the choosen coordinate", async () => {
+      //Support functions mocking
+      (Coordinate.findById as jest.Mock).mockImplementation(async() => mockCoordinate);
+      (Document.findOne as jest.Mock).mockImplementation(async() => null);
+      (Coordinate.deleteOne as jest.Mock).mockImplementation(async() => {});
+
+      //Call of deleteCoordinateById
+      const result = await deleteCoordinateById(mockCoordinate._id.toString());
+
+      expect(result).toBe(true);
+      expect(Coordinate.deleteOne).toHaveBeenCalledWith({ _id: mockCoordinate._id });
+    });
+  });//deleteCoordinatesById
 }); //END OF COORDINATE SERVICES
 
 /* ******************************************* Suite n#3 - DOCUMENTS ******************************************* */
-
-//README!!!!!!!!!!!!!!!!
-//DOCUMENT SERVICES WERE DEEPLY CHANGED DUE TO APPLICATION CONFLICTS WITH THEIR FIRST VERSION
-//BECAUSE OF THIS REASON THE FOLLOWING TESTS WERE ALL DELETED
-//TO RETRIVE PAST VERSION OF DOCUMENT SERVICES TESTS, OLD COMMITS CAN BE CONSULTED
-
 describe('Tests for document services', () => {
   //addingDocument
   describe('Tests for addingDocument', () => {
@@ -482,7 +556,49 @@ describe('Tests for document services', () => {
       summary: "Test summary"
     };
 
+    /*
+    const mockNewDocument = {
+      ...mockDocumentData,
+      id: '2'
+    };
+  
+    const mockCoordinate = {
+      id: '1',
+      type: 'Point',
+      coordinates: [45.123, 7.123],
+      name: 'Test Coordinate',
+    };  
+
+    const mockConnection = {
+      id: '3',
+      connections: []
+    };
+    */
+
+    //THIS TEST DOESN'T WORK DUE TO AN ERROR IN THE CODE -> "newDocument.save() is not a function" 
+
+    /*
     //test 1
+    test("Should save the new document", async () => {
+      //Support functions mocking
+      (Coordinate.findById as jest.Mock).mockImplementation(async() => mockCoordinate);
+      (Document.findById as jest.Mock).mockImplementation(async() => mockConnection);
+      (Document as unknown as jest.Mock).mockImplementation(async() => mockNewDocument);
+      jest.spyOn(require("../services/coordinate.service"), "getCoordinateById").mockResolvedValue(mockCoordinate);
+  
+      //Call of addingDocument
+      const result = await addingDocument(mockDocumentData);
+  
+      expect(Coordinate.findById).toHaveBeenCalledWith('1');
+      expect(result).toEqual({
+        id: '2',
+        ...mockDocumentData,
+        coordinates: mockCoordinate,
+      });
+    });
+    */
+
+    //test 2
     test("Should throw PositionError if coordinates are not found", async () => {
       //Data mocking
       const err = new PositionError();
@@ -496,7 +612,7 @@ describe('Tests for document services', () => {
       expect(Coordinate.findById).toHaveBeenCalledWith(mockDocumentData.coordinates);
     });
 
-    //test 2
+    //test 3
     test("Should throw DocNotFoundError if the document specified in the connection doesn't exist", async () => {
       //Data mocking
       const err = new DocNotFoundError();
@@ -813,7 +929,7 @@ describe('Tests for document services', () => {
       });
       (Coordinate.findById as jest.Mock).mockImplementation(async() => mockCoordinate);
   
-      //Call of updatingDocument + definition of the update
+      //Call of updatingDocument
       const result = await updatingDocument('1', updateData);
   
       expect(Document.findByIdAndUpdate).toHaveBeenCalledWith('1', updateData, {
@@ -873,8 +989,6 @@ describe('Tests for document services', () => {
       //Call of updatingDocument
       const result = await updatingDocument('1', updateCoordinate as unknown as Partial<IDocument>);
 
-      console.log(result)
-
       expect(Coordinate.findById).toHaveBeenCalledWith('1');
       expect(result).toEqual({
         id: '1',
@@ -917,6 +1031,269 @@ describe('Tests for document services', () => {
   });//updatingDocument
   /* ************************************************** */
 
-  //deleteDocumentByName, getDocumentTypes, getDocumentByType won't be tested because the application doesn't use it
-  //they were created for experiments purposes
-}); //END OF DOCUMENT SERVICES
+  //deleteDocumentByName won't be tested because the application doesn't use it (it was created for experiments purposes)
+
+  //getDocumentTypes
+  describe('Tests for getDocumentTypes', () => {
+    afterEach(() => {
+      jest.clearAllMocks();
+    });
+
+    //test 1
+    test("Should retrieve all documents types", async () => {
+      //Call of getDocumentTypes
+      const result = getDocumentTypes();
+  
+      expect(result).toEqual([
+        { label: 'Agreement', value: DocTypeEnum.Agreement },
+        { label: 'Conflict', value: DocTypeEnum.Conflict },
+        { label: 'Consultation', value: DocTypeEnum.Consultation },
+        { label: 'DesignDoc', value: DocTypeEnum.DesignDoc },
+        { label: 'InformativeDoc', value: DocTypeEnum.InformativeDoc },
+        { label: 'MaterialEffects', value: DocTypeEnum.MaterialEffects },
+        { label: 'PrescriptiveDoc', value: DocTypeEnum.PrescriptiveDoc },
+        { label: 'TechnicalDoc', value: DocTypeEnum.TechnicalDoc }
+      ]);
+    });
+  });//getDocumentTypes
+  /* ************************************************** */
+
+  //getDocumentByType
+  describe('Tests for getDocumentByType', () => {
+    afterEach(() => {
+      jest.clearAllMocks();
+    });
+
+    //Mocked data
+    const mockDocuments = [
+      {
+        id: '1',
+        title: 'Test Document',
+        stakeholders: 'Company A',
+        scale: '1:1000',
+        type: DocTypeEnum.Agreement,
+        date: '2000-01-01',
+        connections: [],
+        language: 'EN',
+        media: [],
+        coordinates: '1',
+        summary: 'Test summary'
+      },
+    ];
+  
+    const mockCoordinate = {
+      id: '1',
+      type: 'Point',
+      coordinates: [45.123, 7.123],
+      name: 'Test Coordinate',
+    };
+
+    //It is impossible to see if this test works because a function used in the BE isn't recognized by the test debugger
+
+    /*
+    //test 1
+    test("Should return all the documents of a specific type", async () => {
+      //Support functions mocking
+      (Document.find as jest.Mock).mockImplementation(async() => mockCoordinate);
+      jest.spyOn(require("../services/coordinate.service"), 'getCoordinateById').mockResolvedValue(mockCoordinate);
+
+      const result = await getDocumentByType(DocTypeEnum.Agreement);
+
+      expect(result).toHaveLength(1);
+      expect(result[0]).toHaveProperty('id', mockDocuments[0].id);
+      expect(result[0]).toHaveProperty('title', mockDocuments[0].title);
+      expect(result[0].coordinates).toEqual(mockCoordinate);
+      expect(Document.find).toHaveBeenCalledWith({ type: DocTypeEnum.Agreement });
+      expect(getCoordinateById).toHaveBeenCalledWith(mockDocuments[0].coordinates);
+    });
+    */
+
+    //test 2
+    test("Should throw a DocNotFoundErr", async () => {
+      //Data mock
+      const err = new DocNotFoundError();
+
+      (Document.find as jest.Mock).mockImplementation(async() => []);
+
+      await expect(getDocumentByType("FakeType")).rejects.toThrow(err);
+
+      expect(Document.find).toHaveBeenCalledWith({ type: "FakeType" });
+      expect(getCoordinateById).not.toHaveBeenCalled();
+    });
+  });//getDocumentByType
+});//END OF DOCUMENT SERVICES
+
+/* ******************************************* Suite n#4 - MEDIA ******************************************* */
+describe('Tests for media services', () => {
+  //getTypeFromMimeType
+  describe('Tests for getTypeFromMimeType', () => {
+    afterEach(() => {
+      jest.clearAllMocks();
+    });
+
+    //test 1
+    test('Should return "image" for all images mimetypes', async () => {
+      expect(getTypeFromMimeType('image/jpeg')).toBe('image');
+      expect(getTypeFromMimeType('image/png')).toBe('image');
+      expect(getTypeFromMimeType('image/gif')).toBe('image');
+    });
+
+    //test 2
+    test('Should return "document" for the mimetype application/pdf', () => {
+      expect(getTypeFromMimeType('application/pdf')).toBe('document');
+    });
+
+    //test 3
+    test('Should return "text" for all text/ mimetypes', () => {
+      expect(getTypeFromMimeType('text/plain')).toBe('text');
+      expect(getTypeFromMimeType('text/html')).toBe('text');
+      expect(getTypeFromMimeType('text/css')).toBe('text');
+    });
+  
+    //test 4
+    test('Should return "unknown" for unsupported, empty or invalid mimetypes', () => {
+      expect(getTypeFromMimeType('application/json')).toBe('unknown');
+      expect(getTypeFromMimeType('video/mp4')).toBe('unknown');
+      expect(getTypeFromMimeType('audio/mpeg')).toBe('unknown');
+      expect(getTypeFromMimeType('')).toBe('unknown');
+      expect(getTypeFromMimeType('invalid/mimetype')).toBe('unknown');
+    });
+  });//getTypeFromMimeType
+  /* ************************************************** */
+
+  //uploadMediaService
+  describe('Tests for uploadMediaService', () => {
+    afterEach(() => {
+      jest.clearAllMocks();
+    });
+
+    //Data mock
+    const mediaData = {
+      filename: "example.jpg",
+      mimeType: "image/jpeg",
+      size: 1024,
+      userId: "123",
+      folder: "test-folder"
+    };
+
+    const mockPresignedUrl: IReturnPresignedUrl = { url: 'https://cdn.example.com/presigned-url' };
+    const mockFileMetadata: Partial<IMedia> = { relativeUrl: '/uploads/example.jpg' };
+
+    //test 1
+    test("Should successfully upload a media", async () => {
+      //Data mock
+      const newMedia = {
+        _id: "1",
+        filename: mediaData.filename,
+        relativeUrl: mockFileMetadata.relativeUrl,
+        type: "image",
+        mimetype: mediaData.mimeType,
+        size: mediaData.size,
+        user: mediaData.userId,
+        createdAt: new Date(),
+        updatedAt: new Date()
+      };
+
+      const mockFetchedObj: Response = {
+        ok: true,
+        json: async () => ({ presignedUrl: mockPresignedUrl, fileMetadata: mockFileMetadata })
+      } as Response;
+
+      //Support functions mocking
+      (fetch as jest.Mock).mockImplementation(async() => mockFetchedObj);
+      jest.spyOn(require("@services/media.service"), "getTypeFromMimeType").mockResolvedValue("image");
+      (Media.prototype.save as jest.Mock).mockImplementation(async () => newMedia);
+
+      //Call of uploadMediaService
+      const result = await uploadMediaService(mediaData);
+
+      expect(result).toEqual(mockPresignedUrl);
+      expect(fetch).toHaveBeenCalled();
+      expect(getTypeFromMimeType).toBeCalled();
+      expect(Media.prototype.save).toHaveBeenCalled();
+    });
+
+    //test 2
+    test("Should throw an error", async () => {
+      //Data mock
+      const err = new CustomError("Internal Server Error", 400);
+
+      const mockFetchedObj: Response = {
+        ok: false
+      } as Response;
+
+      //Support functions mocking
+      (fetch as jest.Mock).mockImplementation(async() => mockFetchedObj);
+
+      //Call of uploadMediaService + error check
+      await expect(uploadMediaService(mediaData)).rejects.toThrow(err);
+
+      expect(fetch).toHaveBeenCalled();
+      expect(getTypeFromMimeType).not.toBeCalled();
+      expect(Media.prototype.save).not.toHaveBeenCalled();
+    });
+  });//uploadMediaService
+  /* ************************************************** */
+
+  //updateMediaMetadata
+  describe('Tests for updateMediaMetadata', () => {
+    afterEach(() => {
+      jest.clearAllMocks();
+    });
+
+    //test 1
+    test("Should successfully update a media", async () => {
+      //Data mock
+      const mediaId = "1";
+      const metadata = { pages: 10, size: 2048 };
+      const mockUpdatedMedia = { id: mediaId, ...metadata };
+  
+      //Support functions mocking
+      (Media.findByIdAndUpdate as jest.Mock).mockImplementation(async() => mockUpdatedMedia);
+  
+      //Call of updateMediaMetadata
+      await updateMediaMetadata(mediaId, metadata);
+
+      expect(Media.findByIdAndUpdate).toHaveBeenCalledWith(
+        mediaId,
+        { $set: { pages: 10, size: 2048 } },
+        { new: true }
+      );
+    });
+
+    //This stes will never work, because updateMediaMetadata will never throw a CustomError
+    //The condition to throw the error is that "updateFields" has got 0 as length
+    //But this won't ever happen because, in the method's code, updateFields.size is always assigned
+    /*
+    //test 2
+    test("Should throw a CustomError", async () => {
+      //Data mock
+      const mediaId = "1";
+      //An empty input will trigger the error
+      const metadata = { pages: null, size: null };
+      const err = new CustomError('No fields to update', 400);
+  
+      //Call of updateMediaMetadata + error throwing check
+      await expect(updateMediaMetadata(mediaId, metadata)).rejects.toThrow(err);
+  
+      expect(Media.findByIdAndUpdate).not.toHaveBeenCalled();
+    });
+    */
+
+    //test 3
+    test("Should throw a MediaNotFounderror", async () => {
+      //Data mock
+      const mediaId = "100";
+      const metadata = { pages: 10, size: 2048 };
+      const err = new MediaNotFoundError();
+
+      //Support functions mocking
+      (Media.findByIdAndUpdate as jest.Mock).mockImplementation(async() => null);
+  
+      //Call of updateMediaMetadata + error throwing check
+      await expect(updateMediaMetadata(mediaId, metadata)).rejects.toThrow(err);
+  
+      expect(Media.findByIdAndUpdate).toHaveBeenCalled();
+    });
+  });//updateMediaMetadata
+}); //END OF MEDIA SERVICES

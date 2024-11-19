@@ -8,6 +8,14 @@ export interface IConnection {
   type: LinkTypeEnum;
 }
 
+export interface IDocumentFilters {
+  stakeholders?: string;
+  scale?: string;
+  type?: DocTypeEnum;
+  date?: string;
+  language?: string;
+}
+
 export interface IDocument {
   title: string;
   stakeholders: string;
@@ -16,7 +24,7 @@ export interface IDocument {
   date: string;
   connections?: IConnection[];
   language?: string;
-  media?: [ObjectId];
+  media?: ObjectId[]; //changed By Mina
   coordinates?: ObjectId;
   summary: string;
 

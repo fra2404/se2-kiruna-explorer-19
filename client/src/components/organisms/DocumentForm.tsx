@@ -1,17 +1,22 @@
 import { useState } from 'react';
-import ConnectionForm from './documentConnections/ConnectionForm';
-import Modal from 'react-modal';
 import { useMapEvents } from 'react-leaflet';
 import { LatLng } from 'leaflet';
+import Modal from 'react-modal';
+
+import ConnectionForm from './documentConnections/ConnectionForm';
 import ButtonRounded from '../atoms/button/ButtonRounded';
-import AgreementIcon from '../../assets/icons/agreement-icon';
-import ConflictIcon from '../../assets/icons/conflict-icon';
-import ConsultationIcon from '../../assets/icons/consultation-icon';
-import DesignDocIcon from '../../assets/icons/design-doc-icon';
-import InformativeDocIcon from '../../assets/icons/informative-doc-icon';
-import MaterialEffectsIcon from '../../assets/icons/material-effects-icon';
-import PrescriptiveDocIcon from '../../assets/icons/prescriptive-doc-icon';
-import TechnicalDocIcon from '../../assets/icons/technical-doc-icon';
+
+import {
+  AgreementIcon,
+  ConflictIcon,
+  ConsultationIcon,
+  DesignDocIcon,
+  InformativeDocIcon,
+  MaterialEffectsIcon,
+  PrescriptiveDocIcon,
+  TechnicalDocIcon,
+} from '../../assets/icons';
+
 import { createCoordinate, createDocument, editDocument } from '../../API';
 import Toast from './Toast';
 import Step1 from '../molecules/steps/Step1';
@@ -19,7 +24,11 @@ import Step2 from '../molecules/steps/Step2';
 import Step3 from '../molecules/steps/Step3';
 import Step4 from '../molecules/steps/Step4';
 import Step5 from '../molecules/steps/Step5';
-import { ICoordinate, IDocument } from '../../utils/interfaces/document.interface';
+import Step6 from '../molecules/steps/Step6';
+import {
+  ICoordinate,
+  IDocument,
+} from '../../utils/interfaces/document.interface';
 
 Modal.setAppElement('#root');
 
@@ -38,7 +47,7 @@ interface DocumentFormProps {
   setDocuments: (documents: IDocument[]) => void;
   modalOpen: boolean;
   setModalOpen: (open: boolean) => void;
-  selectedDocument?: IDocument
+  selectedDocument?: IDocument;
 }
 
 const DocumentForm = ({
@@ -49,8 +58,9 @@ const DocumentForm = ({
   documents,
   setDocuments,
   showCoordNamePopup = false,
-  selectedDocument
+  selectedDocument,
 }: DocumentFormProps) => {
+
   const [currentStep, setCurrentStep] = useState(1);
   const [connectToMap, setConnectToMap] = useState(
     !!positionProp || !!selectedCoordIdProp,
@@ -104,15 +114,27 @@ const DocumentForm = ({
   const [stakeholders, setStakeholders] = useState<string | undefined>(
     selectedDocument?.stakeholders || undefined,
   );
-  const [scale, setScale] = useState<string | undefined>(selectedDocument?.scale || '');
-  const [issuanceDate, setIssuanceDate] = useState(
-    selectedDocument?.date ? new Date(selectedDocument.date).toISOString().split('T')[0] : new Date().toISOString().split('T')[0],
+  const [scale, setScale] = useState<string | undefined>(
+    selectedDocument?.scale || '',
   );
-  const [docType, setDocType] = useState<string | undefined>(selectedDocument?.type || undefined);
+  const [issuanceDate, setIssuanceDate] = useState(
+    selectedDocument?.date
+      ? new Date(selectedDocument.date).toISOString().split('T')[0]
+      : new Date().toISOString().split('T')[0],
+  );
+  const [docType, setDocType] = useState<string | undefined>(
+    selectedDocument?.type || undefined,
+  );
   //const [numPages, setNumPages] = useState(0);
-  const [connections, setConnections] = useState<Connection[]>(selectedDocument?.connections?.map((c) => {return {type: c.type, relatedDocument: c.document}}) || []);
+  const [connections, setConnections] = useState<Connection[]>(
+    selectedDocument?.connections?.map((c) => {
+      return { type: c.type, relatedDocument: c.document };
+    }) || [],
+  );
   const [language, setLanguage] = useState(selectedDocument?.language || '');
-  const [description, setDescription] = useState(selectedDocument?.summary || '');
+  const [description, setDescription] = useState(
+    selectedDocument?.summary || '',
+  );
 
   // Georeferencing information
   const [position, setPosition] = useState<LatLng | undefined>(positionProp);
@@ -139,6 +161,9 @@ const DocumentForm = ({
     overlay: { zIndex: 1000 },
   };
 
+  // Original resources data
+  const [files, setFiles] = useState<File[]>([]);
+
   const handleAddConnection = (connection: Connection) => {
     setConnections([...connections, connection]);
   };
@@ -148,14 +173,17 @@ const DocumentForm = ({
     setConnections(updatedConnections);
   };
 
-  /*const handleEditConnection = (index : number, updatedConnection: Connection) => {
-    const updatedConnections = connections.map((conn, i) =>
-    i === index ? updatedConnection : conn
-  );
-    setConnections(updatedConnections);
-  }*/
+  // const handleEditConnection = (
+  //   index: number,
+  //   updatedConnection: Connection,
+  // ) => {
+  //   const updatedConnections = connections.map((conn, i) =>
+  //     i === index ? updatedConnection : conn,
+  //   );
+  //   setConnections(updatedConnections);
+  // };
 
-  //Toast
+  // Toast
   const [toastMsg, setToastMsg] = useState<{
     isShown: boolean;
     type: 'success' | 'error';
@@ -200,9 +228,10 @@ const DocumentForm = ({
 
   const handleNextStep = () => {
     if (validateStep()) {
+      console.log(currentStep);
       setCurrentStep(currentStep + 1);
     } else {
-      alert('Please fill in all required fields.');
+      showToastMessage('Please fill in all required fields', 'error');
     }
   };
 
@@ -211,42 +240,41 @@ const DocumentForm = ({
     let coordId: string | undefined = undefined;
 
     //If selectedCoordId is undefined, this means that we are adding the document into a new point. We need to save this point in the DB
-    if(!selectedCoordId && position) {
+    if (!selectedCoordId && position && connectToMap) {
       const coordData: ICoordinate = {
-        id: "",
+        id: '',
         name: coordName,
-        type: "Point",                              //TODO: will be changed at story 9, to give the possibility to also create areas
-        coordinates: [position.lat, position.lng],  //TODO: will be changed at story 9, to give the possibility to also create areas
-      }
+        type: 'Point', //TODO: will be changed at story 9, to give the possibility to also create areas
+        coordinates: [position.lat, position.lng], //TODO: will be changed at story 9, to give the possibility to also create areas
+      };
 
       try {
         const response = await createCoordinate(coordData);
         console.log(response);
-        if(response.success) {
+        if (response.success) {
           coordId = response.coordinate?.coordinate._id;
-          if(coordId)
+          if (coordId)
             setCoordinates({
-              ...coordinates, 
+              ...coordinates,
               [coordId]: {
-                type: response.coordinate?.coordinate.type, 
+                type: response.coordinate?.coordinate.type,
                 coordinates: response.coordinate?.coordinate.coordinates,
-                name: response.coordinate?.coordinate.name
-              }
+                name: response.coordinate?.coordinate.name,
+              },
             });
-        }
-        else {
+        } else {
           console.log('Failed to create coordinate');
           showToastMessage('Failed to create coordinate', 'error');
         }
-      }
-      catch (error) {
+      } catch (error) {
         console.error('Error creating coordinate:', error);
         showToastMessage('Error creating coordinate:' + error, 'error');
       }
-    }
-    else {
-      coordId = selectedCoordId;
-      console.log(coordId)
+    } else {
+      if(connectToMap)
+        coordId = selectedCoordId;
+      else
+        coordId = undefined;
     }
 
     const documentData = {
@@ -258,7 +286,7 @@ const DocumentForm = ({
       language,
       summary: description,
       date: issuanceDate,
-      coordinates: coordId || '',
+      coordinates: coordId || undefined,
       connections: connections.map((conn) => ({
         document: conn.relatedDocument,
         type: conn.type,
@@ -268,10 +296,9 @@ const DocumentForm = ({
 
     try {
       let response;
-      if(!selectedDocument) {
+      if (!selectedDocument) {
         response = await createDocument(documentData);
-      }
-      else {
+      } else {
         response = await editDocument(documentData);
       }
       console.log(response);
@@ -279,18 +306,16 @@ const DocumentForm = ({
         console.log('Document saved successfully:', response.document);
         showToastMessage('Document saved successfully', 'success');
 
-        setCurrentStep(5);
-        if(response.document) {
-          const responseDocument = response.document;    //Typescript is not able to detect that the value response.document will still be defined in the "else" branch. So, we have to put it in a variable
-          console.log(response.document);
-          if(!selectedDocument) {
+        setCurrentStep(6);
+        if (response.document) {
+          const responseDocument = response.document; //Typescript is not able to detect that the value response.document will still be defined in the "else" branch. So, we have to put it in a variable
+          if (!selectedDocument) {
             setDocuments(documents.concat(responseDocument));
-          }
-          else {
+          } else {
             setDocuments(
               documents.map((doc: IDocument) => {
-                return doc.id == selectedDocument.id ? responseDocument : doc
-              })
+                return doc.id == selectedDocument.id ? responseDocument : doc;
+              }),
             );
           }
         }
@@ -298,7 +323,7 @@ const DocumentForm = ({
         console.log('Failed to create document');
         showToastMessage('Failed to create document', 'error');
       }
-    } catch (error) {
+    }catch (error) {
       console.error('Error creating document:', error);
       showToastMessage('Error creating document:' + error, 'error');
     }
@@ -344,18 +369,21 @@ const DocumentForm = ({
           />
         );
       case 3:
+        return <Step3 files={files} setFiles={setFiles} />;
+      case 4:
         return (
-          <Step3
+          <Step4
             connections={connections}
             handleDeleteConnection={handleDeleteConnection}
             setConnectionModalOpen={setConnectionModalOpen}
             connectToMap={connectToMap}
             setConnectToMap={setConnectToMap}
+            allDocuments={documents}
           />
         );
-      case 4:
+      case 5:
         return (
-          <Step4
+          <Step5
             coordinates={coordinates}
             selectedCoordIdProp={selectedCoordId || ''}
             selectedCoordId={selectedCoordId || ''}
@@ -369,8 +397,8 @@ const DocumentForm = ({
             MapClickHandler={MapClickHandler}
           />
         );
-      case 5:
-        return <Step5 />;
+      case 6:
+        return <Step6 />;
       default:
         return null;
     }
@@ -380,7 +408,7 @@ const DocumentForm = ({
     <>
       <div className="w-full rounded shadow-md border">
         <h2 className="text-center text-2xl font-bold mt-6">
-          {selectedDocument ? "Edit document" : "Create a new document"}
+          {selectedDocument ? 'Edit document' : 'Create a new document'}
         </h2>
         <form className="m-6" onSubmit={handleSubmit}>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-x-4 gap-y-2">
@@ -388,7 +416,7 @@ const DocumentForm = ({
 
             {/* Navigation buttons */}
             <div className="col-span-2 flex justify-between mt-4">
-              {currentStep > 1 && currentStep < 5 && (
+              {currentStep > 1 && currentStep < 6 && (
                 <ButtonRounded
                   variant="outlined"
                   text="Previous"
@@ -396,7 +424,8 @@ const DocumentForm = ({
                   onClick={() => setCurrentStep(currentStep - 1)}
                 />
               )}
-              {currentStep < (connectToMap ? 4 : 3) && (
+              {/** (connectToMap ? 5 : 4) */}
+              {currentStep < (connectToMap ? 5 : 4) && (
                 <ButtonRounded
                   variant="filled"
                   text="Next"
@@ -404,7 +433,7 @@ const DocumentForm = ({
                   onClick={handleNextStep}
                 />
               )}
-              {currentStep === (connectToMap ? 4 : 3) && (
+              {currentStep === (connectToMap ? 5 : 4) && (
                 <ButtonRounded
                   variant="filled"
                   text="Save"

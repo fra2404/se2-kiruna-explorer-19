@@ -8,13 +8,7 @@ import {
   getDocumentsByTypeController,
   searchDocumentsController
 } from '@controllers/document.controllers';
-/* import { 
-  addDocumentController, 
-  deleteDocumentController, 
-  getAllDocumentsController, 
-  getDocumentByIdController, 
-  updateDocumentController 
-} from '@controllers/document.controllers'; */
+//import { addDocumentController, deleteDocumentController, getAllDocumentsController, getDocumentByIdController, updateDocumentController } from '@controllers/document.controllers';
 import {
   validateAddDocument,
   validateDocumentId,
@@ -48,7 +42,6 @@ router.get(
 
 router.get(
   '/:id',
-  authenticateUser,
   validateDocumentId,
   getDocumentByIdController,
 ); // Get Document by ID

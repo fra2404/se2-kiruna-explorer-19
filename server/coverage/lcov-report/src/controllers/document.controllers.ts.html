@@ -23,30 +23,30 @@
         <div class='clearfix'>
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">80.7% </span>
+                <span class="strong">98.3% </span>
                 <span class="quiet">Statements</span>
-                <span class='fraction'>46/57</span>
+                <span class='fraction'>58/59</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">50% </span>
+                <span class="strong">66.66% </span>
                 <span class="quiet">Branches</span>
-                <span class='fraction'>1/2</span>
+                <span class='fraction'>2/3</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">76.92% </span>
+                <span class="strong">100% </span>
                 <span class="quiet">Functions</span>
-                <span class='fraction'>10/13</span>
+                <span class='fraction'>13/13</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">78% </span>
+                <span class="strong">98.07% </span>
                 <span class="quiet">Lines</span>
-                <span class='fraction'>39/50</span>
+                <span class='fraction'>51/52</span>
             </div>
         
             
@@ -503,7 +503,8 @@
 <a name='L438'></a><a href='#L438'>438</a>
 <a name='L439'></a><a href='#L439'>439</a>
 <a name='L440'></a><a href='#L440'>440</a>
-<a name='L441'></a><a href='#L441'>441</a></td><td class="line-coverage quiet"><span class="cline-any cline-neutral">&nbsp;</span>
+<a name='L441'></a><a href='#L441'>441</a>
+<a name='L442'></a><a href='#L442'>442</a></td><td class="line-coverage quiet"><span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -735,11 +736,11 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-yes">1x</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-yes">2x</span>
+<span class="cline-any cline-yes">2x</span>
+<span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -930,18 +931,19 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-yes">2x</span>
+<span class="cline-any cline-yes">2x</span>
+<span class="cline-any cline-yes">2x</span>
+<span class="cline-any cline-yes">2x</span>
+<span class="cline-any cline-yes">2x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span></td><td class="text"><pre class="prettyprint lang-js">import { Request, Response, NextFunction } from 'express';
 import {
@@ -1055,7 +1057,7 @@ export const addDocumentController = async (
     const newDocument = await addingDocument(req.body as IDocument);
     res
       .status(201)
-      .json({ message: 'Document added successfully', document: newDocument });
+      .json({ document: newDocument });
   } catch (error) {
     next(error); // Pass the error to the error handler middleware
   }
@@ -1174,12 +1176,12 @@ export const updateDocumentController = async (
   }
 };
 &nbsp;
-export const getDocumentTypesController = <span class="fstat-no" title="function not covered" >(r</span>eq: Request, res: Response, next: NextFunction): void =&gt; {
-<span class="cstat-no" title="statement not covered" >  try {</span>
-    const docTypes = <span class="cstat-no" title="statement not covered" >getDocumentTypes();</span>
-<span class="cstat-no" title="statement not covered" >    res.status(200).json({ docTypes });</span>
+export const getDocumentTypesController = (req: Request, res: Response, next: NextFunction): void =&gt; {
+  try {
+    const docTypes = getDocumentTypes();
+    res.status(200).json({ docTypes });
   } catch (error) {
-<span class="cstat-no" title="statement not covered" >    next(error); </span>// Pass the error to the error handler middleware
+    next(error); // Pass the error to the error handler middleware
   }
 };
 &nbsp;
@@ -1302,7 +1304,6 @@ export const deleteDocumentController = async (
  *       - in: query
  *         name: keywords
  *         required: true
- *         description: An array of keywords to search for in the title or summary of the document. Ex: ["lorem", "ipsum"]
  *         schema:
  *           type: string
  *     responses:
@@ -1371,26 +1372,28 @@ export const deleteDocumentController = async (
  */
 &nbsp;
 &nbsp;
-export const searchDocumentsController = <span class="fstat-no" title="function not covered" >async (</span>
+export const searchDocumentsController = async (
   req: Request,
   res: Response,
-  next: NextFunction,): Promise&lt;void&gt; =&gt;<span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" > {</span></span>
-<span class="cstat-no" title="statement not covered" >  try {</span>
-&nbsp;
-    const keywords = <span class="cstat-no" title="statement not covered" >JSON.parse(req.query.keywords as string);</span>  // Parse the input query string into an array of keywords
-    const documents = <span class="cstat-no" title="statement not covered" >await searchDocuments(keywords);</span>
-<span class="cstat-no" title="statement not covered" >    res.status(200).json(documents);</span>
+  next: NextFunction,): Promise&lt;void&gt; =&gt; {
+  try {
+    let keywords: string[] = [];
+    if (req.query.keywords) {
+      keywords = JSON.parse(req.query.keywords as string);  // Parse the input query string into an array of keywords
+    }
+    const documents = await searchDocuments(keywords, req.body);
+    res.status(200).json(documents);
   } catch (error) {
-<span class="cstat-no" title="statement not covered" >    next(error); </span>// Pass the error to the error handler middleware
+    next(error); // Pass the error to the error handler middleware
   }
-  }</pre></td></tr></table></pre>
+};</pre></td></tr></table></pre>
 
                 <div class='push'></div><!-- for sticky footer -->
             </div><!-- /wrapper -->
             <div class='footer quiet pad2 space-top1 center small'>
                 Code coverage generated by
                 <a href="https://istanbul.js.org/" target="_blank" rel="noopener noreferrer">istanbul</a>
-                at 2024-11-15T16:38:13.528Z
+                at 2024-11-19T12:28:37.091Z
             </div>
         <script src="../../prettify.js"></script>
         <script>

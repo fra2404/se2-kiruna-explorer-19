@@ -1,0 +1,63 @@
+version: '3.8'
+
+services:
+  # Database MongoDB
+  mongo:
+    image: mongo:latest
+    container_name: mongoDB
+    ports:
+      - "27017:27017"
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: admin
+      MONGO_INITDB_ROOT_PASSWORD: secret
+    volumes:
+      - ./mongo_data:/data/db
+    networks:
+      - my-network
+
+  # Server
+  server:
+    build:
+      context: ./server
+      dockerfile: Dockerfile
+    container_name: server
+    depends_on:
+      - mongo
+    ports:
+      - "5001:5001"
+    environment:
+      - DOCKER_ENV=true
+    networks:
+      - my-network
+
+  # Client (Vite con build)
+  client:
+    build:
+      context: ./client
+      dockerfile: Dockerfile
+    container_name: client
+    depends_on:
+      - server
+    ports:
+      - "5173:5173"
+    networks:
+      - my-network
+
+  # CDN
+  cdn:
+    build:
+      context: ./cdn
+      dockerfile: Dockerfile
+    container_name: cdn
+    ports:
+      - "3004:3004"
+    depends_on:
+      - server
+    environment:
+      - DOCKER_ENV=true
+    networks:
+      - my-network
+
+networks:
+  my-network:
+    driver: bridge

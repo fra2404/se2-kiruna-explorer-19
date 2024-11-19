@@ -3,6 +3,7 @@ import { DocTypeEnum } from '@utils/enums/doc-type.enum';
 import { LinkTypeEnum } from '@utils/enums/link-type.enum';
 import { IConnection } from './document.interface';
 import { ObjectId } from 'mongoose';
+import { IReturnMedia } from './media.return.interface';
 
 export interface IDocumentResponse {
   id: string;
@@ -14,6 +15,6 @@ export interface IDocumentResponse {
   summary: string;
   connections?: IConnection[];
   language?: string;
-  media?: [ObjectId];
+  media?: IReturnMedia[] | null;
   coordinates?: ICoordinate | null;
 }

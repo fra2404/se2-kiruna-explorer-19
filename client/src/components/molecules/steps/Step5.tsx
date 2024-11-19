@@ -1,13 +1,50 @@
-import React from 'react';
-import { FaCheckCircle } from 'react-icons/fa';
+import { LatLng } from 'leaflet';
+import MapSection from '../../organisms/MapSection';
 
-const Step5: React.FC = () => {
+interface Step4Props {
+  coordinates: any;
+  selectedCoordIdProp: string;
+  selectedCoordId: string;
+  setSelectedCoordId: (value: string) => void;
+  setCoordNamePopupOpen: (open: boolean) => void;
+  position: LatLng | undefined;
+  setPosition: (position: LatLng | undefined) => void;
+  coordNamePopupOpen: boolean;
+  coordName: string;
+  setCoordName: (name: string) => void;
+  MapClickHandler: React.FC;
+}
+
+const Step4: React.FC<Step4Props> = ({
+  coordinates,
+  selectedCoordIdProp,
+  selectedCoordId,
+  setSelectedCoordId,
+  setCoordNamePopupOpen,
+  position,
+  setPosition,
+  coordNamePopupOpen,
+  coordName,
+  setCoordName,
+  MapClickHandler,
+}) => {
   return (
-    <div className="flex flex-col items-center justify-center h-full w-full col-span-full">
-      <FaCheckCircle className="w-24 h-24 text-green-500" />
-      <h2 className="text-2xl font-bold mt-4">Document Saved</h2>
-    </div>
+    <>
+      <MapSection 
+        coordinates={coordinates}
+        selectedCoordIdProp={selectedCoordIdProp}
+        selectedCoordId={selectedCoordId}
+        setSelectedCoordId={setSelectedCoordId}
+        setCoordNamePopupOpen={setCoordNamePopupOpen}
+        position={position}
+        setPosition={setPosition}
+        coordNamePopupOpen={coordNamePopupOpen}
+        coordName={coordName}
+        setCoordName={setCoordName}
+        MapClickHandler={MapClickHandler}
+      />
+    </>
   );
 };
 
-export default Step5;
+export default Step4;
