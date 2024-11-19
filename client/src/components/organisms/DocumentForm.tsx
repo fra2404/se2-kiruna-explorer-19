@@ -17,7 +17,7 @@ import {
   TechnicalDocIcon,
 } from '../../assets/icons';
 
-import { createCoordinate, createDocument, editDocument } from '../../API';
+import { createCoordinate, createDocument, editDocument, addResource } from '../../API';
 import Toast from './Toast';
 import Step1 from '../molecules/steps/Step1';
 import Step2 from '../molecules/steps/Step2';
@@ -235,9 +235,23 @@ const DocumentForm = ({
     }
   };
 
+  const handleSaveResource = () => {
+    // Call here the API to save the media file for each file:
+    files.forEach(async file => {
+      console.log("[DEBUG] File name is: ", file);
+      await addResource(file);
+    });
+
+
+
+  }
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     let coordId: string | undefined = undefined;
+
+    // Call here the API to save the media files
+    handleSaveResource();
 
     //If selectedCoordId is undefined, this means that we are adding the document into a new point. We need to save this point in the DB
     if (!selectedCoordId && position && connectToMap) {
@@ -271,7 +285,7 @@ const DocumentForm = ({
         showToastMessage('Error creating coordinate:' + error, 'error');
       }
     } else {
-      if(connectToMap)
+      if (connectToMap)
         coordId = selectedCoordId;
       else
         coordId = undefined;
@@ -292,7 +306,6 @@ const DocumentForm = ({
         type: conn.type,
       })),
     };
-    console.log('Document Data:', documentData);
 
     try {
       let response;
@@ -301,9 +314,7 @@ const DocumentForm = ({
       } else {
         response = await editDocument(documentData);
       }
-      console.log(response);
       if (response.success) {
-        console.log('Document saved successfully:', response.document);
         showToastMessage('Document saved successfully', 'success');
 
         setCurrentStep(6);
@@ -323,7 +334,7 @@ const DocumentForm = ({
         console.log('Failed to create document');
         showToastMessage('Failed to create document', 'error');
       }
-    }catch (error) {
+    } catch (error) {
       console.error('Error creating document:', error);
       showToastMessage('Error creating document:' + error, 'error');
     }

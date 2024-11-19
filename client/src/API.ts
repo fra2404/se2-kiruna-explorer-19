@@ -2,7 +2,7 @@ import { ICoordinate, IDocument } from './utils/interfaces/document.interface';
 import { IUser } from './utils/interfaces/user.interface';
 
 const SERVER_URL = 'http://localhost:5001/api'; // endpoint of the server
-const CDN_URL = 'http://localhost:3004/'; // endpoint of the CDN
+const CDN_URL = 'http://localhost:3004'; // endpoint of the CDN
 
 async function login(
   email: string,
@@ -164,7 +164,7 @@ async function editDocument(documentData: {
       'Content-Type': 'application/json',
     },
     body: JSON.stringify(documentData),
-  })
+  });
 
   if (!response.ok) {
     return { success: false };
@@ -183,7 +183,10 @@ async function getCoordinates() {
     .then((response) => response.json());
 }
 
-async function createCoordinate(coord: ICoordinate): Promise<{ success: boolean; coordinate?: { message: string, coordinate: ICoordinate } }> {
+async function createCoordinate(coord: ICoordinate): Promise<{
+  success: boolean;
+  coordinate?: { message: string; coordinate: ICoordinate };
+}> {
   const response = await fetch(`${SERVER_URL}/coordinates/create`, {
     method: 'POST',
     credentials: 'include',
@@ -191,32 +194,36 @@ async function createCoordinate(coord: ICoordinate): Promise<{ success: boolean;
       'Content-Type': 'application/json',
     },
     body: JSON.stringify(coord),
-  })
+  });
   if (!response.ok) {
     return { success: false };
   }
 
-  const coordinate: { message: string, coordinate: ICoordinate } = await response.json();
+  const coordinate: { message: string; coordinate: ICoordinate } =
+    await response.json();
   return { success: true, coordinate };
 }
 
-async function deleteCoordinate(coordId: string): Promise<{ success: boolean }> {
+async function deleteCoordinate(
+  coordId: string,
+): Promise<{ success: boolean }> {
   const response = await fetch(`${SERVER_URL}/coordinates/` + coordId, {
     method: 'DELETE',
-    credentials: 'include'
-  })
+    credentials: 'include',
+  });
   if (!response.ok) {
     return { success: false };
-  }
-  else {
+  } else {
     return { success: true };
   }
 }
 
 // Utility functions:
 function handleInvalidResponse(response: any) {
+  console.log('Response is:', response);
   if (!response.ok) {
-    throw Error(response.statusText);
+    console.log('Response status:', response.statusText);
+    throw Error(response.statusText || 'An error occurred');
   }
   const type = response.headers.get('Content-Type');
   if (type !== null && type.indexOf('application/json') === -1) {
@@ -231,6 +238,10 @@ function handleInvalidResponse(response: any) {
 async function addResource(file: File) {
   return await fetch(`${SERVER_URL}/media/upload`, {
     method: 'POST',
+    credentials: 'include',
+    headers: {
+      'Content-Type': 'application/json',
+    },
     body: JSON.stringify({
       filename: file.name,
       size: file.size,
@@ -239,17 +250,24 @@ async function addResource(file: File) {
   })
     .then(handleInvalidResponse)
     .then(async (response) => {
-      if (response.status === 201) {
+      if (response.status === 200) {
+        const data = await response.json();
         const body = new FormData();
         body.append('file', file);
         // Resource posted to the CDN
-        // use the token returned by the backend.
-        return await fetch(`${CDN_URL}/upload-file`, {
+        // use the token returned by the backend. It is contained in the field `data` of the previous response.
+        return await fetch(`${data.data}`, {
           method: 'POST',
+          mode: 'no-cors',
+          credentials: 'include',
+          headers: {
+            'Content-Type': 'application/json',
+          },
           body: body,
-        })
-          .then(handleInvalidResponse)
-          .then((response) => response.json());
+        });
+        // When using mode: no-cors, the response is not visible so the following two callback must be commented out:
+        // .then(handleInvalidResponse)
+        // .then((response) => response.json());
       }
     });
 }
@@ -258,8 +276,18 @@ const API = {
   getDocuments,
   getCoordinates,
   addDocument,
-  deleteCoordinate
+  deleteCoordinate,
 };
 
-export { login, logout, getMe, checkAuth, createDocument, editDocument, getDocuments, addResource, createCoordinate };
+export {
+  login,
+  logout,
+  getMe,
+  checkAuth,
+  createDocument,
+  editDocument,
+  getDocuments,
+  addResource,
+  createCoordinate,
+};
 export default API;
