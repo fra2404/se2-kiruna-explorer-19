@@ -235,14 +235,14 @@ const DocumentForm = ({
     }
   };
 
-  const handleSaveResource = () => {
+  const handleSaveResource = async () => {
+    const media_ids: string[] = [];
     // Call here the API to save the media file for each file:
-    files.forEach(async file => {
-      console.log("[DEBUG] File name is: ", file);
-      await addResource(file);
-    });
-
-
+    for (let i = 0; i < files.length; i++) {
+      const token = await addResource(files[i]);
+      media_ids.push(token);
+    }
+    return media_ids;
 
   }
 
@@ -251,7 +251,7 @@ const DocumentForm = ({
     let coordId: string | undefined = undefined;
 
     // Call here the API to save the media files
-    handleSaveResource();
+    const media_ids = await handleSaveResource();
 
     //If selectedCoordId is undefined, this means that we are adding the document into a new point. We need to save this point in the DB
     if (!selectedCoordId && position && connectToMap) {
@@ -305,6 +305,7 @@ const DocumentForm = ({
         document: conn.relatedDocument,
         type: conn.type,
       })),
+      media: media_ids,
     };
 
     try {

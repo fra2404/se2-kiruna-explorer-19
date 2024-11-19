@@ -106,6 +106,7 @@ async function createDocument(documentData: {
   date: string;
   coordinates?: string;
   connections: { document: string; type: string }[];
+  media: string[];
 }): Promise<{ success: boolean; document?: IDocument }> {
   const response = await fetch(`${SERVER_URL}/documents/create`, {
     method: 'POST',
@@ -155,6 +156,7 @@ async function editDocument(documentData: {
   date: string;
   coordinates?: string;
   connections: { document: string; type: string }[];
+  media: string[];
 }): Promise<{ success: boolean; document?: IDocument }> {
   console.log(documentData);
   const response = await fetch(`${SERVER_URL}/documents/${documentData.id}`, {
@@ -260,10 +262,13 @@ async function addResource(file: File) {
           method: 'POST',
           credentials: 'include',
           body: body, // Do not set Content-Type header, let the browser set it
-        });
-        // When using mode: no-cors, the response is not visible so the following two callback must be commented out:
-        // .then(handleInvalidResponse)
-        // .then((response) => response.json());
+        })
+          .then(handleInvalidResponse)
+          .then(async (response) => {
+            const data = await response.json();
+            console.log('ID is ', data.id);
+            return data.id;
+          });
       }
     });
 }
