@@ -258,12 +258,8 @@ async function addResource(file: File) {
         // use the token returned by the backend. It is contained in the field `data` of the previous response.
         return await fetch(`${data.data}`, {
           method: 'POST',
-          mode: 'no-cors',
           credentials: 'include',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: body,
+          body: body, // Do not set Content-Type header, let the browser set it
         });
         // When using mode: no-cors, the response is not visible so the following two callback must be commented out:
         // .then(handleInvalidResponse)
