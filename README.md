@@ -47,6 +47,29 @@ We’ve made deployment incredibly simple using a **Docker Compose file**. This 
 
 ---
 
+
+## 👤 Adding New Users
+
+To add new users, you can use the [create-user.sh](./create-user.sh) script. Follow these steps:
+
+1. Give Execute Permissions:<br>
+   First, give execute permissions to the script:
+   ```bash
+   chmod +x create-user.sh
+   ```
+2. Run the Script: <br>
+   Execute the script to create a new user:
+   ```bash
+   ./create-user.sh
+   ```
+3. Follow the Instructions:<br>
+   Follow the on-screen instructions to enter the user details and select a role.
+
+<br>
+By following these steps, you can create as many users as you need.
+
+---
+
 ## 🧩 Project Architecture
 
 🖥️ **Servers**:
