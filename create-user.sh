@@ -11,7 +11,7 @@ echo
 read -p "Enter your email: " EMAIL
 
 # List of available roles
-declare -a ROLES=("PLANNER" "DEVELOPER" "VISITOR", "RESIDENT")
+declare -a ROLES=("PLANNER" "DEVELOPER" "VISITOR" "RESIDENT")
 echo "Select a role for the user:"
 for i in "${!ROLES[@]}"; do
   echo "$i) ${ROLES[$i]}"
