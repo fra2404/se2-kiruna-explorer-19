@@ -6,7 +6,7 @@ interface ButtonRoundedProps {
   img?: string;
   className?: string;
   variant: ButtonProps['variant'];
-  text: string;
+  text: string | JSX.Element;
   onClick?: (e: React.MouseEvent<HTMLButtonElement>) => void;
   style?: React.CSSProperties;
 }
@@ -28,12 +28,13 @@ const ButtonRounded: React.FC<ButtonRoundedProps> = ({
           variant={variant}
           onClick={onClick}
           className={buttonClassName}
-          style={style}>
+          style={style}
+        >
           <Row>
             <Col xs="auto" className="p-0">
               <img
                 src={img}
-                alt={text}
+                alt={typeof text === 'string' ? text : ''}
                 style={{ width: '2.5rem', height: '2.5rem' }}
               />
             </Col>
@@ -47,7 +48,8 @@ const ButtonRounded: React.FC<ButtonRoundedProps> = ({
           variant={variant}
           onClick={onClick}
           className={buttonClassName}
-          style={style}>
+          style={style}
+        >
           {text}
         </Button>
       )}
