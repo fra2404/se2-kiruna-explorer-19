@@ -21,6 +21,7 @@ We’ve made deployment incredibly simple using a **Docker Compose file**. This 
 ### 🔑 Key Features:
 
 - **Pre-built Docker Images**: Each server is packaged as a separate Docker image, promoting modularity and maintainability.
+- **Cross-Platform Compatibility**: The Docker images are pre-built to support both ARM and AMD architectures, ensuring compatibility across different platforms.
 - **Quick Setup**: All you need is the `docker-compose.yml` file to get started—no additional cloning or setup required.
 - **Accessible Locally**: Once the services are up and running, the application is accessible at **[localhost:5173](http://localhost:5173)**.
 
