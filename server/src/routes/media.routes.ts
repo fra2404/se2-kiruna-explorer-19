@@ -37,12 +37,4 @@ router.put(
   UpdateMediaController
 )
 
-router.get(
-  '/:mediaId',
-  authenticateUser,
-  authorizeRoles('PLANNER', 'DEVELOPER'),
-  validateMediaId,
-  handleValidationErrors,
-  getMediaMetadataByIdController);
-
 export const mediaRoutes = router;

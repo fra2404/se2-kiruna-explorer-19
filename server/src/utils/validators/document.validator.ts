@@ -97,7 +97,9 @@ export const validateAddDocument = [
   body('media')
     .optional()
     .isMongoId()
-    .withMessage('Media must be a valid MongoDB ObjectId'),
+    .withMessage('Media must be a valid MongoDB ObjectId')
+    .isArray()
+    .withMessage('Media must be an array of MediaId'),
 ];
 
 export const validateDocumentId = [
@@ -205,5 +207,7 @@ export const validateUpdateDocument = [
   body('media')
     .optional()
     .isMongoId()
-    .withMessage('Media must be a valid MongoDB ObjectId'),
+    .withMessage('Media must be a valid MongoDB ObjectId')
+    .isArray()
+    .withMessage('Media must be an array of MediaId'),
 ];
