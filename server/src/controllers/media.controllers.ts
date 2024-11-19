@@ -1,6 +1,8 @@
 import { Request, Response, NextFunction } from 'express';
 import { CustomRequest } from '@interfaces/customRequest.interface';
-import { updateMediaMetadata, uploadMediaService } from '@services/media.service';
+import { getMediaMetadataById, 
+         updateMediaMetadata, 
+         uploadMediaService } from '@services/media.service';
 import { MediaNotFoundError } from '@utils/errors';
 import { CustomError } from '@utils/customError';
 
@@ -84,7 +86,7 @@ export const uploadMediaController = async (
         mimetype,
         userId,
       });
-  
+
       // Step 4: Return response with metadata and presigned URL
       res.status(200).json({
         message: 'File validated and metadata saved successfully',
@@ -193,8 +195,91 @@ export const uploadMediaController = async (
         res.status(error.status).json({ message: error.message });
         return;
       }
-  
+
       // Pass unexpected errors to global error handler
       next(error);
+    }
+  };
+
+
+
+
+  /**
+ * @swagger
+ * /api/media/{mediaId}:
+ *   get:
+ *     summary: Retrieve media metadata by ID
+ *     tags: [Media]
+ *     parameters:
+ *       - in: path
+ *         name: mediaId
+ *         required: true
+ *         description: ID of the media to retrieve metadata for
+ *         schema:
+ *           type: string
+ *           example: 64bfad3f4b5d2c001c8e4f2e
+ *     responses:
+ *       200:
+ *         description: Media metadata retrieved successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   description: Success message
+ *                   example: Media metadata retrieved successfully
+ *                 data:
+ *                   type: object
+ *                   description: Media metadata
+ *                   properties:
+ *                     filename:
+ *                       type: string
+ *                       example: example.pdf
+ *                     url:
+ *                       type: string
+ *                       description: Media URL
+ *                       example: /cdn/6738bb5c15c34c39f5383bb8
+ *                     type:
+ *                       type: string
+ *                       example: document
+ *                     mimetype:
+ *                       type: string
+ *                       example: application/pdf
+ *                     pages:
+ *                       type: number
+ *                       example: 10
+ *       404:
+ *         description: Media not found
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   description: Error message
+ *                   example: Media not found
+ */
+  //get Media by Id
+  export const getMediaMetadataByIdController = async (
+    req: Request, 
+    res: Response, 
+    next: NextFunction
+  ): Promise<void> => {
+    try {  
+      const mediaMetadata = await getMediaMetadataById(req.params.mediaId);
+  
+      if (!mediaMetadata) {
+        throw new MediaNotFoundError();
+      }
+  
+      res.status(200).json({
+        message: 'Media metadata retrieved successfully',
+        data: mediaMetadata, 
+      });
+    } catch (error) {
+      next(error); // Pass any errors to the global error handler
     }
   };

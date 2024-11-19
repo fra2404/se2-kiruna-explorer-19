@@ -1,5 +1,5 @@
 import Media from '../schemas/media.schema';
-import { IReturnPresignedUrl } from '@interfaces/media.return.interface';
+import { IReturnMedia, IReturnPresignedUrl } from '@interfaces/media.return.interface';
 import { Types } from 'mongoose';
 import { IMedia } from '@interfaces/media.interface';
 import { CustomError } from '@utils/customError';
@@ -81,7 +81,6 @@ export const updateMediaMetadata = async (mediaId: string, metadata: any): Promi
   if (metadata.pages != null) {
     updateFields.pages = metadata.pages;
   }
-
   updateFields.size = metadata.size;
 
   if (Object.keys(updateFields).length === 0) {
@@ -98,3 +97,23 @@ export const updateMediaMetadata = async (mediaId: string, metadata: any): Promi
     throw new MediaNotFoundError();
   }
 };
+
+
+export const getMediaMetadataById = async (mediaId: string): Promise<IReturnMedia | null> => {
+      const media = await Media.findById(mediaId);
+      
+      if (!media) {
+        throw new Error('Media not found');
+      }
+  
+      const mediaMetadata: IReturnMedia = {
+        filename: media.filename,
+        url: media.relativeUrl,  
+        type: media.type,
+        mimetype: media.mimetype,
+        pages: media.pages,  
+      };
+  
+      return mediaMetadata;
+  };
+

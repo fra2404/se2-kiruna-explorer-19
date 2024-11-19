@@ -23,7 +23,6 @@ import {
   deleteCoordinateById
 } from '../services/coordinate.service';
 import {
-  getTypeFromMimeType,
   uploadMediaService,
   updateMediaMetadata
 } from '@services/media.service';
@@ -59,7 +58,7 @@ import { CustomRequest } from '../interfaces/customRequest.interface';
 import { UserRoleEnum } from '../utils/enums/user-role.enum';
 import { DocTypeEnum } from '../utils/enums/doc-type.enum';
 import { CustomError } from '../utils/customError';
-import { BadConnectionError, DocNotFoundError, PositionError } from '@utils/errors';
+import { BadConnectionError, DocNotFoundError, PositionError, MediaNotFoundError } from '@utils/errors';
 
 jest.mock('../services/user.service'); //For suite n#1
 jest.mock('../services/document.service'); //For suite n#2
@@ -425,9 +424,7 @@ describe('Tests for document controllers', () => {
 
       expect(addingDocument).toHaveBeenCalledWith(req.body);
       expect(res.status).toHaveBeenCalledWith(201);
-      expect(res.json).toHaveBeenCalledWith({
-        document: mockNewDocument,
-      });
+      expect(res.json).toHaveBeenCalledWith(mockNewDocument);
     });
 
     //test 2
@@ -1162,4 +1159,183 @@ describe('Tests for coordinate controllers', () => {
 
 /* ******************************************* Suite n#4 - MEDIA ******************************************* */
 describe('Tests for media controllers', () => {
+  //Connetion objects mock
+  let req: Partial<Request>;
+  let res: Partial<Response>;
+  let next: NextFunction;
+
+  //uploadMediaController
+  describe("Tests for uploadMediaController", () => {
+    afterEach(() => {
+      jest.clearAllMocks();
+    });
+
+    //Connection mocking
+    beforeEach(() => {
+      req = {
+        body: {
+          filename: "example.jpg",
+          size: 1024,
+          mimetype: "image/jpeg",
+        },
+        user: {
+          id: "1",
+        }
+      } as unknown as Request;
+
+      res = {
+        status: jest.fn().mockReturnThis(),
+        json: jest.fn(),
+      } as unknown as Response;
+
+      next = jest.fn();
+    });
+
+    //test 1
+    test("Should upload the given metadata", async () => {
+      //Data mock
+      const mockMediaMetadata = {
+        url: 'https://cdn.example.com/presigned-url',
+      };
+
+      const mediaData = {
+        filename: "example.jpg",
+        size: 1024,
+        mimetype: "image/jpeg",
+        userId: "1",
+      };
+
+      //Support functions mocking
+      (uploadMediaService as jest.Mock).mockImplementation(async() => mockMediaMetadata);
+  
+      //Call of uploadMediaController
+      await uploadMediaController(req as Request, res as Response, next);
+  
+      expect(uploadMediaService).toHaveBeenCalledWith(mediaData);
+      expect(res.status).toHaveBeenCalledWith(200);
+      expect(res.json).toHaveBeenCalledWith({
+        message: 'File validated and metadata saved successfully',
+        data: { url: 'https://cdn.example.com/presigned-url' }
+      });
+    });
+
+    //test 2
+    test("Should throw an error if the user isn't authenticated", async () => {
+      //Data mock
+      req = {
+        body: req.body,
+        user: undefined
+      } as unknown as Request;
+
+      //Call of uploadMediaController
+      await uploadMediaController(req as CustomRequest, res as Response, next);
+
+      expect(res.status).toHaveBeenCalledWith(401);
+      expect(res.json).toHaveBeenCalledWith({ message: 'User not authenticated' });
+      expect(uploadMediaService).not.toHaveBeenCalled();
+    });
+
+    //test 3
+    test("Should throw an error if the connection fails", async () => {
+      //Data mock
+      const err = new Error('Service error');
+
+      //Support functions mocking
+      jest.spyOn(require('@services/media.service'), "uploadMediaService").mockRejectedValue(err);
+  
+      //Call of uploadMediaController
+      await uploadMediaController(req as CustomRequest, res as Response, next);
+  
+      expect(next).toHaveBeenCalledWith(err);
+      expect(res.status).not.toHaveBeenCalled();
+      expect(res.json).not.toHaveBeenCalled();
+    });
+  });//uploadMediaController
+  /* ************************************************** */
+
+  //UpdateMediaController
+  describe("Tests for UpdateMediaController", () => {
+    afterEach(() => {
+      jest.clearAllMocks();
+    });
+
+    //Connection mocking
+    beforeEach(() => {
+      req = {
+        body: {
+          mediaId: "1",
+          metadata: {
+            size: 1024,
+            pages: 10,
+          }
+        }
+      };
+  
+      res = {
+        status: jest.fn().mockReturnThis(),
+        json: jest.fn(),
+      } as unknown as Response;
+  
+      next = jest.fn();
+    });
+
+    //test 1
+    test("Should update the selected media metadata", async () => {
+      //Support functions mocking
+      (updateMediaMetadata as jest.Mock).mockImplementation(async() => undefined);
+  
+      //Call of UpdateMediaController
+      await UpdateMediaController(req as Request, res as Response, next);
+  
+      expect(updateMediaMetadata).toHaveBeenCalledWith("1", {
+        size: 1024,
+        pages: 10
+      });
+      expect(res.status).toHaveBeenCalledWith(200);
+      expect(res.json).toHaveBeenCalledWith({
+        message: 'Media metadata updated successfully',
+      });
+      expect(next).not.toHaveBeenCalled();
+    });
+
+    //test 2
+    test("Should throw MediaNotFoundError", async () => {
+      //Data mock
+      const err = new MediaNotFoundError();
+
+      //Support functions mocking
+      jest.spyOn(require('@services/media.service'), "updateMediaMetadata").mockRejectedValue(err);
+      
+      //Call of UpdateMediaController
+      await UpdateMediaController(req as Request, res as Response, next);
+  
+      expect(updateMediaMetadata).toHaveBeenCalledWith("1", {
+        size: 1024,
+        pages: 10
+      });
+      expect(res.status).toHaveBeenCalledWith(err.status);
+      expect(res.json).toHaveBeenCalledWith({ message: err.message });
+      expect(next).not.toHaveBeenCalled();
+    });
+
+    //test 3
+    test("Should throw an error if the connection fails", async () => {
+      //Data mock
+      const err = new Error();
+
+      //Support functions mocking
+      jest.spyOn(require('@services/media.service'), "updateMediaMetadata").mockRejectedValue(err);
+  
+      //Call of UpdateMediaController
+      await UpdateMediaController(req as Request, res as Response, next);
+  
+      expect(updateMediaMetadata).toHaveBeenCalledWith("1", {
+        size: 1024,
+        pages: 10,
+      });
+      expect(res.status).not.toHaveBeenCalled();
+      expect(res.json).not.toHaveBeenCalled();
+      expect(next).toHaveBeenCalledWith(err);
+    });
+  });//UpdateMediaController
 }); //END OF MEDIA CONTROLLERS

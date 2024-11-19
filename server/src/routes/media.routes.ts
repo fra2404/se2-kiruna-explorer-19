@@ -1,11 +1,13 @@
 import {
   uploadMediaController,
   UpdateMediaController,
+  getMediaMetadataByIdController,
 } from '@controllers/media.controllers';
 
 import {
   validateUploadedMedia,
-  validateUpdateMedia
+  validateUpdateMedia,
+  validateMediaId
 } from '@utils/validators/media.validator';
 import { handleValidationErrors } from '@middlewares/validation.middleware';
 
