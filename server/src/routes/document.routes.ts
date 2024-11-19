@@ -42,7 +42,6 @@ router.get(
 
 router.get(
   '/:id',
-  authenticateUser,
   validateDocumentId,
   getDocumentByIdController,
 ); // Get Document by ID
