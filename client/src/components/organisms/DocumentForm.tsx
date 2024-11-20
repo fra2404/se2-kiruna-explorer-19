@@ -245,6 +245,8 @@ const DocumentForm = ({
     return media_ids;
   }
 
+  console.log(selectedDocument?.media);
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     let coordId: string | undefined = undefined;
@@ -304,7 +306,7 @@ const DocumentForm = ({
         document: conn.relatedDocument,
         type: conn.type,
       })),
-      media: media_ids,
+      media: selectedDocument?.media ? [...selectedDocument.media.map((m) => m.id), ...media_ids] : media_ids,
     };
 
     try {
