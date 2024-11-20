@@ -3,7 +3,11 @@ import MediaDocument from '../schemas/media.schema';
 import { Coordinate } from '../schemas/coordinate.schema';
 import { IDocument, IDocumentFilters } from '@interfaces/document.interface';
 import { IDocumentResponse } from '@interfaces/document.return.interface';
-import { DocNotFoundError, MediaNotFoundError, PositionError } from '../utils/errors';
+import {
+  DocNotFoundError,
+  MediaNotFoundError,
+  PositionError,
+} from '../utils/errors';
 import { ICoordinate } from '@interfaces/coordinate.interface';
 import { getCoordinateById } from './coordinate.service';
 import { DocTypeEnum } from '@utils/enums/doc-type.enum';
@@ -36,18 +40,15 @@ export const addingDocument = async (
     }
   }
 
-
-
   //Check existence of media in DB
   if (documentData.media && documentData.media.length > 0) {
     for (const mediaId of documentData.media) {
-      const existingMedia = await MediaDocument.findById(mediaId); 
+      const existingMedia = await MediaDocument.findById(mediaId);
       if (!existingMedia) {
-        throw new MediaNotFoundError(); 
+        throw new MediaNotFoundError();
       }
     }
   }
-
 
   // Add new document
   const newDocument = new Document(documentData);
@@ -78,8 +79,8 @@ export const addingDocument = async (
   //Call method to fetch media metadata
   let media: IReturnMedia[] | null = null;
   if (newDocument.media && newDocument.media.length > 0) {
-        media = await fetchMedia(newDocument.media);
-   }
+    media = await fetchMedia(newDocument.media);
+  }
 
   const documentObject = newDocument.toObject();
   delete documentObject._id;
@@ -91,7 +92,7 @@ export const addingDocument = async (
     id: newDocument.id,
     ...documentObject,
     coordinates,
-    media, 
+    media,
   };
 
   return document;
@@ -112,13 +113,11 @@ export const getAllDocuments = async (): Promise<IDocumentResponse[]> => {
         coordinate = await getCoordinateById(coordinateId.toString());
       }
 
-
-  //Call method to fetch media metadata
-  let media: IReturnMedia[] | null = null;
-  if (document.media && document.media.length > 0) {
+      //Call method to fetch media metadata
+      let media: IReturnMedia[] | null = null;
+      if (document.media && document.media.length > 0) {
         media = await fetchMedia(document.media);
-   }
-
+      }
 
       const documentObject = document.toObject();
       delete documentObject._id;
@@ -131,7 +130,7 @@ export const getAllDocuments = async (): Promise<IDocumentResponse[]> => {
         id: document.id,
         ...documentObject,
         coordinates: coordinate || null,
-        media: media || null, 
+        media: media || null,
       };
     }),
   );
@@ -158,12 +157,11 @@ export const getDocumentById = async (
     coordinate = await getCoordinateById(coordinateId.toString());
   }
 
-
   //Call method to fetch media metadata
   let media: IReturnMedia[] | null = null;
   if (document.media && document.media.length > 0) {
-        media = await fetchMedia(document.media);
-   }
+    media = await fetchMedia(document.media);
+  }
 
   const documentObject = document.toObject();
   delete documentObject._id;
@@ -224,7 +222,10 @@ export const searchDocuments = async (
       filterQuery = { $and: filterConditions };
     }
   }
-  const query = { ...keywordQuery, ...filterQuery };
+  // const query = { ...keywordQuery, ...filterQuery };
+  const query = {
+    $and: [...keywordQuery.$and, ...(filterQuery.$and || [])],
+  };
 
   const documents = await Document.find(query);
   if (documents.length === 0) {
@@ -245,24 +246,21 @@ export const searchDocuments = async (
         coordinate = await getCoordinateById(coordinateId.toString());
       }
 
- //Call method to fetch media metadata
- let media: IReturnMedia[] | null = null;
- if (document.media && document.media.length > 0) {
-       media = await fetchMedia(document.media);
-  }
-
+      //Call method to fetch media metadata
+      let media: IReturnMedia[] | null = null;
+      if (document.media && document.media.length > 0) {
+        media = await fetchMedia(document.media);
+      }
 
       return {
         id: document.id,
         ...documentObject,
         coordinates: coordinate || null,
-        media: media || null, 
-      } as IDocumentResponse; 
+        media: media || null,
+      } as IDocumentResponse;
     }),
   );
 };
-
-
 
 // Update document
 export const updatingDocument = async (
@@ -287,14 +285,13 @@ export const updatingDocument = async (
     }
   }
 
-
   ////Added By Mina
   //Check existence of media in DB
   if (updateData.media && updateData.media.length > 0) {
     for (const mediaId of updateData.media) {
-      const existingMedia = await MediaDocument.findById(mediaId); 
+      const existingMedia = await MediaDocument.findById(mediaId);
       if (!existingMedia) {
-        throw new MediaNotFoundError(); 
+        throw new MediaNotFoundError();
       }
     }
 
@@ -305,10 +302,8 @@ export const updatingDocument = async (
         updatedDocument.media.push(mediaId);
       }
     }
-
   }
   //******************
-
 
   // Update connections
   if (updateData.connections && updateData.connections.length > 0) {
@@ -359,13 +354,11 @@ export const updatingDocument = async (
     );
   }
 
- //Call method to fetch media metadata
- let media: IReturnMedia[] | null = null;
- if (updatedDocument.media && updatedDocument.media.length > 0) {
-       media = await fetchMedia(updatedDocument.media);
+  //Call method to fetch media metadata
+  let media: IReturnMedia[] | null = null;
+  if (updatedDocument.media && updatedDocument.media.length > 0) {
+    media = await fetchMedia(updatedDocument.media);
   }
-
-  
 
   const documentObject = updatedDocument.toObject();
   delete documentObject._id;
@@ -377,7 +370,7 @@ export const updatingDocument = async (
     id: updatedDocument.id,
     ...documentObject,
     coordinates,
-    media :  media || null,   //Added By Mina
+    media: media || null, //Added By Mina
   };
 
   return document;
@@ -388,8 +381,6 @@ export const deleteDocumentByName = async (name: string): Promise<string> => {
   await Document.deleteMany({ title: name });
   return 'Documents deleted successfully';
 };
-
-
 
 export const getDocumentTypes = () => {
   const docTypes = Object.entries(DocTypeEnum).map(([key, value]) => ({
@@ -431,20 +422,23 @@ export const getDocumentByType = async (
         coordinate = await getCoordinateById(coordinateId.toString());
       }
 
+      //Added By Mina
+      // Fetch the media metadata if media exists
+      let media: IReturnMedia[] | null = null;
+      if (document.media && document.media.length > 0) {
+        const mediaResults = await Promise.all(
+          document.media.map((mediaId) =>
+            getMediaMetadataById(mediaId.toString()),
+          ),
+        );
 
-    //Added By Mina
-    // Fetch the media metadata if media exists
-    let media: IReturnMedia[] | null = null;
-    if (document.media && document.media.length > 0) {
-      const mediaResults = await Promise.all(
-        document.media.map((mediaId) => getMediaMetadataById(mediaId.toString()))
-      );
-  
-      // Filter out null values
-      media = mediaResults.filter((metadata): metadata is IReturnMedia => metadata !== null);
-    }
+        // Filter out null values
+        media = mediaResults.filter(
+          (metadata): metadata is IReturnMedia => metadata !== null,
+        );
+      }
 
-  //*****************
+      //*****************
       return {
         id: document.id,
         ...documentObject,
@@ -455,12 +449,16 @@ export const getDocumentByType = async (
   );
 };
 
-export const fetchMedia = async (mediaIds: ObjectId[]): Promise<IReturnMedia[] | null> => {
+export const fetchMedia = async (
+  mediaIds: ObjectId[],
+): Promise<IReturnMedia[] | null> => {
   if (mediaIds.length > 0) {
     const mediaResults = await Promise.all(
-      mediaIds.map((mediaId) => getMediaMetadataById(mediaId.toString()))
+      mediaIds.map((mediaId) => getMediaMetadataById(mediaId.toString())),
     );
-    return mediaResults.filter((metadata): metadata is IReturnMedia => metadata !== null);
+    return mediaResults.filter(
+      (metadata): metadata is IReturnMedia => metadata !== null,
+    );
   }
   return null;
 };
