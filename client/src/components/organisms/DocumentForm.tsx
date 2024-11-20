@@ -292,7 +292,6 @@ const DocumentForm = ({
 
     const documentData = {
       id: selectedDocument?.id || '',
-      id: selectedDocument?.id || '',
       title,
       stakeholders: stakeholders || '',
       scale: scale || '',
@@ -301,9 +300,7 @@ const DocumentForm = ({
       summary: description,
       date: issuanceDate,
       coordinates: coordId || undefined,
-      coordinates: coordId || undefined,
       connections: connections.map((conn) => ({
-        document: conn.relatedDocument,
         document: conn.relatedDocument,
         type: conn.type,
       })),

@@ -183,38 +183,6 @@ async function getCoordinates() {
     .then((response) => response.json());
 }
 
-async function editDocument(documentData: {
-  id: string;
-  title: string;
-  stakeholders: string;
-  scale: string;
-  type: string;
-  language: string;
-  summary: string;
-  date: string;
-  coordinates?: string;
-  connections: { document: string; type: string }[];
-  media: string[];
-}): Promise<{ success: boolean; document?: IDocument }> {
-  console.log(documentData);
-  const response = await fetch(`${SERVER_URL}/documents/${documentData.id}`, {
-    method: 'PUT',
-    credentials: 'include',
-    headers: {
-      'Content-Type': 'application/json',
-    },
-    body: JSON.stringify(documentData),
-  });
-
-  if (!response.ok) {
-    return { success: false };
-  }
-
-  const document = await response.json();
-  console.log(document);
-  return { success: true, document };
-}
-
 async function createCoordinate(coord: ICoordinate): Promise<{
   success: boolean;
   coordinate?: { message: string; coordinate: ICoordinate };
