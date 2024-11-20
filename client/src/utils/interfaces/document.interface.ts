@@ -10,7 +10,7 @@ export interface IDocument {
   summary: string;
   connections?: IConnection[];
   language?: string;
-  media?: [ObjectId];
+  media?: [{url: string, filename: string, type: string, mimetype: string}];
   coordinates?: ICoordinate | null;
 }
 
