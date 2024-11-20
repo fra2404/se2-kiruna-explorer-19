@@ -222,9 +222,13 @@ export const searchDocuments = async (
       filterQuery = { $and: filterConditions };
     }
   }
-  // const query = { ...keywordQuery, ...filterQuery };
+
+  // Combine keywordQuery and filterQuery using $and
   const query = {
-    $and: [...keywordQuery.$and, ...(filterQuery.$and || [])],
+    $and: [
+      ...(keywordQuery.$and || []),
+      ...(filterQuery.$and || []),
+    ],
   };
 
   const documents = await Document.find(query);
