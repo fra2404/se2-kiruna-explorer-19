@@ -2,6 +2,7 @@ import { ICoordinate, IDocument } from './utils/interfaces/document.interface';
 import { IUser } from './utils/interfaces/user.interface';
 
 const SERVER_URL = 'http://localhost:5001/api'; // endpoint of the server
+const CDN_URL = 'http://localhost:3004'; // endpoint of the CDN
 
 async function login(
   email: string,
@@ -153,6 +154,38 @@ async function getCoordinates() {
     .then((response) => response.json());
 }
 
+async function editDocument(documentData: {
+  id: string;
+  title: string;
+  stakeholders: string;
+  scale: string;
+  type: string;
+  language: string;
+  summary: string;
+  date: string;
+  coordinates?: string;
+  connections: { document: string; type: string }[];
+  media: string[];
+}): Promise<{ success: boolean; document?: IDocument }> {
+  console.log(documentData);
+  const response = await fetch(`${SERVER_URL}/documents/${documentData.id}`, {
+    method: 'PUT',
+    credentials: 'include',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify(documentData),
+  });
+
+  if (!response.ok) {
+    return { success: false };
+  }
+
+  const document = await response.json();
+  console.log(document);
+  return { success: true, document };
+}
+
 async function createCoordinate(coord: ICoordinate): Promise<{
   success: boolean;
   coordinate?: { message: string; coordinate: ICoordinate };
@@ -234,6 +267,7 @@ async function searchDocuments(
       : `${SERVER_URL}/documents/search?keywords=[${searchQuery.split(' ').map(word => `"${encodeURIComponent(word)}"`).join(',')}]`;
 
   console.log('Search URL:', searchURL);
+  console.log('Filters sent in body:', filters);
   
   const response = await fetch(searchURL, {
     method: 'POST',
@@ -241,12 +275,48 @@ async function searchDocuments(
     headers: {
       'Content-Type': 'application/json',
     },
-    body: JSON.stringify({ filters }),
+    body: JSON.stringify(filters),
   });
   if (!response.ok) throw new Error('Failed to fetch documents');
 
   const documents = await response.json();
   return documents;
+}
+
+async function addResource(file: File) {
+  return await fetch(`${SERVER_URL}/media/upload`, {
+    method: 'POST',
+    credentials: 'include',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({
+      filename: file.name,
+      size: file.size,
+      mimetype: file.type,
+    }),
+  })
+    .then(handleInvalidResponse)
+    .then(async (response) => {
+      if (response.status === 200) {
+        const data = await response.json();
+        const body = new FormData();
+        body.append('file', file);
+        // Resource posted to the CDN
+        // use the token returned by the backend. It is contained in the field `data` of the previous response.
+        return await fetch(`${data.data}`, {
+          method: 'POST',
+          credentials: 'include',
+          body: body, // Do not set Content-Type header, let the browser set it
+        })
+          .then(handleInvalidResponse)
+          .then(async (response) => {
+            const data = await response.json();
+            console.log('ID is ', data.id);
+            return data.id;
+          });
+      }
+    });
 }
 
 const API = {
@@ -266,5 +336,6 @@ export {
   getDocuments,
   createCoordinate,
   searchDocuments,
+  addResource,
 };
 export default API;

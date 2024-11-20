@@ -18,7 +18,7 @@ import {
   TechnicalDocIcon,
 } from '../../assets/icons';
 
-import { createCoordinate, createDocument } from '../../API';
+import { createCoordinate, createDocument, editDocument, addResource } from '../../API';
 import Toast from './Toast';
 import Step1 from '../molecules/steps/Step1';
 import Step2 from '../molecules/steps/Step2';
@@ -221,12 +221,25 @@ const DocumentForm = ({
     }
   };
 
+  const handleSaveResource = async () => {
+    const media_ids: string[] = [];
+    // Call here the API to save the media file for each file:
+    for (let i = 0; i < files.length; i++) {
+      const token = await addResource(files[i]);
+      media_ids.push(token);
+    }
+    return media_ids;
+  }
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     let coordId: string | undefined = undefined;
 
+    // Call here the API to save the media files
+    const media_ids = await handleSaveResource();
+
     //If selectedCoordId is undefined, this means that we are adding the document into a new point. We need to save this point in the DB
-    if (!selectedCoordId && position) {
+    if (!selectedCoordId && position && connectToMap) {
       const coordData: ICoordinate = {
         id: '',
         name: coordName,
@@ -257,11 +270,14 @@ const DocumentForm = ({
         showToastMessage('Error creating coordinate:' + error, 'error');
       }
     } else {
-      coordId = selectedCoordId;
-      console.log(coordId);
+      if (connectToMap)
+        coordId = selectedCoordId;
+      else
+        coordId = undefined;
     }
 
     const documentData = {
+      id: selectedDocument?.id || '',
       title,
       stakeholders: stakeholders || '',
       scale: scale || '',
@@ -269,29 +285,42 @@ const DocumentForm = ({
       language,
       summary: description,
       date: issuanceDate,
-      coordinates: coordId || '',
+      coordinates: coordId || undefined,
       connections: connections.map((conn) => ({
-        document: conn.relatedDocument.value,
+        document: conn.relatedDocument,
         type: conn.type,
       })),
+      media: media_ids,
     };
-    console.log('Document Data:', documentData);
 
     try {
-      const response = await createDocument(documentData);
-      console.log(response);
+      let response;
+      if (!selectedDocument) {
+        response = await createDocument(documentData);
+      } else {
+        response = await editDocument(documentData);
+      }
       if (response.success) {
-        console.log('Document created successfully:', response.document);
-        showToastMessage('Document created successfully', 'success');
+        showToastMessage('Document saved successfully', 'success');
 
-        // setIsDocumentSaved(true);
         setCurrentStep(6);
-        if (response.document) setDocuments(documents.concat(response.document.document));
+        if (response.document) {
+          const responseDocument = response.document; //Typescript is not able to detect that the value response.document will still be defined in the "else" branch. So, we have to put it in a variable
+          if (!selectedDocument) {
+            setDocuments(documents.concat(responseDocument));
+          } else {
+            setDocuments(
+              documents.map((doc: IDocument) => {
+                return doc.id == selectedDocument.id ? responseDocument : doc;
+              }),
+            );
+          }
+        }
       } else {
         console.log('Failed to create document');
         showToastMessage('Failed to create document', 'error');
       }
-    }catch (error) {
+    } catch (error) {
       console.error('Error creating document:', error);
       showToastMessage('Error creating document:' + error, 'error');
     }

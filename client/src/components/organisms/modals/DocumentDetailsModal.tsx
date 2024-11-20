@@ -2,7 +2,7 @@ import { DocumentIcon } from '../../molecules/documentsItems/DocumentIcon';
 
 const DocumentDetailsModal = ( {document} : any ) => {
 
-    console.log(document);
+    // console.log(document);
 
     const matchType = (type: string) => {
         switch (type) {
