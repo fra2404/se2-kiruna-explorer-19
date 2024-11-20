@@ -1,5 +1,8 @@
 import React from 'react';
 import Modal from 'react-modal';
+import { useAuth } from '../../context/AuthContext';
+import { UserRoleEnum } from '../../utils/interfaces/user.interface';
+
 
 interface DropdownModalProps {
   isOpen: boolean;
@@ -47,6 +50,8 @@ const DropdownModal: React.FC<DropdownModalProps> = ({
     onRequestClose();
   };
 
+  const { isLoggedIn, user } = useAuth();
+
   return (
     <Modal
       style={dropdownModalStyles}
@@ -62,12 +67,16 @@ const DropdownModal: React.FC<DropdownModalProps> = ({
           Home
         </div>
 
-        <div
-          onClick={() => setManageCoordsModalOpen(true)}
-          style={{ padding: '10px', cursor: 'pointer' }}
-        >
-          Manage points&areas
-        </div>
+        {
+          (isLoggedIn && user && user.role === UserRoleEnum.Uplanner) && (
+            <div
+              onClick={() => setManageCoordsModalOpen(true)}
+              style={{ padding: '10px', cursor: 'pointer' }}
+            >
+              Manage points&areas
+            </div>
+          )
+        }
 
         <div
           onClick={handleLogoutClick}
