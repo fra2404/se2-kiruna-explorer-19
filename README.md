@@ -35,7 +35,7 @@ We’ve made deployment incredibly simple using a **Docker Compose file**. This 
    👉 [Install Docker Compose](https://docs.docker.com/compose/install/)
 
 2. **Download the `docker-compose.yml` File**:  
-   Save the provided `docker-compose.yml` file to a directory on your machine.
+   Save the provided [docker-compose.yml](./docker-compose.yml) file to a directory on your machine.
 
 3. **Run Docker Compose**:  
    Launch all services with a single command:
@@ -46,7 +46,6 @@ We’ve made deployment incredibly simple using a **Docker Compose file**. This 
    Open your browser and navigate to **[localhost:5173](http://localhost:5173)** to explore Kiruna.
 
 ---
-
 
 ## 👤 Adding New Users
 
