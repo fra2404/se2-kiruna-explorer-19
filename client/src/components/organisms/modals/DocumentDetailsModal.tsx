@@ -60,8 +60,14 @@ const DocumentDetailsModal: React.FC<DocumentDetailsModalProps> = ({
         { label: "Connections", content: document.connections?.length.toString() },
         { label: "Language", content: document.language },
         { label: "Coordinates", content: document.coordinates?.name },
-        { label: "Original Resources", content: document.media?.map((m) => {
-                return <a href={CDN_URL + m.url} target='blank' key={m.url}>{m.filename}</a>
+        { label: "Original Resources", content: document.media?.map((m, i) => {
+                return (
+                    <span>
+                        <a href={CDN_URL + m.url} target='blank' key={m.url}>{m.filename}</a>
+                        {document.media ? (i != document.media.length-1 ? " - " : "") : ""}
+                        {/* The above check on document.media is always true, but typescript does not know that and returns an error without that check */}
+                    </span>
+                )
             })
         }
     ]
