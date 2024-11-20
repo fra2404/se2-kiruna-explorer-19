@@ -7,122 +7,137 @@ import Modal from 'react-modal';
 import DocumentForm from '../DocumentForm';
 import { IDocument } from '../../../utils/interfaces/document.interface';
 import { useState } from 'react';
+import { CDN_URL } from '../../../utils/constants';
 
 interface DocumentDetailsModalProps {
-    document: IDocument;
-    coordinates: any;
-    setCoordinates: (coordinates: any) => void;
-    allDocuments: IDocument[];
-    setDocuments: (documents: IDocument[]) => void;
+  document: IDocument;
+  coordinates: any;
+  setCoordinates: (coordinates: any) => void;
+  allDocuments: IDocument[];
+  setDocuments: (documents: IDocument[]) => void;
 }
 
 const DocumentDetailsModal: React.FC<DocumentDetailsModalProps> = ({
-    document,
-    coordinates,
-    setCoordinates,
-    allDocuments,
-    setDocuments
+  document,
+  coordinates,
+  setCoordinates,
+  allDocuments,
+  setDocuments,
 }) => {
-    const CDN_URL = 'http://localhost:3004'; // endpoint of the CDN
+  const { isLoggedIn, user } = useAuth();
+  const [modalOpen, setModalOpen] = useState(false);
 
-    const { isLoggedIn, user } = useAuth();
-    const [modalOpen, setModalOpen] = useState(false);
-
-    const matchType = (type: string) => {
-        switch (type) {
-            case "AGREEMENT":
-                return "Agreement";
-            case "CONFLICT":
-                return "Conflict";
-            case "CONSULTATION":
-                return "Consultation";
-            case "DESIGN_DOC":
-                return "Design Document";
-            case "INFORMATIVE_DOC":
-                return "Informative Document";
-            case "MATERIAL_EFFECTS":
-                return "Material Effects";
-            case "PRESCRIPTIVE_DOC":
-                return "Prescriptive Document";
-            case "TECHNICAL_DOC":
-                return "Technical Document";
-            default: 
-                return "Unknown";
-        }
+  const matchType = (type: string) => {
+    switch (type) {
+      case 'AGREEMENT':
+        return 'Agreement';
+      case 'CONFLICT':
+        return 'Conflict';
+      case 'CONSULTATION':
+        return 'Consultation';
+      case 'DESIGN_DOC':
+        return 'Design Document';
+      case 'INFORMATIVE_DOC':
+        return 'Informative Document';
+      case 'MATERIAL_EFFECTS':
+        return 'Material Effects';
+      case 'PRESCRIPTIVE_DOC':
+        return 'Prescriptive Document';
+      case 'TECHNICAL_DOC':
+        return 'Technical Document';
+      default:
+        return 'Unknown';
     }
+  };
 
-    const list = [
-        { label: "Title", content: document.title },
-        { label: "Stakeholders", content: document.stakeholders },
-        { label: "Scale", content: document.scale },
-        { label: "Issuance Date", content: document.date },
-        { label: "Type", content: matchType(document.type) },
-        { label: "Connections", content: document.connections?.length.toString() },
-        { label: "Language", content: document.language },
-        { label: "Coordinates", content: document.coordinates?.name },
-        { label: "Original Resources", content: document.media?.map((m, i) => {
-                return (
-                    <span key={m.id}>
-                        <a href={CDN_URL + m.url} target='blank'>{m.filename}</a>
-                        {document.media ? (i != document.media.length-1 ? " - " : "") : ""}
-                        {/* The above check on document.media is always true, but typescript does not know that and returns an error without that check */}
-                    </span>
-                )
-            })
-        }
-    ]
-    
-    return (
-        <>
-            <div className="w-full p-8 grid grid-cols-12 text-sm">
-                {/* Icon container */}
-                <div className="col-span-2 px-2">
-                    <DocumentIcon type={document.type} stakeholders={document.stakeholders} />
-                </div>
+  const list = [
+    { label: 'Title', content: document.title },
+    { label: 'Stakeholders', content: document.stakeholders },
+    { label: 'Scale', content: document.scale },
+    { label: 'Issuance Date', content: document.date },
+    { label: 'Type', content: matchType(document.type) },
+    { label: 'Connections', content: document.connections?.length.toString() },
+    { label: 'Language', content: document.language },
+    { label: 'Coordinates', content: document.coordinates?.name },
+    {
+      label: 'Original Resources',
+      content: document.media?.map((m, i) => {
+        return (
+          <span key={m.id}>
+            <a href={CDN_URL + m.url} target="blank">
+              {m.filename}
+            </a>
+            {document.media
+              ? i != document.media.length - 1
+                ? ' - '
+                : ''
+              : ''}
+            {/* The above check on document.media is always true, but typescript does not know that and returns an error without that check */}
+          </span>
+        );
+      }),
+    },
+  ];
 
-                {/* Middle section */}
-                <div className="col-start-3 col-span-5 border-r border-l px-2 overflow-x-hidden">
-                    {list.map((item, index) => (
-                        <div key={index}>{item.label}: <span className="font-bold">{item.content}</span></div>
-                    ))}
-                </div>
+  return (
+    <>
+      <div className="w-full p-8 grid grid-cols-12 text-sm">
+        {/* Icon container */}
+        <div className="col-span-2 px-2">
+          <DocumentIcon
+            type={document.type}
+            stakeholders={document.stakeholders}
+          />
+        </div>
 
-                {/* Description / Summary container */}
-                <div className="col-start-8 col-span-5 px-2">
-                    <h1>Description:</h1>
-                    <p>{document.summary}</p>
-                </div>
+        {/* Middle section */}
+        <div className="col-start-3 col-span-5 border-r border-l px-2 overflow-x-hidden">
+          {list.map((item, index) => (
+            <div key={index}>
+              {item.label}: <span className="font-bold">{item.content}</span>
             </div>
+          ))}
+        </div>
 
-            {
-                /* Button to edit the document */
-                (isLoggedIn && user && user.role === UserRoleEnum.Uplanner) &&
-                <ButtonRounded
-                    text="Edit"
-                    variant="filled" 
-                    className="bg-black text-white text-base px-4 py-2"
-                    onClick={() => {setModalOpen(true)}}
-                />
-            }
+        {/* Description / Summary container */}
+        <div className="col-start-8 col-span-5 px-2">
+          <h1>Description:</h1>
+          <p>{document.summary}</p>
+        </div>
+      </div>
 
-            <Modal
-                style={modalStyles}
-                isOpen={modalOpen}
-                onRequestClose={() => setModalOpen(false)}
-            >
-                <DocumentForm
-                    selectedCoordIdProp={document.coordinates?._id}
-                    coordinates={coordinates}
-                    setCoordinates={setCoordinates}
-                    documents={allDocuments}
-                    setDocuments={setDocuments}
-                    modalOpen={modalOpen}
-                    setModalOpen={setModalOpen}
-                    selectedDocument={document}
-                />
-            </Modal>
-        </>
-    );
+      {
+        /* Button to edit the document */
+        isLoggedIn && user && user.role === UserRoleEnum.Uplanner && (
+          <ButtonRounded
+            text="Edit"
+            variant="filled"
+            className="bg-black text-white text-base px-4 py-2"
+            onClick={() => {
+              setModalOpen(true);
+            }}
+          />
+        )
+      }
+
+      <Modal
+        style={modalStyles}
+        isOpen={modalOpen}
+        onRequestClose={() => setModalOpen(false)}
+      >
+        <DocumentForm
+          selectedCoordIdProp={document.coordinates?._id}
+          coordinates={coordinates}
+          setCoordinates={setCoordinates}
+          documents={allDocuments}
+          setDocuments={setDocuments}
+          modalOpen={modalOpen}
+          setModalOpen={setModalOpen}
+          selectedDocument={document}
+        />
+      </Modal>
+    </>
+  );
 };
 
 export default DocumentDetailsModal;
