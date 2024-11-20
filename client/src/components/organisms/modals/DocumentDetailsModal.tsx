@@ -23,8 +23,7 @@ const DocumentDetailsModal: React.FC<DocumentDetailsModalProps> = ({
     allDocuments,
     setDocuments
 }) => {
-
-    // console.log(document);
+    const CDN_URL = 'http://localhost:3004'; // endpoint of the CDN
 
     const { isLoggedIn, user } = useAuth();
     const [modalOpen, setModalOpen] = useState(false);
@@ -60,7 +59,11 @@ const DocumentDetailsModal: React.FC<DocumentDetailsModalProps> = ({
         { label: "Type", content: matchType(document.type) },
         { label: "Connections", content: document.connections?.length.toString() },
         { label: "Language", content: document.language },
-        { label: "Coordinates", content: document.coordinates?.coordinates.toString() }
+        { label: "Coordinates", content: document.coordinates?.coordinates.join(", ") },
+        { label: "Original Resources", content: document.media?.map((m) => {
+                return <a href={CDN_URL + m.url} target='blank' key={m.url}>{m.filename}</a>
+            })
+        }
     ]
     
     return (
@@ -72,7 +75,7 @@ const DocumentDetailsModal: React.FC<DocumentDetailsModalProps> = ({
                 </div>
 
                 {/* Middle section */}
-                <div className="col-start-3 col-span-5 border-r border-l px-2">
+                <div className="col-start-3 col-span-5 border-r border-l px-2 overflow-x-hidden">
                     {list.map((item, index) => (
                         <div key={index}>{item.label}: <span className="font-bold">{item.content}</span></div>
                     ))}
