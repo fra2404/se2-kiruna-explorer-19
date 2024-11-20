@@ -41,9 +41,9 @@ export const addingDocument = async (
   //Check existence of media in DB
   if (documentData.media && documentData.media.length > 0) {
     for (const mediaId of documentData.media) {
-      const existingMedia = await MediaDocument.findById(mediaId); 
+      const existingMedia = await MediaDocument.findById(mediaId);
       if (!existingMedia) {
-        throw new MediaNotFoundError(); 
+        throw new MediaNotFoundError();
       }
     }
   }
@@ -78,8 +78,8 @@ export const addingDocument = async (
   //Call method to fetch media metadata
   let media: IReturnMedia[] | null = null;
   if (newDocument.media && newDocument.media.length > 0) {
-        media = await fetchMedia(newDocument.media);
-   }
+    media = await fetchMedia(newDocument.media);
+  }
 
   const documentObject = newDocument.toObject();
   delete documentObject._id;
@@ -91,7 +91,7 @@ export const addingDocument = async (
     id: newDocument.id,
     ...documentObject,
     coordinates,
-    media, 
+    media,
   };
 
   return document;
@@ -113,11 +113,11 @@ export const getAllDocuments = async (): Promise<IDocumentResponse[]> => {
       }
 
 
-  //Call method to fetch media metadata
-  let media: IReturnMedia[] | null = null;
-  if (document.media && document.media.length > 0) {
+      //Call method to fetch media metadata
+      let media: IReturnMedia[] | null = null;
+      if (document.media && document.media.length > 0) {
         media = await fetchMedia(document.media);
-   }
+      }
 
 
       const documentObject = document.toObject();
@@ -131,7 +131,7 @@ export const getAllDocuments = async (): Promise<IDocumentResponse[]> => {
         id: document.id,
         ...documentObject,
         coordinates: coordinate || null,
-        media: media || null, 
+        media: media || null,
       };
     }),
   );
@@ -162,8 +162,8 @@ export const getDocumentById = async (
   //Call method to fetch media metadata
   let media: IReturnMedia[] | null = null;
   if (document.media && document.media.length > 0) {
-        media = await fetchMedia(document.media);
-   }
+    media = await fetchMedia(document.media);
+  }
 
   const documentObject = document.toObject();
   delete documentObject._id;
@@ -224,7 +224,14 @@ export const searchDocuments = async (
       filterQuery = { $and: filterConditions };
     }
   }
-  const query = { ...keywordQuery, ...filterQuery };
+
+  // Combine keywordQuery and filterQuery using $and
+  const query = {
+    $and: [
+      ...(keywordQuery.$and || []),
+      ...(filterQuery.$and || []),
+    ],
+  };
 
   const documents = await Document.find(query);
   if (documents.length === 0) {
@@ -245,19 +252,18 @@ export const searchDocuments = async (
         coordinate = await getCoordinateById(coordinateId.toString());
       }
 
- //Call method to fetch media metadata
- let media: IReturnMedia[] | null = null;
- if (document.media && document.media.length > 0) {
-       media = await fetchMedia(document.media);
-  }
-
+      // Call method to fetch media metadata
+      let media: IReturnMedia[] | null = null;
+      if (document.media && document.media.length > 0) {
+        media = await fetchMedia(document.media);
+      }
 
       return {
         id: document.id,
         ...documentObject,
         coordinates: coordinate || null,
-        media: media || null, 
-      } as IDocumentResponse; 
+        media: media || null,
+      } as IDocumentResponse;
     }),
   );
 };
@@ -292,9 +298,9 @@ export const updatingDocument = async (
   //Check existence of media in DB
   if (updateData.media && updateData.media.length > 0) {
     for (const mediaId of updateData.media) {
-      const existingMedia = await MediaDocument.findById(mediaId); 
+      const existingMedia = await MediaDocument.findById(mediaId);
       if (!existingMedia) {
-        throw new MediaNotFoundError(); 
+        throw new MediaNotFoundError();
       }
     }
 
@@ -359,13 +365,13 @@ export const updatingDocument = async (
     );
   }
 
- //Call method to fetch media metadata
- let media: IReturnMedia[] | null = null;
- if (updatedDocument.media && updatedDocument.media.length > 0) {
-       media = await fetchMedia(updatedDocument.media);
+  //Call method to fetch media metadata
+  let media: IReturnMedia[] | null = null;
+  if (updatedDocument.media && updatedDocument.media.length > 0) {
+    media = await fetchMedia(updatedDocument.media);
   }
 
-  
+
 
   const documentObject = updatedDocument.toObject();
   delete documentObject._id;
@@ -377,7 +383,7 @@ export const updatingDocument = async (
     id: updatedDocument.id,
     ...documentObject,
     coordinates,
-    media :  media || null,   //Added By Mina
+    media: media || null,   //Added By Mina
   };
 
   return document;
@@ -432,19 +438,19 @@ export const getDocumentByType = async (
       }
 
 
-    //Added By Mina
-    // Fetch the media metadata if media exists
-    let media: IReturnMedia[] | null = null;
-    if (document.media && document.media.length > 0) {
-      const mediaResults = await Promise.all(
-        document.media.map((mediaId) => getMediaMetadataById(mediaId.toString()))
-      );
-  
-      // Filter out null values
-      media = mediaResults.filter((metadata): metadata is IReturnMedia => metadata !== null);
-    }
+      //Added By Mina
+      // Fetch the media metadata if media exists
+      let media: IReturnMedia[] | null = null;
+      if (document.media && document.media.length > 0) {
+        const mediaResults = await Promise.all(
+          document.media.map((mediaId) => getMediaMetadataById(mediaId.toString()))
+        );
 
-  //*****************
+        // Filter out null values
+        media = mediaResults.filter((metadata): metadata is IReturnMedia => metadata !== null);
+      }
+
+      //*****************
       return {
         id: document.id,
         ...documentObject,
