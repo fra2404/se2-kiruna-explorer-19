@@ -107,6 +107,7 @@ export const getMediaMetadataById = async (mediaId: string): Promise<IReturnMedi
       }
   
       const mediaMetadata: IReturnMedia = {
+        id: media.id,
         filename: media.filename,
         url: media.relativeUrl,  
         type: media.type,

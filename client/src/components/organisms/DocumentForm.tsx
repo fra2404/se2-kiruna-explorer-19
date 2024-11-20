@@ -17,7 +17,12 @@ import {
   TechnicalDocIcon,
 } from '../../assets/icons';
 
-import { createCoordinate, createDocument, editDocument, addResource } from '../../API';
+import {
+  createCoordinate,
+  createDocument,
+  editDocument,
+  addResource,
+} from '../../API';
 import Toast from './Toast';
 import Step1 from '../molecules/steps/Step1';
 import Step2 from '../molecules/steps/Step2';
@@ -60,7 +65,6 @@ const DocumentForm = ({
   showCoordNamePopup = false,
   selectedDocument,
 }: DocumentFormProps) => {
-
   const [currentStep, setCurrentStep] = useState(1);
   const [connectToMap, setConnectToMap] = useState(
     !!positionProp || !!selectedCoordIdProp,
@@ -243,7 +247,7 @@ const DocumentForm = ({
       media_ids.push(token);
     }
     return media_ids;
-  }
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -284,10 +288,8 @@ const DocumentForm = ({
         showToastMessage('Error creating coordinate:' + error, 'error');
       }
     } else {
-      if (connectToMap)
-        coordId = selectedCoordId;
-      else
-        coordId = undefined;
+      if (connectToMap) coordId = selectedCoordId;
+      else coordId = undefined;
     }
 
     const documentData = {
@@ -304,7 +306,9 @@ const DocumentForm = ({
         document: conn.relatedDocument,
         type: conn.type,
       })),
-      media: media_ids,
+      media: selectedDocument?.media
+        ? [...selectedDocument.media.map((m) => m.id), ...media_ids]
+        : media_ids,
     };
 
     try {
@@ -364,6 +368,8 @@ const DocumentForm = ({
     return null;
   }
 
+  const existingFiles = selectedDocument?.media || [];
+
   const renderStep = () => {
     switch (currentStep) {
       case 1:
@@ -392,7 +398,13 @@ const DocumentForm = ({
           />
         );
       case 3:
-        return <Step3 files={files} setFiles={setFiles} />;
+        return (
+          <Step3
+            files={files}
+            setFiles={setFiles}
+            existingFiles={existingFiles}
+          />
+        );
       case 4:
         return (
           <Step4
