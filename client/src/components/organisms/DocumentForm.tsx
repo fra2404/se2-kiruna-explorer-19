@@ -249,8 +249,6 @@ const DocumentForm = ({
     return media_ids;
   };
 
-  console.log(selectedDocument?.media);
-
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     let coordId: string | undefined = undefined;
