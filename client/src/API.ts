@@ -2,6 +2,7 @@ import { ICoordinate, IDocument } from './utils/interfaces/document.interface';
 import { IUser } from './utils/interfaces/user.interface';
 
 const SERVER_URL = 'http://localhost:5001/api'; // endpoint of the server
+const CDN_URL = 'http://localhost:3004'; // endpoint of the CDN
 
 async function login(
   email: string,
@@ -105,6 +106,7 @@ async function createDocument(documentData: {
   date: string;
   coordinates?: string;
   connections: { document: string; type: string }[];
+  media: string[];
 }): Promise<{ success: boolean; document?: IDocument }> {
   const response = await fetch(`${SERVER_URL}/documents/create`, {
     method: 'POST',
@@ -154,6 +156,7 @@ async function editDocument(documentData: {
   date: string;
   coordinates?: string;
   connections: { document: string; type: string }[];
+  media: string[];
 }): Promise<{ success: boolean; document?: IDocument }> {
   console.log(documentData);
   const response = await fetch(`${SERVER_URL}/documents/${documentData.id}`, {
@@ -163,7 +166,7 @@ async function editDocument(documentData: {
       'Content-Type': 'application/json',
     },
     body: JSON.stringify(documentData),
-  })
+  });
 
   if (!response.ok) {
     return { success: false };
@@ -182,7 +185,10 @@ async function getCoordinates() {
     .then((response) => response.json());
 }
 
-async function createCoordinate(coord: ICoordinate): Promise<{ success: boolean; coordinate?: { message: string, coordinate: ICoordinate } }> {
+async function createCoordinate(coord: ICoordinate): Promise<{
+  success: boolean;
+  coordinate?: { message: string; coordinate: ICoordinate };
+}> {
   const response = await fetch(`${SERVER_URL}/coordinates/create`, {
     method: 'POST',
     credentials: 'include',
@@ -190,32 +196,36 @@ async function createCoordinate(coord: ICoordinate): Promise<{ success: boolean;
       'Content-Type': 'application/json',
     },
     body: JSON.stringify(coord),
-  })
+  });
   if (!response.ok) {
     return { success: false };
   }
 
-  const coordinate: { message: string, coordinate: ICoordinate } = await response.json();
+  const coordinate: { message: string; coordinate: ICoordinate } =
+    await response.json();
   return { success: true, coordinate };
 }
 
-async function deleteCoordinate(coordId: string): Promise<{ success: boolean }> {
+async function deleteCoordinate(
+  coordId: string,
+): Promise<{ success: boolean }> {
   const response = await fetch(`${SERVER_URL}/coordinates/` + coordId, {
     method: 'DELETE',
-    credentials: 'include'
-  })
+    credentials: 'include',
+  });
   if (!response.ok) {
     return { success: false };
-  }
-  else {
+  } else {
     return { success: true };
   }
 }
 
 // Utility functions:
 function handleInvalidResponse(response: any) {
+  console.log('Response is:', response);
   if (!response.ok) {
-    throw Error(response.statusText);
+    console.log('Response status:', response.statusText);
+    throw Error(response.statusText || 'An error occurred');
   }
   const type = response.headers.get('Content-Type');
   if (type !== null && type.indexOf('application/json') === -1) {
@@ -225,30 +235,93 @@ function handleInvalidResponse(response: any) {
 }
 
 /**
- * This method is used to parse the information coming from the backend and map it to an array of Document.
- * @param apiDocuments
- * @returns
+ * This method is used to post a resources to the cdn and backend.
  */
-function mapApiDocumentsToDocuments(apiDocuments: any) {
-  return apiDocuments.map(
-    (document: any) =>
-      new DocumentFile(
-        document.id,
-        document.description,
-        document.title,
-        document.file,
-        document.language,
-        document.issueDate,
-      ),
-  );
+async function addResource(file: File) {
+  return await fetch(`${SERVER_URL}/media/upload`, {
+    method: 'POST',
+    credentials: 'include',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({
+      filename: file.name,
+      size: file.size,
+      mimetype: file.type,
+    }),
+  })
+    .then(handleInvalidResponse)
+    .then(async (response) => {
+      if (response.status === 200) {
+        const data = await response.json();
+        const body = new FormData();
+        body.append('file', file);
+        // Resource posted to the CDN
+        // use the token returned by the backend. It is contained in the field `data` of the previous response.
+        return await fetch(`${data.data}`, {
+          method: 'POST',
+          credentials: 'include',
+          body: body, // Do not set Content-Type header, let the browser set it
+        })
+          .then(handleInvalidResponse)
+          .then(async (response) => {
+            const data = await response.json();
+            console.log('ID is ', data.id);
+            return data.id;
+          });
+      }
+    });
+}
+
+async function searchDocuments(
+  searchQuery: string,
+  filters: {
+    type: string;
+    scale: string;
+    stakeholders: string;
+    language: string;
+  },
+): Promise<IDocument[]> {
+    const searchURL =
+    searchQuery.trim() === ''
+      ? `${SERVER_URL}/documents/search`
+      : `${SERVER_URL}/documents/search?keywords=[${searchQuery.split(' ').map(word => `"${encodeURIComponent(word)}"`).join(',')}]`;
+
+  console.log('Search URL:', searchURL);
+  console.log('Filters sent in body:', filters);
+  
+  const response = await fetch(searchURL, {
+    method: 'POST',
+    credentials: 'include',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify(filters),
+  });
+  if (!response.ok) throw new Error('Failed to fetch documents');
+
+  const documents = await response.json();
+  return documents;
 }
 
 const API = {
   getDocuments,
   getCoordinates,
   addDocument,
-  deleteCoordinate
+  deleteCoordinate,
+  searchDocuments,
 };
 
-export { login, logout, getMe, checkAuth, createDocument, editDocument, getDocuments, createCoordinate };
+export {
+  login,
+  logout,
+  getMe,
+  checkAuth,
+  createDocument,
+  editDocument,
+  getDocuments,
+  createCoordinate,
+  searchDocuments,
+  addResource,
+};
 export default API;

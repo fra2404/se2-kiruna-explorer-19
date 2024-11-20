@@ -1,5 +1,6 @@
 import React from 'react';
 import InputComponent from '../../atoms/input/input';
+
 interface Step2Props {
   description: string;
   setDescription: (value: string) => void;

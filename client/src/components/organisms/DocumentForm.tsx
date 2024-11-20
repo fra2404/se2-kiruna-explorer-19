@@ -17,7 +17,12 @@ import {
   TechnicalDocIcon,
 } from '../../assets/icons';
 
-import { createCoordinate, createDocument, editDocument } from '../../API';
+import {
+  createCoordinate,
+  createDocument,
+  editDocument,
+  addResource,
+} from '../../API';
 import Toast from './Toast';
 import Step1 from '../molecules/steps/Step1';
 import Step2 from '../molecules/steps/Step2';
@@ -60,7 +65,6 @@ const DocumentForm = ({
   showCoordNamePopup = false,
   selectedDocument,
 }: DocumentFormProps) => {
-
   const [currentStep, setCurrentStep] = useState(1);
   const [connectToMap, setConnectToMap] = useState(
     !!positionProp || !!selectedCoordIdProp,
@@ -235,9 +239,22 @@ const DocumentForm = ({
     }
   };
 
+  const handleSaveResource = async () => {
+    const media_ids: string[] = [];
+    // Call here the API to save the media file for each file:
+    for (let i = 0; i < files.length; i++) {
+      const token = await addResource(files[i]);
+      media_ids.push(token);
+    }
+    return media_ids;
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     let coordId: string | undefined = undefined;
+
+    // Call here the API to save the media files
+    const media_ids = await handleSaveResource();
 
     //If selectedCoordId is undefined, this means that we are adding the document into a new point. We need to save this point in the DB
     if (!selectedCoordId && position && connectToMap) {
@@ -271,10 +288,8 @@ const DocumentForm = ({
         showToastMessage('Error creating coordinate:' + error, 'error');
       }
     } else {
-      if(connectToMap)
-        coordId = selectedCoordId;
-      else
-        coordId = undefined;
+      if (connectToMap) coordId = selectedCoordId;
+      else coordId = undefined;
     }
 
     const documentData = {
@@ -291,8 +306,10 @@ const DocumentForm = ({
         document: conn.relatedDocument,
         type: conn.type,
       })),
+      media: selectedDocument?.media
+        ? [...selectedDocument.media.map((m) => m.id), ...media_ids]
+        : media_ids,
     };
-    console.log('Document Data:', documentData);
 
     try {
       let response;
@@ -301,12 +318,22 @@ const DocumentForm = ({
       } else {
         response = await editDocument(documentData);
       }
-      console.log(response);
       if (response.success) {
-        console.log('Document saved successfully:', response.document);
         showToastMessage('Document saved successfully', 'success');
 
         setCurrentStep(6);
+        if (response.document) {
+          const responseDocument = response.document; //Typescript is not able to detect that the value response.document will still be defined in the "else" branch. So, we have to put it in a variable
+          if (!selectedDocument) {
+            setDocuments(documents.concat(responseDocument));
+          } else {
+            setDocuments(
+              documents.map((doc: IDocument) => {
+                return doc.id == selectedDocument.id ? responseDocument : doc;
+              }),
+            );
+          }
+        }
         if (response.document) {
           const responseDocument = response.document; //Typescript is not able to detect that the value response.document will still be defined in the "else" branch. So, we have to put it in a variable
           if (!selectedDocument) {
@@ -323,7 +350,7 @@ const DocumentForm = ({
         console.log('Failed to create document');
         showToastMessage('Failed to create document', 'error');
       }
-    }catch (error) {
+    } catch (error) {
       console.error('Error creating document:', error);
       showToastMessage('Error creating document:' + error, 'error');
     }
@@ -340,6 +367,8 @@ const DocumentForm = ({
     });
     return null;
   }
+
+  const existingFiles = selectedDocument?.media || [];
 
   const renderStep = () => {
     switch (currentStep) {
@@ -369,7 +398,13 @@ const DocumentForm = ({
           />
         );
       case 3:
-        return <Step3 files={files} setFiles={setFiles} />;
+        return (
+          <Step3
+            files={files}
+            setFiles={setFiles}
+            existingFiles={existingFiles}
+          />
+        );
       case 4:
         return (
           <Step4

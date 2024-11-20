@@ -110,7 +110,7 @@ export const addDocumentController = async (
     const newDocument = await addingDocument(req.body as IDocument);
     res
       .status(201)
-      .json({ document: newDocument });
+      .json(newDocument);
   } catch (error) {
     next(error); // Pass the error to the error handler middleware
   }
@@ -434,6 +434,7 @@ export const searchDocumentsController = async (
     if (req.query.keywords) {
       keywords = JSON.parse(req.query.keywords as string);  // Parse the input query string into an array of keywords
     }
+  
     const documents = await searchDocuments(keywords, req.body);
     res.status(200).json(documents);
   } catch (error) {

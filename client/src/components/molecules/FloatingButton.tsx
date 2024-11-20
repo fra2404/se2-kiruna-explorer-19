@@ -3,7 +3,7 @@ import ButtonRounded from '../atoms/button/ButtonRounded';
 interface FloatingButtonProps {
   className?: string;
   onClick: () => void;
-  text: string;
+  text: string | JSX.Element;
   onMouseEnter: () => void;
   onMouseLeave: () => void;
 }

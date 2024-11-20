@@ -43,5 +43,5 @@ export const validateUpdateMedia = [
   ];
   
   export const validateMediaId = [
-    param('id').isMongoId().withMessage('Invalid meida ID format'),
+     param('mediaId').isMongoId().withMessage('Invalid meida ID format'),
   ];
