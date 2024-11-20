@@ -96,6 +96,7 @@ async function getDocuments(): Promise<IDocument[]> {
 }
 
 async function createDocument(documentData: {
+  id: string;
   title: string;
   stakeholders: string;
   scale: string;
@@ -103,12 +104,9 @@ async function createDocument(documentData: {
   language: string;
   summary: string;
   date: string;
-  coordinates: string;
+  coordinates?: string;
   connections: { document: string; type: string }[];
-}): Promise<{
-  success: boolean;
-  document?: { message: string; document: IDocument };
-}> {
+}): Promise<{ success: boolean; document?: IDocument }> {
   const response = await fetch(`${SERVER_URL}/documents/create`, {
     method: 'POST',
     credentials: 'include',
@@ -144,6 +142,37 @@ async function addDocument(document: IDocument) {
   })
     .then(handleInvalidResponse)
     .then((response) => response.json());
+}
+
+async function editDocument(documentData: {
+  id: string;
+  title: string;
+  stakeholders: string;
+  scale: string;
+  type: string;
+  language: string;
+  summary: string;
+  date: string;
+  coordinates?: string;
+  connections: { document: string; type: string }[];
+}): Promise<{ success: boolean; document?: IDocument }> {
+  console.log(documentData);
+  const response = await fetch(`${SERVER_URL}/documents/${documentData.id}`, {
+    method: 'PUT',
+    credentials: 'include',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify(documentData),
+  })
+
+  if (!response.ok) {
+    return { success: false };
+  }
+
+  const document = await response.json();
+  console.log(document);
+  return { success: true, document };
 }
 
 async function getCoordinates() {
@@ -207,16 +236,15 @@ async function createCoordinate(coord: ICoordinate): Promise<{
   return { success: true, coordinate };
 }
 
-async function deleteCoordinate(
-  coordId: string,
-): Promise<{ success: boolean }> {
+async function deleteCoordinate(coordId: string): Promise<{ success: boolean }> {
   const response = await fetch(`${SERVER_URL}/coordinates/` + coordId, {
     method: 'DELETE',
-    credentials: 'include',
-  });
+    credentials: 'include'
+  })
   if (!response.ok) {
     return { success: false };
-  } else {
+  }
+  else {
     return { success: true };
   }
 }
@@ -333,6 +361,7 @@ export {
   getMe,
   checkAuth,
   createDocument,
+  editDocument,
   getDocuments,
   createCoordinate,
   searchDocuments,

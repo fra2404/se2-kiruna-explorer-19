@@ -7,6 +7,7 @@ import FloatingButton from '../../molecules/FloatingButton';
 import DocumentForm from '../DocumentForm';
 import { IDocument } from '../../../utils/interfaces/document.interface';
 import AllDocumentsModal from '../modals/AllDocumentsModal';
+import { FaFolder, FaPlus, FaSearch } from 'react-icons/fa';
 
 interface OverlayProps {
   coordinates: any; //Need to pass coordinates to the modal as parameter
@@ -20,49 +21,63 @@ interface OverlayProps {
 //   <p className='text-sm mt-1'>{doc.summary?.slice(0, 200)}...</p>
 // </div>
 
-const Overlay: React.FC<OverlayProps> = ({ 
-  coordinates, 
+const Overlay: React.FC<OverlayProps> = ({
+  coordinates,
   setCoordinates,
   documents,
-  setDocuments
+  setDocuments,
 }) => {
   const [modalOpen, setModalOpen] = useState(false);
   const [isHovered, setIsHovered] = useState(false);
 
+  const [isHoveredSearch, setIsHoveredSearch] = useState(false);
   const [showAllDocuments, setShowAllDocuments] = useState(false);
 
   return (
-    <Container fluid
+    <Container
+      fluid
       style={{
         position: 'absolute',
         top: '50vh',
         left: 0,
         width: '100%',
         zIndex: 1000,
-      }}>
-
+      }}
+    >
       <FloatingButton
-        text={isHovered ? '+ New Document' : '+'}
-        onMouseEnter={()=>setIsHovered(true)}
-        onMouseLeave={()=>setIsHovered(false)}
+        text={isHovered ? '+ New Document' : <FaPlus style={{ display: 'inline' }} />}
+        onMouseEnter={() => setIsHovered(true)}
+        onMouseLeave={() => setIsHovered(false)}
         onClick={() => {
           if (!modalOpen) {
             setModalOpen(true);
           }
-        }}/>
+        }}
+      />
 
-      <FloatingButton onMouseEnter={()=>{}} 
-      onMouseLeave={()=>{}} onClick={()=>{
-        if (!showAllDocuments) {
-          setShowAllDocuments(true);
+      <FloatingButton
+        onMouseEnter={() => setIsHoveredSearch(true)}
+        onMouseLeave={() => setIsHoveredSearch(false)}
+        onClick={() => {
+          if (!showAllDocuments) {
+            setShowAllDocuments(true);
+          }
+        }}
+        text={
+          isHoveredSearch ? (
+            'See All Documents'
+          ) : (
+            <FaFolder style={{ display: 'inline' }} />
+          )
         }
-      }} text='See All Documents' className='mt-20' />
-      
+        className="mt-20"
+      />
 
       <Modal
         style={modalStyles}
         isOpen={modalOpen}
-        onRequestClose={() => setModalOpen(false)}>
+        onRequestClose={() => setModalOpen(false)}
+      >
         <DocumentForm
           coordinates={coordinates}
           setCoordinates={setCoordinates}
@@ -70,11 +85,15 @@ const Overlay: React.FC<OverlayProps> = ({
           setDocuments={setDocuments}
           positionProp={undefined}
           modalOpen={modalOpen}
-          setModalOpen={setModalOpen}/>
+          setModalOpen={setModalOpen}
+        />
       </Modal>
 
-      <Modal style={modalStyles} isOpen={showAllDocuments}
-      onRequestClose={()=>setShowAllDocuments(false)}>
+      <Modal
+        style={modalStyles}
+        isOpen={showAllDocuments}
+        onRequestClose={() => setShowAllDocuments(false)}
+      >
         <AllDocumentsModal setShowAllDocuments={setShowAllDocuments} />
       </Modal>
     </Container>

@@ -74,6 +74,7 @@ const Step2: React.FC<Step2Props> = ({
           label="Type"
           type="select"
           options={documentTypeOptions}
+          defaultValue={docType}
           value={docType}
           onChange={(e) => {
             if ('target' in e) {

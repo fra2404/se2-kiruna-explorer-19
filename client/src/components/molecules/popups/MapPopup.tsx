@@ -10,17 +10,25 @@ import { UserRoleEnum } from '../../../utils/interfaces/user.interface';
 interface MapPopupProps {
   name: string;
   message: string;
-  documents: IDocument[];
+  markerDocuments: IDocument[];
   onYesClick: () => void;
   onCancelClick: () => void;
+  coordinates: any;
+  setCoordinates: (coordinates: any) => void;
+  allDocuments: IDocument[];
+  setDocuments: (documents: IDocument[]) => void;
 }
 
 export const MapPopup: React.FC<MapPopupProps> = ({
   name,
   message,
-  documents,
+  markerDocuments,
   onYesClick,
   onCancelClick,
+  coordinates,
+  setCoordinates,
+  allDocuments,
+  setDocuments
 }) => {
   const popupRef = useRef<L.Popup>(null);
   const { isLoggedIn, user } = useAuth();
@@ -29,7 +37,13 @@ export const MapPopup: React.FC<MapPopupProps> = ({
     <Popup ref={popupRef}>
       <span className="text-lg font-bold">{name}</span>
       <br />
-      <MarkerDocumentList documents={documents} />
+      <MarkerDocumentList 
+        markerDocuments={markerDocuments}
+        coordinates={coordinates}
+        setCoordinates={setCoordinates}
+        allDocuments={allDocuments}
+        setDocuments={setDocuments}
+      />
 
       <hr />
 
