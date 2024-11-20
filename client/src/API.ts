@@ -273,11 +273,43 @@ async function addResource(file: File) {
     });
 }
 
+async function searchDocuments(
+  searchQuery: string,
+  filters: {
+    type: string;
+    scale: string;
+    stakeholders: string;
+    language: string;
+  },
+): Promise<IDocument[]> {
+    const searchURL =
+    searchQuery.trim() === ''
+      ? `${SERVER_URL}/documents/search`
+      : `${SERVER_URL}/documents/search?keywords=[${searchQuery.split(' ').map(word => `"${encodeURIComponent(word)}"`).join(',')}]`;
+
+  console.log('Search URL:', searchURL);
+  console.log('Filters sent in body:', filters);
+  
+  const response = await fetch(searchURL, {
+    method: 'POST',
+    credentials: 'include',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify(filters),
+  });
+  if (!response.ok) throw new Error('Failed to fetch documents');
+
+  const documents = await response.json();
+  return documents;
+}
+
 const API = {
   getDocuments,
   getCoordinates,
   addDocument,
   deleteCoordinate,
+  searchDocuments,
 };
 
 export {
@@ -288,7 +320,8 @@ export {
   createDocument,
   editDocument,
   getDocuments,
-  addResource,
   createCoordinate,
+  searchDocuments,
+  addResource,
 };
 export default API;

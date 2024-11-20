@@ -1,7 +1,7 @@
 import { LatLng } from 'leaflet';
 import MapSection from '../../organisms/MapSection';
 
-interface Step4Props {
+interface Step5Props {
   coordinates: any;
   selectedCoordIdProp: string;
   selectedCoordId: string;
@@ -15,7 +15,7 @@ interface Step4Props {
   MapClickHandler: React.FC;
 }
 
-const Step5: React.FC<Step4Props> = ({
+const Step5: React.FC<Step5Props> = ({
   coordinates,
   selectedCoordIdProp,
   selectedCoordId,

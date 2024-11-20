@@ -243,7 +243,6 @@ const DocumentForm = ({
       media_ids.push(token);
     }
     return media_ids;
-
   }
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -319,6 +318,18 @@ const DocumentForm = ({
         showToastMessage('Document saved successfully', 'success');
 
         setCurrentStep(6);
+        if (response.document) {
+          const responseDocument = response.document; //Typescript is not able to detect that the value response.document will still be defined in the "else" branch. So, we have to put it in a variable
+          if (!selectedDocument) {
+            setDocuments(documents.concat(responseDocument));
+          } else {
+            setDocuments(
+              documents.map((doc: IDocument) => {
+                return doc.id == selectedDocument.id ? responseDocument : doc;
+              }),
+            );
+          }
+        }
         if (response.document) {
           const responseDocument = response.document; //Typescript is not able to detect that the value response.document will still be defined in the "else" branch. So, we have to put it in a variable
           if (!selectedDocument) {

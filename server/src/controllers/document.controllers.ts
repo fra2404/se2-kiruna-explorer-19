@@ -434,6 +434,7 @@ export const searchDocumentsController = async (
     if (req.query.keywords) {
       keywords = JSON.parse(req.query.keywords as string);  // Parse the input query string into an array of keywords
     }
+  
     const documents = await searchDocuments(keywords, req.body);
     res.status(200).json(documents);
   } catch (error) {

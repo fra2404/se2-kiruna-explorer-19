@@ -24,7 +24,7 @@ const DocumentDetailsModal: React.FC<DocumentDetailsModalProps> = ({
     setDocuments
 }) => {
 
-    console.log(document);
+    // console.log(document);
 
     const { isLoggedIn, user } = useAuth();
     const [modalOpen, setModalOpen] = useState(false);
