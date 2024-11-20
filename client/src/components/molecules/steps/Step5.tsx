@@ -30,7 +30,7 @@ const Step5: React.FC<Step5Props> = ({
 }) => {
   return (
     <>
-      <MapSection 
+      <MapSection
         coordinates={coordinates}
         selectedCoordIdProp={selectedCoordIdProp}
         selectedCoordId={selectedCoordId}

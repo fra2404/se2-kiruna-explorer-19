@@ -106,6 +106,7 @@ async function createDocument(documentData: {
   date: string;
   coordinates?: string;
   connections: { document: string; type: string }[];
+  media: string[];
 }): Promise<{ success: boolean; document?: IDocument }> {
   const response = await fetch(`${SERVER_URL}/documents/create`, {
     method: 'POST',
@@ -155,6 +156,7 @@ async function editDocument(documentData: {
   date: string;
   coordinates?: string;
   connections: { document: string; type: string }[];
+  media: string[];
 }): Promise<{ success: boolean; document?: IDocument }> {
   console.log(documentData);
   const response = await fetch(`${SERVER_URL}/documents/${documentData.id}`, {
@@ -164,7 +166,7 @@ async function editDocument(documentData: {
       'Content-Type': 'application/json',
     },
     body: JSON.stringify(documentData),
-  })
+  });
 
   if (!response.ok) {
     return { success: false };
@@ -204,23 +206,26 @@ async function createCoordinate(coord: ICoordinate): Promise<{
   return { success: true, coordinate };
 }
 
-async function deleteCoordinate(coordId: string): Promise<{ success: boolean }> {
+async function deleteCoordinate(
+  coordId: string,
+): Promise<{ success: boolean }> {
   const response = await fetch(`${SERVER_URL}/coordinates/` + coordId, {
     method: 'DELETE',
-    credentials: 'include'
-  })
+    credentials: 'include',
+  });
   if (!response.ok) {
     return { success: false };
-  }
-  else {
+  } else {
     return { success: true };
   }
 }
 
 // Utility functions:
 function handleInvalidResponse(response: any) {
+  console.log('Response is:', response);
   if (!response.ok) {
-    throw Error(response.statusText);
+    console.log('Response status:', response.statusText);
+    throw Error(response.statusText || 'An error occurred');
   }
   const type = response.headers.get('Content-Type');
   if (type !== null && type.indexOf('application/json') === -1) {
@@ -230,55 +235,8 @@ function handleInvalidResponse(response: any) {
 }
 
 /**
- * This method is used to parse the information coming from the backend and map it to an array of Document.
- * @param apiDocuments
- * @returns
+ * This method is used to post a resources to the cdn and backend.
  */
-function mapApiDocumentsToDocuments(apiDocuments: any) {
-  return apiDocuments.map(
-    (document: any) =>
-      new DocumentFile(
-        document.id,
-        document.description,
-        document.title,
-        document.file,
-        document.language,
-        document.issueDate,
-      ),
-  );
-}
-
-async function searchDocuments(
-  searchQuery: string,
-  filters: {
-    type: string;
-    scale: string;
-    stakeholders: string;
-    language: string;
-  },
-): Promise<IDocument[]> {
-    const searchURL =
-    searchQuery.trim() === ''
-      ? `${SERVER_URL}/documents/search`
-      : `${SERVER_URL}/documents/search?keywords=[${searchQuery.split(' ').map(word => `"${encodeURIComponent(word)}"`).join(',')}]`;
-
-  console.log('Search URL:', searchURL);
-  console.log('Filters sent in body:', filters);
-  
-  const response = await fetch(searchURL, {
-    method: 'POST',
-    credentials: 'include',
-    headers: {
-      'Content-Type': 'application/json',
-    },
-    body: JSON.stringify(filters),
-  });
-  if (!response.ok) throw new Error('Failed to fetch documents');
-
-  const documents = await response.json();
-  return documents;
-}
-
 async function addResource(file: File) {
   return await fetch(`${SERVER_URL}/media/upload`, {
     method: 'POST',
@@ -313,6 +271,37 @@ async function addResource(file: File) {
           });
       }
     });
+}
+
+async function searchDocuments(
+  searchQuery: string,
+  filters: {
+    type: string;
+    scale: string;
+    stakeholders: string;
+    language: string;
+  },
+): Promise<IDocument[]> {
+    const searchURL =
+    searchQuery.trim() === ''
+      ? `${SERVER_URL}/documents/search`
+      : `${SERVER_URL}/documents/search?keywords=[${searchQuery.split(' ').map(word => `"${encodeURIComponent(word)}"`).join(',')}]`;
+
+  console.log('Search URL:', searchURL);
+  console.log('Filters sent in body:', filters);
+  
+  const response = await fetch(searchURL, {
+    method: 'POST',
+    credentials: 'include',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify(filters),
+  });
+  if (!response.ok) throw new Error('Failed to fetch documents');
+
+  const documents = await response.json();
+  return documents;
 }
 
 const API = {

@@ -38,7 +38,6 @@ router.post('/search', searchDocumentsController); //Search Document
 
 router.get(
   '/:id',
-  authenticateUser,
   validateDocumentId,
   getDocumentByIdController,
 ); // Get Document by ID
