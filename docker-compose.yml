@@ -1,37 +1,56 @@
 version: '3.8'
 
 services:
-  db:
+  # Database MongoDB
+  mongo:
     image: mongo:latest
-    container_name: mongo
+    container_name: mongoDB
     ports:
       - "27017:27017"
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: admin
+      MONGO_INITDB_ROOT_PASSWORD: secret
     volumes:
-      - mongo_data:/data/db
+      - ./mongo_data:/data/db
+    networks:
+      - my-network
 
+  # Server
   server:
-    build:
-      context: ./server
-    container_name: my_server
-    ports:
-      - "5001:5001" # Mappa la porta del sistema host con la porta del container
-    env_file:
-      - ./server/.env
-    volumes:
-      - ./server:/usr/src/app # Monta l'intera cartella server
+    image: fraalbi24/se2-kiruna-explorer-19-server:final
     depends_on:
-      - db
-
-  client:
-    build:
-      context: ./client
-    container_name: my_client
+      - mongo
     ports:
-      - "5173:5173" # Espone la porta 5173 per il client Vite
-    volumes:
-      - ./client:/usr/src/app # Monta la cartella del client
+      - "5001:5001"
+    environment:
+      - DOCKER_ENV=true
+    networks:
+      - my-network
+
+  # Client (Vite con build)
+  client:
+    image: fraalbi24/se2-kiruna-explorer-19-client:final
+    container_name: client
     depends_on:
       - server
+    ports:
+      - "5173:5173"
+    networks:
+      - my-network
 
-volumes:
-  mongo_data:
+  # CDN
+  cdn:
+    image: fraalbi24/se2-kiruna-explorer-19-cdn:final
+    container_name: cdn
+    ports:
+      - "3004:3004"
+    depends_on:
+      - server
+    environment:
+      - DOCKER_ENV=true
+    networks:
+      - my-network
+
+networks:
+  my-network:
+    driver: bridge

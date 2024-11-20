@@ -1,21 +1,20 @@
-# Usa un'immagine di base per Node.js
-FROM node:14
+# Usa l'immagine ufficiale di Node.js con supporto multi-architettura
+FROM node:18
 
 # Imposta la directory di lavoro
-WORKDIR /usr/src/app
+WORKDIR /app
 
-# Copia i file package.json e package-lock.json
+# Copia solo i file di package per gestire correttamente la cache
 COPY package*.json ./
 
-# Installa le dipendenze
-RUN npm install
+# Installa le dipendenze, forzando la ricostruzione di bcrypt
+RUN npm install 
 
-# Copia il codice sorgente
+# Copia il resto del codice dell'applicazione
 COPY . .
 
-# Espone la porta 5173, che è la porta predefinita per Vite
+# Esponi la porta usata dall'applicazione (5001)
 EXPOSE 5173
 
-# Comando per avviare l'app in modalità sviluppo con Vite
-CMD ["npm", "run", "dev"]  
-# Assicurati di avere lo script "dev" definito nel package.json
+# Comando per avviare l'applicazione
+CMD ["npm", "run", "dev"]

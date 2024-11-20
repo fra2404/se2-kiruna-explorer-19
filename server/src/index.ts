@@ -4,11 +4,14 @@ import 'module-alias/register';
 import dotenv from 'dotenv';
 import { setupSwagger } from './swagger';
 
-// Carica le variabili d'ambiente dal file .env
-dotenv.config();
+// Determina quale file .env caricare
+const envFile = process.env.DOCKER_ENV ? '.env.docker' : '.env.local';
+
+// Carica le variabili d'ambiente dal file specificato
+dotenv.config({ path: envFile });
 
 // Log per verificare il caricamento delle variabili d'ambiente
-console.log('MONGO_URI:', process.env.MONGO_URI);
+// console.log('MONGO_URI:', process.env.MONGO_URI);
 
 const PORT = process.env.PORT || 5000;
 

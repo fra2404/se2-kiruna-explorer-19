@@ -10,10 +10,11 @@ lerna-debug.log*
 node_modules
 dist
 dist-ssr
-*.local
+#*.local
 mongo_data
 
 package-lock.json
+.env.*
 
 # Editor directories and files
 !.vscode/extensions.json
