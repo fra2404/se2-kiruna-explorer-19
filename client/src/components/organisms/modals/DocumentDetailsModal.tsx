@@ -59,7 +59,7 @@ const DocumentDetailsModal: React.FC<DocumentDetailsModalProps> = ({
         { label: "Type", content: matchType(document.type) },
         { label: "Connections", content: document.connections?.length.toString() },
         { label: "Language", content: document.language },
-        { label: "Coordinates", content: document.coordinates?.coordinates.join(", ") },
+        { label: "Coordinates", content: document.coordinates?.name },
         { label: "Original Resources", content: document.media?.map((m) => {
                 return <a href={CDN_URL + m.url} target='blank' key={m.url}>{m.filename}</a>
             })
