@@ -52,11 +52,11 @@ sections:
   Standard deviation: 1.89  
 - Total estimation error ratio: sum of total hours spent / sum of total hours effort - 1
 
-    $$\frac{\sum_i spent_{task_i}}{\sum_i estimation_{task_i}} - 1 = \frac{96.5}{101.67} - 1 = -0.05$$
+    $$\frac{\sum_i spent_{task_i}}{\sum_i estimation_{task_i}} - 1 = \frac{101.67}{96.5} - 1 = 0.054$$
     
 - Absolute relative task estimation error: sum( abs( spent-task-i / estimation-task-i - 1))/n
 
-    $$\frac{1}{n}\sum_i^n \left| \frac{spent_{task_i}}{estimation_task_i}-1 \right| = \frac{1}{51} \left| \frac{96.5}{101.67} - 1 \right| = 0.00100$$
+    $$\frac{1}{n}\sum_i^n \left| \frac{spent_{task_i}}{estimation_task_i}-1 \right| = \frac{1}{51} \left| \frac{101.67}{96.5} - 1 \right| = 0.00100$$
   
 ## QUALITY MEASURES 
 

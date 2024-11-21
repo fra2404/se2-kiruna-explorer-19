@@ -1,0 +1,115 @@
+TEMPLATE FOR RETROSPECTIVE (Team 19)
+=====================================
+
+The retrospective should include _at least_ the following
+sections:
+
+- [process measures](#process-measures)
+- [quality measures](#quality-measures)
+- [general assessment](#assessment)
+
+## PROCESS MEASURES 
+
+### Macro statistics
+
+- Number of stories committed vs. done 
+  - Commited: 6
+  - Done: 5
+- Total points committed vs. done 
+  - Committed: 28
+  - Done: 20
+- Nr of hours planned vs. spent (as a team)
+  - Planned: 95h40m
+  - Spent: 97h32m
+
+**Remember**a story is done ONLY if it fits the Definition of Done:
+ 
+- Unit Tests passing
+- Code review completed
+- Code present on VCS
+- End-to-End tests performed
+- Integration Tests passing
+
+> Please refine your DoD if required (you cannot remove items!) 
+
+### Detailed statistics
+
+| Story  | # Tasks | Points | Hours est. | Hours actual |
+|--------|---------|--------|------------|--------------|
+| _#0_   |   24    |        |   55h20m   |    55h57m    |
+| KX4    |    2    |    5   |   02h30m   |    02h40m    |
+| KX5    |    2    |    3   |   02h30m   |    02h35m    |
+| KX6    |    1    |    2   |   02h30m   |    02h30m    |
+| KX7    |   12    |    5   |   19h20m   |    21h10m    |
+| KX8    |    4    |    5   |   10h30m   |    13h40m    |
+| KX9    |    1    |    8   |     3h     |      0h      |
+   
+
+> story `#0` is for technical tasks, leave out story points (not applicable in this case)
+
+- Hours per task average, standard deviation (estimate and actual)  
+  Estimated hours per task average: 2.08  
+  Standard deviation: 1.86  
+  
+  Actual hours per task average: 2.20  
+  Standard deviation: 1.99  
+- Total estimation error ratio: sum of total hours spent / sum of total hours effort - 1
+
+  $$\frac{\sum_i spent_{task_i}}{\sum_i estimation_{task_i}} - 1 = \frac{97.53}{95.67} - 1 = 0.019$$
+    
+- Absolute relative task estimation error: sum( abs( spent-task-i / estimation-task-i - 1))/n
+
+  $$\frac{1}{n}\sum_i^n \left| \frac{spent_{task_i}}{estimation_task_i}-1 \right| = \frac{1}{45} \left| \frac{97.53}{95.67} - 1 \right| = 0.00042$$
+  
+## QUALITY MEASURES 
+
+- Unit Testing:
+  - Total hours estimated: 7h30
+  - Total hours spent: 13h25
+  - Nr of automated unit test cases: 48
+  - Coverage (if available): 65.03%
+- E2E testing:
+  - Total hours estimated: 1h10
+  - Total hours spent: 1h15
+- Code review 
+  - Total hours estimated: 1h
+  - Total hours spent: 30m
+  
+
+
+## ASSESSMENT
+
+- What caused your errors in estimation (if any)?
+  - E2E testing and Code Review. We should increase the time spent on e2e and code review, and try to write better code before opening a new merge request in order to . More time can always be spent on testing and code reviews. While estimating time for tasks
+  - Unexpected problems while developing a task that increase the time spent on that task
+  - On unit testing, much time was spent on trying to test methods whose code was different than other methods, therefore they had to be tested in a different way
+
+- What lessons did you learn (both positive and negative) in this sprint?
+  - Increase the minimun value in terms of code quality to accept the merge requests
+  - We focused too much on route unit testing, while we found a better way to do that with integration testing
+
+  - Positive thing: the method of managing git repository works very well. It allows us to have a branch (dev) that is always up ad running and to check the code quality before merging to dev
+
+  - When a task is put to done, if it then needs changes afterwards, the person who tested it will put it back in "to do"
+  - Rush situations are still present
+  
+
+- Which improvement goals set in the previous retrospective were you able to achieve?
+  - Assigning stories instead of tasks and having everyone defining their own tasks allowed us to better understand our tasks and estimate them in an effective way
+  - Understanding the stories before start working on them 
+  Take some time to understand the stories that we need to develop before start working on them
+  
+  
+- Which ones you were not able to achieve? Why?
+  - None
+  
+
+- Improvement goals for the next sprint and how to achieve them (technical tasks, team coordination, etc.)
+
+  > Propose one or two
+  
+  - Better code quality
+  - Rush situations are still present
+
+- One thing you are proud of as a Team!!
+  - We improved from the previous sprint, and these improvements can be seen in the project quality
