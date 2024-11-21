@@ -282,14 +282,17 @@ async function searchDocuments(
     language: string;
   },
 ): Promise<IDocument[]> {
-    const searchURL =
+  const searchURL =
     searchQuery.trim() === ''
       ? `${SERVER_URL}/documents/search`
-      : `${SERVER_URL}/documents/search?keywords=[${searchQuery.split(' ').map(word => `"${encodeURIComponent(word)}"`).join(',')}]`;
+      : `${SERVER_URL}/documents/search?keywords=[${searchQuery
+          .split(' ')
+          .map((word) => `"${encodeURIComponent(word)}"`)
+          .join(',')}]`;
 
   console.log('Search URL:', searchURL);
   console.log('Filters sent in body:', filters);
-  
+
   const response = await fetch(searchURL, {
     method: 'POST',
     credentials: 'include',

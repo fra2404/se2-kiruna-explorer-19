@@ -176,11 +176,10 @@ export const deleteCoordinateController = async (
   }
 };
 
-
 export const deleteCoordinateByIdController = async (
   req: Request,
   res: Response,
-  next: NextFunction
+  next: NextFunction,
 ): Promise<void> => {
   try {
     const { id } = req.params;

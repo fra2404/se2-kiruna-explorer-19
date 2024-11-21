@@ -1,5 +1,8 @@
 import Media from '../schemas/media.schema';
-import { IReturnMedia, IReturnPresignedUrl } from '@interfaces/media.return.interface';
+import {
+  IReturnMedia,
+  IReturnPresignedUrl,
+} from '@interfaces/media.return.interface';
 import { Types } from 'mongoose';
 import { IMedia } from '@interfaces/media.interface';
 import { CustomError } from '@utils/customError';
@@ -18,37 +21,46 @@ export const getTypeFromMimeType = (mimetype: string): string => {
   }
 };
 
-export const uploadMediaService = async (mediaData: any): Promise<IReturnPresignedUrl> => {
+export const uploadMediaService = async (
+  mediaData: any,
+): Promise<IReturnPresignedUrl> => {
   try {
     // Step 1: Generate a unique ObjectId without saving to DB
     const generatedId = new Types.ObjectId().toString();
 
-    // Step 2: Prepare data for CDN 
+    // Step 2: Prepare data for CDN
     const cdnRequestData = {
       id: generatedId,
       filename: mediaData.filename,
       contentType: mediaData.mimetype,
       userId: mediaData.userId,
-      folder: mediaData.folder || "",
+      folder: mediaData.folder || '',
     };
 
     // Step 3: Make a POST request to CDN to get the presigned URL
-    const response: any = await fetch(process.env.CDN_URI + "/generate-presigned-url", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        "x-api-key": "my_api_key",
+    const response: any = await fetch(
+      process.env.CDN_URI + '/generate-presigned-url',
+      {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'x-api-key': 'my_api_key',
+        },
+        body: JSON.stringify(cdnRequestData),
       },
-      body: JSON.stringify(cdnRequestData),
-    });
+    );
 
     if (!response.ok) {
-      throw new CustomError("Failed to obtain presigned URL from CDN", 400);
+      throw new CustomError('Failed to obtain presigned URL from CDN', 400);
     }
 
-    // Step 4: Parse the CDN response 
+    // Step 4: Parse the CDN response
     const cdnResponse = await response.json();
-    const { presignedUrl, fileMetadata }: { presignedUrl: IReturnPresignedUrl; fileMetadata: IMedia } = cdnResponse;
+    const {
+      presignedUrl,
+      fileMetadata,
+    }: { presignedUrl: IReturnPresignedUrl; fileMetadata: IMedia } =
+      cdnResponse;
 
     // Step 5: Save metadata along with the CDN output in DB
     const media = new Media({
@@ -67,15 +79,17 @@ export const uploadMediaService = async (mediaData: any): Promise<IReturnPresign
 
     // Step 6: Return presigned URL
     return presignedUrl;
-
   } catch (error) {
-    console.error("Error in uploadMediaService:", error);
+    console.error('Error in uploadMediaService:', error);
     throw new CustomError('Internal Server Error', 500);
   }
 };
 
 //update metadata of media
-export const updateMediaMetadata = async (mediaId: string, metadata: any): Promise<void> => {
+export const updateMediaMetadata = async (
+  mediaId: string,
+  metadata: any,
+): Promise<void> => {
   const updateFields: any = {};
 
   if (metadata.pages != null) {
@@ -90,7 +104,7 @@ export const updateMediaMetadata = async (mediaId: string, metadata: any): Promi
   const updatedMedia = await Media.findByIdAndUpdate(
     mediaId,
     { $set: updateFields },
-    { new: true }
+    { new: true },
   );
 
   if (!updatedMedia) {
@@ -98,8 +112,9 @@ export const updateMediaMetadata = async (mediaId: string, metadata: any): Promi
   }
 };
 
-
-export const getMediaMetadataById = async (mediaId: string): Promise<IReturnMedia | null> => {
+export const getMediaMetadataById = async (
+  mediaId: string,
+): Promise<IReturnMedia | null> => {
   const media = await Media.findById(mediaId);
 
   if (!media) {
@@ -117,4 +132,3 @@ export const getMediaMetadataById = async (mediaId: string): Promise<IReturnMedi
 
   return mediaMetadata;
 };
-
