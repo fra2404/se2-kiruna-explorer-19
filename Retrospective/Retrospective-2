@@ -64,40 +64,40 @@ sections:
 ## QUALITY MEASURES 
 
 - Unit Testing:
-  - Total hours estimated: 7h30
-  - Total hours spent: 13h25
-  - Nr of automated unit test cases: 48
-  - Coverage (if available): 65.03%
+  - Total hours estimated: 12h30m
+  - Total hours spent: 12h30m
+  - Nr of automated unit test cases: 91
+  - Coverage (if available): 84.67%
+- Integration Testing:
+  - Total hours estimated: 30m
+  - Total hours spent: 22m
+  - Nr of automated unit test cases: 144
 - E2E testing:
-  - Total hours estimated: 1h10
-  - Total hours spent: 1h15
+  - Total hours estimated: 2h
+  - Total hours spent: 2h
 - Code review 
-  - Total hours estimated: 1h
-  - Total hours spent: 30m
+  - Total hours estimated: 3h30m
+  - Total hours spent: 6h20m
   
 
 
 ## ASSESSMENT
 
 - What caused your errors in estimation (if any)?
-  - E2E testing and Code Review. We should increase the time spent on e2e and code review, and try to write better code before opening a new merge request in order to . More time can always be spent on testing and code reviews. While estimating time for tasks
+  - E2E testing and Code Review: we should both increase the time estimated on E2E and code review, and try to write code with superior quality and logic before opening a new merge request. This would allow us to reduce the time spent on code review.
+  - Unit testing: non-uniformity of the code written by different people. Therefore different testing methodology.
   - Unexpected problems while developing a task that increase the time spent on that task
-  - On unit testing, much time was spent on trying to test methods whose code was different than other methods, therefore they had to be tested in a different way
 
 - What lessons did you learn (both positive and negative) in this sprint?
-  - Increase the minimun value in terms of code quality to accept the merge requests
-  - We focused too much on route unit testing, while we found a better way to do that with integration testing
-
-  - Positive thing: the method of managing git repository works very well. It allows us to have a branch (dev) that is always up ad running and to check the code quality before merging to dev
-
-  - When a task is put to done, if it then needs changes afterwards, the person who tested it will put it back in "to do"
-  - Rush situations are still present
+  - We managed the git repository in a very effective way. This allowed us to have a branch (dev) that is always up ad running and to check the code quality before merging into dev.
+  - Increase the minimun value in terms of code quality to accept the merge requests.
+  - Rush situations are still present in some cases. We should better organize our time during the sprint.
+  - The route unit tests are not very effective, since in order to get them working we needed to mock the routes, making the tests useless. We test the routes via integration testing, and run unit test only on services and controllers.
   
 
 - Which improvement goals set in the previous retrospective were you able to achieve?
-  - Assigning stories instead of tasks and having everyone defining their own tasks allowed us to better understand our tasks and estimate them in an effective way
-  - Understanding the stories before start working on them 
-  Take some time to understand the stories that we need to develop before start working on them
+  - We had a better method of assigning stories and tasks.
+  - Estimate a story and began to work on it only after having fully understood it.
   
   
 - Which ones you were not able to achieve? Why?
@@ -108,8 +108,8 @@ sections:
 
   > Propose one or two
   
-  - Better code quality
-  - Rush situations are still present
+  - Increase the code quality by writing cleaner code and trying to reduce to a minimum the new issue opened on SonarCloud.
+  - Try to avoid rush situation as much as possible, by better organizing the workload of individuals.
 
 - One thing you are proud of as a Team!!
-  - We improved from the previous sprint, and these improvements can be seen in the project quality
+  - We improved from the previous sprint, and these improvements can be seen in the quality of the project.
