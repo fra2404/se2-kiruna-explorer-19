@@ -162,7 +162,7 @@ app.post(
         console.log('Metadata saved in the database:', fileMetadata);
 
         // Create the presigned URL for the upload
-        const presignedUrl = `${req.protocol}://${req.get('host')}/upload-file?token=${token}`;
+        const presignedUrl = `${process.env.CDN_URI}/upload-file?token=${token}`;
         const finalUrl = `${req.protocol}://${req.get('host')}/cdn/${targetFolder ? targetFolder + '/' : ''}${id}`;
         res.json({ presignedUrl, finalUrl, fileMetadata });
     },
@@ -232,7 +232,7 @@ app.post(
             // Call the external API with the metadata
             try {
                 const apiResponse = await axios.put(
-                    'http://localhost:5001/api/media/update',
+                    process.env.SERVER || 'http://localhost:5001/api/media/update',
                     fileMetadata,
                     {
                         headers: {
