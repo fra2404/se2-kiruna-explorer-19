@@ -33,7 +33,7 @@ export const uploadMediaService = async (mediaData: any): Promise<IReturnPresign
     };
 
     // Step 3: Make a POST request to CDN to get the presigned URL
-    const response: any = await fetch("http://localhost:3004/generate-presigned-url", {
+    const response: any = await fetch(process.env.CDN_URI + "/generate-presigned-url", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -100,21 +100,21 @@ export const updateMediaMetadata = async (mediaId: string, metadata: any): Promi
 
 
 export const getMediaMetadataById = async (mediaId: string): Promise<IReturnMedia | null> => {
-      const media = await Media.findById(mediaId);
-      
-      if (!media) {
-        throw new Error('Media not found');
-      }
-  
-      const mediaMetadata: IReturnMedia = {
-        id: media.id,
-        filename: media.filename,
-        url: media.relativeUrl,  
-        type: media.type,
-        mimetype: media.mimetype,
-        pages: media.pages,  
-      };
-  
-      return mediaMetadata;
+  const media = await Media.findById(mediaId);
+
+  if (!media) {
+    throw new Error('Media not found');
+  }
+
+  const mediaMetadata: IReturnMedia = {
+    id: media.id,
+    filename: media.filename,
+    url: media.relativeUrl,
+    type: media.type,
+    mimetype: media.mimetype,
+    pages: media.pages,
   };
+
+  return mediaMetadata;
+};
 
