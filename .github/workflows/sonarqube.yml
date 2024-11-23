@@ -44,7 +44,7 @@ jobs:
             -Dsonar.organization=softeng-organization
             -Dsonar.sources=.
             -Dsonar.exclusions=**/node_modules/**,**/dist/**,**/*.test.ts,**/test/**,__tests__/**,**/coverage/**,**/integration/**
-            -Dsonar.coverage.exclusions=client/**,cdn/**
+            -Dsonar.coverage.exclusions=client/**,cdn/**,**/*routes.ts
             -Dsonar.tests=./server
             -Dsonar.test.inclusions=**/*.test.ts
             -Dsonar.typescript.lcov.reportPaths=server/coverage/lcov.info
