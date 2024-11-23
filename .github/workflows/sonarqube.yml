@@ -4,7 +4,7 @@ on:
   push:
     branches:
       - main
-      - dev # Aggiungi dev se vuoi includerlo
+      - dev
   pull_request:
     types: [opened, synchronize, reopened]
 
@@ -14,34 +14,28 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      # Checkout del repository
       - uses: actions/checkout@v4
         with:
-          fetch-depth: 0 # Disabilita il shallow clone per ottenere un'analisi più accurata
+          fetch-depth: 0
 
-      # Configura Node.js per installare le dipendenze (progetto TypeScript)
       - name: Setup Node.js
         uses: actions/setup-node@v3
         with:
-          node-version: '20' # Aggiorna alla versione 20 di Node.js
+          node-version: '20'
 
-      # Installa le dipendenze del progetto
       - name: Install dependencies
         run: npm install
 
-      # Spostati nella cartella server e installa le dipendenze
       - name: Install server dependencies
         run: |
           cd server
           npm install
 
-      # Esegui i test e genera il report di copertura nella cartella server
       - name: Run tests
         run: |
           cd server
           npm test -- --coverage
 
-      # Esegui l'analisi SonarCloud
       - name: SonarCloud Scan
         uses: SonarSource/sonarcloud-github-action@master
         with:
@@ -54,5 +48,5 @@ jobs:
             -Dsonar.test.inclusions=**/*.test.ts
             -Dsonar.typescript.lcov.reportPaths=server/coverage/lcov.info
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }} # Necessario per ottenere le informazioni PR, se presenti
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
