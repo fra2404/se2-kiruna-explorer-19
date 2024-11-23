@@ -1,63 +1,46 @@
-name: SonarCloud Analysis
+name: Build and Analyze
 
 on:
   push:
     branches:
       - main
-      - dev
+      - dev # Aggiungi dev se vuoi includerlo
   pull_request:
-    branches:
-      - main
-      - dev
+    types: [opened, synchronize, reopened]
 
 jobs:
-  sonarqube:
+  sonarcloud:
+    name: SonarCloud Analysis
     runs-on: ubuntu-latest
 
     steps:
       # Checkout del repository
-      - name: Checkout repository
-        uses: actions/checkout@v3
-
-      # Setup Java 17 (usando 'temurin')
-      - name: Setup Java 17
-        uses: actions/setup-java@v3
+      - uses: actions/checkout@v4
         with:
-          java-version: '17'
-          distribution: 'temurin' # Distribuzione corretta per Java 17
+          fetch-depth: 0 # Disabilita il shallow clone per ottenere un'analisi più accurata
 
-      # Setup Node.js per installare dipendenze (progetto TypeScript)
+      # Configura Node.js per installare le dipendenze (progetto TypeScript)
       - name: Setup Node.js
         uses: actions/setup-node@v3
         with:
           node-version: '18'
 
-      # Cache del SonarCloud Scanner per velocizzare i run successivi
-      - name: Cache SonarCloud Scanner
-        uses: actions/cache@v3
-        with:
-          path: ~/.sonar/cache
-          key: ${{ runner.os }}-sonarcloud-cache
-          restore-keys: ${{ runner.os }}-sonarcloud-cache
-
-      # Installazione delle dipendenze
+      # Installa le dipendenze del progetto
       - name: Install dependencies
-        run: |
-          npm install
+        run: npm install
 
-      # Esecuzione del SonarCloud Scanner
-      - name: Run SonarCloud Scanner
-        run: |
-          npx sonar-scanner \
-            -Dsonar.projectKey=Paolino01_se2-kiruna-explorer-19 \
-            -Dsonar.organization=softeng-organization \
-            -Dsonar.sources=. \
-            -Dsonar.exclusions=**/node_modules/**,**/dist/**,**/*.test.ts \
-            -Dsonar.tests=./ \
-            -Dsonar.test.inclusions=**/*.test.ts \
-            -Dsonar.typescript.lcov.reportPaths=coverage/lcov.info \
-            -Dsonar.host.url=https://sonarcloud.io \
-            -Dsonar.login=${{ secrets.SONAR_TOKEN }} \
-            -Dsonar.branch.name=${{ github.ref_name }}
+      # Esegui l'analisi SonarCloud
+      - name: SonarCloud Scan
+        uses: SonarSource/sonarcloud-github-action@master
+        with:
+          args: >
+            -Dsonar.projectKey=Paolino01_se2-kiruna-explorer-19
+            -Dsonar.organization=softeng-organization
+            -Dsonar.sources=.
+            -Dsonar.exclusions=**/node_modules/**,**/dist/**,**/*.test.ts
+            -Dsonar.tests=./
+            -Dsonar.test.inclusions=**/*.test.ts
+            -Dsonar.typescript.lcov.reportPaths=coverage/lcov.info
         env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }} # Necessario per ottenere le informazioni PR, se presenti
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
