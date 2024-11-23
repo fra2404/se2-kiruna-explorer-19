@@ -1,0 +1,53 @@
+name: SonarCloud Analysis
+
+on:
+  push:
+    branches:
+      - main
+      - dev
+  pull_request:
+
+jobs:
+  sonarqube:
+    runs-on: ubuntu-latest
+
+    steps:
+      # Checkout del repository
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      # Setup Node.js per installare dipendenze (progetto TypeScript)
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '18'
+
+      # Cache del SonarCloud Scanner per velocizzare i run successivi
+      - name: Cache SonarCloud Scanner
+        uses: actions/cache@v3
+        with:
+          path: ~/.sonar/cache
+          key: ${{ runner.os }}-sonarcloud-cache
+          restore-keys: ${{ runner.os }}-sonarcloud-cache
+
+      # Installazione delle dipendenze
+      - name: Install dependencies
+        run: |
+          npm install
+
+      # Esecuzione del SonarCloud Scanner
+      - name: Run SonarCloud Scanner
+        run: |
+          npx sonar-scanner \
+            -Dsonar.projectKey=Paolino01_se2-kiruna-explorer-19 \
+            -Dsonar.organization=softeng-organization \
+            -Dsonar.sources=. \
+            -Dsonar.exclusions=**/node_modules/**,**/dist/**,**/*.test.ts \
+            -Dsonar.tests=./ \
+            -Dsonar.test.inclusions=**/*.test.ts \
+            -Dsonar.typescript.lcov.reportPaths=coverage/lcov.info \
+            -Dsonar.host.url=https://sonarcloud.io \
+            -Dsonar.login=${{ secrets.SONAR_TOKEN }} \
+            -Dsonar.branch.name=${{ github.ref_name }}
+        env:
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
