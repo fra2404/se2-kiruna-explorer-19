@@ -39,6 +39,7 @@ interface InputComponentProps {
   maxLength?: number;
   returnObject?: boolean;
   onKeyDown?: (event: React.KeyboardEvent<HTMLInputElement>) => void; // Aggiungi questa proprietà
+  error?: string; // Aggiungi questa proprietà
 }
 
 const mockFlags = {
@@ -83,6 +84,7 @@ const InputComponent: React.FC<InputComponentProps> = ({
   maxLength,
   returnObject = false,
   onKeyDown, // Aggiungi questa proprietà
+  error, // Aggiungi questa proprietà
 }) => {
   const [isEmailValid, setIsEmailValid] = useState<boolean>(true);
   const [isFieldEmpty, setIsFieldEmpty] = useState<boolean>(false);
@@ -167,7 +169,9 @@ const InputComponent: React.FC<InputComponentProps> = ({
 
   const inputClassName = `shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline ${
     type === 'email' && !isEmailValid && isTouched ? 'border-red-500' : ''
-  } ${isFieldEmpty && isTouched ? 'border-red-500' : ''}`;
+  } ${isFieldEmpty && isTouched ? 'border-red-500' : ''} ${
+    error ? 'border-red-500' : ''
+  }`;
 
   const togglePasswordVisibility = () => {
     setShowPassword(!showPassword);
@@ -322,6 +326,7 @@ const InputComponent: React.FC<InputComponentProps> = ({
       {!isFieldEmpty && !isEmailValid && type === 'email' && isTouched && (
         <span className="text-red-500 text-xs italic">Email non valida</span>
       )}
+      {error && <span className="text-red-500 text-xs italic">{error}</span>}
     </div>
   );
 };
