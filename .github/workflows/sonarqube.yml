@@ -31,7 +31,7 @@ jobs:
           cd server
           npm install
 
-      - name: Run tests
+      - name: Run server tests
         run: |
           cd server
           npm test -- --coverage
@@ -43,7 +43,8 @@ jobs:
             -Dsonar.projectKey=Paolino01_se2-kiruna-explorer-19
             -Dsonar.organization=softeng-organization
             -Dsonar.sources=.
-            -Dsonar.exclusions=**/node_modules/**,**/dist/**,**/*.test.ts
+            -Dsonar.exclusions=**/node_modules/**,**/dist/**,**/*.test.ts,**/test/**,__tests__/**,**/coverage/**,**/integration/**
+            -Dsonar.coverage.exclusions=client/**,cdn/**
             -Dsonar.tests=./server
             -Dsonar.test.inclusions=**/*.test.ts
             -Dsonar.typescript.lcov.reportPaths=server/coverage/lcov.info
