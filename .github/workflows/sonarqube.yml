@@ -4,8 +4,11 @@ on:
   push:
     branches:
       - main
-      - dev
+      - dev # Includi dev per le analisi su entrambe le branche
   pull_request:
+    branches:
+      - main
+      - dev # Includi dev anche per le pull request
 
 jobs:
   sonarqube:
@@ -22,18 +25,17 @@ jobs:
         with:
           node-version: '18'
 
-      # Cache del SonarCloud Scanner per velocizzare i run successivi
-      - name: Cache SonarCloud Scanner
+      # Cache per le dipendenze di npm
+      - name: Cache Node.js dependencies
         uses: actions/cache@v3
         with:
-          path: ~/.sonar/cache
-          key: ${{ runner.os }}-sonarcloud-cache
-          restore-keys: ${{ runner.os }}-sonarcloud-cache
+          path: ~/.npm
+          key: ${{ runner.os }}-npm-${{ hashFiles('**/package-lock.json') }}
+          restore-keys: ${{ runner.os }}-npm-
 
       # Installazione delle dipendenze
       - name: Install dependencies
-        run: |
-          npm install
+        run: npm install
 
       # Esecuzione del SonarCloud Scanner
       - name: Run SonarCloud Scanner
@@ -48,6 +50,6 @@ jobs:
             -Dsonar.typescript.lcov.reportPaths=coverage/lcov.info \
             -Dsonar.host.url=https://sonarcloud.io \
             -Dsonar.login=${{ secrets.SONAR_TOKEN }} \
-            -Dsonar.branch.name=${{ github.ref_name }}
+            -Dsonar.branch.name=${{ github.ref_name }}  # Usa la branch corrente (main, dev, ecc.)
         env:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
