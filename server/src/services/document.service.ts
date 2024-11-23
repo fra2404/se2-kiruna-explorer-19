@@ -225,10 +225,7 @@ export const searchDocuments = async (
 
   // Combine keywordQuery and filterQuery using $and
   const query = {
-    $and: [
-      ...(keywordQuery.$and || []),
-      ...(filterQuery.$and || []),
-    ],
+    $and: [...(keywordQuery.$and || []), ...(filterQuery.$and || [])],
   };
 
   const documents = await Document.find(query);

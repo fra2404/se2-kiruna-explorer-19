@@ -14,24 +14,24 @@ import {
   updatingDocument,
   getDocumentByType,
   getDocumentTypes,
-  searchDocuments
+  searchDocuments,
 } from '../services/document.service';
 import {
   addCoordinateService,
   getAllCoordinates,
   getCoordinateById,
-  deleteCoordinateById
+  deleteCoordinateById,
 } from '../services/coordinate.service';
 import {
   uploadMediaService,
-  updateMediaMetadata
+  updateMediaMetadata,
 } from '@services/media.service';
 import {
   getUsers,
   createUser,
   login,
   getMe,
-  logout
+  logout,
 } from '../controllers/user.controllers';
 import {
   addDocumentController,
@@ -40,17 +40,17 @@ import {
   updateDocumentController,
   getDocumentsByTypeController,
   getDocumentTypesController,
-  searchDocumentsController
+  searchDocumentsController,
 } from '../controllers/document.controllers';
 import {
   addCoordinate,
   getAllCoordinatesController,
   getCoordinateByIdController,
-  deleteCoordinateByIdController
+  deleteCoordinateByIdController,
 } from '../controllers/coordinate.controllers';
 import {
   uploadMediaController,
-  UpdateMediaController
+  UpdateMediaController,
 } from '../controllers/media.controllers';
 
 import { IUserResponse } from '../interfaces/user.return.interface';
@@ -58,7 +58,12 @@ import { CustomRequest } from '../interfaces/customRequest.interface';
 import { UserRoleEnum } from '../utils/enums/user-role.enum';
 import { DocTypeEnum } from '../utils/enums/doc-type.enum';
 import { CustomError } from '../utils/customError';
-import { BadConnectionError, DocNotFoundError, PositionError, MediaNotFoundError } from '@utils/errors';
+import {
+  BadConnectionError,
+  DocNotFoundError,
+  PositionError,
+  MediaNotFoundError,
+} from '@utils/errors';
 
 jest.mock('../services/user.service'); //For suite n#1
 jest.mock('../services/document.service'); //For suite n#2
@@ -148,7 +153,7 @@ describe('Tests for user controllers', () => {
           password: 'password123',
           surname: 'Martinez',
           phone: '123456789',
-          role: UserRoleEnum.Visitor
+          role: UserRoleEnum.Visitor,
         },
       };
 
@@ -321,39 +326,39 @@ describe('Tests for user controllers', () => {
       expect(next).toHaveBeenCalledWith(err);
       expect(res.json).not.toHaveBeenCalled();
     });
-  });//getMe
+  }); //getMe
   /* ************************************************** */
 
   //logout
   describe('Tests for logout', () => {
     //test 1
-    test("Should logout a logged user", async () => {
+    test('Should logout a logged user', async () => {
       //Data mock
       res = {
         clearCookie: jest.fn(),
         json: jest.fn(),
-        status: jest.fn(() => res)
+        status: jest.fn(() => res),
       } as unknown as Response;
 
       //In the response "clearCookie" and "jest" were mocked
 
       //Call of logout
       await logout(req as CustomRequest, res as Response, next);
-  
+
       //Here the auth-token is cleared, this process emulate the logout action
-      expect(res.clearCookie).toHaveBeenCalledWith("auth-token", {
+      expect(res.clearCookie).toHaveBeenCalledWith('auth-token', {
         httpOnly: true,
-        secure: process.env.NODE_ENV === "production",
-        sameSite: "strict",
-        path: "/",
+        secure: process.env.NODE_ENV === 'production',
+        sameSite: 'strict',
+        path: '/',
       });
       expect(res.json).toHaveBeenCalledWith({
-        message: "User logged out successfully"
+        message: 'User logged out successfully',
       });
     });
 
     //test 2
-    test("Should throw an error", async () => {
+    test('Should throw an error', async () => {
       //Data mock
       const err = new Error();
 
@@ -368,8 +373,7 @@ describe('Tests for user controllers', () => {
 
       expect(next).toHaveBeenCalledWith(err);
     });
-  });//logout
-
+  }); //logout
 }); //END OF USER CONTROLLERS
 
 /* ******************************************* Suite n#2 - DOCUMENTS ******************************************* */
@@ -585,16 +589,18 @@ describe('Tests for document controllers', () => {
       const err = new DocNotFoundError();
 
       req = {
-        params: { id: "wrongId" }
+        params: { id: 'wrongId' },
       };
-      
+
       //Support functions mocking
-      (getDocumentById as jest.Mock).mockImplementation(async() => { throw err });
+      (getDocumentById as jest.Mock).mockImplementation(async () => {
+        throw err;
+      });
 
       //Call of getDocumentByIdController
       await getDocumentByIdController(req as Request, res as Response, next);
 
-      expect(getDocumentById).toHaveBeenCalledWith("wrongId");
+      expect(getDocumentById).toHaveBeenCalledWith('wrongId');
       expect(next).toHaveBeenCalledWith(err);
       expect(res.status).not.toHaveBeenCalled();
       expect(res.json).not.toHaveBeenCalled();
@@ -764,7 +770,7 @@ describe('Tests for document controllers', () => {
     });
 
     //test 1
-    test("Should return the requested documents successfully", async () => {
+    test('Should return the requested documents successfully', async () => {
       //Support functions mocking
       (getDocumentByType as jest.Mock).mockImplementation(
         async () => mockDocuments[0],
@@ -779,7 +785,7 @@ describe('Tests for document controllers', () => {
     });
 
     //test 2
-    test("Should throw a DocNotFoundError", async () => {
+    test('Should throw a DocNotFoundError', async () => {
       //Data mocking
       const err = new DocNotFoundError();
 
@@ -797,7 +803,7 @@ describe('Tests for document controllers', () => {
     });
 
     //test 3
-    test("Should throw an error if the connection fails", async () => {
+    test('Should throw an error if the connection fails', async () => {
       //Data mocking
       const err = new CustomError('Database Error', 500);
 
@@ -823,7 +829,7 @@ describe('Tests for document controllers', () => {
   //getDocumentTypesController
   describe('Tests for getDocumentTypesController', () => {
     //test 1
-    test("Shoulde retrive all document types", () => {
+    test('Shoulde retrive all document types', () => {
       //Data mock
       const mockDocTypes = [
         { label: 'Agreement', value: DocTypeEnum.Agreement },
@@ -833,22 +839,22 @@ describe('Tests for document controllers', () => {
         { label: 'InformativeDoc', value: DocTypeEnum.InformativeDoc },
         { label: 'MaterialEffects', value: DocTypeEnum.MaterialEffects },
         { label: 'PrescriptiveDoc', value: DocTypeEnum.PrescriptiveDoc },
-        { label: 'TechnicalDoc', value: DocTypeEnum.TechnicalDoc }
+        { label: 'TechnicalDoc', value: DocTypeEnum.TechnicalDoc },
       ];
-  
+
       //Support functions mocking
       (getDocumentTypes as jest.Mock).mockReturnValue(mockDocTypes);
-  
+
       //Call of getDocumentTypesController
       getDocumentTypesController(req as Request, res as Response, next);
-  
+
       expect(res.status).toHaveBeenCalledWith(200);
       expect(res.json).toHaveBeenCalledWith({ docTypes: mockDocTypes });
       expect(next).not.toHaveBeenCalled();
     });
 
     //test 2
-    test("Should throw an error", () => {
+    test('Should throw an error', () => {
       //Data mock
       const err = new Error();
 
@@ -862,60 +868,62 @@ describe('Tests for document controllers', () => {
 
       expect(next).toHaveBeenCalledWith(err);
     });
-  });//getDocumentTypesController
+  }); //getDocumentTypesController
   /* ************************************************** */
 
   //searchDocumentsController
-  describe("Tests for searchDocumentsController", () => {
+  describe('Tests for searchDocumentsController', () => {
     //Data mock
     const mockDocuments = [
-      { id: "1", title: "Title1", coordinates: null },
-      { id: "2", title: "Title2", coordinates: null }
+      { id: '1', title: 'Title1', coordinates: null },
+      { id: '2', title: 'Title2', coordinates: null },
     ];
 
     //test 1
-    test("Should response with the searched documents", async () => {
+    test('Should response with the searched documents', async () => {
       //Input mock
-      const mockKeywords = ["keyword1", "keyword2"];
-    
+      const mockKeywords = ['keyword1', 'keyword2'];
+
       //Request mock
       //With "httpMocks.createRequest" it was possible to create a mock for the right expected request
       const req = httpMocks.createRequest({
         method: 'GET',
         url: '/api/documents',
         query: {
-          keywords: JSON.stringify(mockKeywords)
+          keywords: JSON.stringify(mockKeywords),
         },
       });
-  
+
       //Support functions mocking
-      (searchDocuments as jest.Mock).mockImplementation(async() => mockDocuments);
-  
+      (searchDocuments as jest.Mock).mockImplementation(
+        async () => mockDocuments,
+      );
+
       //Call of searchDocumentsController
       await searchDocumentsController(req as Request, res as Response, next);
-  
+
       expect(res.status).toHaveBeenCalledWith(200);
       expect(res.json).toHaveBeenCalledWith(mockDocuments);
     });
 
     //test 2
-    test("Should throw an error", async () => {
+    test('Should throw an error', async () => {
       //Request mock
-      //The query input format is on purpose wrong (instead of a JSON, was given a string)  
+      //The query input format is on purpose wrong (instead of a JSON, was given a string)
       const req = httpMocks.createRequest({
-          method: 'GET',
-          url: '/api/documents',
-          query: {
-            keywords: "wrongInput"
-          },
-        });
-    
-        //Call of searchDocumentsController
-        await searchDocumentsController(req as Request, res as Response, next);
-    
-        expect(next).toHaveBeenCalledWith(expect.any(Error));
+        method: 'GET',
+        url: '/api/documents',
+        query: {
+          keywords: 'wrongInput',
+        },
+      });
+
+      //Call of searchDocumentsController
+      await searchDocumentsController(req as Request, res as Response, next);
+
+      expect(next).toHaveBeenCalledWith(expect.any(Error));
     });
-  });//searchDocumentsController
+  }); //searchDocumentsController
 }); //END OF DOCUMENT CONTROLLERS
 
 /* ******************************************* Suite n#3 - COORDINATES ******************************************* */
@@ -1112,49 +1120,62 @@ describe('Tests for coordinate controllers', () => {
   /* ************************************************** */
 
   //deleteCoordinateByIdController
-  describe("Tests for deleteCoordinateByIdController", () => {
+  describe('Tests for deleteCoordinateByIdController', () => {
     //test 1
-    test("Should delete the choosen coordinate", async () => {
+    test('Should delete the choosen coordinate', async () => {
       //Data mock
       req = {
-        params: { id: "1" }
+        params: { id: '1' },
       };
 
       //Support functions mocking
-      (deleteCoordinateById as jest.Mock).mockImplementation(async() => true);
+      (deleteCoordinateById as jest.Mock).mockImplementation(async () => true);
 
       //Call of deleteCoordinateByIdController
-      await deleteCoordinateByIdController(req as Request, res as Response, next);
+      await deleteCoordinateByIdController(
+        req as Request,
+        res as Response,
+        next,
+      );
 
-      expect(deleteCoordinateById).toHaveBeenCalledWith("1");
+      expect(deleteCoordinateById).toHaveBeenCalledWith('1');
       expect(res.status).toHaveBeenCalledWith(200);
-      expect(res.json).toHaveBeenCalledWith({ message: 'Coordinate deleted successfully' });
+      expect(res.json).toHaveBeenCalledWith({
+        message: 'Coordinate deleted successfully',
+      });
     });
 
     //test 2
-    test("Should throw PositionError", async () => {
+    test('Should throw PositionError', async () => {
       //Data mock
       req = {
-        params: { id: "wrongId" }
+        params: { id: 'wrongId' },
       };
-      
+
       //Data mock
       const err = new PositionError();
 
       //Support functions mocking
       jest
-        .spyOn(require('../services/coordinate.service'), 'deleteCoordinateById')
+        .spyOn(
+          require('../services/coordinate.service'),
+          'deleteCoordinateById',
+        )
         .mockImplementation(async () => {
           throw err;
         });
 
       //Call of deleteCoordinateByIdController
-      await deleteCoordinateByIdController(req as Request, res as Response, next);
+      await deleteCoordinateByIdController(
+        req as Request,
+        res as Response,
+        next,
+      );
 
-      expect(deleteCoordinateById).toHaveBeenCalledWith("wrongId");
+      expect(deleteCoordinateById).toHaveBeenCalledWith('wrongId');
       expect(next).toHaveBeenCalledWith(err);
     });
-  });//deleteCoordinateByIdController
+  }); //deleteCoordinateByIdController
 }); //END OF COORDINATE CONTROLLERS
 
 /* ******************************************* Suite n#4 - MEDIA ******************************************* */
@@ -1165,7 +1186,7 @@ describe('Tests for media controllers', () => {
   let next: NextFunction;
 
   //uploadMediaController
-  describe("Tests for uploadMediaController", () => {
+  describe('Tests for uploadMediaController', () => {
     afterEach(() => {
       jest.clearAllMocks();
     });
@@ -1174,13 +1195,13 @@ describe('Tests for media controllers', () => {
     beforeEach(() => {
       req = {
         body: {
-          filename: "example.jpg",
+          filename: 'example.jpg',
           size: 1024,
-          mimetype: "image/jpeg",
+          mimetype: 'image/jpeg',
         },
         user: {
-          id: "1",
-        }
+          id: '1',
+        },
       } as unknown as Request;
 
       res = {
@@ -1192,30 +1213,32 @@ describe('Tests for media controllers', () => {
     });
 
     //test 1
-    test("Should upload the given metadata", async () => {
+    test('Should upload the given metadata', async () => {
       //Data mock
       const mockMediaMetadata = {
         url: 'https://cdn.example.com/presigned-url',
       };
 
       const mediaData = {
-        filename: "example.jpg",
+        filename: 'example.jpg',
         size: 1024,
-        mimetype: "image/jpeg",
-        userId: "1",
+        mimetype: 'image/jpeg',
+        userId: '1',
       };
 
       //Support functions mocking
-      (uploadMediaService as jest.Mock).mockImplementation(async() => mockMediaMetadata);
-  
+      (uploadMediaService as jest.Mock).mockImplementation(
+        async () => mockMediaMetadata,
+      );
+
       //Call of uploadMediaController
       await uploadMediaController(req as Request, res as Response, next);
-  
+
       expect(uploadMediaService).toHaveBeenCalledWith(mediaData);
       expect(res.status).toHaveBeenCalledWith(200);
       expect(res.json).toHaveBeenCalledWith({
         message: 'File validated and metadata saved successfully',
-        data: { url: 'https://cdn.example.com/presigned-url' }
+        data: { url: 'https://cdn.example.com/presigned-url' },
       });
     });
 
@@ -1224,37 +1247,41 @@ describe('Tests for media controllers', () => {
       //Data mock
       req = {
         body: req.body,
-        user: undefined
+        user: undefined,
       } as unknown as Request;
 
       //Call of uploadMediaController
       await uploadMediaController(req as CustomRequest, res as Response, next);
 
       expect(res.status).toHaveBeenCalledWith(401);
-      expect(res.json).toHaveBeenCalledWith({ message: 'User not authenticated' });
+      expect(res.json).toHaveBeenCalledWith({
+        message: 'User not authenticated',
+      });
       expect(uploadMediaService).not.toHaveBeenCalled();
     });
 
     //test 3
-    test("Should throw an error if the connection fails", async () => {
+    test('Should throw an error if the connection fails', async () => {
       //Data mock
       const err = new Error('Service error');
 
       //Support functions mocking
-      jest.spyOn(require('@services/media.service'), "uploadMediaService").mockRejectedValue(err);
-  
+      jest
+        .spyOn(require('@services/media.service'), 'uploadMediaService')
+        .mockRejectedValue(err);
+
       //Call of uploadMediaController
       await uploadMediaController(req as CustomRequest, res as Response, next);
-  
+
       expect(next).toHaveBeenCalledWith(err);
       expect(res.status).not.toHaveBeenCalled();
       expect(res.json).not.toHaveBeenCalled();
     });
-  });//uploadMediaController
+  }); //uploadMediaController
   /* ************************************************** */
 
   //UpdateMediaController
-  describe("Tests for UpdateMediaController", () => {
+  describe('Tests for UpdateMediaController', () => {
     afterEach(() => {
       jest.clearAllMocks();
     });
@@ -1263,33 +1290,35 @@ describe('Tests for media controllers', () => {
     beforeEach(() => {
       req = {
         body: {
-          mediaId: "1",
+          mediaId: '1',
           metadata: {
             size: 1024,
             pages: 10,
-          }
-        }
+          },
+        },
       };
-  
+
       res = {
         status: jest.fn().mockReturnThis(),
         json: jest.fn(),
       } as unknown as Response;
-  
+
       next = jest.fn();
     });
 
     //test 1
-    test("Should update the selected media metadata", async () => {
+    test('Should update the selected media metadata', async () => {
       //Support functions mocking
-      (updateMediaMetadata as jest.Mock).mockImplementation(async() => undefined);
-  
+      (updateMediaMetadata as jest.Mock).mockImplementation(
+        async () => undefined,
+      );
+
       //Call of UpdateMediaController
       await UpdateMediaController(req as Request, res as Response, next);
-  
-      expect(updateMediaMetadata).toHaveBeenCalledWith("1", {
+
+      expect(updateMediaMetadata).toHaveBeenCalledWith('1', {
         size: 1024,
-        pages: 10
+        pages: 10,
       });
       expect(res.status).toHaveBeenCalledWith(200);
       expect(res.json).toHaveBeenCalledWith({
@@ -1299,19 +1328,21 @@ describe('Tests for media controllers', () => {
     });
 
     //test 2
-    test("Should throw MediaNotFoundError", async () => {
+    test('Should throw MediaNotFoundError', async () => {
       //Data mock
       const err = new MediaNotFoundError();
 
       //Support functions mocking
-      jest.spyOn(require('@services/media.service'), "updateMediaMetadata").mockRejectedValue(err);
-      
+      jest
+        .spyOn(require('@services/media.service'), 'updateMediaMetadata')
+        .mockRejectedValue(err);
+
       //Call of UpdateMediaController
       await UpdateMediaController(req as Request, res as Response, next);
-  
-      expect(updateMediaMetadata).toHaveBeenCalledWith("1", {
+
+      expect(updateMediaMetadata).toHaveBeenCalledWith('1', {
         size: 1024,
-        pages: 10
+        pages: 10,
       });
       expect(res.status).toHaveBeenCalledWith(err.status);
       expect(res.json).toHaveBeenCalledWith({ message: err.message });
@@ -1319,17 +1350,19 @@ describe('Tests for media controllers', () => {
     });
 
     //test 3
-    test("Should throw an error if the connection fails", async () => {
+    test('Should throw an error if the connection fails', async () => {
       //Data mock
       const err = new Error();
 
       //Support functions mocking
-      jest.spyOn(require('@services/media.service'), "updateMediaMetadata").mockRejectedValue(err);
-  
+      jest
+        .spyOn(require('@services/media.service'), 'updateMediaMetadata')
+        .mockRejectedValue(err);
+
       //Call of UpdateMediaController
       await UpdateMediaController(req as Request, res as Response, next);
-  
-      expect(updateMediaMetadata).toHaveBeenCalledWith("1", {
+
+      expect(updateMediaMetadata).toHaveBeenCalledWith('1', {
         size: 1024,
         pages: 10,
       });
@@ -1337,5 +1370,5 @@ describe('Tests for media controllers', () => {
       expect(res.json).not.toHaveBeenCalled();
       expect(next).toHaveBeenCalledWith(err);
     });
-  });//UpdateMediaController
+  }); //UpdateMediaController
 }); //END OF MEDIA CONTROLLERS

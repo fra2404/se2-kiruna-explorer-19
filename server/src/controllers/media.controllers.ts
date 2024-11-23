@@ -1,8 +1,10 @@
 import { Request, Response, NextFunction } from 'express';
 import { CustomRequest } from '@interfaces/customRequest.interface';
-import { getMediaMetadataById, 
-         updateMediaMetadata, 
-         uploadMediaService } from '@services/media.service';
+import {
+  getMediaMetadataById,
+  updateMediaMetadata,
+  uploadMediaService,
+} from '@services/media.service';
 import { MediaNotFoundError } from '@utils/errors';
 import { CustomError } from '@utils/customError';
 
@@ -64,39 +66,38 @@ import { CustomError } from '@utils/customError';
 
 //upload media
 export const uploadMediaController = async (
-    req: CustomRequest,
-    res: Response,
-    next: NextFunction,
-  ): Promise<void> => {
-    try {
-      // Step 1: Extract data from the request body
-      const { filename, size, mimetype } = req.body;
-  
-      // Step 2: Get the current user ID from the request (from authentication middleware)
-      const userId = req.user?.id;
-      if (!userId) {
-         res.status(401).json({ message: 'User not authenticated' });
-         return;
-      }
-  
-      // Step 3: Call the service and pass the data (file info and user ID)
-      const mediaMetadata = await uploadMediaService({
-        filename,
-        size,
-        mimetype,
-        userId,
-      });
+  req: CustomRequest,
+  res: Response,
+  next: NextFunction,
+): Promise<void> => {
+  try {
+    // Step 1: Extract data from the request body
+    const { filename, size, mimetype } = req.body;
 
-      // Step 4: Return response with metadata and presigned URL
-      res.status(200).json({
-        message: 'File validated and metadata saved successfully',
-        data: mediaMetadata, // This should include the presigned URL and other data
-      });
-    } catch (error) {
-      next(error); // Pass any errors to the global error handler
+    // Step 2: Get the current user ID from the request (from authentication middleware)
+    const userId = req.user?.id;
+    if (!userId) {
+      res.status(401).json({ message: 'User not authenticated' });
+      return;
     }
-  };
-  
+
+    // Step 3: Call the service and pass the data (file info and user ID)
+    const mediaMetadata = await uploadMediaService({
+      filename,
+      size,
+      mimetype,
+      userId,
+    });
+
+    // Step 4: Return response with metadata and presigned URL
+    res.status(200).json({
+      message: 'File validated and metadata saved successfully',
+      data: mediaMetadata, // This should include the presigned URL and other data
+    });
+  } catch (error) {
+    next(error); // Pass any errors to the global error handler
+  }
+};
 
 /**
  * @swagger
@@ -175,36 +176,33 @@ export const uploadMediaController = async (
  *                   description: Error message
  *                   example: Internal Server Error
  */
- 
-  export const UpdateMediaController = async (
-    req: Request,
-    res: Response,
-    next: NextFunction
-  ): Promise<void> => {
-    try {
-      const { mediaId, metadata } = req.body;
-  
-      await updateMediaMetadata(mediaId, metadata);
-  
-      res.status(200).json({
-        message: 'Media metadata updated successfully',
-      });
-    } catch (error: any) {
-      // Handle known errors
-      if (error instanceof MediaNotFoundError || error instanceof CustomError) {
-        res.status(error.status).json({ message: error.message });
-        return;
-      }
 
-      // Pass unexpected errors to global error handler
-      next(error);
+export const UpdateMediaController = async (
+  req: Request,
+  res: Response,
+  next: NextFunction,
+): Promise<void> => {
+  try {
+    const { mediaId, metadata } = req.body;
+
+    await updateMediaMetadata(mediaId, metadata);
+
+    res.status(200).json({
+      message: 'Media metadata updated successfully',
+    });
+  } catch (error: any) {
+    // Handle known errors
+    if (error instanceof MediaNotFoundError || error instanceof CustomError) {
+      res.status(error.status).json({ message: error.message });
+      return;
     }
-  };
 
+    // Pass unexpected errors to global error handler
+    next(error);
+  }
+};
 
-
-
-  /**
+/**
  * @swagger
  * /api/media/{mediaId}:
  *   get:
@@ -262,24 +260,24 @@ export const uploadMediaController = async (
  *                   description: Error message
  *                   example: Media not found
  */
-  //get Media by Id
-  export const getMediaMetadataByIdController = async (
-    req: Request, 
-    res: Response, 
-    next: NextFunction
-  ): Promise<void> => {
-    try {  
-      const mediaMetadata = await getMediaMetadataById(req.params.mediaId);
-  
-      if (!mediaMetadata) {
-        throw new MediaNotFoundError();
-      }
-  
-      res.status(200).json({
-        message: 'Media metadata retrieved successfully',
-        data: mediaMetadata, 
-      });
-    } catch (error) {
-      next(error); // Pass any errors to the global error handler
+//get Media by Id
+export const getMediaMetadataByIdController = async (
+  req: Request,
+  res: Response,
+  next: NextFunction,
+): Promise<void> => {
+  try {
+    const mediaMetadata = await getMediaMetadataById(req.params.mediaId);
+
+    if (!mediaMetadata) {
+      throw new MediaNotFoundError();
     }
-  };
+
+    res.status(200).json({
+      message: 'Media metadata retrieved successfully',
+      data: mediaMetadata,
+    });
+  } catch (error) {
+    next(error); // Pass any errors to the global error handler
+  }
+};

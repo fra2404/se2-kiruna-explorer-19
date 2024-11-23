@@ -35,13 +35,13 @@ router.get(
 /* istanbul ignore next */
 router.delete('/', deleteCoordinateController);
 
-
 router.delete(
   '/:id',
   authenticateUser,
   authorizeRoles('PLANNER', 'DEVELOPER'),
   validateId,
   handleValidationErrors,
-  deleteCoordinateByIdController)
+  deleteCoordinateByIdController,
+);
 
 export const coordinateRoutes = router;

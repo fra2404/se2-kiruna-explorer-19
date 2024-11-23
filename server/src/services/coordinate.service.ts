@@ -4,8 +4,6 @@ import { CustomError } from '../utils/customError';
 import { PositionError } from '../utils/errors';
 import Document from '../schemas/document.schema';
 
-
-
 // Function to get a coordinate by its ID
 export const getCoordinateById = async (
   id: string,
@@ -58,7 +56,6 @@ export const deleteCoordinatesByNames = async (
     throw new CustomError('Internal Server Error', 500);
   }
 };
-
 
 export const deleteCoordinateById = async (id: string): Promise<boolean> => {
   //console.log("Start of delete method");

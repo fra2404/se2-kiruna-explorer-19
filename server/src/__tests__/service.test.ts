@@ -28,27 +28,32 @@ import {
   getDocumentById,
   searchDocuments,
   updatingDocument,
-  getDocumentTypes, 
+  getDocumentTypes,
   getDocumentByType,
-  fetchMedia
+  fetchMedia,
 } from '../services/document.service';
 import {
   addCoordinateService,
   getAllCoordinates,
   getCoordinateById,
-  deleteCoordinateById
+  deleteCoordinateById,
 } from '@services/coordinate.service';
 import {
   getTypeFromMimeType,
   uploadMediaService,
-  updateMediaMetadata
+  updateMediaMetadata,
 } from '@services/media.service';
 
 import { UserRoleEnum } from '../utils/enums/user-role.enum';
 import { DocTypeEnum } from '../utils/enums/doc-type.enum';
 import { LinkTypeEnum } from '@utils/enums/link-type.enum';
 import { CustomError } from '../utils/customError';
-import { DocNotFoundError, UserNotAuthorizedError, PositionError, MediaNotFoundError } from '../utils/errors';
+import {
+  DocNotFoundError,
+  UserNotAuthorizedError,
+  PositionError,
+  MediaNotFoundError,
+} from '../utils/errors';
 import { mock } from 'node:test';
 
 //MOCKS
@@ -288,7 +293,7 @@ describe('Tests for user services', () => {
 
       //Call of loginUser
       await expect(loginUser(wrongMockMail, wrongMockPassword)).rejects.toThrow(
-        err
+        err,
       );
 
       expect(User.findOne).toHaveBeenCalledWith({ email: wrongMockMail });
@@ -339,7 +344,9 @@ describe('Tests for coordinate services', () => {
       };
 
       //Support functions mocking
-      jest.spyOn(Coordinate, 'findById').mockResolvedValue({ toObject: () => mockCoordinate });
+      jest
+        .spyOn(Coordinate, 'findById')
+        .mockResolvedValue({ toObject: () => mockCoordinate });
 
       //Call of getCoordinateById
       const result = await getCoordinateById(coordinateId);
@@ -388,8 +395,12 @@ describe('Tests for coordinate services', () => {
     //test 1
     test('Should successfully save a new coordinate', async () => {
       //Support functions mocking
-      (Coordinate.prototype.save as jest.Mock).mockImplementation(async () => mockCoordinate);
-      (Coordinate.prototype.toObject as jest.Mock).mockReturnValueOnce(mockCoordinate);
+      (Coordinate.prototype.save as jest.Mock).mockImplementation(
+        async () => mockCoordinate,
+      );
+      (Coordinate.prototype.toObject as jest.Mock).mockReturnValueOnce(
+        mockCoordinate,
+      );
 
       //Call of addCoordinateService
       const result = await addCoordinateService(mockCoordinate);
@@ -483,53 +494,65 @@ describe('Tests for coordinate services', () => {
       _id: new mongoose.Schema.Types.ObjectId('1234567890abcdef12345678'),
       coordinates: [45.123, 7.123],
       type: 'Point',
-      name: 'Test Coordinate'
+      name: 'Test Coordinate',
     };
-  
+
     const mockDocument = {
       _id: new mongoose.Schema.Types.ObjectId('abcdef1234567890abcdef12'),
       coordinates: mockCoordinate._id,
     };
 
     //test 1
-    test("Should throw PositionError", async () => {
+    test('Should throw PositionError', async () => {
       //Data mock
       const err = new PositionError();
 
       //Support functions mocking
-      (Coordinate.findById as jest.Mock).mockImplementation(async() => null);
-  
+      (Coordinate.findById as jest.Mock).mockImplementation(async () => null);
+
       //Call of deleteCoordinateById + result check
-      await expect(deleteCoordinateById(mockCoordinate._id.toString())).rejects.toThrow(err);
+      await expect(
+        deleteCoordinateById(mockCoordinate._id.toString()),
+      ).rejects.toThrow(err);
     });
 
     //test 2
-    test("Should throw an error if the coordinate is linked to a document", async () => {
+    test('Should throw an error if the coordinate is linked to a document', async () => {
       //Data mock
-      const err = new CustomError("Coordinate is linked to a document", 400);
-      
+      const err = new CustomError('Coordinate is linked to a document', 400);
+
       //Support functions mocking
-      (Coordinate.findById as jest.Mock).mockImplementation(async() => mockCoordinate);
-      (Document.findOne as jest.Mock).mockImplementation(async() => mockDocument);
-  
+      (Coordinate.findById as jest.Mock).mockImplementation(
+        async () => mockCoordinate,
+      );
+      (Document.findOne as jest.Mock).mockImplementation(
+        async () => mockDocument,
+      );
+
       //Call of deleteCoordinateById + result check
-      await expect(deleteCoordinateById(mockCoordinate._id.toString())).rejects.toThrow(err);
+      await expect(
+        deleteCoordinateById(mockCoordinate._id.toString()),
+      ).rejects.toThrow(err);
     });
 
     //test 3
-    test("Should delete the choosen coordinate", async () => {
+    test('Should delete the choosen coordinate', async () => {
       //Support functions mocking
-      (Coordinate.findById as jest.Mock).mockImplementation(async() => mockCoordinate);
-      (Document.findOne as jest.Mock).mockImplementation(async() => null);
-      (Coordinate.deleteOne as jest.Mock).mockImplementation(async() => {});
+      (Coordinate.findById as jest.Mock).mockImplementation(
+        async () => mockCoordinate,
+      );
+      (Document.findOne as jest.Mock).mockImplementation(async () => null);
+      (Coordinate.deleteOne as jest.Mock).mockImplementation(async () => {});
 
       //Call of deleteCoordinateById
       const result = await deleteCoordinateById(mockCoordinate._id.toString());
 
       expect(result).toBe(true);
-      expect(Coordinate.deleteOne).toHaveBeenCalledWith({ _id: mockCoordinate._id });
+      expect(Coordinate.deleteOne).toHaveBeenCalledWith({
+        _id: mockCoordinate._id,
+      });
     });
-  });//deleteCoordinatesById
+  }); //deleteCoordinatesById
 }); //END OF COORDINATE SERVICES
 
 /* ******************************************* Suite n#3 - DOCUMENTS ******************************************* */
@@ -540,23 +563,27 @@ describe('Tests for document services', () => {
       jest.clearAllMocks();
     });
 
-    //Mocked input  
+    //Mocked input
     const mockDocumentData: IDocument = {
-      title: "Test title",
-      stakeholders: "Company A",
-      scale: "1:1000",
+      title: 'Test title',
+      stakeholders: 'Company A',
+      scale: '1:1000',
       type: DocTypeEnum.Agreement,
-      date: "2000-01-01",
+      date: '2000-01-01',
       connections: [
         {
-          document: new mongoose.Schema.Types.ObjectId("6456e8f9f1e99e2d8c8e84b0"),
+          document: new mongoose.Schema.Types.ObjectId(
+            '6456e8f9f1e99e2d8c8e84b0',
+          ),
           type: LinkTypeEnum.Collateral,
-        }
+        },
       ],
-      language: "EN",
-      media: [new mongoose.Schema.Types.ObjectId("6456e8f9f1e99e2d8c8e84b2")],
-      coordinates: new mongoose.Schema.Types.ObjectId("6456e8f9f1e99e2d8c8e84b3"),
-      summary: "Test summary"
+      language: 'EN',
+      media: [new mongoose.Schema.Types.ObjectId('6456e8f9f1e99e2d8c8e84b2')],
+      coordinates: new mongoose.Schema.Types.ObjectId(
+        '6456e8f9f1e99e2d8c8e84b3',
+      ),
+      summary: 'Test summary',
     };
 
     /*
@@ -578,7 +605,7 @@ describe('Tests for document services', () => {
     };
     */
 
-    //THIS TEST DOESN'T WORK DUE TO AN ERROR IN THE CODE -> "newDocument.save() is not a function" 
+    //THIS TEST DOESN'T WORK DUE TO AN ERROR IN THE CODE -> "newDocument.save() is not a function"
 
     /*
     //test 1
@@ -602,32 +629,38 @@ describe('Tests for document services', () => {
     */
 
     //test 2
-    test("Should throw PositionError if coordinates are not found", async () => {
+    test('Should throw PositionError if coordinates are not found', async () => {
       //Data mocking
       const err = new PositionError();
-      
+
       //Support functions mocking
-      (Coordinate.findById as jest.Mock).mockImplementation(async() => null);
+      (Coordinate.findById as jest.Mock).mockImplementation(async () => null);
 
       //Call of addingDocument
       await expect(addingDocument(mockDocumentData)).rejects.toThrow(err);
 
-      expect(Coordinate.findById).toHaveBeenCalledWith(mockDocumentData.coordinates);
+      expect(Coordinate.findById).toHaveBeenCalledWith(
+        mockDocumentData.coordinates,
+      );
     });
 
     //test 3
     test("Should throw DocNotFoundError if the document specified in the connection doesn't exist", async () => {
       //Data mocking
       const err = new DocNotFoundError();
-      
+
       //Support functions mocking
-      (Coordinate.findById as jest.Mock).mockImplementation(async() => "6456e8f9f1e99e2d8c8e84b3");
-      (Document.findById as jest.Mock).mockImplementation(async() => null);
+      (Coordinate.findById as jest.Mock).mockImplementation(
+        async () => '6456e8f9f1e99e2d8c8e84b3',
+      );
+      (Document.findById as jest.Mock).mockImplementation(async () => null);
 
       //Call of addingDocument
       await expect(addingDocument(mockDocumentData)).rejects.toThrow(err);
 
-      expect(Document.findById).toHaveBeenCalledWith(mockDocumentData.connections![0].document);
+      expect(Document.findById).toHaveBeenCalledWith(
+        mockDocumentData.connections![0].document,
+      );
     });
 
     //TODO: Success case test (test 3)
@@ -652,7 +685,7 @@ describe('Tests for document services', () => {
       { id: 'media1', url: 'https://example.com/media1' },
       { id: 'media2', url: 'https://example.com/media2' },
     ];
-  
+
     const mockDocuments = [
       {
         _id: new mongoose.Types.ObjectId(),
@@ -677,19 +710,28 @@ describe('Tests for document services', () => {
           media: [],
           summary: 'Summary 1',
         }),
-      }
+      },
     ];
 
     //test 1
-    test("Should return all documents with coordinates", async () => {
+    test('Should return all documents with coordinates', async () => {
       //Support functions mocking
-      (Document.find as jest.Mock).mockImplementation(async() => mockDocuments);
-      jest.spyOn(require("../services/coordinate.service.ts"), 'getCoordinateById').mockResolvedValue(mockCoordinate);
-      jest.spyOn(require("../services/document.service"), "fetchMedia").mockResolvedValue(mockMedia);
+      (Document.find as jest.Mock).mockImplementation(
+        async () => mockDocuments,
+      );
+      jest
+        .spyOn(
+          require('../services/coordinate.service.ts'),
+          'getCoordinateById',
+        )
+        .mockResolvedValue(mockCoordinate);
+      jest
+        .spyOn(require('../services/document.service'), 'fetchMedia')
+        .mockResolvedValue(mockMedia);
 
       //Call of getAllDocuments
       const result = await getAllDocuments();
-      
+
       expect(result).toHaveLength(1);
       expect(getCoordinateById).toHaveBeenCalled();
       expect(fetchMedia).toHaveBeenCalled();
@@ -699,7 +741,7 @@ describe('Tests for document services', () => {
       expect(result[0].coordinates).toEqual(mockCoordinate);
       expect(result[0].media).toEqual(mockMedia);
     });
-  });//getAllDocuments
+  }); //getAllDocuments
   /* ************************************************** */
 
   //getDocumentById
@@ -715,14 +757,14 @@ describe('Tests for document services', () => {
       coordinates: [45.123, 7.123],
       name: 'Test coordinate',
     };
-    
+
     const mockMedia = [
       { id: 'media1', url: 'https://example.com/media1' },
       { id: 'media2', url: 'https://example.com/media2' },
     ];
-  
+
     const mockDocument = {
-      id: "1",
+      id: '1',
       title: 'Document 1',
       coordinates: mockCoordinate._id,
       stakeholders: 'Stakeholder 1',
@@ -747,16 +789,25 @@ describe('Tests for document services', () => {
     };
 
     //test 1
-    test("Should return document and its coordinates (if it has any)", async () => {
+    test('Should return document and its coordinates (if it has any)', async () => {
       //Support functions mocking
-      (Document.findById as jest.Mock).mockImplementation(async() => mockDocument);
-      jest.spyOn(require("../services/coordinate.service.ts"), 'getCoordinateById').mockResolvedValue(mockCoordinate);
-      jest.spyOn(require("../services/document.service"), "fetchMedia").mockResolvedValue(mockMedia);
+      (Document.findById as jest.Mock).mockImplementation(
+        async () => mockDocument,
+      );
+      jest
+        .spyOn(
+          require('../services/coordinate.service.ts'),
+          'getCoordinateById',
+        )
+        .mockResolvedValue(mockCoordinate);
+      jest
+        .spyOn(require('../services/document.service'), 'fetchMedia')
+        .mockResolvedValue(mockMedia);
 
       //Call of getDocumentById
-      const result = await getDocumentById("1");
+      const result = await getDocumentById('1');
 
-      expect(Document.findById).toHaveBeenCalledWith("1");
+      expect(Document.findById).toHaveBeenCalledWith('1');
       expect(getCoordinateById).toHaveBeenCalled();
       expect(fetchMedia).toHaveBeenCalled();
       expect(result).toHaveProperty('id');
@@ -767,7 +818,7 @@ describe('Tests for document services', () => {
     });
 
     //test2
-    test("Should throw a DocNotFoundError", async () => {
+    test('Should throw a DocNotFoundError', async () => {
       //Data mocking
       const err = new DocNotFoundError();
 
@@ -775,11 +826,11 @@ describe('Tests for document services', () => {
       (Document.findById as jest.Mock).mockImplementation(async () => null);
 
       //Call of getDocumentById
-      await expect(getDocumentById("2")).rejects.toThrow(err);
+      await expect(getDocumentById('2')).rejects.toThrow(err);
 
-      expect(Document.findById).toHaveBeenCalledWith("2");
+      expect(Document.findById).toHaveBeenCalledWith('2');
     });
-  });//getDocumentById
+  }); //getDocumentById
   /* ************************************************** */
 
   //searchDocuments
@@ -793,7 +844,7 @@ describe('Tests for document services', () => {
       _id: '1',
       type: 'Point',
       coordinates: [45.123, 7.123],
-      name: 'Test Coordinate'
+      name: 'Test Coordinate',
     };
 
     const mockMedia = [
@@ -824,7 +875,7 @@ describe('Tests for document services', () => {
           language: 'EN',
           media: ['media1', 'media2'],
           coordinates: '1',
-        })
+        }),
       },
       {
         id: '2',
@@ -848,25 +899,31 @@ describe('Tests for document services', () => {
           language: 'EN',
           media: ['media3'],
           coordinates: '',
-        })
-      }
+        }),
+      },
     ];
 
     //test 1
     test('Should return searched documents and relative coordinates and media (if there are any)', async () => {
       //Input mock
-      const filters = { 
-        language: "EN", 
-        stakeholders: "Company A",
-        scale: "1:500",
+      const filters = {
+        language: 'EN',
+        stakeholders: 'Company A',
+        scale: '1:500',
         type: DocTypeEnum.Agreement,
-        date: "2000-01-01"
+        date: '2000-01-01',
       };
-      
+
       //Support functions mocking
-      (Document.find as jest.Mock).mockImplementation(async() => [mockDocuments[0]]);
-      (getCoordinateById as jest.Mock).mockImplementation(async() => mockCoordinate);
-      jest.spyOn(require("../services/document.service"), "fetchMedia").mockResolvedValueOnce(mockMedia);
+      (Document.find as jest.Mock).mockImplementation(async () => [
+        mockDocuments[0],
+      ]);
+      (getCoordinateById as jest.Mock).mockImplementation(
+        async () => mockCoordinate,
+      );
+      jest
+        .spyOn(require('../services/document.service'), 'fetchMedia')
+        .mockResolvedValueOnce(mockMedia);
 
       //Call of searchDocuments
       //In order to navigate each if-else block of searchDocuments, all possible filters are added
@@ -887,8 +944,8 @@ describe('Tests for document services', () => {
           date: '2000-01-01',
           language: 'EN',
           media: mockMedia,
-          coordinates: mockCoordinate
-        }
+          coordinates: mockCoordinate,
+        },
       ]);
     });
 
@@ -896,13 +953,13 @@ describe('Tests for document services', () => {
     test('Should return an empty array if no documents match', async () => {
       //Mocked input
       const keywords = ['randomText'];
-      
+
       //Support functions mocking
-      (Document.find as jest.Mock).mockImplementation(async() => []);
-  
+      (Document.find as jest.Mock).mockImplementation(async () => []);
+
       //Call of searchDocuments
       const result = await searchDocuments(keywords);
-  
+
       expect(Document.find).toHaveBeenCalledWith({
         $and: [
           {
@@ -913,10 +970,10 @@ describe('Tests for document services', () => {
           },
         ],
       });
-  
+
       expect(result).toEqual([]);
     });
-  });//searchDocuments
+  }); //searchDocuments
   /* ************************************************** */
 
   //updatingDocument
@@ -940,20 +997,20 @@ describe('Tests for document services', () => {
       language: 'EN',
       media: ['media1', 'media2'],
       coordinates: '1',
-      summary: 'Test summary'
+      summary: 'Test summary',
     };
-  
+
     const mockUpdatedDocument = {
       ...mockDocument,
       title: 'Test document updated',
-      summary: 'Test updated summary'
+      summary: 'Test updated summary',
     };
-  
+
     const mockCoordinate = {
       _id: '1',
       type: 'Point',
       coordinates: [45.123, 7.123],
-      name: 'Test Coordinate'
+      name: 'Test Coordinate',
     };
 
     const mockMedia = [
@@ -964,21 +1021,25 @@ describe('Tests for document services', () => {
     //test 1
     test('Should update the document', async () => {
       //Support functions mocking
-      jest.spyOn(Document, "findByIdAndUpdate").mockResolvedValue({
-        ...mockUpdatedDocument, 
-        toObject: () => mockUpdatedDocument
+      jest.spyOn(Document, 'findByIdAndUpdate').mockResolvedValue({
+        ...mockUpdatedDocument,
+        toObject: () => mockUpdatedDocument,
       });
-      (Coordinate.findById as jest.Mock).mockImplementation(async() => mockCoordinate);
-      (MediaDocument.findById as jest.Mock).mockImplementation(async() => mockMedia);
+      (Coordinate.findById as jest.Mock).mockImplementation(
+        async () => mockCoordinate,
+      );
+      (MediaDocument.findById as jest.Mock).mockImplementation(
+        async () => mockMedia,
+      );
 
       //Call of updatingDocument
       const result = await updatingDocument('1', {
         title: 'Test document updated',
-        summary: 'Test updated summary'
+        summary: 'Test updated summary',
       });
-  
+
       expect(Document.findByIdAndUpdate).toHaveBeenCalled();
-  
+
       expect(result).toEqual({
         id: '1',
         title: 'Test document updated',
@@ -990,7 +1051,7 @@ describe('Tests for document services', () => {
         language: 'EN',
         media: mockMedia,
         coordinates: mockCoordinate,
-        summary: 'Test updated summary'
+        summary: 'Test updated summary',
       });
     });
 
@@ -1000,15 +1061,21 @@ describe('Tests for document services', () => {
       const err = new DocNotFoundError();
 
       //Support functions mocking
-      (Document.findByIdAndUpdate as jest.Mock).mockImplementation(async() => null);
+      (Document.findByIdAndUpdate as jest.Mock).mockImplementation(
+        async () => null,
+      );
 
       //Call of updatingDocument
       await expect(updatingDocument('100', updateData)).rejects.toThrow(err);
-  
-      expect(Document.findByIdAndUpdate).toHaveBeenCalledWith('100', updateData, {
-        new: true,
-        runValidators: true,
-      });
+
+      expect(Document.findByIdAndUpdate).toHaveBeenCalledWith(
+        '100',
+        updateData,
+        {
+          new: true,
+          runValidators: true,
+        },
+      );
     });
 
     //test 3
@@ -1017,14 +1084,19 @@ describe('Tests for document services', () => {
       const updateCoordinate = { coordinates: '1' };
 
       //Support functions mocking
-      jest.spyOn(Document, "findByIdAndUpdate").mockResolvedValue({
-        ...mockDocument, 
-        toObject: () => mockDocument
+      jest.spyOn(Document, 'findByIdAndUpdate').mockResolvedValue({
+        ...mockDocument,
+        toObject: () => mockDocument,
       });
-      (Coordinate.findById as jest.Mock).mockImplementation(async() => mockCoordinate);
+      (Coordinate.findById as jest.Mock).mockImplementation(
+        async () => mockCoordinate,
+      );
 
       //Call of updatingDocument
-      const result = await updatingDocument('1', updateCoordinate as unknown as Partial<IDocument>);
+      const result = await updatingDocument(
+        '1',
+        updateCoordinate as unknown as Partial<IDocument>,
+      );
 
       expect(Coordinate.findById).toHaveBeenCalledWith('1');
       expect(result).toEqual({
@@ -1040,10 +1112,10 @@ describe('Tests for document services', () => {
         coordinates: {
           _id: '1',
           type: 'Point',
-          coordinates: [ 45.123, 7.123 ],
-          name: 'Test Coordinate'
+          coordinates: [45.123, 7.123],
+          name: 'Test Coordinate',
         },
-        summary: 'Test summary'
+        summary: 'Test summary',
       });
     });
 
@@ -1055,14 +1127,19 @@ describe('Tests for document services', () => {
       //This coiche is made to test also the case where a new related media (to the document) is added
 
       //Support functions mocking
-      jest.spyOn(Document, "findByIdAndUpdate").mockResolvedValue({
-        ...mockDocument, 
-        toObject: () => mockDocument
+      jest.spyOn(Document, 'findByIdAndUpdate').mockResolvedValue({
+        ...mockDocument,
+        toObject: () => mockDocument,
       });
-      (MediaDocument.findById as jest.Mock).mockImplementation(async() => mockMedia);
+      (MediaDocument.findById as jest.Mock).mockImplementation(
+        async () => mockMedia,
+      );
 
       //Call of updatingDocument
-      const result = await updatingDocument('1', updateMedia as unknown as Partial<IDocument>);
+      const result = await updatingDocument(
+        '1',
+        updateMedia as unknown as Partial<IDocument>,
+      );
 
       expect(Media.findById).toHaveBeenCalledWith('media3');
       expect(result).toEqual({
@@ -1078,10 +1155,10 @@ describe('Tests for document services', () => {
         coordinates: {
           _id: '1',
           type: 'Point',
-          coordinates: [ 45.123, 7.123 ],
-          name: 'Test Coordinate'
+          coordinates: [45.123, 7.123],
+          name: 'Test Coordinate',
         },
-        summary: 'Test summary'
+        summary: 'Test summary',
       });
     });
 
@@ -1092,15 +1169,20 @@ describe('Tests for document services', () => {
       const err = new PositionError();
 
       //Support functions mocking
-      jest.spyOn(Document, "findByIdAndUpdate").mockResolvedValue({
-        ...mockDocument, 
-        toObject: () => mockDocument
+      jest.spyOn(Document, 'findByIdAndUpdate').mockResolvedValue({
+        ...mockDocument,
+        toObject: () => mockDocument,
       });
-      (Coordinate.findById as jest.Mock).mockImplementation(async() => null);
-  
+      (Coordinate.findById as jest.Mock).mockImplementation(async () => null);
+
       //Call of updatingDocument
-      await expect(updatingDocument('1', updateCoordinate as unknown as Partial<IDocument>)).rejects.toThrow(err);
-  
+      await expect(
+        updatingDocument(
+          '1',
+          updateCoordinate as unknown as Partial<IDocument>,
+        ),
+      ).rejects.toThrow(err);
+
       expect(Coordinate.findById).toHaveBeenCalledWith('2');
     });
 
@@ -1111,20 +1193,24 @@ describe('Tests for document services', () => {
       const err = new MediaNotFoundError();
 
       //Support functions mocking
-      jest.spyOn(Document, "findByIdAndUpdate").mockResolvedValue({
-        ...mockDocument, 
-        toObject: () => mockDocument
+      jest.spyOn(Document, 'findByIdAndUpdate').mockResolvedValue({
+        ...mockDocument,
+        toObject: () => mockDocument,
       });
-      (MediaDocument.findById as jest.Mock).mockImplementation(async() => null);
-  
+      (MediaDocument.findById as jest.Mock).mockImplementation(
+        async () => null,
+      );
+
       //Call of updatingDocument
-      await expect(updatingDocument('1', updateMedia as unknown as Partial<IDocument>)).rejects.toThrow(err);
-  
+      await expect(
+        updatingDocument('1', updateMedia as unknown as Partial<IDocument>),
+      ).rejects.toThrow(err);
+
       expect(MediaDocument.findById).toHaveBeenCalledWith('media3');
     });
 
     //CONNECTIONS UPDATE WILL BE TESTED IN FUTURE
-  });//updatingDocument
+  }); //updatingDocument
   /* ************************************************** */
 
   //deleteDocumentByName won't be tested because the application doesn't use it (it was created for experiments purposes)
@@ -1136,10 +1222,10 @@ describe('Tests for document services', () => {
     });
 
     //test 1
-    test("Should retrieve all documents types", async () => {
+    test('Should retrieve all documents types', async () => {
       //Call of getDocumentTypes
       const result = getDocumentTypes();
-  
+
       expect(result).toEqual([
         { label: 'Agreement', value: DocTypeEnum.Agreement },
         { label: 'Conflict', value: DocTypeEnum.Conflict },
@@ -1148,10 +1234,10 @@ describe('Tests for document services', () => {
         { label: 'InformativeDoc', value: DocTypeEnum.InformativeDoc },
         { label: 'MaterialEffects', value: DocTypeEnum.MaterialEffects },
         { label: 'PrescriptiveDoc', value: DocTypeEnum.PrescriptiveDoc },
-        { label: 'TechnicalDoc', value: DocTypeEnum.TechnicalDoc }
+        { label: 'TechnicalDoc', value: DocTypeEnum.TechnicalDoc },
       ]);
     });
-  });//getDocumentTypes
+  }); //getDocumentTypes
   /* ************************************************** */
 
   //getDocumentByType
@@ -1173,10 +1259,10 @@ describe('Tests for document services', () => {
         language: 'EN',
         media: [],
         coordinates: '1',
-        summary: 'Test summary'
+        summary: 'Test summary',
       },
     ];
-  
+
     const mockCoordinate = {
       id: '1',
       type: 'Point',
@@ -1205,24 +1291,23 @@ describe('Tests for document services', () => {
     */
 
     //test 2
-    test("Should throw a DocNotFoundErr", async () => {
+    test('Should throw a DocNotFoundErr', async () => {
       //Data mock
       const err = new DocNotFoundError();
 
-      (Document.find as jest.Mock).mockImplementation(async() => []);
+      (Document.find as jest.Mock).mockImplementation(async () => []);
 
-      await expect(getDocumentByType("FakeType")).rejects.toThrow(err);
+      await expect(getDocumentByType('FakeType')).rejects.toThrow(err);
 
-      expect(Document.find).toHaveBeenCalledWith({ type: "FakeType" });
+      expect(Document.find).toHaveBeenCalledWith({ type: 'FakeType' });
       expect(getCoordinateById).not.toHaveBeenCalled();
     });
-  });//getDocumentByType
+  }); //getDocumentByType
   /* ************************************************** */
 
   //fetchMedia
-  describe('Tests for getDocumentByType', () => {
-  });//fetchMedia
-});//END OF DOCUMENT SERVICES
+  describe('Tests for getDocumentByType', () => {}); //fetchMedia
+}); //END OF DOCUMENT SERVICES
 
 /* ******************************************* Suite n#4 - MEDIA ******************************************* */
 describe('Tests for media services', () => {
@@ -1250,7 +1335,7 @@ describe('Tests for media services', () => {
       expect(getTypeFromMimeType('text/html')).toBe('text');
       expect(getTypeFromMimeType('text/css')).toBe('text');
     });
-  
+
     //test 4
     test('Should return "unknown" for unsupported, empty or invalid mimetypes', () => {
       expect(getTypeFromMimeType('application/json')).toBe('unknown');
@@ -1259,7 +1344,7 @@ describe('Tests for media services', () => {
       expect(getTypeFromMimeType('')).toBe('unknown');
       expect(getTypeFromMimeType('invalid/mimetype')).toBe('unknown');
     });
-  });//getTypeFromMimeType
+  }); //getTypeFromMimeType
   /* ************************************************** */
 
   //uploadMediaService
@@ -1270,40 +1355,51 @@ describe('Tests for media services', () => {
 
     //Data mock
     const mediaData = {
-      filename: "example.jpg",
-      mimeType: "image/jpeg",
+      filename: 'example.jpg',
+      mimeType: 'image/jpeg',
       size: 1024,
-      userId: "123",
-      folder: "test-folder"
+      userId: '123',
+      folder: 'test-folder',
     };
 
-    const mockPresignedUrl: IReturnPresignedUrl = { url: 'https://cdn.example.com/presigned-url' };
-    const mockFileMetadata: Partial<IMedia> = { relativeUrl: '/uploads/example.jpg' };
+    const mockPresignedUrl: IReturnPresignedUrl = {
+      url: 'https://cdn.example.com/presigned-url',
+    };
+    const mockFileMetadata: Partial<IMedia> = {
+      relativeUrl: '/uploads/example.jpg',
+    };
 
     //test 1
-    test("Should successfully upload a media", async () => {
+    test('Should successfully upload a media', async () => {
       //Data mock
       const newMedia = {
-        _id: "1",
+        _id: '1',
         filename: mediaData.filename,
         relativeUrl: mockFileMetadata.relativeUrl,
-        type: "image",
+        type: 'image',
         mimetype: mediaData.mimeType,
         size: mediaData.size,
         user: mediaData.userId,
         createdAt: new Date(),
-        updatedAt: new Date()
+        updatedAt: new Date(),
       };
 
       const mockFetchedObj: Response = {
         ok: true,
-        json: async () => ({ presignedUrl: mockPresignedUrl, fileMetadata: mockFileMetadata })
+        json: async () => ({
+          presignedUrl: mockPresignedUrl,
+          fileMetadata: mockFileMetadata,
+        }),
       } as Response;
 
       //Support functions mocking
-      (fetch as jest.Mock).mockImplementation(async() => mockFetchedObj);
-      jest.spyOn(require("@services/media.service"), "getTypeFromMimeType").mockResolvedValue("image");
-      (Media.prototype.save as jest.Mock).mockImplementation(async () => newMedia);
+      (fetch as jest.Mock).mockImplementation(async () => mockFetchedObj);
+      jest
+        .spyOn(require('@services/media.service'), 'getTypeFromMimeType')
+        .mockResolvedValue('image');
+      (Media.prototype.save as jest.Mock).mockImplementation(
+        async () => newMedia,
+      );
 
       //Call of uploadMediaService
       const result = await uploadMediaService(mediaData);
@@ -1315,16 +1411,16 @@ describe('Tests for media services', () => {
     });
 
     //test 2
-    test("Should throw an error", async () => {
+    test('Should throw an error', async () => {
       //Data mock
-      const err = new CustomError("Internal Server Error", 400);
+      const err = new CustomError('Internal Server Error', 400);
 
       const mockFetchedObj: Response = {
-        ok: false
+        ok: false,
       } as Response;
 
       //Support functions mocking
-      (fetch as jest.Mock).mockImplementation(async() => mockFetchedObj);
+      (fetch as jest.Mock).mockImplementation(async () => mockFetchedObj);
 
       //Call of uploadMediaService + error check
       await expect(uploadMediaService(mediaData)).rejects.toThrow(err);
@@ -1333,7 +1429,7 @@ describe('Tests for media services', () => {
       expect(getTypeFromMimeType).not.toBeCalled();
       expect(Media.prototype.save).not.toHaveBeenCalled();
     });
-  });//uploadMediaService
+  }); //uploadMediaService
   /* ************************************************** */
 
   //updateMediaMetadata
@@ -1343,22 +1439,24 @@ describe('Tests for media services', () => {
     });
 
     //test 1
-    test("Should successfully update a media", async () => {
+    test('Should successfully update a media', async () => {
       //Data mock
-      const mediaId = "1";
+      const mediaId = '1';
       const metadata = { pages: 10, size: 2048 };
       const mockUpdatedMedia = { id: mediaId, ...metadata };
-  
+
       //Support functions mocking
-      (Media.findByIdAndUpdate as jest.Mock).mockImplementation(async() => mockUpdatedMedia);
-  
+      (Media.findByIdAndUpdate as jest.Mock).mockImplementation(
+        async () => mockUpdatedMedia,
+      );
+
       //Call of updateMediaMetadata
       await updateMediaMetadata(mediaId, metadata);
 
       expect(Media.findByIdAndUpdate).toHaveBeenCalledWith(
         mediaId,
         { $set: { pages: 10, size: 2048 } },
-        { new: true }
+        { new: true },
       );
     });
 
@@ -1382,19 +1480,21 @@ describe('Tests for media services', () => {
     */
 
     //test 3
-    test("Should throw a MediaNotFounderror", async () => {
+    test('Should throw a MediaNotFounderror', async () => {
       //Data mock
-      const mediaId = "100";
+      const mediaId = '100';
       const metadata = { pages: 10, size: 2048 };
       const err = new MediaNotFoundError();
 
       //Support functions mocking
-      (Media.findByIdAndUpdate as jest.Mock).mockImplementation(async() => null);
-  
+      (Media.findByIdAndUpdate as jest.Mock).mockImplementation(
+        async () => null,
+      );
+
       //Call of updateMediaMetadata + error throwing check
       await expect(updateMediaMetadata(mediaId, metadata)).rejects.toThrow(err);
-  
+
       expect(Media.findByIdAndUpdate).toHaveBeenCalled();
     });
-  });//updateMediaMetadata
+  }); //updateMediaMetadata
 }); //END OF MEDIA SERVICES
