@@ -4,11 +4,11 @@ on:
   push:
     branches:
       - main
-      - dev # Includi dev per le analisi su entrambe le branche
+      - dev
   pull_request:
     branches:
       - main
-      - dev # Includi dev anche per le pull request
+      - dev
 
 jobs:
   sonarqube:
@@ -19,23 +19,30 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v3
 
+      # Setup Java 17
+      - name: Setup Java 17
+        uses: actions/setup-java@v3
+        with:
+          java-version: '17'
+
       # Setup Node.js per installare dipendenze (progetto TypeScript)
       - name: Setup Node.js
         uses: actions/setup-node@v3
         with:
           node-version: '18'
 
-      # Cache per le dipendenze di npm
-      - name: Cache Node.js dependencies
+      # Cache del SonarCloud Scanner per velocizzare i run successivi
+      - name: Cache SonarCloud Scanner
         uses: actions/cache@v3
         with:
-          path: ~/.npm
-          key: ${{ runner.os }}-npm-${{ hashFiles('**/package-lock.json') }}
-          restore-keys: ${{ runner.os }}-npm-
+          path: ~/.sonar/cache
+          key: ${{ runner.os }}-sonarcloud-cache
+          restore-keys: ${{ runner.os }}-sonarcloud-cache
 
       # Installazione delle dipendenze
       - name: Install dependencies
-        run: npm install
+        run: |
+          npm install
 
       # Esecuzione del SonarCloud Scanner
       - name: Run SonarCloud Scanner
@@ -50,6 +57,6 @@ jobs:
             -Dsonar.typescript.lcov.reportPaths=coverage/lcov.info \
             -Dsonar.host.url=https://sonarcloud.io \
             -Dsonar.login=${{ secrets.SONAR_TOKEN }} \
-            -Dsonar.branch.name=${{ github.ref_name }}  # Usa la branch corrente (main, dev, ecc.)
+            -Dsonar.branch.name=${{ github.ref_name }}
         env:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
