@@ -23,11 +23,23 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v3
         with:
-          node-version: '18'
+          node-version: '20' # Aggiorna alla versione 20 di Node.js
 
       # Installa le dipendenze del progetto
       - name: Install dependencies
         run: npm install
+
+      # Spostati nella cartella server e installa le dipendenze
+      - name: Install server dependencies
+        run: |
+          cd server
+          npm install
+
+      # Esegui i test e genera il report di copertura nella cartella server
+      - name: Run tests
+        run: |
+          cd server
+          npm test -- --coverage
 
       # Esegui l'analisi SonarCloud
       - name: SonarCloud Scan
@@ -38,9 +50,9 @@ jobs:
             -Dsonar.organization=softeng-organization
             -Dsonar.sources=.
             -Dsonar.exclusions=**/node_modules/**,**/dist/**,**/*.test.ts
-            -Dsonar.tests=./
+            -Dsonar.tests=./server
             -Dsonar.test.inclusions=**/*.test.ts
-            -Dsonar.typescript.lcov.reportPaths=coverage/lcov.info
+            -Dsonar.typescript.lcov.reportPaths=server/coverage/lcov.info
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }} # Necessario per ottenere le informazioni PR, se presenti
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
