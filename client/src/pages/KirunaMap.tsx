@@ -9,7 +9,6 @@ import { useAuth } from '../context/AuthContext';
 import 'leaflet/dist/leaflet.css';
 import Overlay from '../components/organisms/Overlay/Overlay';
 import { Point } from '../components/organisms/coordsOverlay/Point';
-import { Area } from '../components/organisms/coordsOverlay/Area';
 import ClickMarker from '../components/organisms/coordsOverlay/ClickMarker';
 import CustomZoomControl from '../components/molecules/ZoomControl';
 import { Header } from '../components/organisms/Header';
@@ -165,39 +164,21 @@ export default function KirunaMap() {
           }}>
             {Object.entries(coordinates).map(([coordId, coordInfo]: any) => {
               const filteredDocuments = documents.filter((d) => d.coordinates?._id == coordId);
-
-              if (coordInfo.type == 'Point') {
-                if (filteredDocuments.length > 0) {
-                  return (
-                    <Point
-                      key={coordId}
-                      id={coordId}
-                      pointCoordinates={coordInfo.coordinates}
-                      name={coordInfo.name}
-                      coordinates={coordinates}
-                      setCoordinates={setCoordinates}
-                      pointDocuments={filteredDocuments}
-                      allDocuments={documents}
-                      setDocuments={setDocuments}
-                    />
-                  );
-                }
-              } else {
-                if(filteredDocuments.length > 0) {
-                  return (
-                    <Area
-                      key={coordId}
-                      id={coordId}
-                      areaCoordinates={coordInfo.coordinates}
-                      name={coordInfo.name}
-                      coordinates={coordinates}
-                      setCoordinates={setCoordinates}
-                      areaDocuments={filteredDocuments}
-                      allDocuments={documents}
-                      setDocuments={setDocuments}
-                    />
-                  );
-                }
+              if (filteredDocuments.length > 0) {
+                return (
+                  <Point
+                    key={coordId}
+                    id={coordId}
+                    pointCoordinates={coordInfo.coordinates}
+                    name={coordInfo.name}
+                    type={coordInfo.type}
+                    coordinates={coordinates}
+                    setCoordinates={setCoordinates}
+                    pointDocuments={filteredDocuments}
+                    allDocuments={documents}
+                    setDocuments={setDocuments}
+                  />
+                );
               }
             })}
           </MarkerClusterGroup>

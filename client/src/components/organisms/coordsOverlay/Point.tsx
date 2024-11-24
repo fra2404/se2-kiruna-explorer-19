@@ -12,8 +12,9 @@ import { CoordsIconStyle } from '../../molecules/MapIconsStyles';
 
 interface PointProps {
   id: string;
-  pointCoordinates: LatLng;
+  pointCoordinates: LatLng | LatLng[];
   name: string;
+  type: string;
   coordinates: any;
   setCoordinates: (coordinates: any) => void;
   pointDocuments: IDocument[];
@@ -25,6 +26,7 @@ export const Point: React.FC<PointProps> = ({
   id,
   pointCoordinates,
   name,
+  type,
   coordinates,
   setCoordinates,
   pointDocuments,
@@ -37,28 +39,40 @@ export const Point: React.FC<PointProps> = ({
 
   return (
     <>
-      <Marker key={id} position={pointCoordinates} ref={markerRef} icon={
-        new DivIcon({
-          iconSize: [45, 45],
-          className: "pointIcon",
-          html: renderToString(
-            <div style={
-              CoordsIconStyle(pointDocuments, true)
-              }>
-              <span style={{transform: "rotate(45deg)"}}>
-              {pointDocuments.length == 1 ? 
-                <DocumentIcon type={pointDocuments[0].type} stakeholders={pointDocuments[0].stakeholders} /> 
-                :
-                pointDocuments.length
-              }
-              </span>
-            </div>
-          ),
-        })
-      }>
+      <Marker key={id} 
+        position={
+          type == "Point" ? 
+            pointCoordinates as LatLng 
+          : 
+            calculateCentroid(pointCoordinates as LatLng[])
+        }
+        
+        ref={markerRef} 
+        
+        icon={
+          new DivIcon({
+            iconSize: [45, 45],
+            className: "pointIcon",
+            html: renderToString(
+              <div style={
+                CoordsIconStyle(pointDocuments, true)
+                }>
+                <span style={{transform: "rotate(45deg)"}}>
+                {pointDocuments.length == 1 ? 
+                  <DocumentIcon type={pointDocuments[0].type} stakeholders={pointDocuments[0].stakeholders} /> 
+                  :
+                  pointDocuments.length
+                }
+                </span>
+              </div>
+            ),
+            iconAnchor: [10, 41]
+          })
+        }
+      >
         <MapPopup
           name={name}
-          message="Do you want to add a document in this point?"
+          message="Do you want to add a document in this coordinate?"
           markerDocuments={pointDocuments}
           onYesClick={() => {
             markerRef.current?.closePopup();
@@ -93,3 +107,16 @@ export const Point: React.FC<PointProps> = ({
     </>
   );
 };
+
+
+function calculateCentroid(coords: LatLng[]): LatLng {
+  let latSum = 0, lngSum = 0;
+  const n = coords.length;
+
+  coords.forEach((c: any) => {
+    latSum += c[0];
+    lngSum += c[1];
+  });
+
+  return new LatLng(latSum / n, lngSum / n);
+}
