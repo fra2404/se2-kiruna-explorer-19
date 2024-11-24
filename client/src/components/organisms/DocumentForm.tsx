@@ -99,7 +99,6 @@ const DocumentForm = ({
       block: 'start',
       inline: 'nearest',
     });
-    window.scrollBy(0, -150); // Aggiungi un offset di 150px
   };
 
   const documentTypeOptions = [
@@ -392,6 +391,10 @@ const DocumentForm = ({
     }
   };
 
+  const handleStepClick = (step: number) => {
+    setCurrentStep(step);
+  };
+
   return (
     <>
       <Modal
@@ -401,9 +404,15 @@ const DocumentForm = ({
       >
         <div className="relative">
           <div
-            className="fixed top-0 left-0 w-full bg-white z-10000"
             style={{
-              zIndex: 99999,
+              position: 'sticky',
+              top: '-20px',
+              paddingBottom: '10px',
+              paddingTop: '10px',
+              left: '0',
+              width: '100%',
+              backgroundColor: 'white',
+              zIndex: 10000,
             }}
           >
             <button
@@ -411,7 +420,7 @@ const DocumentForm = ({
               className="absolute top-0 right-0 p-2 text-xl text-gray-500 hover:text-gray-700"
             >
               &times;
-            </button>{' '}
+            </button>
             <h2 className="text-center text-2xl font-bold mt-6">
               {selectedDocument ? 'Edit document' : 'Create a new document'}
             </h2>
@@ -456,11 +465,12 @@ const DocumentForm = ({
               ))}
             </div>
           </div>
-          <form className="m-6 pt-32" onSubmit={handleSubmit}>
+          <form className="m-6" onSubmit={handleSubmit}>
             <div className="grid grid-cols-1 gap-x-4 gap-y-2 mt-16">
               <div
                 ref={stepRefs[0]}
                 className={`header-section ${hasErrors(1) ? 'error' : ''} scroll-margin-top`}
+                onClick={() => handleStepClick(1)}
               >
                 <h3 className="header-text text-xl font-bold mb-2">
                   Document Info
@@ -481,6 +491,7 @@ const DocumentForm = ({
               <div
                 ref={stepRefs[1]}
                 className={`header-section ${hasErrors(2) ? 'error' : ''} scroll-margin-top`}
+                onClick={() => handleStepClick(2)}
               >
                 <h3 className="header-text text-xl font-bold mb-2">
                   Description
@@ -500,6 +511,7 @@ const DocumentForm = ({
               <div
                 ref={stepRefs[2]}
                 className={`header-section ${hasErrors(3) ? 'error' : ''} scroll-margin-top`}
+                onClick={() => handleStepClick(3)}
               >
                 <h3 className="header-text text-xl font-bold mb-2">Files</h3>
                 <label>
@@ -522,6 +534,7 @@ const DocumentForm = ({
               <div
                 ref={stepRefs[3]}
                 className={`header-section ${hasErrors(4) ? 'error' : ''} scroll-margin-top`}
+                onClick={() => handleStepClick(4)}
               >
                 <h3 className="header-text text-xl font-bold mb-2">
                   Connections
@@ -547,6 +560,7 @@ const DocumentForm = ({
               <div
                 ref={stepRefs[4]}
                 className={`header-section ${hasErrors(5) ? 'error' : ''} scroll-margin-top`}
+                onClick={() => handleStepClick(5)}
               >
                 <h3 className="header-text text-xl font-bold mb-2">
                   Georeferencing
