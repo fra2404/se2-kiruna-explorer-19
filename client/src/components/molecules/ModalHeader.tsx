@@ -1,3 +1,4 @@
+// ModalHeader.tsx
 import React from 'react';
 import { IoInformationCircleOutline } from 'react-icons/io5';
 import {
