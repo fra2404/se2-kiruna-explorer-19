@@ -447,6 +447,12 @@ const DocumentForm = ({
               ].map((item, i) => (
                 <div key={i} className="flex flex-col items-center mx-2">
                   <button
+                    onClick={() => scrollToStep(i + 1)}
+                    onKeyDown={(e) => {
+                      if (e.key === 'Enter' || e.key === ' ') {
+                        scrollToStep(i + 1);
+                      }
+                    }}
                     className={`p-2 rounded-full ${
                       hasErrors(i + 1)
                         ? 'bg-red-500 text-white'
@@ -454,7 +460,7 @@ const DocumentForm = ({
                           ? 'bg-blue-500 text-white'
                           : 'bg-gray-300 text-gray-700'
                     }`}
-                    onClick={() => scrollToStep(i + 1)}
+                    tabIndex={0} // Ensure the element is focusable
                   >
                     {item.icon}
                   </button>
@@ -466,9 +472,15 @@ const DocumentForm = ({
           <form className="m-6" onSubmit={handleSubmit}>
             <div className="grid grid-cols-1 gap-x-4 gap-y-2 mt-16">
               <div
+                onClick={() => handleStepClick(1)}
+                onKeyDown={(e) => {
+                  if (e.key === 'Enter' || e.key === ' ') {
+                    handleStepClick(1);
+                  }
+                }}
+                tabIndex={0} // Ensure the element is focusable
                 ref={stepRefs[0]}
                 className={`header-section ${hasErrors(1) ? 'error' : ''} scroll-margin-top`}
-                onClick={() => handleStepClick(1)}
               >
                 <h3 className="header-text text-xl font-bold mb-2">
                   Document Info
@@ -487,9 +499,15 @@ const DocumentForm = ({
               </div>
               <hr className="light-divider" />
               <div
+                onClick={() => handleStepClick(2)}
+                onKeyDown={(e) => {
+                  if (e.key === 'Enter' || e.key === ' ') {
+                    handleStepClick(2);
+                  }
+                }}
+                tabIndex={0} // Ensure the element is focusable
                 ref={stepRefs[1]}
                 className={`header-section ${hasErrors(2) ? 'error' : ''} scroll-margin-top`}
-                onClick={() => handleStepClick(2)}
               >
                 <h3 className="header-text text-xl font-bold mb-2">
                   Description
@@ -507,9 +525,15 @@ const DocumentForm = ({
               </div>
               <hr className="light-divider" />
               <div
+                onClick={() => handleStepClick(3)}
+                onKeyDown={(e) => {
+                  if (e.key === 'Enter' || e.key === ' ') {
+                    handleStepClick(3);
+                  }
+                }}
+                tabIndex={0} // Ensure the element is focusable
                 ref={stepRefs[2]}
                 className={`header-section ${hasErrors(3) ? 'error' : ''} scroll-margin-top`}
-                onClick={() => handleStepClick(3)}
               >
                 <h3 className="header-text text-xl font-bold mb-2">Files</h3>
                 <label>
@@ -530,9 +554,15 @@ const DocumentForm = ({
               </div>
               <hr className="light-divider" />
               <div
+                onClick={() => handleStepClick(4)}
+                onKeyDown={(e) => {
+                  if (e.key === 'Enter' || e.key === ' ') {
+                    handleStepClick(4);
+                  }
+                }}
+                tabIndex={0} // Ensure the element is focusable
                 ref={stepRefs[3]}
                 className={`header-section ${hasErrors(4) ? 'error' : ''} scroll-margin-top`}
-                onClick={() => handleStepClick(4)}
               >
                 <h3 className="header-text text-xl font-bold mb-2">
                   Connections
@@ -556,9 +586,15 @@ const DocumentForm = ({
               </div>
               <hr className="light-divider" />
               <div
+                onClick={() => handleStepClick(5)}
+                onKeyDown={(e) => {
+                  if (e.key === 'Enter' || e.key === ' ') {
+                    handleStepClick(5);
+                  }
+                }}
+                tabIndex={0} // Ensure the element is focusable
                 ref={stepRefs[4]}
                 className={`header-section ${hasErrors(5) ? 'error' : ''} scroll-margin-top`}
-                onClick={() => handleStepClick(5)}
               >
                 <h3 className="header-text text-xl font-bold mb-2">
                   Georeferencing
