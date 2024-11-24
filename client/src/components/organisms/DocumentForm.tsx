@@ -36,7 +36,6 @@ import {
 } from '../../utils/interfaces/document.interface';
 
 import './DocumentForm.css';
-import { FaCircleInfo } from 'react-icons/fa6';
 import {
   TbBrandGoogleMaps,
   TbCloudDataConnection,
@@ -71,7 +70,6 @@ const DocumentForm = ({
   coordinates,
   setCoordinates,
   documents,
-  setDocuments,
   showCoordNamePopup = false,
   selectedDocument,
   modalOpen,
