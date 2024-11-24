@@ -36,13 +36,8 @@ import {
 } from '../../utils/interfaces/document.interface';
 
 import './DocumentForm.css';
-import {
-  TbBrandGoogleMaps,
-  TbCloudDataConnection,
-  TbFileDescription,
-} from 'react-icons/tb';
-import { IoInformationCircleOutline } from 'react-icons/io5';
-import { MdOutlineUploadFile } from 'react-icons/md';
+import StepSection from '../molecules/StepSection';
+import ModalHeader from '../molecules/ModalHeader';
 
 Modal.setAppElement('#root');
 
@@ -401,90 +396,23 @@ const DocumentForm = ({
         style={connectionModalStyles}
       >
         <div className="relative">
-          <div
-            style={{
-              position: 'sticky',
-              top: '-20px',
-              paddingBottom: '10px',
-              paddingTop: '10px',
-              left: '0',
-              width: '100%',
-              backgroundColor: 'white',
-              zIndex: 10000,
-            }}
-          >
-            <button
-              onClick={() => setModalOpen(false)}
-              className="absolute top-0 right-0 p-2 text-xl text-gray-500 hover:text-gray-700"
-            >
-              &times;
-            </button>
-            <h2 className="text-center text-2xl font-bold mt-6">
-              {selectedDocument ? 'Edit document' : 'Create a new document'}
-            </h2>
-            <div className="flex justify-between mt-4 space-x-4">
-              {[
-                {
-                  label: 'Document Info',
-                  icon: <IoInformationCircleOutline color="#000" />,
-                },
-                {
-                  label: 'Description',
-                  icon: <TbFileDescription color="#000" />,
-                },
-                {
-                  label: 'Files',
-                  icon: <MdOutlineUploadFile color="#000" />,
-                },
-                {
-                  label: 'Connections',
-                  icon: <TbCloudDataConnection color="#000" />,
-                },
-                {
-                  label: 'Georeferencing',
-                  icon: <TbBrandGoogleMaps color="#000" />,
-                },
-              ].map((item, i) => (
-                <div key={i} className="flex flex-col items-center mx-2">
-                  <button
-                    onClick={() => scrollToStep(i + 1)}
-                    onKeyDown={(e) => {
-                      if (e.key === 'Enter' || e.key === ' ') {
-                        scrollToStep(i + 1);
-                      }
-                    }}
-                    className={`p-2 rounded-full ${
-                      hasErrors(i + 1)
-                        ? 'bg-red-500 text-white'
-                        : currentStep === i + 1
-                          ? 'bg-blue-500 text-white'
-                          : 'bg-gray-300 text-gray-700'
-                    }`}
-                    tabIndex={0} // Ensure the element is focusable
-                  >
-                    {item.icon}
-                  </button>
-                  <span className="mt-1 text-center">{item.label}</span>
-                </div>
-              ))}
-            </div>
-          </div>
+          <ModalHeader
+            currentStep={currentStep}
+            hasErrors={hasErrors}
+            scrollToStep={scrollToStep}
+            setModalOpen={setModalOpen}
+            selectedDocument={selectedDocument}
+          />
           <form className="m-6" onSubmit={handleSubmit}>
             <div className="grid grid-cols-1 gap-x-4 gap-y-2 mt-16">
-              <div
-                onClick={() => handleStepClick(1)}
-                onKeyDown={(e) => {
-                  if (e.key === 'Enter' || e.key === ' ') {
-                    handleStepClick(1);
-                  }
-                }}
-                tabIndex={0} // Ensure the element is focusable
+              <StepSection
+                title="Document Info"
+                showContent={currentStep === 1}
+                toggleContent={() => handleStepClick(1)}
+                hasErrors={hasErrors(1)}
                 ref={stepRefs[0]}
-                className={`header-section ${hasErrors(1) ? 'error' : ''} scroll-margin-top`}
+                showToggle={false}
               >
-                <h3 className="header-text text-xl font-bold mb-2">
-                  Document Info
-                </h3>
                 <Step1
                   title={title}
                   setTitle={setTitle}
@@ -496,22 +424,15 @@ const DocumentForm = ({
                   setIssuanceDate={setIssuanceDate}
                   errors={errors}
                 />
-              </div>
-              <hr className="light-divider" />
-              <div
-                onClick={() => handleStepClick(2)}
-                onKeyDown={(e) => {
-                  if (e.key === 'Enter' || e.key === ' ') {
-                    handleStepClick(2);
-                  }
-                }}
-                tabIndex={0} // Ensure the element is focusable
+              </StepSection>
+              <StepSection
+                title="Description"
+                showContent={currentStep === 2}
+                toggleContent={() => handleStepClick(2)}
+                hasErrors={hasErrors(2)}
                 ref={stepRefs[1]}
-                className={`header-section ${hasErrors(2) ? 'error' : ''} scroll-margin-top`}
+                showToggle={false}
               >
-                <h3 className="header-text text-xl font-bold mb-2">
-                  Description
-                </h3>
                 <Step2
                   description={description}
                   setDescription={setDescription}
@@ -522,28 +443,14 @@ const DocumentForm = ({
                   documentTypeOptions={documentTypeOptions}
                   errors={errors}
                 />
-              </div>
-              <hr className="light-divider" />
-              <div
-                onClick={() => handleStepClick(3)}
-                onKeyDown={(e) => {
-                  if (e.key === 'Enter' || e.key === ' ') {
-                    handleStepClick(3);
-                  }
-                }}
-                tabIndex={0} // Ensure the element is focusable
+              </StepSection>
+              <StepSection
+                title="Files"
+                showContent={showFiles}
+                toggleContent={() => setShowFiles(!showFiles)}
+                hasErrors={hasErrors(3)}
                 ref={stepRefs[2]}
-                className={`header-section ${hasErrors(3) ? 'error' : ''} scroll-margin-top`}
               >
-                <h3 className="header-text text-xl font-bold mb-2">Files</h3>
-                <label>
-                  <input
-                    type="checkbox"
-                    checked={showFiles}
-                    onChange={() => setShowFiles(!showFiles)}
-                  />
-                  Add Files
-                </label>
                 {showFiles && (
                   <Step3
                     files={files}
@@ -551,30 +458,14 @@ const DocumentForm = ({
                     existingFiles={existingFiles}
                   />
                 )}
-              </div>
-              <hr className="light-divider" />
-              <div
-                onClick={() => handleStepClick(4)}
-                onKeyDown={(e) => {
-                  if (e.key === 'Enter' || e.key === ' ') {
-                    handleStepClick(4);
-                  }
-                }}
-                tabIndex={0} // Ensure the element is focusable
+              </StepSection>
+              <StepSection
+                title="Connections"
+                showContent={showConnections}
+                toggleContent={() => setShowConnections(!showConnections)}
+                hasErrors={hasErrors(4)}
                 ref={stepRefs[3]}
-                className={`header-section ${hasErrors(4) ? 'error' : ''} scroll-margin-top`}
               >
-                <h3 className="header-text text-xl font-bold mb-2">
-                  Connections
-                </h3>
-                <label>
-                  <input
-                    type="checkbox"
-                    checked={showConnections}
-                    onChange={() => setShowConnections(!showConnections)}
-                  />
-                  Add Connections
-                </label>
                 {showConnections && (
                   <Step4
                     connections={connections}
@@ -583,30 +474,14 @@ const DocumentForm = ({
                     allDocuments={documents}
                   />
                 )}
-              </div>
-              <hr className="light-divider" />
-              <div
-                onClick={() => handleStepClick(5)}
-                onKeyDown={(e) => {
-                  if (e.key === 'Enter' || e.key === ' ') {
-                    handleStepClick(5);
-                  }
-                }}
-                tabIndex={0} // Ensure the element is focusable
+              </StepSection>
+              <StepSection
+                title="Georeferencing"
+                showContent={showGeoreferencing}
+                toggleContent={() => setShowGeoreferencing(!showGeoreferencing)}
+                hasErrors={hasErrors(5)}
                 ref={stepRefs[4]}
-                className={`header-section ${hasErrors(5) ? 'error' : ''} scroll-margin-top`}
               >
-                <h3 className="header-text text-xl font-bold mb-2">
-                  Georeferencing
-                </h3>
-                <label>
-                  <input
-                    type="checkbox"
-                    checked={showGeoreferencing}
-                    onChange={() => setShowGeoreferencing(!showGeoreferencing)}
-                  />
-                  Add Georeferencing
-                </label>
                 {showGeoreferencing && (
                   <Step5
                     coordinates={coordinates}
@@ -622,7 +497,7 @@ const DocumentForm = ({
                     MapClickHandler={MapClickHandler}
                   />
                 )}
-              </div>
+              </StepSection>
             </div>
             <div className="flex justify-end mt-4">
               <ButtonRounded
