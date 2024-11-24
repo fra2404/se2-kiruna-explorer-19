@@ -2,6 +2,7 @@ import { useState, useRef, useEffect } from 'react';
 import { useMapEvents } from 'react-leaflet';
 import { LatLng } from 'leaflet';
 import Modal from 'react-modal';
+import { FaChevronDown, FaChevronRight } from 'react-icons/fa';
 
 import ConnectionForm from './documentConnections/ConnectionForm';
 import ButtonRounded from '../atoms/button/ButtonRounded';
@@ -36,8 +37,9 @@ import {
 } from '../../utils/interfaces/document.interface';
 
 import './DocumentForm.css';
-import StepSection from '../molecules/StepSection';
+import LightDivider from '../atoms/light-divider/light-divider';
 import ModalHeader from '../molecules/ModalHeader';
+import ToggleButton from '../atoms/ToggleButton';
 
 Modal.setAppElement('#root');
 
@@ -405,14 +407,20 @@ const DocumentForm = ({
           />
           <form className="m-6" onSubmit={handleSubmit}>
             <div className="grid grid-cols-1 gap-x-4 gap-y-2 mt-16">
-              <StepSection
-                title="Document Info"
-                showContent={currentStep === 1}
-                toggleContent={() => handleStepClick(1)}
-                hasErrors={hasErrors(1)}
+              <div
+                onClick={() => handleStepClick(1)}
+                onKeyDown={(e) => {
+                  if (e.key === 'Enter' || e.key === ' ') {
+                    handleStepClick(1);
+                  }
+                }}
+                tabIndex={0} // Ensure the element is focusable
                 ref={stepRefs[0]}
-                showToggle={false}
+                className={`header-section ${hasErrors(1) ? 'error' : ''} scroll-margin-top`}
               >
+                <h3 className="header-text text-xl font-bold mb-2">
+                  Document Info
+                </h3>
                 <Step1
                   title={title}
                   setTitle={setTitle}
@@ -424,15 +432,23 @@ const DocumentForm = ({
                   setIssuanceDate={setIssuanceDate}
                   errors={errors}
                 />
-              </StepSection>
-              <StepSection
-                title="Description"
-                showContent={currentStep === 2}
-                toggleContent={() => handleStepClick(2)}
-                hasErrors={hasErrors(2)}
+              </div>
+              <LightDivider />
+              <div
+                onClick={() => handleStepClick(2)}
+                onKeyDown={(e) => {
+                  if (e.key === 'Enter' || e.key === ' ') {
+                    handleStepClick(2);
+                  }
+                }}
+                tabIndex={0} // Ensure the element is focusable
                 ref={stepRefs[1]}
-                showToggle={false}
+                className={`header-section ${hasErrors(2) ? 'error' : ''} scroll-margin-top`}
               >
+                <h3 className="header-text text-xl font-bold mb-2">
+                  Description
+                </h3>
+
                 <Step2
                   description={description}
                   setDescription={setDescription}
@@ -443,14 +459,25 @@ const DocumentForm = ({
                   documentTypeOptions={documentTypeOptions}
                   errors={errors}
                 />
-              </StepSection>
-              <StepSection
-                title="Files"
-                showContent={showFiles}
-                toggleContent={() => setShowFiles(!showFiles)}
-                hasErrors={hasErrors(3)}
+              </div>
+              <LightDivider />
+              <div
+                onClick={() => setShowFiles(!showFiles)}
+                onKeyDown={(e) => {
+                  if (e.key === 'Enter' || e.key === ' ') {
+                    setShowFiles(!showFiles);
+                  }
+                }}
+                tabIndex={0} // Ensure the element is focusable
                 ref={stepRefs[2]}
+                className={`header-section ${hasErrors(3) ? 'error' : ''} scroll-margin-top`}
               >
+                <h3 className="header-text text-xl font-bold mb-2">
+                  Files
+                  <button className="ml-2">
+                    {showFiles ? <FaChevronDown /> : <FaChevronRight />}
+                  </button>
+                </h3>
                 {showFiles && (
                   <Step3
                     files={files}
@@ -458,14 +485,23 @@ const DocumentForm = ({
                     existingFiles={existingFiles}
                   />
                 )}
-              </StepSection>
-              <StepSection
-                title="Connections"
-                showContent={showConnections}
-                toggleContent={() => setShowConnections(!showConnections)}
-                hasErrors={hasErrors(4)}
+              </div>
+              <LightDivider />
+              <div
+                onClick={() => setShowConnections(!showConnections)}
+                onKeyDown={(e) => {
+                  if (e.key === 'Enter' || e.key === ' ') {
+                    setShowConnections(!showConnections);
+                  }
+                }}
+                tabIndex={0} // Ensure the element is focusable
                 ref={stepRefs[3]}
+                className={`header-section ${hasErrors(4) ? 'error' : ''} scroll-margin-top`}
               >
+                <h3 className="header-text text-xl font-bold mb-2">
+                  Connections
+                  <ToggleButton showContent={showConnections} />
+                </h3>
                 {showConnections && (
                   <Step4
                     connections={connections}
@@ -474,14 +510,29 @@ const DocumentForm = ({
                     allDocuments={documents}
                   />
                 )}
-              </StepSection>
-              <StepSection
-                title="Georeferencing"
-                showContent={showGeoreferencing}
-                toggleContent={() => setShowGeoreferencing(!showGeoreferencing)}
-                hasErrors={hasErrors(5)}
+              </div>
+              <LightDivider />
+              <div
+                onClick={() => setShowGeoreferencing(!showGeoreferencing)}
+                onKeyDown={(e) => {
+                  if (e.key === 'Enter' || e.key === ' ') {
+                    setShowGeoreferencing(!showGeoreferencing);
+                  }
+                }}
+                tabIndex={0} // Ensure the element is focusable
                 ref={stepRefs[4]}
+                className={`header-section ${hasErrors(5) ? 'error' : ''} scroll-margin-top`}
               >
+                <h3 className="header-text text-xl font-bold mb-2">
+                  Georeferencing
+                  <button className="ml-2">
+                    {showGeoreferencing ? (
+                      <FaChevronDown />
+                    ) : (
+                      <FaChevronRight />
+                    )}
+                  </button>
+                </h3>
                 {showGeoreferencing && (
                   <Step5
                     coordinates={coordinates}
@@ -497,7 +548,7 @@ const DocumentForm = ({
                     MapClickHandler={MapClickHandler}
                   />
                 )}
-              </StepSection>
+              </div>
             </div>
             <div className="flex justify-end mt-4">
               <ButtonRounded
