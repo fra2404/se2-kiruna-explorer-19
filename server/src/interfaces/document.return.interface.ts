@@ -1,5 +1,6 @@
 import { ICoordinate } from '@interfaces/coordinate.interface';
 import { DocTypeEnum } from '@utils/enums/doc-type.enum';
+import { StakeholderEnum } from '@utils/enums/stakeholder.enum';
 import { LinkTypeEnum } from '@utils/enums/link-type.enum';
 import { IConnection } from './document.interface';
 import { ObjectId } from 'mongoose';
@@ -8,7 +9,7 @@ import { IReturnMedia } from './media.return.interface';
 export interface IDocumentResponse {
   id: string;
   title: string;
-  stakeholders?: string;
+  stakeholders?: StakeholderEnum;
   scale?: string;
   type: DocTypeEnum;
   date: string;

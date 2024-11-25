@@ -2,6 +2,7 @@ import { body, param } from 'express-validator';
 import { IConnection } from '@interfaces/document.interface';
 import mongoose from 'mongoose';
 
+
 export const validateAddDocument = [
   body('title')
     .notEmpty()
@@ -11,8 +12,24 @@ export const validateAddDocument = [
   body('stakeholders')
     .notEmpty()
     .withMessage('Stakeholders is required')
-    .isString()
-    .withMessage('Stakeholders must be a string'),
+    .isArray()
+    .withMessage('Stakeholders must be an array')
+    .custom((stakeholders: string[]) => {
+      const validStakeholders = [
+        'LKAB',
+        'Municipalty',
+        'RegionalAuthority',
+        'ArchitectureFirms',
+        'Citizens',
+        'Others',
+      ];
+      stakeholders.forEach((stakeholder) => {
+        if (!validStakeholders.includes(stakeholder)) {
+          throw new Error(`Invalid stakeholder: ${stakeholder}`);
+        }
+      });
+      return true; 
+    }),
   body('scale')
     .notEmpty()
     .withMessage('Scale is required')
@@ -127,8 +144,30 @@ export const validateUpdateDocument = [
   body('title').optional().isString().withMessage('Title must be a string'),
   body('stakeholders')
     .optional()
-    .isString()
-    .withMessage('Stakeholders must be a string'),
+    .isArray()
+    .withMessage('Stakeholders must be an array')
+    .custom((stakeholders) => {
+      if (Array.isArray(stakeholders) && stakeholders.length === 0) {
+        throw new Error('Stakeholders cannot be an empty array');
+      }
+      return true;
+    })
+    .custom((stakeholders: string[]) => {
+      const validStakeholders = [
+        'LKAB',
+        'Municipalty',
+        'RegionalAuthority',
+        'ArchitectureFirms',
+        'Citizens',
+        'Others',
+      ];
+      stakeholders.forEach((stakeholder) => {
+        if (!validStakeholders.includes(stakeholder)) {
+          throw new Error(`Invalid stakeholder: ${stakeholder}`);
+        }
+      });
+      return true; 
+    }),
   body('scale').optional().isString().withMessage('Scale must be a string'),
   body('type')
     .optional()
