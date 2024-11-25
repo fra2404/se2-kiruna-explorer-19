@@ -1,6 +1,6 @@
 import { useState, useEffect, useContext } from 'react';
-import { MapContainer, TileLayer } from 'react-leaflet';
-import { DivIcon, LatLng, LatLngExpression } from 'leaflet';
+import { TileLayer } from 'react-leaflet';
+import { DivIcon, LatLng } from 'leaflet';
 import API from '../API';
 import FeedbackContext from '../context/FeedbackContext';
 import MapStyleContext from '../context/MapStyleContext';
@@ -18,8 +18,7 @@ import MarkerClusterGroup from 'react-leaflet-markercluster';
 import { ManageCoordsModal } from '../components/organisms/modals/ManageCoordsModal';
 import { renderToString } from 'react-dom/server';
 import { UserRoleEnum } from '../utils/interfaces/user.interface';
-
-export const kirunaLatLngCoords: LatLngExpression = [67.85572, 20.22513];
+import CustomMap from '../components/molecules/CustomMap';
 
 export const modalStyles = {
   content: {
@@ -114,20 +113,7 @@ export default function KirunaMap() {
             setDocuments={setDocuments} />
         }
 
-        <MapContainer
-          style={{ width: '100%', height: '100%', zIndex: 0 }}
-          center={kirunaLatLngCoords}
-          zoom={13}
-          doubleClickZoom={false}
-          scrollWheelZoom={true}
-          minZoom={9}
-          zoomControl={false}
-          touchZoom={true}
-          maxBounds={[
-            [67.8, 19.9],
-            [67.9, 20.5],
-          ]}
-          maxBoundsViscosity={0.9}>
+        <CustomMap>
           {mapType === 'osm' ? (
             <TileLayer
               attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
@@ -218,7 +204,7 @@ export default function KirunaMap() {
             coordinates={coordinates}
             setCoordinates={setCoordinates}
             documents={documents} />
-        </MapContainer>
+        </CustomMap>
       </div>
     </>
   );

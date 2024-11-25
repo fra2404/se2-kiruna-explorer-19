@@ -1,6 +1,5 @@
 import Modal from 'react-modal';
-import { kirunaLatLngCoords } from '../../../pages/KirunaMap';
-import { MapContainer, Marker, Polygon, TileLayer } from 'react-leaflet';
+import { Marker, Polygon, TileLayer } from 'react-leaflet';
 import { useContext, useRef } from 'react';
 import MapStyleContext from '../../../context/MapStyleContext';
 import CustomZoomControl from '../../molecules/ZoomControl';
@@ -10,6 +9,7 @@ import { renderToString } from 'react-dom/server';
 import { DivIcon } from 'leaflet';
 import { DeleteCoordPopup } from '../../molecules/popups/DeleteCoordPopup';
 import API from '../../../API';
+import CustomMap from '../../molecules/CustomMap';
 
 interface ManageCoordsModalProps {
   manageCoordsModalOpen: boolean,
@@ -51,22 +51,7 @@ export const ManageCoordsModal: React.FC<ManageCoordsModalProps> = ({
       onRequestClose={() => setManageCoordsModalOpen(false)}
     >
       <div className="w-full rounded shadow-md border h-full">
-        <MapContainer
-          style={{ width: '100%', height: '100%', zIndex: 10 }}
-          center={kirunaLatLngCoords}
-          zoom={13}
-          doubleClickZoom={false}
-          scrollWheelZoom={true}
-          minZoom={9}
-          zoomControl={false}
-          touchZoom={true}
-          maxBounds={[
-            [67.8, 19.9],
-            [67.9, 20.5],
-          ]}
-          maxBoundsViscosity={0.9}
-        >
-          
+        <CustomMap>
           {mapType === 'osm' ? (
             <TileLayer
               attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
@@ -157,7 +142,7 @@ export const ManageCoordsModal: React.FC<ManageCoordsModalProps> = ({
 
           <CustomZoomControl />
 
-        </MapContainer>
+        </CustomMap>
       </div>
     </Modal>
   );
