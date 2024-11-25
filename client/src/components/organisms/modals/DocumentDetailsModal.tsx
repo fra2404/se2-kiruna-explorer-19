@@ -8,6 +8,7 @@ import DocumentForm from '../DocumentForm';
 import { IDocument } from '../../../utils/interfaces/document.interface';
 import { useState } from 'react';
 import { CDN_URL } from '../../../utils/constants';
+import { nanoid } from 'nanoid';
 
 interface DocumentDetailsModalProps {
   document: IDocument;
@@ -67,11 +68,7 @@ const DocumentDetailsModal: React.FC<DocumentDetailsModalProps> = ({
             <a href={CDN_URL + m.url} target="blank">
               {m.filename}
             </a>
-            {document.media
-              ? i != document.media.length - 1
-                ? ' - '
-                : ''
-              : ''}
+            {(document.media && i != document.media.length - 1) ? ' - ' : ''}
             {/* The above check on document.media is always true, but typescript does not know that and returns an error without that check */}
           </span>
         );
@@ -92,8 +89,8 @@ const DocumentDetailsModal: React.FC<DocumentDetailsModalProps> = ({
 
         {/* Middle section */}
         <div className="col-start-3 col-span-5 border-r border-l px-2 overflow-x-hidden">
-          {list.map((item, index) => (
-            <div key={index}>
+          {list.map((item) => (
+            <div key={nanoid()}>
               {item.label}: <span className="font-bold">{item.content}</span>
             </div>
           ))}

@@ -1,6 +1,5 @@
 import React, { useContext } from 'react';
 import {
-  MapContainer,
   TileLayer,
   Marker,
   Tooltip,
@@ -10,7 +9,7 @@ import { LatLng } from 'leaflet';
 import InputComponent from '../atoms/input/input';
 import NamePopup from '../molecules/popups/NamePopup';
 import MapStyleContext from '../../context/MapStyleContext';
-import { kirunaLatLngCoords } from '../../pages/KirunaMap';
+import CustomMap from '../molecules/CustomMap';
 import CustomZoomControl from '../molecules/ZoomControl';
 
 interface MapSectionProps {
@@ -80,21 +79,7 @@ const MapSection: React.FC<MapSectionProps> = ({
           />
         </div>
 
-        <MapContainer
-          style={{ width: '100%', height: '100%', zIndex: 10 }}
-          center={position ? position : kirunaLatLngCoords}
-          zoom={13}
-          doubleClickZoom={false}
-          scrollWheelZoom={true}
-          minZoom={9}
-          zoomControl={false}
-          touchZoom={true}
-          maxBounds={[
-            [67.8, 19.9],
-            [67.9, 20.5],
-          ]}
-          maxBoundsViscosity={0.9}
-        >
+        <CustomMap center={position}>
           {mapType === 'osm' ? (
             <TileLayer
               attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
@@ -148,7 +133,7 @@ const MapSection: React.FC<MapSectionProps> = ({
           <MapClickHandler />
 
           <CustomZoomControl />
-        </MapContainer>
+        </CustomMap>
       </div>
     </div>
   );

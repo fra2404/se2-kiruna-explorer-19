@@ -139,12 +139,12 @@ const DocumentForm = ({
   ];
 
   // Document information
-  const [title, setTitle] = useState(selectedDocument?.title || '');
+  const [title, setTitle] = useState(selectedDocument?.title ?? '');
   const [stakeholders, setStakeholders] = useState<string | undefined>(
-    selectedDocument?.stakeholders || undefined,
+    selectedDocument?.stakeholders ?? undefined,
   );
   const [scale, setScale] = useState<string | undefined>(
-    selectedDocument?.scale || '',
+    selectedDocument?.scale ?? '',
   );
   const [issuanceDate, setIssuanceDate] = useState(
     selectedDocument?.date
@@ -152,16 +152,16 @@ const DocumentForm = ({
       : new Date().toISOString().split('T')[0],
   );
   const [docType, setDocType] = useState<string | undefined>(
-    selectedDocument?.type || undefined,
+    selectedDocument?.type ?? undefined,
   );
   const [connections, setConnections] = useState<Connection[]>(
     selectedDocument?.connections?.map((c) => {
       return { type: c.type, relatedDocument: c.document };
     }) || [],
   );
-  const [language, setLanguage] = useState(selectedDocument?.language || '');
+  const [language, setLanguage] = useState(selectedDocument?.language ?? '');
   const [description, setDescription] = useState(
-    selectedDocument?.summary || '',
+    selectedDocument?.summary ?? '',
   );
 
   // Georeferencing information
@@ -251,8 +251,9 @@ const DocumentForm = ({
 
   const handleSaveResource = async () => {
     const media_ids: string[] = [];
-    for (let i = 0; i < files.length; i++) {
-      const token = await addResource(files[i]);
+    // Call here the API to save the media file for each file:
+    for (let f of files) {
+      const token = await addResource(f);
       media_ids.push(token);
     }
     return media_ids;
@@ -297,20 +298,19 @@ const DocumentForm = ({
         showToastMessage('Error creating coordinate:' + error, 'error');
       }
     } else {
-      if (connectToMap) coordId = selectedCoordId;
-      else coordId = undefined;
+      coordId = connectToMap ? selectedCoordId : undefined;
     }
 
     const documentData = {
-      id: selectedDocument?.id || '',
+      id: selectedDocument?.id ?? '',
       title,
-      stakeholders: stakeholders || '',
-      scale: scale || '',
-      type: docType || '',
+      stakeholders: stakeholders ?? '',
+      scale: scale ?? '',
+      type: docType ?? '',
       language,
       summary: description,
       date: issuanceDate,
-      coordinates: coordId || undefined,
+      coordinates: coordId ?? undefined,
       connections: connections.map((conn) => ({
         document: conn.relatedDocument,
         type: conn.type,
@@ -487,7 +487,7 @@ const DocumentForm = ({
                   onClick={() => setShowFiles(!showFiles)}
                 >
                   Files
-                  <span className='align-middle'>
+                  <span className="align-middle">
                     <ToggleButton
                       showContent={showFiles}
                       onToggle={() => setShowFiles(!showFiles)}
@@ -518,7 +518,7 @@ const DocumentForm = ({
                   onClick={() => setShowConnections(!showConnections)}
                 >
                   Connections
-                  <span className='align-middle'>
+                  <span className="align-middle">
                     <ToggleButton
                       showContent={showConnections}
                       onToggle={() => setShowConnections(!showConnections)}
@@ -539,7 +539,7 @@ const DocumentForm = ({
                 onKeyDown={(e) => {
                   if (e.key === 'Enter' || e.key === ' ') {
                     setShowGeoreferencing(!showGeoreferencing);
-                    setConnectToMap(!connectToMap)
+                    setConnectToMap(!connectToMap);
                   }
                 }}
                 tabIndex={0} // Ensure the element is focusable
@@ -548,13 +548,19 @@ const DocumentForm = ({
               >
                 <h3
                   className="header-text text-xl font-bold mb-2 cursor-pointer"
-                  onClick={() => {setShowGeoreferencing(!showGeoreferencing); setConnectToMap(!connectToMap)}}
+                  onClick={() => {
+                    setShowGeoreferencing(!showGeoreferencing);
+                    setConnectToMap(!connectToMap);
+                  }}
                 >
                   Georeferencing
-                  <span className='align-middle'>
+                  <span className="align-middle">
                     <ToggleButton
                       showContent={showGeoreferencing}
-                      onToggle={() => {setShowGeoreferencing(!showGeoreferencing); setConnectToMap(!connectToMap)}}
+                      onToggle={() => {
+                        setShowGeoreferencing(!showGeoreferencing);
+                        setConnectToMap(!connectToMap);
+                      }}
                     />
                   </span>
                 </h3>
