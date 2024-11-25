@@ -12,7 +12,6 @@ import {
 // import { addingDocument, deleteDocumentByName, getAllDocuments, getDocumentById, updatingDocument } from '../services/document.service';
 import { IDocument } from '@interfaces/document.interface';
 import { IDocumentResponse } from '@interfaces/document.return.interface';
-import { ICoordinate } from '@interfaces/coordinate.interface';
 import { DocNotFoundError } from '@utils/errors';
 
 /**
@@ -29,8 +28,17 @@ import { DocNotFoundError } from '@utils/errors';
  *           type: string
  *           description: The title of the document
  *         stakeholders:
- *           type: string
- *           description: The stakeholders of the document
+ *           type: array
+ *             items:
+ *              type: string
+ *              description: The stakeholders of the document
+ *              enum:
+ *                - LKAB
+ *                - Municipalty
+ *                - RegionalAuthority
+ *                - ArchitectureFirms
+ *                - Citizens
+ *                - Others
  *         scale:
  *           type: string
  *           description: The scale of the document

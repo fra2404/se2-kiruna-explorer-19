@@ -1,4 +1,5 @@
 import { DocTypeEnum } from '@utils/enums/doc-type.enum';
+import { StakeholderEnum } from '@utils/enums/stakeholder.enum';
 import { LinkTypeEnum } from '@utils/enums/link-type.enum';
 import { ObjectId } from 'mongoose';
 
@@ -9,7 +10,7 @@ export interface IConnection {
 }
 
 export interface IDocumentFilters {
-  stakeholders?: string;
+  stakeholders?: StakeholderEnum;
   scale?: string;
   type?: DocTypeEnum;
   date?: string;
@@ -18,7 +19,7 @@ export interface IDocumentFilters {
 
 export interface IDocument {
   title: string;
-  stakeholders: string;
+  stakeholders: StakeholderEnum;
   scale: string;
   type: DocTypeEnum;
   date: string;
