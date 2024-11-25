@@ -1,15 +1,6 @@
 name: Static Analysis Only
 
 on:
-  push:
-    branches:
-      - main
-      - dev
-      - 'fra-*'
-      - 'paolino-*'
-      - 'mina-*'
-      - 'mariam-*'
-      - 'diego-*'
   pull_request:
     types: [opened, synchronize, reopened]
 
