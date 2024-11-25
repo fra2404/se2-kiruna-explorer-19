@@ -2,7 +2,6 @@ import { useState, useRef, useEffect } from 'react';
 import { useMapEvents } from 'react-leaflet';
 import { LatLng } from 'leaflet';
 import Modal from 'react-modal';
-import { FaChevronDown, FaChevronRight } from 'react-icons/fa';
 
 import ConnectionForm from './documentConnections/ConnectionForm';
 import ButtonRounded from '../atoms/button/ButtonRounded';
@@ -472,14 +471,16 @@ const DocumentForm = ({
                 className={`header-section ${hasErrors(3) ? 'error' : ''} scroll-margin-top`}
               >
                 <h3
-                  className="header-text text-xl font-bold mb-2"
+                  className="header-text text-xl font-bold mb-2 cursor-pointer"
                   onClick={() => setShowFiles(!showFiles)}
                 >
                   Files
-                  <ToggleButton
-                    showContent={showFiles}
-                    onToggle={() => setShowFiles(!showFiles)}
-                  />
+                  <span className='align-middle'>
+                    <ToggleButton
+                      showContent={showFiles}
+                      onToggle={() => setShowFiles(!showFiles)}
+                    />
+                  </span>
                 </h3>
                 {showFiles && (
                   <Step3
@@ -501,14 +502,16 @@ const DocumentForm = ({
                 className={`header-section ${hasErrors(4) ? 'error' : ''} scroll-margin-top`}
               >
                 <h3
-                  className="header-text text-xl font-bold mb-2"
+                  className="header-text text-xl font-bold mb-2 cursor-pointer"
                   onClick={() => setShowConnections(!showConnections)}
                 >
                   Connections
-                  <ToggleButton
-                    showContent={showConnections}
-                    onToggle={() => setShowConnections(!showConnections)}
-                  />
+                  <span className='align-middle'>
+                    <ToggleButton
+                      showContent={showConnections}
+                      onToggle={() => setShowConnections(!showConnections)}
+                    />
+                  </span>
                 </h3>
                 {showConnections && (
                   <Step4
@@ -524,6 +527,7 @@ const DocumentForm = ({
                 onKeyDown={(e) => {
                   if (e.key === 'Enter' || e.key === ' ') {
                     setShowGeoreferencing(!showGeoreferencing);
+                    setConnectToMap(!connectToMap)
                   }
                 }}
                 tabIndex={0} // Ensure the element is focusable
@@ -531,14 +535,16 @@ const DocumentForm = ({
                 className={`header-section ${hasErrors(5) ? 'error' : ''} scroll-margin-top`}
               >
                 <h3
-                  className="header-text text-xl font-bold mb-2"
-                  onClick={() => setShowGeoreferencing(!showGeoreferencing)}
+                  className="header-text text-xl font-bold mb-2 cursor-pointer"
+                  onClick={() => {setShowGeoreferencing(!showGeoreferencing); setConnectToMap(!connectToMap)}}
                 >
                   Georeferencing
-                  <ToggleButton
-                    showContent={showGeoreferencing}
-                    onToggle={() => setShowGeoreferencing(!showGeoreferencing)}
-                  />
+                  <span className='align-middle'>
+                    <ToggleButton
+                      showContent={showGeoreferencing}
+                      onToggle={() => {setShowGeoreferencing(!showGeoreferencing); setConnectToMap(!connectToMap)}}
+                    />
+                  </span>
                 </h3>
                 {showGeoreferencing && (
                   <Step5
