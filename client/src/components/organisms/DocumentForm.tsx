@@ -462,7 +462,6 @@ const DocumentForm = ({
               </div>
               <LightDivider />
               <div
-                onClick={() => setShowFiles(!showFiles)}
                 onKeyDown={(e) => {
                   if (e.key === 'Enter' || e.key === ' ') {
                     setShowFiles(!showFiles);
@@ -472,11 +471,15 @@ const DocumentForm = ({
                 ref={stepRefs[2]}
                 className={`header-section ${hasErrors(3) ? 'error' : ''} scroll-margin-top`}
               >
-                <h3 className="header-text text-xl font-bold mb-2">
+                <h3
+                  className="header-text text-xl font-bold mb-2"
+                  onClick={() => setShowFiles(!showFiles)}
+                >
                   Files
-                  <button className="ml-2">
-                    {showFiles ? <FaChevronDown /> : <FaChevronRight />}
-                  </button>
+                  <ToggleButton
+                    showContent={showFiles}
+                    onToggle={() => setShowFiles(!showFiles)}
+                  />
                 </h3>
                 {showFiles && (
                   <Step3
@@ -488,7 +491,6 @@ const DocumentForm = ({
               </div>
               <LightDivider />
               <div
-                onClick={() => setShowConnections(!showConnections)}
                 onKeyDown={(e) => {
                   if (e.key === 'Enter' || e.key === ' ') {
                     setShowConnections(!showConnections);
@@ -498,9 +500,15 @@ const DocumentForm = ({
                 ref={stepRefs[3]}
                 className={`header-section ${hasErrors(4) ? 'error' : ''} scroll-margin-top`}
               >
-                <h3 className="header-text text-xl font-bold mb-2">
+                <h3
+                  className="header-text text-xl font-bold mb-2"
+                  onClick={() => setShowConnections(!showConnections)}
+                >
                   Connections
-                  <ToggleButton showContent={showConnections} />
+                  <ToggleButton
+                    showContent={showConnections}
+                    onToggle={() => setShowConnections(!showConnections)}
+                  />
                 </h3>
                 {showConnections && (
                   <Step4
@@ -513,7 +521,6 @@ const DocumentForm = ({
               </div>
               <LightDivider />
               <div
-                onClick={() => setShowGeoreferencing(!showGeoreferencing)}
                 onKeyDown={(e) => {
                   if (e.key === 'Enter' || e.key === ' ') {
                     setShowGeoreferencing(!showGeoreferencing);
@@ -523,15 +530,15 @@ const DocumentForm = ({
                 ref={stepRefs[4]}
                 className={`header-section ${hasErrors(5) ? 'error' : ''} scroll-margin-top`}
               >
-                <h3 className="header-text text-xl font-bold mb-2">
+                <h3
+                  className="header-text text-xl font-bold mb-2"
+                  onClick={() => setShowGeoreferencing(!showGeoreferencing)}
+                >
                   Georeferencing
-                  <button className="ml-2">
-                    {showGeoreferencing ? (
-                      <FaChevronDown />
-                    ) : (
-                      <FaChevronRight />
-                    )}
-                  </button>
+                  <ToggleButton
+                    showContent={showGeoreferencing}
+                    onToggle={() => setShowGeoreferencing(!showGeoreferencing)}
+                  />
                 </h3>
                 {showGeoreferencing && (
                   <Step5
