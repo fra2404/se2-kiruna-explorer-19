@@ -290,7 +290,7 @@ const InputComponent: React.FC<InputComponentProps> = ({
             <label key={option.value} className="inline-flex items-center mt-2">
               <input
                 type="radio"
-                name={name || label}
+                name={name ?? label}
                 value={option.value}
                 checked={value === option.value}
                 required={required}

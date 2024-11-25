@@ -25,7 +25,7 @@ const Step4: React.FC<Step4Props> = ({
     <>
       {/* Connections */}
       <div className="my-2 col-span-2">
-        <label className="font-semibold">Connections</label>
+        <span className="font-semibold">Connections</span>
 
         {connections?.length === 0 ? (
           <p className="mt-1 text-gray-500">No connections yet</p>

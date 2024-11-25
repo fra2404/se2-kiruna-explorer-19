@@ -7,7 +7,7 @@ import FloatingButton from '../../molecules/FloatingButton';
 import DocumentForm from '../DocumentForm';
 import { IDocument } from '../../../utils/interfaces/document.interface';
 import AllDocumentsModal from '../modals/AllDocumentsModal';
-import { FaFolder, FaPlus, FaSearch } from 'react-icons/fa';
+import { FaFolder, FaPlus } from 'react-icons/fa';
 
 interface OverlayProps {
   coordinates: any; //Need to pass coordinates to the modal as parameter

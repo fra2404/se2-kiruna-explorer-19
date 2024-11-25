@@ -9,6 +9,8 @@ export function CoordsIconStyle (
   pointy: boolean
 ): {} {
   const {swedishFlagBlue, satMapMainColor, mapType} = useContext(MapStyleContext);
+
+  const bgColor = mapType == "sat" ? satMapMainColor : swedishFlagBlue;
   
   return {
       display: "flex",
@@ -23,6 +25,6 @@ export function CoordsIconStyle (
       fontWeight: "bold",
       border: "2px solid black",
       padding: coordDocuments.length == 1 ? "1px" : "0px",
-      backgroundColor: coordDocuments.length == 1 ? "white" : mapType == "sat" ? satMapMainColor : swedishFlagBlue
+      backgroundColor: coordDocuments.length == 1 ? "white" : bgColor
   }
 }

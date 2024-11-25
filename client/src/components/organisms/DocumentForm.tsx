@@ -114,12 +114,12 @@ const DocumentForm = ({
   ];
 
   // Document information
-  const [title, setTitle] = useState(selectedDocument?.title || '');
+  const [title, setTitle] = useState(selectedDocument?.title ?? '');
   const [stakeholders, setStakeholders] = useState<string | undefined>(
-    selectedDocument?.stakeholders || undefined,
+    selectedDocument?.stakeholders ?? undefined,
   );
   const [scale, setScale] = useState<string | undefined>(
-    selectedDocument?.scale || '',
+    selectedDocument?.scale ?? '',
   );
   const [issuanceDate, setIssuanceDate] = useState(
     selectedDocument?.date
@@ -127,7 +127,7 @@ const DocumentForm = ({
       : new Date().toISOString().split('T')[0],
   );
   const [docType, setDocType] = useState<string | undefined>(
-    selectedDocument?.type || undefined,
+    selectedDocument?.type ?? undefined,
   );
   //const [numPages, setNumPages] = useState(0);
   const [connections, setConnections] = useState<Connection[]>(
@@ -135,9 +135,9 @@ const DocumentForm = ({
       return { type: c.type, relatedDocument: c.document };
     }) || [],
   );
-  const [language, setLanguage] = useState(selectedDocument?.language || '');
+  const [language, setLanguage] = useState(selectedDocument?.language ?? '');
   const [description, setDescription] = useState(
-    selectedDocument?.summary || '',
+    selectedDocument?.summary ?? '',
   );
 
   // Georeferencing information
@@ -242,8 +242,8 @@ const DocumentForm = ({
   const handleSaveResource = async () => {
     const media_ids: string[] = [];
     // Call here the API to save the media file for each file:
-    for (let i = 0; i < files.length; i++) {
-      const token = await addResource(files[i]);
+    for (let f of files) {
+      const token = await addResource(f);
       media_ids.push(token);
     }
     return media_ids;
@@ -288,20 +288,22 @@ const DocumentForm = ({
         showToastMessage('Error creating coordinate:' + error, 'error');
       }
     } else {
-      if (connectToMap) coordId = selectedCoordId;
-      else coordId = undefined;
+      if (connectToMap) 
+        coordId = selectedCoordId;
+      else 
+        coordId = undefined;
     }
 
     const documentData = {
-      id: selectedDocument?.id || '',
+      id: selectedDocument?.id ?? '',
       title,
-      stakeholders: stakeholders || '',
-      scale: scale || '',
-      type: docType || '',
+      stakeholders: stakeholders ?? '',
+      scale: scale ?? '',
+      type: docType ?? '',
       language,
       summary: description,
       date: issuanceDate,
-      coordinates: coordId || undefined,
+      coordinates: coordId ?? undefined,
       connections: connections.map((conn) => ({
         document: conn.relatedDocument,
         type: conn.type,
@@ -377,9 +379,9 @@ const DocumentForm = ({
           <Step1
             title={title}
             setTitle={setTitle}
-            stakeholders={stakeholders || ''}
+            stakeholders={stakeholders ?? ''}
             setStakeholders={setStakeholders}
-            scale={scale || ''}
+            scale={scale ?? ''}
             setScale={setScale}
             issuanceDate={issuanceDate}
             setIssuanceDate={setIssuanceDate}
@@ -392,7 +394,7 @@ const DocumentForm = ({
             setDescription={setDescription}
             language={language}
             setLanguage={setLanguage}
-            docType={docType || ''}
+            docType={docType ?? ''}
             setDocType={setDocType}
             documentTypeOptions={documentTypeOptions}
           />
@@ -420,8 +422,8 @@ const DocumentForm = ({
         return (
           <Step5
             coordinates={coordinates}
-            selectedCoordIdProp={selectedCoordId || ''}
-            selectedCoordId={selectedCoordId || ''}
+            selectedCoordIdProp={selectedCoordId ?? ''}
+            selectedCoordId={selectedCoordId ?? ''}
             setSelectedCoordId={setSelectedCoordId}
             setCoordNamePopupOpen={setCoordNamePopupOpen}
             position={position}
