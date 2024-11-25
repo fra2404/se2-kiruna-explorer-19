@@ -2,7 +2,6 @@ import { useState, useRef, useEffect } from 'react';
 import { useMapEvents } from 'react-leaflet';
 import { LatLng } from 'leaflet';
 import Modal from 'react-modal';
-
 import ConnectionForm from './documentConnections/ConnectionForm';
 import ButtonRounded from '../atoms/button/ButtonRounded';
 
