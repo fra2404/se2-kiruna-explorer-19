@@ -2,7 +2,6 @@ import { useState, useRef, useEffect } from 'react';
 import { useMapEvents } from 'react-leaflet';
 import { LatLng } from 'leaflet';
 import Modal from 'react-modal';
-
 import ConnectionForm from './documentConnections/ConnectionForm';
 import ButtonRounded from '../atoms/button/ButtonRounded';
 
@@ -488,7 +487,7 @@ const DocumentForm = ({
                   onClick={() => setShowFiles(!showFiles)}
                 >
                   Files
-                  <span className='align-middle'>
+                  <span className="align-middle">
                     <ToggleButton
                       showContent={showFiles}
                       onToggle={() => setShowFiles(!showFiles)}
@@ -519,7 +518,7 @@ const DocumentForm = ({
                   onClick={() => setShowConnections(!showConnections)}
                 >
                   Connections
-                  <span className='align-middle'>
+                  <span className="align-middle">
                     <ToggleButton
                       showContent={showConnections}
                       onToggle={() => setShowConnections(!showConnections)}
@@ -540,7 +539,7 @@ const DocumentForm = ({
                 onKeyDown={(e) => {
                   if (e.key === 'Enter' || e.key === ' ') {
                     setShowGeoreferencing(!showGeoreferencing);
-                    setConnectToMap(!connectToMap)
+                    setConnectToMap(!connectToMap);
                   }
                 }}
                 tabIndex={0} // Ensure the element is focusable
@@ -549,13 +548,19 @@ const DocumentForm = ({
               >
                 <h3
                   className="header-text text-xl font-bold mb-2 cursor-pointer"
-                  onClick={() => {setShowGeoreferencing(!showGeoreferencing); setConnectToMap(!connectToMap)}}
+                  onClick={() => {
+                    setShowGeoreferencing(!showGeoreferencing);
+                    setConnectToMap(!connectToMap);
+                  }}
                 >
                   Georeferencing
-                  <span className='align-middle'>
+                  <span className="align-middle">
                     <ToggleButton
                       showContent={showGeoreferencing}
-                      onToggle={() => {setShowGeoreferencing(!showGeoreferencing); setConnectToMap(!connectToMap)}}
+                      onToggle={() => {
+                        setShowGeoreferencing(!showGeoreferencing);
+                        setConnectToMap(!connectToMap);
+                      }}
                     />
                   </span>
                 </h3>
