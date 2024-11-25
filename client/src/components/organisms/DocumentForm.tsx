@@ -266,10 +266,28 @@ const DocumentForm = ({
       return;
     }
 
-    let coordId: string | undefined = undefined;
-
     const media_ids = await handleSaveResource();
+    const coordId = await handleCoordinate();
 
+    const documentData = createDocumentData(media_ids, coordId);
+
+    try {
+      const response = await saveDocument(documentData);
+      if (response.success) {
+        if (response.document) {
+          handleSuccessfulSave(response.document);
+        } else {
+          showToastMessage('Failed to create document', 'error');
+        }
+      } else {
+        showToastMessage('Failed to create document', 'error');
+      }
+    } catch (error) {
+      showToastMessage('Error creating document:' + error, 'error');
+    }
+  };
+
+  const handleCoordinate = async () => {
     if (!selectedCoordId && position && connectToMap) {
       const coordData: ICoordinate = {
         id: '',
@@ -281,8 +299,8 @@ const DocumentForm = ({
       try {
         const response = await createCoordinate(coordData);
         if (response.success) {
-          coordId = response.coordinate?.coordinate._id;
-          if (coordId)
+          const coordId = response.coordinate?.coordinate._id;
+          if (coordId) {
             setCoordinates({
               ...coordinates,
               [coordId]: {
@@ -291,6 +309,8 @@ const DocumentForm = ({
                 name: response.coordinate?.coordinate.name,
               },
             });
+          }
+          return coordId;
         } else {
           showToastMessage('Failed to create coordinate', 'error');
         }
@@ -298,10 +318,12 @@ const DocumentForm = ({
         showToastMessage('Error creating coordinate:' + error, 'error');
       }
     } else {
-      coordId = connectToMap ? selectedCoordId : undefined;
+      return connectToMap ? selectedCoordId : undefined;
     }
+  };
 
-    const documentData = {
+  const createDocumentData = (media_ids: string[], coordId?: string) => {
+    return {
       id: selectedDocument?.id ?? '',
       title,
       stakeholders: stakeholders ?? '',
@@ -319,34 +341,29 @@ const DocumentForm = ({
         ? [...selectedDocument.media.map((m) => m.id), ...media_ids]
         : media_ids,
     };
+  };
 
-    try {
-      let response;
+  const saveDocument = async (documentData: any) => {
+    if (!selectedDocument) {
+      return await createDocument(documentData);
+    } else {
+      return await editDocument(documentData);
+    }
+  };
+
+  const handleSuccessfulSave = (responseDocument: IDocument) => {
+    showToastMessage('Document saved successfully', 'success');
+    setShowSummary(true);
+    if (responseDocument) {
       if (!selectedDocument) {
-        response = await createDocument(documentData);
+        setDocuments(documents.concat(responseDocument));
       } else {
-        response = await editDocument(documentData);
+        setDocuments(
+          documents.map((doc: IDocument) => {
+            return doc.id == selectedDocument.id ? responseDocument : doc;
+          }),
+        );
       }
-      if (response.success) {
-        showToastMessage('Document saved successfully', 'success');
-        setShowSummary(true);
-        if (response.document) {
-          const responseDocument = response.document; //Typescript is not able to detect that the value response.document will still be defined in the "else" branch. So, we have to put it in a variable
-          if (!selectedDocument) {
-            setDocuments(documents.concat(responseDocument));
-          } else {
-            setDocuments(
-              documents.map((doc: IDocument) => {
-                return doc.id == selectedDocument.id ? responseDocument : doc;
-              }),
-            );
-          }
-        }
-      } else {
-        showToastMessage('Failed to create document', 'error');
-      }
-    } catch (error) {
-      showToastMessage('Error creating document:' + error, 'error');
     }
   };
 
