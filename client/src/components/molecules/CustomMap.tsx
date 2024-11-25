@@ -1,21 +1,18 @@
-import { LatLng, LatLngExpression } from "leaflet"
-import { MapContainer } from "react-leaflet"
+import { LatLng, LatLngExpression } from 'leaflet';
+import { MapContainer } from 'react-leaflet';
 
 export const kirunaLatLngCoords: LatLngExpression = [67.85572, 20.22513];
 
 interface CustomMapProps {
   center?: LatLng;
-  children: any
+  children: any;
 }
 
-const CustomMap: React.FC<CustomMapProps> = ({
-  center,
-  children
-}) => {
+const CustomMap: React.FC<CustomMapProps> = ({ center, children }) => {
   return (
     <MapContainer
       style={{ width: '100%', height: '100%', zIndex: 0 }}
-      center={center ? center : kirunaLatLngCoords}
+      center={center || kirunaLatLngCoords}
       zoom={13}
       doubleClickZoom={false}
       scrollWheelZoom={true}
@@ -30,7 +27,7 @@ const CustomMap: React.FC<CustomMapProps> = ({
     >
       {children}
     </MapContainer>
-  )
-}
+  );
+};
 
 export default CustomMap;

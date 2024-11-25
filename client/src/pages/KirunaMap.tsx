@@ -30,7 +30,7 @@ export const modalStyles = {
     transform: 'translate(-50%, -50%)',
     width: '80%',
     maxWidth: '95vh',
-    maxHeight: '90vh'
+    maxHeight: '90vh',
   },
   overlay: { zIndex: 1000 },
 };
@@ -38,7 +38,8 @@ export const modalStyles = {
 export default function KirunaMap() {
   const { isLoggedIn, user } = useAuth();
   const { setFeedbackFromError } = useContext(FeedbackContext);
-  const { swedishFlagBlue, swedishFlagYellow, mapType } = useContext(MapStyleContext);
+  const { swedishFlagBlue, swedishFlagYellow, mapType } =
+    useContext(MapStyleContext);
 
   const [documents, setDocuments] = useState<IDocument[]>([]);
   const [coordinates, setCoordinates] = useState({});
@@ -104,13 +105,14 @@ export default function KirunaMap() {
     <div style={{ width: width, height: height }}>
       <Header setManageCoordsModalOpen={setManageCoordsModalOpen} />
 
-      {(isLoggedIn && user && user.role === UserRoleEnum.Uplanner) &&
-        <Overlay 
+      {isLoggedIn && user && user.role === UserRoleEnum.Uplanner && (
+        <Overlay
           coordinates={coordinates}
           setCoordinates={setCoordinates}
           documents={documents}
-          setDocuments={setDocuments} />
-      }
+          setDocuments={setDocuments}
+        />
+      )}
 
       <CustomMap>
         {mapType === 'osm' ? (
@@ -120,36 +122,41 @@ export default function KirunaMap() {
           />
         ) : (
           <TileLayer
-            attribution='ArcGIS'
+            attribution="ArcGIS"
             url="https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}"
           />
         )}
 
-        <MarkerClusterGroup iconCreateFunction={(cluster: any) => {
-          return new DivIcon({
-            iconSize: [45, 45],
-            className: "pointIcon",
-            html: renderToString(
-              <div
-                style={{
-                  display: "flex",
-                  justifyContent: "center",
-                  alignItems: "center",
-                  width: "40px",
-                  height: "40px",
-                  backgroundColor: swedishFlagYellow,
-                  color: swedishFlagBlue,
-                  borderRadius: "50%",
-                  fontSize: "20px",
-                  fontWeight: "bold",
-                }}>
-                {cluster.getChildCount()}
-              </div>
-            ),
-          });
-        }}>
+        <MarkerClusterGroup
+          iconCreateFunction={(cluster: any) => {
+            return new DivIcon({
+              iconSize: [45, 45],
+              className: 'pointIcon',
+              html: renderToString(
+                <div
+                  style={{
+                    display: 'flex',
+                    justifyContent: 'center',
+                    alignItems: 'center',
+                    width: '40px',
+                    height: '40px',
+                    backgroundColor: swedishFlagYellow,
+                    color: swedishFlagBlue,
+                    borderRadius: '50%',
+                    fontSize: '20px',
+                    fontWeight: 'bold',
+                  }}
+                >
+                  {cluster.getChildCount()}
+                </div>,
+              ),
+            });
+          }}
+        >
           {Object.entries(coordinates).map(([coordId, coordInfo]: any) => {
-            const filteredDocuments = documents.filter((d) => d.coordinates?._id == coordId);
+            const filteredDocuments = documents.filter(
+              (d) => d.coordinates?._id == coordId,
+            );
 
             if (coordInfo.type == 'Point') {
               if (filteredDocuments.length > 0) {
@@ -168,7 +175,7 @@ export default function KirunaMap() {
                 );
               }
             } else {
-              if(filteredDocuments.length > 0) {
+              if (filteredDocuments.length > 0) {
                 return (
                   <Area
                     key={coordId}
@@ -187,22 +194,24 @@ export default function KirunaMap() {
           })}
         </MarkerClusterGroup>
 
-        {(isLoggedIn && user && user.role === UserRoleEnum.Uplanner) &&
-          <ClickMarker 
+        {isLoggedIn && user && user.role === UserRoleEnum.Uplanner && (
+          <ClickMarker
             coordinates={coordinates}
-            setCoordinates={setCoordinates} 
+            setCoordinates={setCoordinates}
             documents={documents}
-            setDocuments={setDocuments} />
-        }
+            setDocuments={setDocuments}
+          />
+        )}
 
         <CustomZoomControl />
 
-        <ManageCoordsModal 
+        <ManageCoordsModal
           manageCoordsModalOpen={manageCoordsModalOpen}
           setManageCoordsModalOpen={setManageCoordsModalOpen}
           coordinates={coordinates}
           setCoordinates={setCoordinates}
-          documents={documents} />
+          documents={documents}
+        />
       </CustomMap>
     </div>
   );
