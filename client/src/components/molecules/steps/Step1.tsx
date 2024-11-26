@@ -138,9 +138,13 @@ const Step1: React.FC<Step1Props> = ({
           onChange={(selectedOptions) => {
             setStakeholders(
               selectedOptions
-                ? Array.isArray(selectedOptions)
-                  ? selectedOptions.map((option) => option.value)
-                  : []
+                ? (() => {
+                    if (Array.isArray(selectedOptions)) {
+                      return selectedOptions.map((option) => option.value);
+                    } else {
+                      return [];
+                    }
+                  })()
                 : [],
             );
           }}
