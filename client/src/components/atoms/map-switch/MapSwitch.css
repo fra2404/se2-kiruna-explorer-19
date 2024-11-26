@@ -1,0 +1,15 @@
+.mini-map {
+  height: 104px;
+  width: 104px;
+  right: 10px;
+  margin-left: 3px;
+}
+
+.custom-thumbnail {
+  padding: 0.25rem !important;
+  background-color: black !important; /* Forza il colore di sfondo nero */
+  border: 2px solid black !important; /* Imposta il colore del bordo su nero */
+  border-radius: var(--bs-border-radius) !important;
+  max-width: 100% !important;
+  height: auto !important;
+}
