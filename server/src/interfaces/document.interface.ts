@@ -19,7 +19,7 @@ export interface IDocumentFilters {
 
 export interface IDocument {
   title: string;
-  stakeholders: StakeholderEnum;
+  stakeholders: StakeholderEnum[];
   scale: string;
   type: DocTypeEnum;
   date: string;

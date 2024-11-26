@@ -9,7 +9,7 @@ import { IReturnMedia } from './media.return.interface';
 export interface IDocumentResponse {
   id: string;
   title: string;
-  stakeholders?: StakeholderEnum;
+  stakeholders?: StakeholderEnum[];
   scale?: string;
   type: DocTypeEnum;
   date: string;
