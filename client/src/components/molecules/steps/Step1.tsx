@@ -191,7 +191,9 @@ const Step1: React.FC<Step1Props> = ({
 
       {/* Issuance date of document */}
       <div className="my-2">
-        <label>Issuance date</label>
+        <label htmlFor="issuance-date-year" className="font-bold text-sm">
+          Issuance date <span className="text-red-500">*</span>
+        </label>
         <div className="flex space-x-2">
           <InputComponent
             label="Year"
