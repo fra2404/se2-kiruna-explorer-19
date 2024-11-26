@@ -140,12 +140,15 @@ const DocumentForm = ({
 
   // Document information
   const [title, setTitle] = useState(selectedDocument?.title ?? '');
-  const [stakeholders, setStakeholders] = useState<string | undefined>(
-    selectedDocument?.stakeholders ?? undefined,
+  const [stakeholders, setStakeholders] = useState<string[]>(
+    Array.isArray(selectedDocument?.stakeholders)
+      ? selectedDocument.stakeholders
+      : [],
   );
   const [scale, setScale] = useState<string | undefined>(
     selectedDocument?.scale ?? '',
   );
+  const [customScale, setCustomScale] = useState<string>('');
   const [issuanceDate, setIssuanceDate] = useState(
     selectedDocument?.date
       ? new Date(selectedDocument.date).toISOString().split('T')[0]
@@ -238,9 +241,11 @@ const DocumentForm = ({
   const validateStep = () => {
     const newErrors: { [key: string]: string } = {};
     if (title.trim() === '') newErrors.title = 'Title is required';
-    if (stakeholders === '')
+    if (stakeholders.length === 0)
       newErrors.stakeholders = 'Stakeholders are required';
     if (scale === '') newErrors.scale = 'Scale is required';
+    if (scale === 'Architectural Style' && customScale.trim() === '')
+      newErrors.customScale = 'Custom Scale is required';
     if (issuanceDate.trim() === '')
       newErrors.issuanceDate = 'Issuance date is required';
     if ((docType ?? '').trim() === '')
@@ -328,6 +333,7 @@ const DocumentForm = ({
       title,
       stakeholders: stakeholders ?? '',
       scale: scale ?? '',
+      customScale: scale === 'Architectural Style' ? customScale : '',
       type: docType ?? '',
       language,
       summary: description,
@@ -405,7 +411,8 @@ const DocumentForm = ({
           !!errors.title ||
           !!errors.stakeholders ||
           !!errors.scale ||
-          !!errors.issuanceDate
+          !!errors.issuanceDate ||
+          !!errors.customScale
         );
       case 2:
         return !!errors.docType;
@@ -452,12 +459,14 @@ const DocumentForm = ({
                 <Step1
                   title={title}
                   setTitle={setTitle}
-                  stakeholders={stakeholders || ''}
+                  stakeholders={stakeholders}
                   setStakeholders={setStakeholders}
                   scale={scale || ''}
                   setScale={setScale}
                   issuanceDate={issuanceDate}
                   setIssuanceDate={setIssuanceDate}
+                  customScale={customScale}
+                  setCustomScale={setCustomScale}
                   errors={errors}
                 />
               </div>

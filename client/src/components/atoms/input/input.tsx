@@ -16,6 +16,7 @@ interface InputComponentProps {
   type:
     | 'text'
     | 'select'
+    | 'multi-select' // Aggiungi questo tipo
     | 'radio'
     | 'password'
     | 'email'
@@ -25,21 +26,22 @@ interface InputComponentProps {
   options?: Option[];
   required?: boolean;
   name?: string;
-  value?: string | Option;
+  value?: string | Option | Option[]; // Aggiungi Option[]
   defaultValue?: string;
   checked?: boolean;
   onChange?: (
     event:
       | ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>
-      | Option,
+      | Option
+      | Option[], // Aggiungi Option[]
   ) => void;
   onValidityChange?: (isValid: boolean) => void;
   disabled?: boolean;
   max?: string;
   maxLength?: number;
   returnObject?: boolean;
-  onKeyDown?: (event: React.KeyboardEvent<HTMLInputElement>) => void; // Aggiungi questa proprietà
-  error?: string; // Aggiungi questa proprietà
+  onKeyDown?: (event: React.KeyboardEvent<HTMLInputElement>) => void;
+  error?: string;
 }
 
 const mockFlags = {
@@ -83,13 +85,16 @@ const InputComponent: React.FC<InputComponentProps> = ({
   max,
   maxLength,
   returnObject = false,
-  onKeyDown, // Aggiungi questa proprietà
-  error, // Aggiungi questa proprietà
+  onKeyDown,
+  error,
 }) => {
   const [isEmailValid, setIsEmailValid] = useState<boolean>(true);
   const [isFieldEmpty, setIsFieldEmpty] = useState<boolean>(false);
   const [selectedOption, setSelectedOption] = useState<Option | null>(
     options.find((option) => option.value === defaultValue) || null,
+  );
+  const [selectedOptions, setSelectedOptions] = useState<Option[]>(
+    Array.isArray(value) ? (value as Option[]) : [],
   );
   const [isTouched, setIsTouched] = useState<boolean>(false);
   const [showPassword, setShowPassword] = useState(false);
@@ -195,6 +200,13 @@ const InputComponent: React.FC<InputComponentProps> = ({
     }
   };
 
+  const handleMultiSelectChange = (selectedOptions: Option[]) => {
+    setSelectedOptions(selectedOptions);
+    if (onChange) {
+      onChange(selectedOptions);
+    }
+  };
+
   const selectOptions = selectedOption
     ? [{ value: '', label: 'Cancel selection' }, ...options]
     : options;
@@ -222,7 +234,7 @@ const InputComponent: React.FC<InputComponentProps> = ({
             onBlur={handleBlur}
             disabled={disabled}
             max={type === 'date' ? max : undefined}
-            onKeyDown={onKeyDown} // Aggiungi questa proprietà
+            onKeyDown={onKeyDown}
           />
           {type === 'password' && (
             <button
@@ -269,10 +281,54 @@ const InputComponent: React.FC<InputComponentProps> = ({
             }),
             valueContainer: (provided) => ({
               ...provided,
-              padding: '0',
+              padding: '0 0 0 10px',
               height: '2.5rem',
               display: 'flex',
               alignItems: 'center',
+            }),
+            input: (provided) => ({
+              ...provided,
+              margin: '0',
+              padding: '0',
+            }),
+            singleValue: (provided) => ({
+              ...provided,
+              display: 'flex',
+              alignItems: 'center',
+            }),
+            menuPortal: (provided) => ({ ...provided, zIndex: 9999 }),
+          }}
+        />
+      )}
+      {type === 'multi-select' && (
+        <Select
+          isMulti
+          className="shadow appearance-none rounded w-full text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+          options={options}
+          onChange={(selectedOptions) =>
+            handleMultiSelectChange(selectedOptions as Option[])
+          }
+          value={selectedOptions}
+          defaultValue={options.filter((option) =>
+            (value as Option[]).includes(option),
+          )}
+          isDisabled={disabled}
+          getOptionLabel={(option) => option.label}
+          getOptionValue={(option) => option.value}
+          menuPortalTarget={document.body}
+          styles={{
+            control: (provided) => ({
+              ...provided,
+              minHeight: '2.5rem',
+              height: 'auto',
+            }),
+            valueContainer: (provided) => ({
+              ...provided,
+              padding: '0 0 0 10px',
+              height: 'auto',
+              display: 'flex',
+              alignItems: 'center',
+              flexWrap: 'wrap',
             }),
             input: (provided) => ({
               ...provided,
