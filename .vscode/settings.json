@@ -2,5 +2,9 @@
   "editor.formatOnSave": true,
   "editor.defaultFormatter": "esbenp.prettier-vscode",
   "prettier.requireConfig": true,
-  "typescript.tsdk": "node_modules/typescript/lib"
+  "typescript.tsdk": "node_modules/typescript/lib",
+  "sonarlint.connectedMode.project": {
+    "connectionId": "softeng-organization",
+    "projectKey": "Paolino01_se2-kiruna-explorer-19"
+  }
 }

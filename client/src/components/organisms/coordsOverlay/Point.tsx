@@ -51,25 +51,28 @@ export const Point: React.FC<PointProps> = ({
         
         icon={
           new DivIcon({
-            iconSize: [45, 45],
+            iconSize:  id!="all_municipality" ? [45, 45] : [60, 60],
             className: "pointIcon",
             html: renderToString(
               <div style={
-                CoordsIconStyle(pointDocuments, true)
+                CoordsIconStyle(pointDocuments, id != "all_municipality" ? true : false, id == "all_municipality")
                 }>
                 <span style={{transform: "rotate(45deg)"}}>
-                {pointDocuments.length == 1 ? 
-                  <DocumentIcon type={pointDocuments[0].type} stakeholders={pointDocuments[0].stakeholders} /> 
+                {
+                  id!="all_municipality" ?
+                    pointDocuments.length == 1 ? 
+                      <DocumentIcon type={pointDocuments[0].type} stakeholders={pointDocuments[0].stakeholders} /> 
+                      :
+                      pointDocuments.length
                   :
-                  pointDocuments.length
+                    "AM"
                 }
                 </span>
               </div>
             ),
             iconAnchor: [10, 41]
           })
-        }
-      >
+      }>
         <MapPopup
           name={name}
           message="Do you want to add a document in this coordinate?"

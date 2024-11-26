@@ -1,0 +1,44 @@
+.header-section {
+  display: flex;
+  flex-direction: column;
+  margin-bottom: 1rem;
+}
+
+.header-title {
+  display: flex;
+  align-items: center;
+  margin-bottom: 0.5rem;
+}
+
+.icon {
+  width: 16px;
+  height: 16px;
+  margin-right: 8px;
+}
+
+.header-text {
+  font-size: 24px;
+}
+
+.error {
+  border: 1px solid red;
+  padding: 0.5rem;
+  border-radius: 4px;
+}
+
+.header-section.highlight {
+  background-color: yellow;
+}
+
+.header-section.error {
+  border: 2px solid red;
+}
+
+.scroll-margin-top {
+  scroll-margin-top: 180px;
+}
+
+.bg-swedish-flag-yellow {
+  background-color: #fecc02;
+  color: #006aa7;
+}

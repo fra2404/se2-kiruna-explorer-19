@@ -29,21 +29,19 @@ const Step5: React.FC<Step5Props> = ({
   MapClickHandler,
 }) => {
   return (
-    <>
-      <MapSection
-        coordinates={coordinates}
-        selectedCoordIdProp={selectedCoordIdProp}
-        selectedCoordId={selectedCoordId}
-        setSelectedCoordId={setSelectedCoordId}
-        setCoordNamePopupOpen={setCoordNamePopupOpen}
-        position={position}
-        setPosition={setPosition}
-        coordNamePopupOpen={coordNamePopupOpen}
-        coordName={coordName}
-        setCoordName={setCoordName}
-        MapClickHandler={MapClickHandler}
-      />
-    </>
+    <MapSection
+      coordinates={coordinates}
+      selectedCoordIdProp={selectedCoordIdProp}
+      selectedCoordId={selectedCoordId}
+      setSelectedCoordId={setSelectedCoordId}
+      setCoordNamePopupOpen={setCoordNamePopupOpen}
+      position={position}
+      setPosition={setPosition}
+      coordNamePopupOpen={coordNamePopupOpen}
+      coordName={coordName}
+      setCoordName={setCoordName}
+      MapClickHandler={MapClickHandler}
+    />
   );
 };
 

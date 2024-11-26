@@ -3,6 +3,7 @@ import { useDropzone } from 'react-dropzone';
 import { HiOutlineViewGridAdd } from 'react-icons/hi';
 
 import { MAX_FILE_SIZE, CDN_URL } from '../../utils/constants';
+import { nanoid } from 'nanoid';
 
 interface ExistingFile {
   id: string;
@@ -95,8 +96,8 @@ const FileUploader = ({
         <div className="mt-4">
           <h4 className="text-lg font-semibold mb-2">Existing files:</h4>
           <ul className="list-disc pl-6 text-gray-700">
-            {existingFiles.map((file, index) => (
-              <li key={index} className="flex justify-between items-center">
+            {existingFiles.map((file) => (
+              <li key={file.id} className="flex justify-between items-center">
                 <a
                   href={CDN_URL + file.url}
                   target="_blank"
@@ -116,7 +117,7 @@ const FileUploader = ({
         <h4 className="text-lg font-semibold mb-2">Uploaded files:</h4>
         <ul className="list-disc pl-6 text-gray-700">
           {files.map((file, index) => (
-            <li key={index} className="flex justify-between items-center">
+            <li key={nanoid()} className="flex justify-between items-center">   {/* Instead of using the item's index as the key, we generate a random ID (file does not have an ID, so we cannot use that) */}
               <span>
                 {file.name} - {(file.size / 1024).toFixed(2)} KB
               </span>

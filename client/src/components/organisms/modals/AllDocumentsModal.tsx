@@ -54,8 +54,8 @@ const AllDocumentsModal: React.FC<AllDocumentsModalProps> = ({
             <div className=''>
                 {
                     documents.length === 0 ? <h1 className='text-sm text-gray-400'>No documents</h1> :
-                    documents.map((doc, index) => (
-                    <DocumentItem key={index} document={doc} />
+                    documents.map((doc) => (
+                      <DocumentItem key={doc.id} document={doc} />
                     ))
                 }
             </div>
