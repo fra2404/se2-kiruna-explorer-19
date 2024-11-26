@@ -18,7 +18,7 @@ import MarkerClusterGroup from 'react-leaflet-markercluster';
 import { ManageCoordsModal } from '../components/organisms/modals/ManageCoordsModal';
 import { renderToString } from 'react-dom/server';
 import { UserRoleEnum } from '../utils/interfaces/user.interface';
-import CustomMap from '../components/molecules/CustomMap';
+import CustomMap, { kirunaLatLngCoords } from '../components/molecules/CustomMap';
 
 export const modalStyles = {
   content: {
@@ -153,45 +153,60 @@ export default function KirunaMap() {
             });
           }}
         >
-          {Object.entries(coordinates).map(([coordId, coordInfo]: any) => {
-            const filteredDocuments = documents.filter(
-              (d) => d.coordinates?._id == coordId,
-            );
+          {
+            Object.entries(coordinates).map(([coordId, coordInfo]: any) => {
+              const filteredDocuments = documents.filter(
+                (d) => d.coordinates?._id == coordId,
+              );
 
-            if (coordInfo.type == 'Point') {
-              if (filteredDocuments.length > 0) {
-                return (
-                  <Point
-                    key={coordId}
-                    id={coordId}
-                    pointCoordinates={coordInfo.coordinates}
-                    name={coordInfo.name}
-                    coordinates={coordinates}
-                    setCoordinates={setCoordinates}
-                    pointDocuments={filteredDocuments}
-                    allDocuments={documents}
-                    setDocuments={setDocuments}
-                  />
-                );
+              if (coordInfo.type == 'Point') {
+                if (filteredDocuments.length > 0) {
+                  return (
+                    <Point
+                      key={coordId}
+                      id={coordId}
+                      pointCoordinates={coordInfo.coordinates}
+                      name={coordInfo.name}
+                      coordinates={coordinates}
+                      setCoordinates={setCoordinates}
+                      pointDocuments={filteredDocuments}
+                      allDocuments={documents}
+                      setDocuments={setDocuments}
+                    />
+                  );
+                }
+              } else {
+                if (filteredDocuments.length > 0) {
+                  return (
+                    <Area
+                      key={coordId}
+                      id={coordId}
+                      areaCoordinates={coordInfo.coordinates}
+                      name={coordInfo.name}
+                      coordinates={coordinates}
+                      setCoordinates={setCoordinates}
+                      areaDocuments={filteredDocuments}
+                      allDocuments={documents}
+                      setDocuments={setDocuments}
+                    />
+                  );
+                }
               }
-            } else {
-              if (filteredDocuments.length > 0) {
-                return (
-                  <Area
-                    key={coordId}
-                    id={coordId}
-                    areaCoordinates={coordInfo.coordinates}
-                    name={coordInfo.name}
-                    coordinates={coordinates}
-                    setCoordinates={setCoordinates}
-                    areaDocuments={filteredDocuments}
-                    allDocuments={documents}
-                    setDocuments={setDocuments}
-                  />
-                );
-              }
-            }
-          })}
+            })
+          }
+
+          {/* Adding another point that represents "All municipality" documents */}
+          <Point
+            key="all_municipality"
+            id="all_municipality"
+            pointCoordinates={kirunaLatLngCoords as LatLng}
+            name="All Municipality"
+            pointDocuments={documents.filter((d) => !d.coordinates)}
+            coordinates={coordinates}
+            setCoordinates={setCoordinates}
+            allDocuments={documents}
+            setDocuments={setDocuments}
+          />
         </MarkerClusterGroup>
 
         {isLoggedIn && user && user.role === UserRoleEnum.Uplanner && (
