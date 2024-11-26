@@ -34,7 +34,7 @@ export const MapPopup: React.FC<MapPopupProps> = ({
   const { isLoggedIn, user } = useAuth();
 
   return (
-    <Popup ref={popupRef}>
+    <Popup ref={popupRef} offset={[10, -10]}>
       <span className="text-lg font-bold">{name}</span>
       <br />
       <MarkerDocumentList 

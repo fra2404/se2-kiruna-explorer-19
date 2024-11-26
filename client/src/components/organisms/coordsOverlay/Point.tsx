@@ -1,5 +1,5 @@
-import React, { useRef, useState } from 'react';
-import { Marker } from 'react-leaflet';
+import React, {useEffect, useRef, useState } from 'react';
+import { Marker, useMap } from 'react-leaflet';
 import { DivIcon, LatLng } from 'leaflet';
 import Modal from 'react-modal';
 import { IDocument } from '../../../utils/interfaces/document.interface';
@@ -9,6 +9,8 @@ import DocumentForm from '../DocumentForm';
 import { DocumentIcon } from '../../molecules/documentsItems/DocumentIcon';
 import { renderToString } from 'react-dom/server';
 import { CoordsIconStyle } from '../../molecules/MapIconsStyles';
+import { Area } from './Area';
+import { KirunaMunicipalityCoordinates } from '../../../context/KirunaMunicipalityCoordinates';
 
 interface PointProps {
   id: string;
@@ -37,6 +39,61 @@ export const Point: React.FC<PointProps> = ({
   const [selectedPointId, setSelectedPointId] = useState('');
   const markerRef = useRef<L.Marker>(null);
 
+  let markerText: any;
+
+  if(id != "all_municipality") {
+    if(pointDocuments.length == 1) {
+      markerText = <DocumentIcon type={pointDocuments[0].type} stakeholders={pointDocuments[0].stakeholders} /> ;
+    }
+    else {
+      markerText = pointDocuments.length;
+    }
+  }
+  else {
+    markerText = "AM";
+  }
+
+  //Show area when clicking/overing a marker
+  let polygonFirstLoad = true;      //This variable checks if its the first time that an area is loaded on a map. If so, it hides the area
+  let popupOpen = false;
+  const polygonRef = useRef<L.Polygon>(null);
+  const map = useMap();
+
+  const handlePopupOpen = () => {
+    if(type == 'Polygon' || id=='all_municipality') {
+      popupOpen = true;
+      polygonRef.current?.addTo(map);
+    }
+  }
+
+  const handlePopupClose = () => {
+    if(type == 'Polygon' || id=='all_municipality') {
+      popupOpen = false;
+      polygonRef.current?.remove();
+    }
+  }
+
+  const handleMouseOver = () => {
+    if(type == 'Polygon' || id=='all_municipality') {
+      polygonRef.current?.addTo(map);
+    }
+  }
+
+  const handleMouseOut = () => {
+    if((type == 'Polygon' || id=='all_municipality') && !popupOpen) {
+      polygonRef.current?.remove();
+    }
+  }
+
+  useEffect(() => {
+    polygonRef.current?.addEventListener("add", () => {
+      if(polygonFirstLoad) {
+        polygonRef.current?.remove();
+        polygonFirstLoad = false;
+      }
+    })
+  }, [polygonRef.current])
+
   return (
     <>
       <Marker key={id} 
@@ -56,23 +113,23 @@ export const Point: React.FC<PointProps> = ({
             html: renderToString(
               <div style={
                 CoordsIconStyle(pointDocuments, id != "all_municipality" ? true : false, id == "all_municipality")
-                }>
+              }>
                 <span style={{transform: "rotate(45deg)"}}>
-                {
-                  id!="all_municipality" ?
-                    pointDocuments.length == 1 ? 
-                      <DocumentIcon type={pointDocuments[0].type} stakeholders={pointDocuments[0].stakeholders} /> 
-                      :
-                      pointDocuments.length
-                  :
-                    "AM"
-                }
+                  { markerText }
                 </span>
               </div>
             ),
             iconAnchor: [10, 41]
           })
-      }>
+        }
+
+        eventHandlers={{
+          mouseover: handleMouseOver,
+          mouseout: handleMouseOut,
+          popupopen: handlePopupOpen,
+          popupclose: handlePopupClose
+        }}
+      >
         <MapPopup
           name={name}
           message="Do you want to add a document in this coordinate?"
@@ -90,6 +147,14 @@ export const Point: React.FC<PointProps> = ({
           allDocuments={allDocuments}
           setDocuments={setDocuments}
         />
+
+        {(type=='Polygon' || id=='all_municipality') &&
+          <Area
+            id={id}
+            areaCoordinates={id != 'all_municipality' ? pointCoordinates as LatLng[] : KirunaMunicipalityCoordinates as unknown as LatLng[]}
+            areaRef={polygonRef}
+          />
+        }
       </Marker>
 
       <Modal

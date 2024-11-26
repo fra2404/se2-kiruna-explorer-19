@@ -1,4 +1,4 @@
-import React, { useContext, useRef } from 'react';
+import React, { useContext } from 'react';
 import { LatLng } from 'leaflet';
 import { Polygon } from 'react-leaflet';
 import MapStyleContext from '../../../context/MapStyleContext';
@@ -6,14 +6,15 @@ import MapStyleContext from '../../../context/MapStyleContext';
 interface AreaProps {
   id: string;
   areaCoordinates: LatLng[];
+  areaRef: any
 }
 
 export const Area: React.FC<AreaProps> = ({
   id,
   areaCoordinates,
+  areaRef
 }) => {
   const {swedishFlagBlue, satMapMainColor, mapType} = useContext(MapStyleContext);
-  const polygonRef = useRef<L.Polygon>(null);
 
   return (
     <>
@@ -21,7 +22,7 @@ export const Area: React.FC<AreaProps> = ({
         key={id}
         pathOptions={{ color: mapType == "sat" ? satMapMainColor : swedishFlagBlue }}
         positions={areaCoordinates as unknown as LatLng[]}
-        ref={polygonRef}
+        ref={areaRef}
       >
       </Polygon>
     </>

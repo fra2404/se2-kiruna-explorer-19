@@ -172,8 +172,10 @@ export default function KirunaMap() {
             })
           }
 
-          {/* Adding another point that represents "All municipality" documents */}
-          <Point
+        </MarkerClusterGroup>
+
+        {/* Adding another point that represents "All municipality" documents */}
+        <Point
             key="all_municipality"
             id="all_municipality"
             pointCoordinates={kirunaLatLngCoords as LatLng}
@@ -184,8 +186,7 @@ export default function KirunaMap() {
             setCoordinates={setCoordinates}
             allDocuments={documents}
             setDocuments={setDocuments}
-          />
-        </MarkerClusterGroup>
+        />
 
         {isLoggedIn && user && user.role === UserRoleEnum.Uplanner && (
           <ClickMarker
