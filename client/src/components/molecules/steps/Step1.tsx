@@ -52,6 +52,60 @@ const Step1: React.FC<Step1Props> = ({
     }
   }, [scale, setCustomScale]);
 
+  const [selectedYear, setSelectedYear] = useState<string>('');
+  const [selectedMonth, setSelectedMonth] = useState<string>('');
+  const [selectedDay, setSelectedDay] = useState<string>('');
+
+  useEffect(() => {
+    if (issuanceDate) {
+      const [year, month, day] = issuanceDate.split('-');
+      setSelectedYear(year || '');
+      setSelectedMonth(month || '');
+      setSelectedDay(day || '');
+    }
+  }, [issuanceDate]);
+
+  useEffect(() => {
+    if (selectedYear && selectedMonth && selectedDay) {
+      setIssuanceDate(`${selectedYear}-${selectedMonth}-${selectedDay}`);
+    } else if (selectedYear && selectedMonth) {
+      setIssuanceDate(`${selectedYear}-${selectedMonth}`);
+    } else if (selectedYear) {
+      setIssuanceDate(selectedYear);
+    } else {
+      setIssuanceDate('');
+    }
+  }, [selectedYear, selectedMonth, selectedDay, setIssuanceDate]);
+
+  useEffect(() => {
+    if (!selectedMonth) {
+      setSelectedDay('');
+    }
+  }, [selectedMonth]);
+
+  const getDaysInMonth = (year: number, month: number) => {
+    return new Date(year, month, 0).getDate();
+  };
+
+  const years = Array.from({ length: 100 }, (_, i) =>
+    (new Date().getFullYear() - i).toString(),
+  );
+  const months = Array.from({ length: 12 }, (_, i) =>
+    (i + 1).toString().padStart(2, '0'),
+  );
+  const days =
+    selectedYear && selectedMonth
+      ? Array.from(
+          {
+            length: getDaysInMonth(
+              parseInt(selectedYear),
+              parseInt(selectedMonth),
+            ),
+          },
+          (_, i) => (i + 1).toString().padStart(2, '0'),
+        )
+      : [];
+
   return (
     <>
       {/* Title */}
@@ -137,20 +191,49 @@ const Step1: React.FC<Step1Props> = ({
 
       {/* Issuance date of document */}
       <div className="my-2">
-        <InputComponent
-          label="Issuance date"
-          type="date"
-          value={issuanceDate}
-          onChange={(e) => {
-            if ('target' in e) {
-              setIssuanceDate(e.target.value);
+        <label>Issuance date</label>
+        <div className="flex space-x-2">
+          <InputComponent
+            label="Year"
+            type="select"
+            value={selectedYear}
+            onChange={(e) =>
+              setSelectedYear(
+                (e as React.ChangeEvent<HTMLSelectElement>).target.value,
+              )
             }
-          }}
-          required={true}
-          placeholder="Select issuance date"
-          max={new Date().toISOString().split('T')[0]}
-          error={errors.issuanceDate}
-        />
+            required
+            options={years.map((year) => ({ value: year, label: year }))}
+            placeholder="Year"
+            error={errors.issuanceDate}
+          />
+          <InputComponent
+            label="Month"
+            type="select"
+            value={selectedMonth}
+            onChange={(e) =>
+              setSelectedMonth(
+                (e as React.ChangeEvent<HTMLSelectElement>).target.value,
+              )
+            }
+            disabled={!selectedYear}
+            options={months.map((month) => ({ value: month, label: month }))}
+            placeholder="Month"
+          />
+          <InputComponent
+            label="Day"
+            type="select"
+            value={selectedDay}
+            onChange={(e) =>
+              setSelectedDay(
+                (e as React.ChangeEvent<HTMLSelectElement>).target.value,
+              )
+            }
+            disabled={!selectedYear || !selectedMonth}
+            options={days.map((day) => ({ value: day, label: day }))}
+            placeholder="Day"
+          />
+        </div>
       </div>
     </>
   );

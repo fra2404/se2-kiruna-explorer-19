@@ -16,7 +16,7 @@ interface InputComponentProps {
   type:
     | 'text'
     | 'select'
-    | 'multi-select' // Aggiungi questo tipo
+    | 'multi-select'
     | 'radio'
     | 'password'
     | 'email'
@@ -26,14 +26,14 @@ interface InputComponentProps {
   options?: Option[];
   required?: boolean;
   name?: string;
-  value?: string | Option | Option[]; // Aggiungi Option[]
+  value?: string | Option | Option[];
   defaultValue?: string;
   checked?: boolean;
   onChange?: (
     event:
       | ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>
       | Option
-      | Option[], // Aggiungi Option[]
+      | Option[],
   ) => void;
   onValidityChange?: (isValid: boolean) => void;
   disabled?: boolean;
@@ -183,19 +183,31 @@ const InputComponent: React.FC<InputComponentProps> = ({
   };
 
   const handleSelectChange = (selectedOption: Option | null) => {
-    setSelectedOption(selectedOption);
-    if (onChange) {
-      if (returnObject) {
-        if (selectedOption) {
-          onChange(selectedOption); // Passa l'intero oggetto selezionato
-        }
-      } else {
+    if (selectedOption && selectedOption.value === '') {
+      setSelectedOption(null);
+      if (onChange) {
         onChange({
           target: {
-            value: selectedOption ? selectedOption.value : '',
+            value: '',
             name,
           } as any,
         } as ChangeEvent<HTMLSelectElement>);
+      }
+    } else {
+      setSelectedOption(selectedOption);
+      if (onChange) {
+        if (returnObject) {
+          if (selectedOption) {
+            onChange(selectedOption); // Passa l'intero oggetto selezionato
+          }
+        } else {
+          onChange({
+            target: {
+              value: selectedOption ? selectedOption.value : '',
+              name,
+            } as any,
+          } as ChangeEvent<HTMLSelectElement>);
+        }
       }
     }
   };
