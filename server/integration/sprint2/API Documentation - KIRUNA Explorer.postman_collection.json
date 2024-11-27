@@ -2612,7 +2612,7 @@
 												{
 													"key": "file",
 													"type": "file",
-													"src": "postman-cloud:///1efa69a0-f594-4de0-b217-a6a53bdab449"
+													"src": "{{FILE_PATH}}"
 												}
 											]
 										},

@@ -31,7 +31,6 @@ const LoginForm = (props: any) => {
         props.setLoginModalOpen(false);
       } else {
         setError(result.message ?? 'Invalid credentials');
-
         console.log('Login failed');
       }
     } catch (error) {

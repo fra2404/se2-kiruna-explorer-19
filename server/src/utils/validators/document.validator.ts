@@ -1,6 +1,7 @@
 import { body, param } from 'express-validator';
 import { IConnection } from '@interfaces/document.interface';
 import mongoose from 'mongoose';
+import { ScaleTypeEnum } from '@utils/enums/scale-type-enum';
 
 
 export const validateAddDocument = [
@@ -28,13 +29,14 @@ export const validateAddDocument = [
           throw new Error(`Invalid stakeholder: ${stakeholder}`);
         }
       });
-      return true; 
+      return true;
     }),
   body('scale')
     .notEmpty()
     .withMessage('Scale is required')
     .isString()
-    .withMessage('Scale must be a string'),
+    .withMessage('Scale must be a string')
+    .custom((value, { req }) => validateScale(value, req.body.architecturalScale)),
   body('type')
     .notEmpty()
     .withMessage('Type is required')
@@ -166,7 +168,7 @@ export const validateUpdateDocument = [
           throw new Error(`Invalid stakeholder: ${stakeholder}`);
         }
       });
-      return true; 
+      return true;
     }),
   body('scale').optional().isString().withMessage('Scale must be a string'),
   body('type')
@@ -250,3 +252,21 @@ export const validateUpdateDocument = [
     .isArray()
     .withMessage('Media must be an array of MediaId'),
 ];
+
+
+const validateScale = (value: ScaleTypeEnum, architecturalScale?: string) => {
+  if (value === ScaleTypeEnum.Architectural) {
+    if (!architecturalScale || !/^1:\d+$/.test(architecturalScale)) {
+      throw new Error('Architectural Scale must be in the 1:number format');
+    }
+  } else {
+    if ([ScaleTypeEnum.BlueprintMaterialEffects, ScaleTypeEnum.Text, ScaleTypeEnum.Concept].includes(value)) {
+      if (architecturalScale) {
+        throw new Error('Architectural Scale must be empty when scale is a string');
+      }
+    } else if (![ScaleTypeEnum.BlueprintMaterialEffects, ScaleTypeEnum.Text, ScaleTypeEnum.Concept].includes(value)) {
+      throw new Error('Scale must be either blueprint/material effects or text or concept  when it is not a number');
+    }
+  }
+  return true;
+};

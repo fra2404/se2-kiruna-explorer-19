@@ -1,10 +1,5 @@
 import React, { useContext } from 'react';
-import {
-  TileLayer,
-  Marker,
-  Tooltip,
-  Polygon,
-} from 'react-leaflet';
+import { TileLayer, Marker, Tooltip, Polygon } from 'react-leaflet';
 import { LatLng } from 'leaflet';
 import InputComponent from '../atoms/input/input';
 import NamePopup from '../molecules/popups/NamePopup';
@@ -39,7 +34,8 @@ const MapSection: React.FC<MapSectionProps> = ({
   setCoordName,
   MapClickHandler,
 }) => {
-  const {swedishFlagBlue, satMapMainColor, mapType} = useContext(MapStyleContext);
+  const { swedishFlagBlue, satMapMainColor, mapType } =
+    useContext(MapStyleContext);
 
   return (
     <div className="col-span-2">
@@ -87,17 +83,17 @@ const MapSection: React.FC<MapSectionProps> = ({
             />
           ) : (
             <TileLayer
-              attribution='ArcGIS'
+              attribution="ArcGIS"
               url="https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}"
             />
           )}
 
-          {(position ||
+          {(position ??
             (selectedCoordId &&
               coordinates[selectedCoordId]['type'] == 'Point')) && (
             <Marker
               position={
-                position ||
+                position ??
                 new LatLng(
                   coordinates[selectedCoordId]['coordinates'][0],
                   coordinates[selectedCoordId]['coordinates'][1],
@@ -125,7 +121,9 @@ const MapSection: React.FC<MapSectionProps> = ({
           {selectedCoordId &&
             coordinates[selectedCoordId]['type'] == 'Polygon' && (
               <Polygon
-                pathOptions={{ color: mapType == "sat" ? satMapMainColor : swedishFlagBlue }}
+                pathOptions={{
+                  color: mapType == 'sat' ? satMapMainColor : swedishFlagBlue,
+                }}
                 positions={coordinates[selectedCoordId]['coordinates']}
               ></Polygon>
             )}
