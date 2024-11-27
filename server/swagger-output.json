@@ -58,7 +58,6 @@
           },
           "scale": {
             "type": "string",
-            "description": "The scale of the document (e.g., 'Architectural', 'blueprints/effects', 'text')",
             "example": "Architectural"
           },
           "architecturalScale": {
