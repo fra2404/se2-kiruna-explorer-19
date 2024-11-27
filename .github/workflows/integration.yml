@@ -41,6 +41,7 @@ jobs:
             --reporters cli,json,html \
             --reporter-json-export reports/newman-report.json \
             --reporter-html-export reports/newman-report.html
+            --env-var "FILE_PATH=server/integration/sprint2/1.pdf"
 
       # 6. Carica i report come artefatti
       - name: Upload test reports
