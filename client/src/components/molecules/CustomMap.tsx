@@ -1,5 +1,8 @@
 import { LatLng, LatLngExpression } from 'leaflet';
-import { MapContainer } from 'react-leaflet';
+import { MapContainer, TileLayer } from 'react-leaflet';
+import CustomZoomControl from './ZoomControl';
+import { useContext } from 'react';
+import MapStyleContext from '../../context/MapStyleContext';
 
 export const kirunaLatLngCoords: LatLngExpression = [67.85572, 20.22513];
 
@@ -16,6 +19,8 @@ const CustomMap: React.FC<CustomMapProps> = ({
   allMunicipality,
   children 
 }) => {
+  const {mapType} = useContext(MapStyleContext);
+  
   return (
     <MapContainer
       style={{ width: '100%', height: '100%', zIndex: zIndex }}
@@ -32,6 +37,19 @@ const CustomMap: React.FC<CustomMapProps> = ({
       ]}
       maxBoundsViscosity={0.9}
     >
+      {mapType === 'osm' ? (
+      <TileLayer
+        attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+        url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+      />
+    ) : (
+      <TileLayer
+        attribution='ArcGIS'
+        url="https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}"
+      />
+    )}
+    <CustomZoomControl />
+
       {children}
     </MapContainer>
   );

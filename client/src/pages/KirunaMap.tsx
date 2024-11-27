@@ -1,5 +1,4 @@
 import { useState, useEffect, useContext } from 'react';
-import { TileLayer } from 'react-leaflet';
 import { DivIcon, LatLng } from 'leaflet';
 import API from '../API';
 import FeedbackContext from '../context/FeedbackContext';
@@ -10,7 +9,6 @@ import 'leaflet/dist/leaflet.css';
 import Overlay from '../components/organisms/Overlay/Overlay';
 import { Point } from '../components/organisms/coordsOverlay/Point';
 import ClickMarker from '../components/organisms/coordsOverlay/ClickMarker';
-import CustomZoomControl from '../components/molecules/ZoomControl';
 import { Header } from '../components/organisms/Header';
 import { IDocument } from '../utils/interfaces/document.interface';
 import MarkerClusterGroup from 'react-leaflet-markercluster';
@@ -37,7 +35,7 @@ export const modalStyles = {
 export default function KirunaMap() {
   const { isLoggedIn, user } = useAuth();
   const { setFeedbackFromError } = useContext(FeedbackContext);
-  const { swedishFlagBlue, swedishFlagYellow, mapType } =
+  const { swedishFlagBlue, swedishFlagYellow } =
     useContext(MapStyleContext);
 
   const [documents, setDocuments] = useState<IDocument[]>([]);
@@ -114,18 +112,6 @@ export default function KirunaMap() {
       )}
 
       <CustomMap>
-        {mapType === 'osm' ? (
-          <TileLayer
-            attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-            url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
-          />
-        ) : (
-          <TileLayer
-            attribution="ArcGIS"
-            url="https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}"
-          />
-        )}
-
         <MarkerClusterGroup
           iconCreateFunction={(cluster: any) => {
             return new DivIcon({
@@ -182,8 +168,6 @@ export default function KirunaMap() {
             setDocuments={setDocuments}
           />
         )}
-
-        <CustomZoomControl />
 
         <ManageCoordsModal
           manageCoordsModalOpen={manageCoordsModalOpen}
