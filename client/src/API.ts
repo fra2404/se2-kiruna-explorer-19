@@ -2,7 +2,6 @@ import { ICoordinate, IDocument } from './utils/interfaces/document.interface';
 import { IUser } from './utils/interfaces/user.interface';
 
 const SERVER_URL = 'http://localhost:5001/api'; // endpoint of the server
-const CDN_URL = 'http://localhost:3004'; // endpoint of the CDN
 
 async function login(
   email: string,
@@ -287,8 +286,8 @@ async function searchDocuments(
       ? `${SERVER_URL}/documents/search`
       : `${SERVER_URL}/documents/search?keywords=[${searchQuery.split(' ').map(word => `"${encodeURIComponent(word)}"`).join(',')}]`;
 
-  console.log('Search URL:', searchURL);
-  console.log('Filters sent in body:', filters);
+  // console.log('Search URL:', searchURL);
+  // console.log('Filters sent in body:', filters);
   
   const response = await fetch(searchURL, {
     method: 'POST',

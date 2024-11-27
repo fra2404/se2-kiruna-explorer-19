@@ -15,9 +15,11 @@ const AllDocumentsModal: React.FC<AllDocumentsModalProps> = ({
 
     const [filters, setFilters] = useState({
         type: '',
-        scale: '',
         stakeholders: '',
-        language: ''
+        area: '',
+        year: '',
+        month: '',
+        day: ''
     });
     const [searchQuery, setSearchQuery] = useState('');
     const [documents, setDocuments] = useState<IDocument[]>([]);
@@ -43,10 +45,8 @@ const AllDocumentsModal: React.FC<AllDocumentsModalProps> = ({
                 className='bg-black text-white font-semibold px-2 rounded'>Close</button>
             </div>
 
-            <h2 className='text-xl'>Filters</h2>
-            <div className="grid grid-cols-2 grid-rows-2 gap-4">
-                <Filters filters={filters} setFilters={setFilters} />
-            </div>
+            <h2 className='text-xl'>Filters</h2>            
+            <Filters filters={filters} setFilters={setFilters} />
             
             <Searchbar searchQuery={searchQuery} setSearchQuery={setSearchQuery}
             handleSearch={handleSearch} />
@@ -55,7 +55,7 @@ const AllDocumentsModal: React.FC<AllDocumentsModalProps> = ({
                 {
                     documents.length === 0 ? <h1 className='text-sm text-gray-400'>No documents</h1> :
                     documents.map((doc, index) => (
-                    <DocumentItem key={index} document={doc} />
+                        <DocumentItem key={index} document={doc} />
                     ))
                 }
             </div>

@@ -20,11 +20,9 @@ function CustomZoomControl() {
   return (
     <div
       style={{ pointerEvents: 'auto', position: 'absolute', display: 'flex', flexDirection: 'column', alignItems: 'center', zIndex: 1000 }}
-      className="leaflet-bottom leaflet-left flex flex-row mb-4 ml-4 "
+      className="leaflet-bottom leaflet-left flex flex-row mb-4 ml-4"
     >
-      <div
-        style={{ pointerEvents: 'auto' }}
-      >
+      <div style={{ pointerEvents: 'auto' }}>
         <ButtonRounded
           variant="filled"
           text="+"

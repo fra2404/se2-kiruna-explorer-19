@@ -6,18 +6,20 @@ import FeedbackContext from '../context/FeedbackContext';
 import MapStyleContext from '../context/MapStyleContext';
 
 import { useAuth } from '../context/AuthContext';
-import 'leaflet/dist/leaflet.css';
 import Overlay from '../components/organisms/Overlay/Overlay';
 import { Point } from '../components/organisms/coordsOverlay/Point';
 import { Area } from '../components/organisms/coordsOverlay/Area';
 import ClickMarker from '../components/organisms/coordsOverlay/ClickMarker';
 import CustomZoomControl from '../components/molecules/ZoomControl';
 import { Header } from '../components/organisms/Header';
+import DrawingPanel from '../components/molecules/DrawingPanel';
 import { IDocument } from '../utils/interfaces/document.interface';
 import MarkerClusterGroup from 'react-leaflet-markercluster';
 import { ManageCoordsModal } from '../components/organisms/modals/ManageCoordsModal';
 import { renderToString } from 'react-dom/server';
 import { UserRoleEnum } from '../utils/interfaces/user.interface';
+import 'leaflet/dist/leaflet.css';
+
 
 export const kirunaLatLngCoords: LatLngExpression = [67.85572, 20.22513];
 
@@ -106,13 +108,12 @@ export default function KirunaMap() {
       <div style={{ width: width, height: height }}>
         <Header setManageCoordsModalOpen={setManageCoordsModalOpen} />
 
-        {(isLoggedIn && user && user.role === UserRoleEnum.Uplanner) &&
-          <Overlay 
-            coordinates={coordinates}
-            setCoordinates={setCoordinates}
-            documents={documents}
-            setDocuments={setDocuments} />
-        }
+        <Overlay 
+          isLoggedIn={isLoggedIn && user && user.role === UserRoleEnum.Uplanner}
+          coordinates={coordinates}
+          setCoordinates={setCoordinates}
+          documents={documents}
+          setDocuments={setDocuments} />
 
         <MapContainer
           style={{ width: '100%', height: '100%', zIndex: 0 }}
@@ -208,6 +209,11 @@ export default function KirunaMap() {
               setCoordinates={setCoordinates} 
               documents={documents}
               setDocuments={setDocuments} />
+          }
+
+          {
+            isLoggedIn &&
+            <DrawingPanel />
           }
 
           <CustomZoomControl />
