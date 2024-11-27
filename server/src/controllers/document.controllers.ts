@@ -30,10 +30,10 @@ import { DocNotFoundError } from '@utils/errors';
  *         stakeholders:
  *           type: string
  *           description: The stakeholders of the document
- *          scale:
+ *         scale:
  *           type: string
  *           description: The scale of the document (e.g., 'Architectural', 'blueprints/effects', 'text')
- *          architecturalScale:
+ *         architecturalScale:
  *           type: string
  *           description: The value in number:number format, required when scale is 'Architectural'
  *           example: "1:1000"
