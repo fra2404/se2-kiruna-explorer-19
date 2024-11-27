@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import InputComponent from '../../atoms/input/input';
 import './Step1.css';
+import { stakeholderOptions } from '../../../shared/stakeholder.options.const';
+import { scaleOptions } from '../../../shared/scale.options.const';
 
 interface Step1Props {
   title: string;
@@ -15,22 +17,6 @@ interface Step1Props {
   setCustomScale: (value: string) => void;
   errors: { [key: string]: string };
 }
-
-const stakeholderOptions = [
-  { value: 'LKAB', label: 'LKAB' },
-  { value: 'Municipalty', label: 'Municipalty' },
-  { value: 'RegionalAuthority', label: 'Regional Authority' },
-  { value: 'ArchitectureFirms', label: 'Architecture Firms' },
-  { value: 'Citizens', label: 'Citizens' },
-  { value: 'Others', label: 'Others' },
-];
-
-const scaleOptions = [
-  { value: 'Architectural Style', label: 'Architectural Style' },
-  { value: 'pippo', label: 'pippo' },
-  { value: 'pluto', label: 'pluto' },
-  { value: 'altro', label: 'altro' },
-];
 
 const Step1: React.FC<Step1Props> = ({
   title,
