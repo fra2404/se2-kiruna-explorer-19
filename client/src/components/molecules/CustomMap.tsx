@@ -5,23 +5,30 @@ export const kirunaLatLngCoords: LatLngExpression = [67.85572, 20.22513];
 
 interface CustomMapProps {
   center?: LatLng;
+  zIndex?: number;
+  allMunicipality?: boolean
   children: any;
 }
 
-const CustomMap: React.FC<CustomMapProps> = ({ center, children }) => {
+const CustomMap: React.FC<CustomMapProps> = ({
+  center, 
+  zIndex = 0, 
+  allMunicipality,
+  children 
+}) => {
   return (
     <MapContainer
-      style={{ width: '100%', height: '100%', zIndex: 0 }}
+      style={{ width: '100%', height: '100%', zIndex: zIndex }}
       center={center || kirunaLatLngCoords}
-      zoom={13}
+      zoom={!allMunicipality ? 13 : 8}
       doubleClickZoom={false}
       scrollWheelZoom={true}
-      minZoom={9}
+      minZoom={8}
       zoomControl={false}
       touchZoom={true}
       maxBounds={[
-        [67.8, 19.9],
-        [67.9, 20.5],
+        [67.0, 17.8],
+        [69.5, 23.4],
       ]}
       maxBoundsViscosity={0.9}
     >

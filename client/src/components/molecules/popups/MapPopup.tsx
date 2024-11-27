@@ -6,6 +6,7 @@ import { IDocument } from '../../../utils/interfaces/document.interface';
 import { MarkerDocumentList } from '../documentsItems/MarkerDocumentList';
 import { useAuth } from '../../../context/AuthContext';
 import { UserRoleEnum } from '../../../utils/interfaces/user.interface';
+import { kirunaLatLngCoords } from '../CustomMap';
 
 interface MapPopupProps {
   name: string;
@@ -17,6 +18,7 @@ interface MapPopupProps {
   setCoordinates: (coordinates: any) => void;
   allDocuments: IDocument[];
   setDocuments: (documents: IDocument[]) => void;
+  allMunicipality?: boolean
 }
 
 export const MapPopup: React.FC<MapPopupProps> = ({
@@ -28,13 +30,21 @@ export const MapPopup: React.FC<MapPopupProps> = ({
   coordinates,
   setCoordinates,
   allDocuments,
-  setDocuments
+  setDocuments,
+  allMunicipality
 }) => {
   const popupRef = useRef<L.Popup>(null);
   const { isLoggedIn, user } = useAuth();
 
   return (
-    <Popup ref={popupRef} offset={[10, -10]}>
+    <Popup 
+      ref={popupRef} offset={[10, -10]} 
+      position={allMunicipality ? kirunaLatLngCoords : undefined}
+      closeButton={!allMunicipality} 
+      closeOnClick={!allMunicipality} 
+      closeOnEscapeKey={!allMunicipality} 
+      autoClose={!allMunicipality}
+    >
       <span className="text-lg font-bold">{name}</span>
       <br />
       <MarkerDocumentList 
@@ -58,12 +68,14 @@ export const MapPopup: React.FC<MapPopupProps> = ({
               className="bg-black text-white text-base pt-2 pb-2 pl-3 pr-3"
               onClick={onYesClick}
             />
-            <ButtonRounded
-              variant="outlined"
-              text="Cancel"
-              className="text-base pt-2 pb-2 pl-3 pr-3"
-              onClick={onCancelClick}
-            />
+            {!allMunicipality &&
+              <ButtonRounded
+                variant="outlined"
+                text="Cancel"
+                className="text-base pt-2 pb-2 pl-3 pr-3"
+                onClick={onCancelClick}
+              />
+            }
           </div>
         </>
       )}

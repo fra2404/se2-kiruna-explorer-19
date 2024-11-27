@@ -10,7 +10,6 @@ import { DocumentIcon } from '../../molecules/documentsItems/DocumentIcon';
 import { renderToString } from 'react-dom/server';
 import { CoordsIconStyle } from '../../molecules/MapIconsStyles';
 import { Area } from './Area';
-import { KirunaMunicipalityCoordinates } from '../../../context/KirunaMunicipalityCoordinates';
 
 interface PointProps {
   id: string;
@@ -41,16 +40,11 @@ export const Point: React.FC<PointProps> = ({
 
   let markerText: any;
 
-  if(id != "all_municipality") {
-    if(pointDocuments.length == 1) {
-      markerText = <DocumentIcon type={pointDocuments[0].type} stakeholders={pointDocuments[0].stakeholders} /> ;
-    }
-    else {
-      markerText = pointDocuments.length;
-    }
+  if(pointDocuments.length == 1) {
+    markerText = <DocumentIcon type={pointDocuments[0].type} stakeholders={pointDocuments[0].stakeholders} /> ;
   }
   else {
-    markerText = "AM";
+    markerText = pointDocuments.length;
   }
 
   //Show area when clicking/overing a marker
@@ -60,27 +54,27 @@ export const Point: React.FC<PointProps> = ({
   const map = useMap();
 
   const handlePopupOpen = () => {
-    if(type == 'Polygon' || id=='all_municipality') {
+    if(type == 'Polygon') {
       popupOpen = true;
       polygonRef.current?.addTo(map);
     }
   }
 
   const handlePopupClose = () => {
-    if(type == 'Polygon' || id=='all_municipality') {
+    if(type == 'Polygon') {
       popupOpen = false;
       polygonRef.current?.remove();
     }
   }
 
   const handleMouseOver = () => {
-    if(type == 'Polygon' || id=='all_municipality') {
+    if(type == 'Polygon') {
       polygonRef.current?.addTo(map);
     }
   }
 
   const handleMouseOut = () => {
-    if((type == 'Polygon' || id=='all_municipality') && !popupOpen) {
+    if((type == 'Polygon') && !popupOpen) {
       polygonRef.current?.remove();
     }
   }
@@ -108,11 +102,11 @@ export const Point: React.FC<PointProps> = ({
         
         icon={
           new DivIcon({
-            iconSize:  id!="all_municipality" ? [45, 45] : [60, 60],
+            iconSize: [45, 45],
             className: "pointIcon",
             html: renderToString(
               <div style={
-                CoordsIconStyle(pointDocuments, id != "all_municipality" ? true : false, id == "all_municipality")
+                CoordsIconStyle(pointDocuments, true)
               }>
                 <span style={{transform: "rotate(45deg)"}}>
                   { markerText }
@@ -148,10 +142,10 @@ export const Point: React.FC<PointProps> = ({
           setDocuments={setDocuments}
         />
 
-        {(type=='Polygon' || id=='all_municipality') &&
+        {(type=='Polygon') &&
           <Area
             id={id}
-            areaCoordinates={id != 'all_municipality' ? pointCoordinates as LatLng[] : KirunaMunicipalityCoordinates as unknown as LatLng[]}
+            areaCoordinates={pointCoordinates as LatLng[]}
             areaRef={polygonRef}
           />
         }

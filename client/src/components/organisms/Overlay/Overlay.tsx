@@ -7,7 +7,8 @@ import FloatingButton from '../../molecules/FloatingButton';
 import DocumentForm from '../DocumentForm';
 import { IDocument } from '../../../utils/interfaces/document.interface';
 import AllDocumentsModal from '../modals/AllDocumentsModal';
-import { FaFolder, FaPlus } from 'react-icons/fa';
+import { FaFolder, FaGlobe, FaPlus } from 'react-icons/fa';
+import { AllMunicipalityDocuments } from '../coordsOverlay/AllMunicipalityDocuments';
 
 interface OverlayProps {
   coordinates: any; //Need to pass coordinates to the modal as parameter
@@ -27,11 +28,28 @@ const Overlay: React.FC<OverlayProps> = ({
   documents,
   setDocuments,
 }) => {
+  const [isHoveredMunicipality, setIsHoveredMunicipality] = useState(false);
+  const [showMunicipalityDocuments, setShowMunicipalityDocuments] = useState(false);
+
   const [modalOpen, setModalOpen] = useState(false);
-  const [isHovered, setIsHovered] = useState(false);
+  const [isHoveredNewDocument, setIsHoveredNewDocument] = useState(false);
 
   const [isHoveredSearch, setIsHoveredSearch] = useState(false);
   const [showAllDocuments, setShowAllDocuments] = useState(false);
+
+  const municipalityDocumentsModalStyles = {
+    content: {
+      top: '50%',
+      left: '50%',
+      right: 'auto',
+      bottom: 'auto',
+      marginRight: '-50%',
+      transform: 'translate(-50%, -50%)',
+      width: '90%',
+      height: '90vh',
+    },
+    overlay: { zIndex: 1000 },
+  }
 
   return (
     <Container
@@ -45,14 +63,26 @@ const Overlay: React.FC<OverlayProps> = ({
       }}
     >
       <FloatingButton
-        text={isHovered ? '+ New Document' : <FaPlus style={{ display: 'inline' }} />}
-        onMouseEnter={() => setIsHovered(true)}
-        onMouseLeave={() => setIsHovered(false)}
+        text={isHoveredMunicipality ? 'All Municipality Documents' : <FaGlobe style={{ display: 'inline' }} />}
+        onMouseEnter={() => setIsHoveredMunicipality(true)}
+        onMouseLeave={() => setIsHoveredMunicipality(false)}
+        onClick={() => {
+          if (!modalOpen) {
+            setShowMunicipalityDocuments(true);
+          }
+        }}
+      />
+
+      <FloatingButton
+        text={isHoveredNewDocument ? '+ New Document' : <FaPlus style={{ display: 'inline' }} />}
+        onMouseEnter={() => setIsHoveredNewDocument(true)}
+        onMouseLeave={() => setIsHoveredNewDocument(false)}
         onClick={() => {
           if (!modalOpen) {
             setModalOpen(true);
           }
         }}
+        className='mt-20'
       />
 
       <FloatingButton
@@ -70,7 +100,7 @@ const Overlay: React.FC<OverlayProps> = ({
             <FaFolder style={{ display: 'inline' }} />
           )
         }
-        className="mt-20"
+        className='mt-40'
       />
 
       <Modal
@@ -95,6 +125,19 @@ const Overlay: React.FC<OverlayProps> = ({
         onRequestClose={() => setShowAllDocuments(false)}
       >
         <AllDocumentsModal setShowAllDocuments={setShowAllDocuments} />
+      </Modal>
+
+      <Modal
+        style={municipalityDocumentsModalStyles}
+        isOpen={showMunicipalityDocuments}
+        onRequestClose={() => setShowMunicipalityDocuments(false)}
+      >
+        <AllMunicipalityDocuments 
+          coordinates={coordinates}
+          setCoordinates={setCoordinates}
+          documents={documents}
+          setDocuments={setDocuments}
+        />
       </Modal>
     </Container>
   );

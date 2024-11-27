@@ -17,7 +17,7 @@ import MarkerClusterGroup from 'react-leaflet-markercluster';
 import { ManageCoordsModal } from '../components/organisms/modals/ManageCoordsModal';
 import { renderToString } from 'react-dom/server';
 import { UserRoleEnum } from '../utils/interfaces/user.interface';
-import CustomMap, { kirunaLatLngCoords } from '../components/molecules/CustomMap';
+import CustomMap from '../components/molecules/CustomMap';
 
 export const modalStyles = {
   content: {
@@ -173,20 +173,6 @@ export default function KirunaMap() {
           }
 
         </MarkerClusterGroup>
-
-        {/* Adding another point that represents "All municipality" documents */}
-        <Point
-            key="all_municipality"
-            id="all_municipality"
-            pointCoordinates={kirunaLatLngCoords as LatLng}
-            name="All Municipality"
-            type="Point"
-            pointDocuments={documents.filter((d) => !d.coordinates)}
-            coordinates={coordinates}
-            setCoordinates={setCoordinates}
-            allDocuments={documents}
-            setDocuments={setDocuments}
-        />
 
         {isLoggedIn && user && user.role === UserRoleEnum.Uplanner && (
           <ClickMarker

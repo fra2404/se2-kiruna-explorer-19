@@ -1,6 +1,5 @@
 .floating-button {
   position: fixed;
-  top: 50%;
   right: 1rem;
   transform: translateY(-50%);
   z-index: 1000;

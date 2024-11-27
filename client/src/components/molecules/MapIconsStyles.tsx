@@ -6,32 +6,23 @@ import { IDocument } from '../../utils/interfaces/document.interface';
 
 export function CoordsIconStyle(
   coordDocuments: IDocument[],
-  pointy: boolean,
-  allMunicipality: boolean
+  pointy: boolean
 ): {} {
   const { swedishFlagBlue, satMapMainColor, mapType } =
     useContext(MapStyleContext);
 
   let bgColor, size, textColor, padding;
 
-  if(!allMunicipality) {
-    if(coordDocuments.length != 1) {
-      bgColor = mapType == 'sat' ? satMapMainColor : swedishFlagBlue;
-      padding = '0px';
-    }
-    else {
-      bgColor = 'white';
-      padding = '1px';
-    }
-    size = '40px';
-    textColor = mapType == 'sat' ? 'black' : 'white';
-  }
-  else {
-    bgColor = '#1B1B1B';
-    size = '50px';
-    textColor = 'white';
+  if(coordDocuments.length != 1) {
+    bgColor = mapType == 'sat' ? satMapMainColor : swedishFlagBlue;
     padding = '0px';
   }
+  else {
+    bgColor = 'white';
+    padding = '1px';
+  }
+  size = '40px';
+  textColor = mapType == 'sat' ? 'black' : 'white';
 
   return {
     display: 'flex',
