@@ -3,7 +3,6 @@ import { DocTypeEnum } from '@utils/enums/doc-type.enum';
 import { StakeholderEnum } from '@utils/enums/stakeholder.enum';
 import { LinkTypeEnum } from '@utils/enums/link-type.enum';
 import mongoose, { Document, Schema } from 'mongoose';
-import { isMapIterator } from 'util/types';
 
 export type DocumentDocument = IDocument & Document;
 
@@ -31,11 +30,11 @@ const documentSchema = new Schema<DocumentDocument>(
     },
     stakeholders: [
       {
-      type: String,
-      required: true,
-      enum: StakeholderEnum,
-    },
-  ],
+        type: String,
+        required: true,
+        enum: StakeholderEnum,
+      },
+    ],
     scale: {
       type: String,
       required: true,
