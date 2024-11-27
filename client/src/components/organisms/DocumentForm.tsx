@@ -148,7 +148,9 @@ const DocumentForm = ({
   const [scale, setScale] = useState<string | undefined>(
     selectedDocument?.scale ?? '',
   );
-  const [customScale, setCustomScale] = useState<string>('');
+  const [architecturalScale, setArchitecturalScale] = useState<
+    string | undefined
+  >(selectedDocument?.architecturalScale ?? '');
   const [issuanceDate, setIssuanceDate] = useState(
     selectedDocument?.date
       ? new Date(selectedDocument.date).toISOString().split('T')[0]
@@ -244,8 +246,11 @@ const DocumentForm = ({
     if (stakeholders.length === 0)
       newErrors.stakeholders = 'Stakeholders are required';
     if (scale === '') newErrors.scale = 'Scale is required';
-    if (scale === 'Architectural Style' && customScale.trim() === '')
-      newErrors.customScale = 'Custom Scale is required';
+    if (
+      scale === 'Architectural Style' &&
+      (architecturalScale ?? '').trim() === ''
+    )
+      newErrors.architecturalScale = 'Custom Scale is required';
     if (issuanceDate.trim() === '')
       newErrors.issuanceDate = 'Issuance date is required';
     if ((docType ?? '').trim() === '')
@@ -333,7 +338,7 @@ const DocumentForm = ({
       title,
       stakeholders: stakeholders ?? '',
       scale: scale ?? '',
-      customScale: scale === 'Architectural Style' ? customScale : '',
+      architecturalScale: scale === 'ARCHITECTURAL' ? architecturalScale : '',
       type: docType ?? '',
       language,
       summary: description,
@@ -465,8 +470,8 @@ const DocumentForm = ({
                   setScale={setScale}
                   issuanceDate={issuanceDate}
                   setIssuanceDate={setIssuanceDate}
-                  customScale={customScale}
-                  setCustomScale={setCustomScale}
+                  architecturalScale={architecturalScale || ''}
+                  setArchitecturalScale={setArchitecturalScale}
                   errors={errors}
                 />
               </div>

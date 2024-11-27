@@ -1,9 +1,40 @@
-export default function AgreementIcon({fillColor}: any) {
-	return (
-		<svg version="1.1" id="Layer_1" xmlns="http://www.w3.org/2000/svg" xmlnsXlink="http://www.w3.org/1999/xlink" x="0px" y="0px"
-			width="100%" viewBox="0 0 992 928" enableBackground="new 0 0 992 928" xmlSpace="preserve">
-		<path fill={fillColor} opacity="1.000000" stroke="none" 
-			d="
+export default function AgreementIcon({
+  fillColor,
+}: {
+  fillColor: string[] | string;
+}) {
+  const gradientId = 'gradient';
+  const fillColorArray = Array.isArray(fillColor) ? fillColor : [fillColor];
+
+  return (
+    <svg
+      version="1.1"
+      id="Layer_1"
+      xmlns="http://www.w3.org/2000/svg"
+      xmlnsXlink="http://www.w3.org/1999/xlink"
+      x="0px"
+      y="0px"
+      width="100%"
+      viewBox="0 0 992 928"
+      enableBackground="new 0 0 992 928"
+      xmlSpace="preserve"
+    >
+      <defs>
+        <linearGradient id={gradientId} x1="0%" y1="0%" x2="100%" y2="100%">
+          {fillColorArray.map((color, index) => (
+            <stop
+              key={index}
+              offset={`${(index / (fillColorArray.length - 1)) * 100}%`}
+              stopColor={color}
+            />
+          ))}
+        </linearGradient>
+      </defs>
+      <path
+        fill={`url(#${gradientId})`}
+        opacity="1.000000"
+        stroke="none"
+        d="
 		M758.067383,641.855042 
 			C750.586121,655.775696 737.152832,660.722595 723.997559,665.948364 
 			C722.109070,666.698547 719.692261,666.358704 717.549255,666.176880 
@@ -195,9 +226,13 @@ export default function AgreementIcon({fillColor}: any) {
 			C723.223755,581.441101 721.813538,577.273926 722.259766,574.212708 
 			C723.666199,564.562195 734.200378,555.655396 744.730286,558.748352 
 			C749.477661,560.142822 754.898804,560.454895 759.878357,556.276001 
-		z"/>
-		<path fill={fillColor} opacity="1.000000" stroke="none" 
-			d="
+		z"
+      />
+      <path
+        fill={`url(#${gradientId})`}
+        opacity="1.000000"
+        stroke="none"
+        d="
 		M724.025085,820.085815 
 			C729.234192,816.533752 733.916443,812.768616 739.115662,809.960999 
 			C749.302429,804.460144 758.141357,797.031982 767.315979,790.199829 
@@ -286,9 +321,13 @@ export default function AgreementIcon({fillColor}: any) {
 			C635.172791,859.079956 654.240479,852.509033 673.128662,845.395752 
 			C681.170288,842.367310 688.504456,837.489868 696.495239,834.289429 
 			C706.048767,830.463196 714.263367,824.191650 724.025085,820.085815 
-		z"/>
-		<path fill={fillColor} opacity="1.000000" stroke="none" 
-			d="
+		z"
+      />
+      <path
+        fill={`url(#${gradientId})`}
+        opacity="1.000000"
+        stroke="none"
+        d="
 		M335.925476,79.884720 
 			C355.856293,69.775749 376.719604,62.961754 397.534485,56.360443 
 			C409.943695,52.424931 422.961731,50.004692 435.890808,47.557991 
@@ -336,7 +375,8 @@ export default function AgreementIcon({fillColor}: any) {
 			C262.915771,124.063019 271.089630,117.676033 279.457703,111.559021 
 			C284.908752,107.574310 290.571106,103.784264 296.493591,100.558327 
 			C309.414764,93.520203 322.562439,86.897903 335.925476,79.884720 
-		z"/>
-		</svg>
-	);
+		z"
+      />
+    </svg>
+  );
 }

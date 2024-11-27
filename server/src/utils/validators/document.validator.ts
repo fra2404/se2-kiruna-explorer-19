@@ -34,24 +34,9 @@ export const validateAddDocument = [
   body('scale')
     .notEmpty()
     .withMessage('Scale is required')
-    .custom((value, { req }) => {
-      // If scale is architectural
-      if (value === 'Architectural') {  //Value must be changed
-        if (!req.body.architecturalScale || !/^\d+:\d+$/.test(req.body.architecturalScale)) {
-          throw new Error('Architectural Scale must be in the  number:number format');
-        }
-      } else {
-        if (['blueprints/effects', 'text'].includes(value)) {
-          if (req.body.architecturalScale) {
-            throw new Error('Architectural Scale must be empty when scale is a string');
-          }
-        }
-        else if (!['blueprints/effects', 'text'].includes(value)) {
-          throw new Error('Scale must be either blueprints/effects or text when it is not a number');
-        }
-      }
-      return true;
-    }),
+    .isString()
+    .withMessage('Scale must be a string')
+    .custom((value, { req }) => validateScale(value, req.body.architecturalScale)),
   //**********************************/
 
   body('type')
@@ -187,7 +172,11 @@ export const validateUpdateDocument = [
       });
       return true;
     }),
-  body('scale').optional().isString().withMessage('Scale must be a string'),
+  body('scale')
+    .optional()
+    .isString()
+    .withMessage('Scale must be a string')
+    .custom((value, { req }) => validateScale(value, req.body.architecturalScale)),
   body('type')
     .optional()
     .isIn([

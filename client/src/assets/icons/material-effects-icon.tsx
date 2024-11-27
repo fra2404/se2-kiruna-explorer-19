@@ -1,9 +1,40 @@
-export default function MaterialEffectsIcon({fillColor}: any) {
-	return (
-		<svg version="1.1" id="Layer_1" xmlns="http://www.w3.org/2000/svg" xmlnsXlink="http://www.w3.org/1999/xlink" x="0px" y="0px"
-			width="100%" viewBox="0 0 1024 880" enableBackground="new 0 0 1024 880" xmlSpace="preserve">
-		<path fill={fillColor} opacity="1.000000" stroke="none" 
-			d="
+export default function MaterialEffectsIcon({
+  fillColor,
+}: {
+  fillColor: string[] | string;
+}) {
+  const gradientId = 'gradient';
+  const fillColorArray = Array.isArray(fillColor) ? fillColor : [fillColor];
+
+  return (
+    <svg
+      version="1.1"
+      id="Layer_1"
+      xmlns="http://www.w3.org/2000/svg"
+      xmlnsXlink="http://www.w3.org/1999/xlink"
+      x="0px"
+      y="0px"
+      width="100%"
+      viewBox="0 0 992 928"
+      enableBackground="new 0 0 992 928"
+      xmlSpace="preserve"
+    >
+      <defs>
+        <linearGradient id={gradientId} x1="0%" y1="0%" x2="100%" y2="100%">
+          {fillColorArray.map((color, index) => (
+            <stop
+              key={index}
+              offset={`${(index / (fillColorArray.length - 1)) * 100}%`}
+              stopColor={color}
+            />
+          ))}
+        </linearGradient>
+      </defs>
+      <path
+        fill={`url(#${gradientId})`}
+        opacity="1.000000"
+        stroke="none"
+        d="
 		M626.000000,744.055298 
 			C481.858063,744.078552 338.216034,744.171082 194.574234,744.032776 
 			C177.230988,744.016113 159.764893,741.383972 146.283569,729.763977 
@@ -83,9 +114,13 @@ export default function MaterialEffectsIcon({fillColor}: any) {
 			C749.568115,503.656647 738.050781,480.030182 723.930908,457.836884 
 			C711.844116,438.839172 701.091492,418.990082 689.827759,399.471985 
 			C679.226685,381.101990 668.728760,362.672455 657.716614,343.700195 
-		z"/>
-		<path fill={fillColor} opacity="1.000000" stroke="none" 
-			d="
+		z"
+      />
+      <path
+        fill={`url(#${gradientId})`}
+        opacity="1.000000"
+        stroke="none"
+        d="
 		M492.058380,630.966919 
 			C494.319305,636.018005 496.476044,640.700134 498.464691,645.452576 
 			C500.164093,649.513733 499.182465,651.091003 494.862183,651.195740 
@@ -170,9 +205,13 @@ export default function MaterialEffectsIcon({fillColor}: any) {
 			C583.482605,398.217285 585.483521,388.941986 588.502991,379.011902 
 			C577.569336,380.708130 567.688904,382.254547 557.497437,385.838623 
 			C559.892029,388.361542 561.905212,390.482513 564.392639,393.142822 
-		z"/>
-		<path fill={fillColor} opacity="1.000000" stroke="none" 
-			d="
+		z"
+      />
+      <path
+        fill={`url(#${gradientId})`}
+        opacity="1.000000"
+        stroke="none"
+        d="
 		M473.375000,356.229492 
 			C471.025208,364.600281 466.935486,370.964996 460.058136,376.223297 
 			C451.652008,382.650513 442.613708,385.575592 432.423004,384.922119 
@@ -182,15 +221,20 @@ export default function MaterialEffectsIcon({fillColor}: any) {
 			C448.782043,304.825348 458.218292,308.602020 465.619324,317.288391 
 			C471.129028,323.754944 474.841644,331.103546 475.016174,339.685913 
 			C475.125641,345.069427 476.350800,350.692566 473.375000,356.229492 
-		z"/>
-		<path fill={fillColor} opacity="1.000000" stroke="none" 
-			d="
+		z"
+      />
+      <path
+        fill={`url(#${gradientId})`}
+        opacity="1.000000"
+        stroke="none"
+        d="
 		M381.470825,383.513458 
 			C376.804626,383.146057 377.209412,380.361877 378.581024,377.653198 
 			C379.595367,375.650085 381.815063,375.196106 383.719696,376.292664 
 			C385.770844,377.473541 384.464478,379.141663 383.673889,380.539246 
 			C383.122070,381.514771 382.439728,382.416534 381.470825,383.513458 
-		z"/>
-		</svg>
-	);
+		z"
+      />
+    </svg>
+  );
 }

@@ -1,9 +1,40 @@
-export default function InformativeDocIcon({fillColor}: any) {
-	return (
-		<svg version="1.1" id="Layer_1" xmlns="http://www.w3.org/2000/svg" xmlnsXlink="http://www.w3.org/1999/xlink" x="0px" y="0px"
-			width="100%" viewBox="0 0 992 832" enableBackground="new 0 0 992 832" xmlSpace="preserve">
-		<path fill={fillColor} opacity="1.000000" stroke="none" 
-			d="
+export default function InformativeDocIcon({
+  fillColor,
+}: {
+  fillColor: string[] | string;
+}) {
+  const gradientId = 'gradient';
+  const fillColorArray = Array.isArray(fillColor) ? fillColor : [fillColor];
+
+  return (
+    <svg
+      version="1.1"
+      id="Layer_1"
+      xmlns="http://www.w3.org/2000/svg"
+      xmlnsXlink="http://www.w3.org/1999/xlink"
+      x="0px"
+      y="0px"
+      width="100%"
+      viewBox="0 0 992 928"
+      enableBackground="new 0 0 992 928"
+      xmlSpace="preserve"
+    >
+      <defs>
+        <linearGradient id={gradientId} x1="0%" y1="0%" x2="100%" y2="100%">
+          {fillColorArray.map((color, index) => (
+            <stop
+              key={index}
+              offset={`${(index / (fillColorArray.length - 1)) * 100}%`}
+              stopColor={color}
+            />
+          ))}
+        </linearGradient>
+      </defs>
+      <path
+        fill={`url(#${gradientId})`}
+        opacity="1.000000"
+        stroke="none"
+        d="
 		M419.000000,688.238831 
 			C397.003662,688.243042 375.506287,688.371399 354.011566,688.187561 
 			C345.657776,688.116150 337.575226,686.499329 330.262817,681.956482 
@@ -34,9 +65,13 @@ export default function InformativeDocIcon({fillColor}: any) {
 			C726.143738,667.265503 710.149963,684.656921 691.354309,687.345947 
 			C686.044006,688.105713 680.771545,688.258911 675.454956,688.258484 
 			C590.136658,688.252014 504.818329,688.245056 419.000000,688.238831 
-		z"/>
-		<path fill={fillColor} opacity="1.000000" stroke="none" 
-			d="
+		z"
+      />
+      <path
+        fill={`url(#${gradientId})`}
+        opacity="1.000000"
+        stroke="none"
+        d="
 		M418.458496,351.637634 
 			C430.970764,369.439026 438.545990,388.991852 440.717194,410.091461 
 			C442.857239,430.887878 441.013397,451.557495 433.044098,471.350189 
@@ -57,9 +92,13 @@ export default function InformativeDocIcon({fillColor}: any) {
 			C255.432419,322.339020 232.410843,338.907043 216.494492,364.427185 
 			C202.120773,387.473846 195.873260,412.580963 199.627869,439.527679 
 			C203.232544,465.398193 213.982620,488.042542 233.955643,506.546722 
-		z"/>
-		<path fill={fillColor} opacity="1.000000" stroke="none" 
-			d="
+		z"
+      />
+      <path
+        fill={`url(#${gradientId})`}
+        opacity="1.000000"
+        stroke="none"
+        d="
 		M321.874786,421.130066 
 			C321.905914,442.096191 321.973206,462.581451 321.949005,483.066650 
 			C321.941040,489.818329 318.516815,494.106750 313.240814,494.354919 
@@ -69,15 +108,20 @@ export default function InformativeDocIcon({fillColor}: any) {
 			C302.891541,401.845581 307.074585,396.977417 312.349640,397.101196 
 			C317.626892,397.225006 321.626923,402.175964 321.707733,408.672821 
 			C321.757385,412.665009 321.819031,416.657043 321.874786,421.130066 
-		z"/>
-		<path fill={fillColor} opacity="1.000000" stroke="none" 
-			d="
+		z"
+      />
+      <path
+        fill={`url(#${gradientId})`}
+        opacity="1.000000"
+        stroke="none"
+        d="
 		M320.740417,367.164124 
 			C324.683472,372.355682 324.741913,377.597382 321.178192,381.988403 
 			C317.666412,386.315430 312.531525,387.663391 307.776367,385.506561 
 			C302.857819,383.275574 300.090027,378.245758 300.829803,372.882904 
 			C301.989624,364.475677 312.077820,361.404938 320.740417,367.164124 
-		z"/>
-		</svg>
-	);
+		z"
+      />
+    </svg>
+  );
 }

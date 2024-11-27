@@ -1,9 +1,40 @@
-export default function PrescriptiveDocIcon({fillColor}: any) {
-	return (
-		<svg version="1.1" id="Layer_1" xmlns="http://www.w3.org/2000/svg" xmlnsXlink="http://www.w3.org/1999/xlink" x="0px" y="0px"
-			width="100%" viewBox="0 0 1006 840" enableBackground="new 0 0 1006 840" xmlSpace="preserve">
-		<path fill={fillColor} opacity="1.000000" stroke="none" 
-			d="
+export default function PrescriptiveDocIcon({
+  fillColor,
+}: {
+  fillColor: string[] | string;
+}) {
+  const gradientId = 'gradient';
+  const fillColorArray = Array.isArray(fillColor) ? fillColor : [fillColor];
+
+  return (
+    <svg
+      version="1.1"
+      id="Layer_1"
+      xmlns="http://www.w3.org/2000/svg"
+      xmlnsXlink="http://www.w3.org/1999/xlink"
+      x="0px"
+      y="0px"
+      width="100%"
+      viewBox="0 0 992 928"
+      enableBackground="new 0 0 992 928"
+      xmlSpace="preserve"
+    >
+      <defs>
+        <linearGradient id={gradientId} x1="0%" y1="0%" x2="100%" y2="100%">
+          {fillColorArray.map((color, index) => (
+            <stop
+              key={index}
+              offset={`${(index / (fillColorArray.length - 1)) * 100}%`}
+              stopColor={color}
+            />
+          ))}
+        </linearGradient>
+      </defs>
+      <path
+        fill={`url(#${gradientId})`}
+        opacity="1.000000"
+        stroke="none"
+        d="
 		M504.192780,38.481743 
 			C519.019897,38.412701 533.846924,38.298508 548.674072,38.284008 
 			C579.670532,38.253696 610.667236,38.340645 641.663208,38.212700 
@@ -69,9 +100,13 @@ export default function PrescriptiveDocIcon({fillColor}: any) {
 			C357.163300,39.157188 427.033081,38.765511 497.393860,38.755516 
 			C498.112213,41.015289 498.338806,42.818748 498.710663,45.778465 
 			C501.075348,42.631077 502.634064,40.556412 504.192780,38.481743 
-		z"/>
-		<path fill={fillColor} opacity="1.000000" stroke="none" 
-			d="
+		z"
+      />
+      <path
+        fill={`url(#${gradientId})`}
+        opacity="1.000000"
+        stroke="none"
+        d="
 		M396.653503,293.462463 
 			C397.175598,293.906036 397.492737,294.029419 397.726898,294.243500 
 			C402.955902,299.023468 408.180847,303.807922 413.390320,308.609100 
@@ -104,7 +139,8 @@ export default function PrescriptiveDocIcon({fillColor}: any) {
 			C381.775726,316.821747 381.760498,301.490356 381.760529,286.159027 
 			C381.760559,284.540894 381.760529,282.922729 381.760529,280.185638 
 			C387.168884,284.984680 391.789398,289.084595 396.653503,293.462463 
-		z"/>
-		</svg>
-	);
+		z"
+      />
+    </svg>
+  );
 }

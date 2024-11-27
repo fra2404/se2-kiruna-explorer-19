@@ -13,11 +13,10 @@ interface Step1Props {
   setScale: (value: string) => void;
   issuanceDate: string;
   setIssuanceDate: (value: string) => void;
-  customScale: string;
-  setCustomScale: (value: string) => void;
+  architecturalScale: string;
+  setArchitecturalScale: (value: string) => void;
   errors: { [key: string]: string };
 }
-
 const Step1: React.FC<Step1Props> = ({
   title,
   setTitle,
@@ -27,20 +26,21 @@ const Step1: React.FC<Step1Props> = ({
   setScale,
   issuanceDate,
   setIssuanceDate,
-  customScale,
-  setCustomScale,
+  architecturalScale,
+  setArchitecturalScale,
   errors,
 }) => {
-  useEffect(() => {
-    console.log('useEffect - scale:', scale);
-    if (scale !== 'Architectural Style') {
-      setCustomScale('');
-    }
-  }, [scale, setCustomScale]);
+  const [selectedYear, setSelectedYear] = useState<string>(
+    issuanceDate ? issuanceDate.split('-')[0] : '',
+  );
+  const [selectedMonth, setSelectedMonth] = useState<string>(
+    issuanceDate ? issuanceDate.split('-')[1] : '',
+  );
+  const [selectedDay, setSelectedDay] = useState<string>(
+    issuanceDate ? issuanceDate.split('-')[2] : '',
+  );
 
-  const [selectedYear, setSelectedYear] = useState<string>('');
-  const [selectedMonth, setSelectedMonth] = useState<string>('');
-  const [selectedDay, setSelectedDay] = useState<string>('');
+  console.log('architecturalScale:', architecturalScale);
 
   useEffect(() => {
     if (issuanceDate) {
@@ -48,6 +48,9 @@ const Step1: React.FC<Step1Props> = ({
       setSelectedYear(year || '');
       setSelectedMonth(month || '');
       setSelectedDay(day || '');
+      console.log('useEffect - selectedYear:', year);
+      console.log('useEffect - selectedMonth:', month);
+      console.log('useEffect - selectedDay:', day);
     }
   }, [issuanceDate]);
 
@@ -142,7 +145,7 @@ const Step1: React.FC<Step1Props> = ({
 
       {/* Scale of document */}
       <div
-        className={`my-2 ${scale === 'Architectural Style' ? 'inline-fields' : ''}`}
+        className={`my-2 ${scale === 'ARCHITECTURAL' ? 'inline-fields' : ''}`}
       >
         <InputComponent
           label="Scale"
@@ -157,24 +160,26 @@ const Step1: React.FC<Step1Props> = ({
             }
           }}
           required={true}
+          defaultValue={scale}
           placeholder="Select scale"
           error={errors.scale}
         />
 
         {/* Custom Scale Input */}
-        {scale === 'Architectural Style' && (
+        {scale === 'ARCHITECTURAL' && (
           <InputComponent
             label="Custom Scale"
             type="text"
-            value={customScale}
+            value={architecturalScale}
             onChange={(v) => {
               if ('target' in v) {
-                setCustomScale(v.target.value);
+                setArchitecturalScale(v.target.value);
               }
             }}
             required={true}
+            defaultValue={architecturalScale}
             placeholder="Enter custom scale"
-            error={errors.customScale}
+            error={errors.architecturalScale}
           />
         )}
       </div>
@@ -195,6 +200,7 @@ const Step1: React.FC<Step1Props> = ({
               )
             }
             required
+            defaultValue={selectedYear}
             options={years.map((year) => ({ value: year, label: year }))}
             placeholder="Year"
             error={errors.issuanceDate}
@@ -209,6 +215,7 @@ const Step1: React.FC<Step1Props> = ({
               )
             }
             disabled={!selectedYear}
+            defaultValue={selectedMonth}
             options={months.map((month) => ({ value: month, label: month }))}
             placeholder="Month"
           />
@@ -216,6 +223,7 @@ const Step1: React.FC<Step1Props> = ({
             label="Day"
             type="select"
             value={selectedDay}
+            defaultValue={selectedDay}
             onChange={(e) =>
               setSelectedDay(
                 (e as React.ChangeEvent<HTMLSelectElement>).target.value,

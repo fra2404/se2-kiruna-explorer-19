@@ -1,9 +1,40 @@
-export default function ConsultationIcon({fillColor}: any) {
-	return (
-		<svg version="1.1" id="Layer_1" xmlns="http://www.w3.org/2000/svg" xmlnsXlink="http://www.w3.org/1999/xlink" x="0px" y="0px"
-			width="100%" viewBox="0 0 1024 880" enableBackground="new 0 0 1024 880" xmlSpace="preserve">
-		<path fill={fillColor} opacity="1.000000" stroke="none" 
-			d="
+export default function ConsultationIcon({
+  fillColor,
+}: {
+  fillColor: string[] | string;
+}) {
+  const gradientId = 'gradient';
+  const fillColorArray = Array.isArray(fillColor) ? fillColor : [fillColor];
+
+  return (
+    <svg
+      version="1.1"
+      id="Layer_1"
+      xmlns="http://www.w3.org/2000/svg"
+      xmlnsXlink="http://www.w3.org/1999/xlink"
+      x="0px"
+      y="0px"
+      width="100%"
+      viewBox="0 0 992 928"
+      enableBackground="new 0 0 992 928"
+      xmlSpace="preserve"
+    >
+      <defs>
+        <linearGradient id={gradientId} x1="0%" y1="0%" x2="100%" y2="100%">
+          {fillColorArray.map((color, index) => (
+            <stop
+              key={index}
+              offset={`${(index / (fillColorArray.length - 1)) * 100}%`}
+              stopColor={color}
+            />
+          ))}
+        </linearGradient>
+      </defs>
+      <path
+        fill={`url(#${gradientId})`}
+        opacity="1.000000"
+        stroke="none"
+        d="
 		M151.034668,588.792969 
 			C161.950790,585.598389 171.819901,580.294861 182.959763,579.144592 
 			C189.514526,578.467773 196.046158,577.058655 202.600464,576.978149 
@@ -25,9 +56,13 @@ export default function ConsultationIcon({fillColor}: any) {
 			C77.095512,662.144470 83.930893,648.015869 93.748344,635.532471 
 			C103.374153,623.292786 113.996422,612.296143 126.808311,603.171570 
 			C134.451004,597.728394 142.957993,594.054504 151.034668,588.792969 
-		z"/>
-		<path fill={fillColor} opacity="1.000000" stroke="none" 
-			d="
+		z"
+      />
+      <path
+        fill={`url(#${gradientId})`}
+        opacity="1.000000"
+        stroke="none"
+        d="
 		M703.519592,581.571899 
 			C712.467773,580.004333 721.066223,578.539062 729.675781,577.142029 
 			C731.144287,576.903809 732.660156,576.887695 734.154236,576.886841 
@@ -51,9 +86,13 @@ export default function ConsultationIcon({fillColor}: any) {
 			C636.646973,624.092651 647.395508,612.764893 660.478638,603.431946 
 			C672.508301,594.850586 685.248962,588.223083 699.279175,583.851746 
 			C700.666504,583.419617 701.879639,582.428772 703.519592,581.571899 
-		z"/>
-		<path fill={fillColor} opacity="1.000000" stroke="none" 
-			d="
+		z"
+      />
+      <path
+        fill={`url(#${gradientId})`}
+        opacity="1.000000"
+        stroke="none"
+        d="
 		M309.504730,340.410309 
 			C311.803925,343.529053 314.171783,345.968964 317.580597,347.291046 
 			C321.276733,348.724548 322.490570,352.606873 324.812073,355.314819 
@@ -81,9 +120,13 @@ export default function ConsultationIcon({fillColor}: any) {
 			C259.601318,318.915833 268.414398,320.430695 276.222412,323.634735 
 			C285.378326,327.391876 294.950256,330.775360 302.997986,337.004364 
 			C304.807617,338.405090 307.114166,339.163818 309.504730,340.410309 
-		z"/>
-		<path fill={fillColor} opacity="1.000000" stroke="none" 
-			d="
+		z"
+      />
+      <path
+        fill={`url(#${gradientId})`}
+        opacity="1.000000"
+        stroke="none"
+        d="
 		M834.823975,336.087891 
 			C846.364380,342.199646 855.244019,350.579346 863.119446,360.574005 
 			C867.293945,365.871887 870.983887,371.572388 875.466187,376.651245 
@@ -114,9 +157,13 @@ export default function ConsultationIcon({fillColor}: any) {
 			C776.443604,318.429382 786.633850,318.138275 796.599731,320.240936 
 			C809.502869,322.963287 821.715393,327.546661 832.711548,335.019836 
 			C833.256897,335.390503 833.895935,335.623260 834.823975,336.087891 
-		z"/>
-		<path fill={fillColor} opacity="1.000000" stroke="none" 
-			d="
+		z"
+      />
+      <path
+        fill={`url(#${gradientId})`}
+        opacity="1.000000"
+        stroke="none"
+        d="
 		M374.366974,266.524292 
 			C367.795319,254.342316 362.886353,241.884003 360.413513,228.652237 
 			C357.437164,212.726166 356.520721,196.429489 358.390167,180.472839 
@@ -154,9 +201,13 @@ export default function ConsultationIcon({fillColor}: any) {
 			C419.020142,103.133858 409.053406,112.173622 401.542877,123.503593 
 			C396.341980,131.349335 390.798615,138.986313 387.411987,147.994476 
 			C384.433502,155.917007 381.890167,163.948166 379.374084,172.866882 
-		z"/>
-		<path fill={fillColor} opacity="1.000000" stroke="none" 
-			d="
+		z"
+      />
+      <path
+        fill={`url(#${gradientId})`}
+        opacity="1.000000"
+        stroke="none"
+        d="
 		M451.096283,123.175888 
 			C456.296692,115.251114 462.911682,109.305885 470.659454,104.618767 
 			C479.173676,99.467949 488.490021,96.827934 498.383545,95.953934 
@@ -178,15 +229,20 @@ export default function ConsultationIcon({fillColor}: any) {
 			C442.494934,169.942078 439.027222,162.839386 440.286926,154.530670 
 			C441.556854,146.154663 442.742310,137.877502 446.857697,130.337646 
 			C448.127991,128.010330 449.563354,125.773132 451.096283,123.175888 
-		z"/>
-		<path fill={fillColor} opacity="1.000000" stroke="none" 
-			d="
+		z"
+      />
+      <path
+        fill={`url(#${gradientId})`}
+        opacity="1.000000"
+        stroke="none"
+        d="
 		M501.586548,317.102295 
 			C494.731201,314.127319 489.839447,309.740936 489.769501,302.241150 
 			C489.703156,295.121704 493.556061,290.253906 500.077423,287.214294 
 			C508.379272,283.344727 519.832031,290.477509 520.982788,300.071320 
 			C522.200928,310.227325 513.726807,318.857391 501.586548,317.102295 
-		z"/>
-		</svg>
-	);
+		z"
+      />
+    </svg>
+  );
 }
