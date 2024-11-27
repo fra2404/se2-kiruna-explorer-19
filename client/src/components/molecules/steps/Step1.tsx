@@ -10,6 +10,7 @@ interface Step1Props {
   setScale: (value: string) => void;
   issuanceDate: string;
   setIssuanceDate: (value: string) => void;
+  errors: { [key: string]: string };
 }
 
 const Step1: React.FC<Step1Props> = ({
@@ -21,6 +22,7 @@ const Step1: React.FC<Step1Props> = ({
   setScale,
   issuanceDate,
   setIssuanceDate,
+  errors,
 }) => {
   return (
     <>
@@ -37,6 +39,7 @@ const Step1: React.FC<Step1Props> = ({
           }}
           required={true}
           placeholder="Enter title"
+          error={errors.title}
         />
       </div>
 
@@ -53,6 +56,7 @@ const Step1: React.FC<Step1Props> = ({
           }}
           required={true}
           placeholder="Enter stakeholder(s), comma separated"
+          error={errors.stakeholders}
         />
       </div>
 
@@ -69,6 +73,7 @@ const Step1: React.FC<Step1Props> = ({
           }}
           required={true}
           placeholder="Enter scale"
+          error={errors.scale}
         />
       </div>
 
@@ -86,6 +91,7 @@ const Step1: React.FC<Step1Props> = ({
           required={true}
           placeholder="Select issuance date"
           max={new Date().toISOString().split('T')[0]}
+          error={errors.issuanceDate}
         />
       </div>
     </>

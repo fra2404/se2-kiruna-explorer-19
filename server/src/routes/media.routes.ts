@@ -7,7 +7,7 @@ import {
 import {
   validateUploadedMedia,
   validateUpdateMedia,
-  validateMediaId
+  validateMediaId,
 } from '@utils/validators/media.validator';
 import { handleValidationErrors } from '@middlewares/validation.middleware';
 
@@ -18,23 +18,21 @@ import checkHeader from '@middlewares/checkHeader.middleware';
 
 const router = express.Router();
 
-
 router.post(
   '/upload',
   authenticateUser,
   authorizeRoles('PLANNER', 'DEVELOPER'),
   validateUploadedMedia,
   handleValidationErrors,
-  uploadMediaController
+  uploadMediaController,
 );
-
 
 router.put(
   '/update',
   checkHeader,
   validateUpdateMedia,
   handleValidationErrors,
-  UpdateMediaController
-)
+  UpdateMediaController,
+);
 
 export const mediaRoutes = router;

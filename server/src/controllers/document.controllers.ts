@@ -108,9 +108,7 @@ export const addDocumentController = async (
 ): Promise<void> => {
   try {
     const newDocument = await addingDocument(req.body as IDocument);
-    res
-      .status(201)
-      .json(newDocument);
+    res.status(201).json(newDocument);
   } catch (error) {
     next(error); // Pass the error to the error handler middleware
   }
@@ -229,7 +227,11 @@ export const updateDocumentController = async (
   }
 };
 
-export const getDocumentTypesController = (req: Request, res: Response, next: NextFunction): void => {
+export const getDocumentTypesController = (
+  req: Request,
+  res: Response,
+  next: NextFunction,
+): void => {
   try {
     const docTypes = getDocumentTypes();
     res.status(200).json({ docTypes });
@@ -346,7 +348,6 @@ export const deleteDocumentController = async (
   }
 };
 
-
 /**
  * @swagger
  * /documents/search:
@@ -424,17 +425,17 @@ export const deleteDocumentController = async (
  *           example: 'This is a summary of the document.'
  */
 
-
 export const searchDocumentsController = async (
   req: Request,
   res: Response,
-  next: NextFunction,): Promise<void> => {
+  next: NextFunction,
+): Promise<void> => {
   try {
     let keywords: string[] = [];
     if (req.query.keywords) {
-      keywords = JSON.parse(req.query.keywords as string);  // Parse the input query string into an array of keywords
+      keywords = JSON.parse(req.query.keywords as string); // Parse the input query string into an array of keywords
     }
-  
+
     const documents = await searchDocuments(keywords, req.body);
     res.status(200).json(documents);
   } catch (error) {

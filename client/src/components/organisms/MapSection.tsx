@@ -1,16 +1,10 @@
 import React, { useContext } from 'react';
-import {
-  MapContainer,
-  TileLayer,
-  Marker,
-  Tooltip,
-  Polygon,
-} from 'react-leaflet';
+import { TileLayer, Marker, Tooltip, Polygon } from 'react-leaflet';
 import { LatLng } from 'leaflet';
 import InputComponent from '../atoms/input/input';
 import NamePopup from '../molecules/popups/NamePopup';
 import MapStyleContext from '../../context/MapStyleContext';
-import { kirunaLatLngCoords } from '../../pages/KirunaMap';
+import CustomMap from '../molecules/CustomMap';
 import CustomZoomControl from '../molecules/ZoomControl';
 
 interface MapSectionProps {
@@ -40,7 +34,8 @@ const MapSection: React.FC<MapSectionProps> = ({
   setCoordName,
   MapClickHandler,
 }) => {
-  const {swedishFlagBlue, satMapMainColor, mapType} = useContext(MapStyleContext);
+  const { swedishFlagBlue, satMapMainColor, mapType } =
+    useContext(MapStyleContext);
 
   return (
     <div className="col-span-2">
@@ -80,21 +75,7 @@ const MapSection: React.FC<MapSectionProps> = ({
           />
         </div>
 
-        <MapContainer
-          style={{ width: '100%', height: '100%', zIndex: 10 }}
-          center={position ? position : kirunaLatLngCoords}
-          zoom={13}
-          doubleClickZoom={false}
-          scrollWheelZoom={true}
-          minZoom={9}
-          zoomControl={false}
-          touchZoom={true}
-          maxBounds={[
-            [67.8, 19.9],
-            [67.9, 20.5],
-          ]}
-          maxBoundsViscosity={0.9}
-        >
+        <CustomMap center={position}>
           {mapType === 'osm' ? (
             <TileLayer
               attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
@@ -102,17 +83,17 @@ const MapSection: React.FC<MapSectionProps> = ({
             />
           ) : (
             <TileLayer
-              attribution='ArcGIS'
+              attribution="ArcGIS"
               url="https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}"
             />
           )}
 
-          {(position ||
+          {(position ??
             (selectedCoordId &&
               coordinates[selectedCoordId]['type'] == 'Point')) && (
             <Marker
               position={
-                position ||
+                position ??
                 new LatLng(
                   coordinates[selectedCoordId]['coordinates'][0],
                   coordinates[selectedCoordId]['coordinates'][1],
@@ -140,7 +121,9 @@ const MapSection: React.FC<MapSectionProps> = ({
           {selectedCoordId &&
             coordinates[selectedCoordId]['type'] == 'Polygon' && (
               <Polygon
-                pathOptions={{ color: mapType == "sat" ? satMapMainColor : swedishFlagBlue }}
+                pathOptions={{
+                  color: mapType == 'sat' ? satMapMainColor : swedishFlagBlue,
+                }}
                 positions={coordinates[selectedCoordId]['coordinates']}
               ></Polygon>
             )}
@@ -148,7 +131,7 @@ const MapSection: React.FC<MapSectionProps> = ({
           <MapClickHandler />
 
           <CustomZoomControl />
-        </MapContainer>
+        </CustomMap>
       </div>
     </div>
   );

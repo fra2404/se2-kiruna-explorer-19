@@ -36,11 +36,7 @@ router.get('/', getAllDocumentsController); //Get All Documents
 
 router.post('/search', searchDocumentsController); //Search Document
 
-router.get(
-  '/:id',
-  validateDocumentId,
-  getDocumentByIdController,
-); // Get Document by ID
+router.get('/:id', validateDocumentId, getDocumentByIdController); // Get Document by ID
 
 router.put(
   '/:id',
