@@ -21,11 +21,12 @@ export interface IDocument {
   title: string;
   stakeholders: StakeholderEnum[];
   scale: string;
+  architecturalScale?: string;  //Added due to changing in scale
   type: DocTypeEnum;
   date: string;
   connections?: IConnection[];
   language?: string;
-  media?: ObjectId[]; //changed By Mina
+  media?: ObjectId[]; 
   coordinates?: ObjectId;
   summary: string;
 

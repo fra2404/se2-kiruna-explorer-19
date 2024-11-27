@@ -45,6 +45,12 @@ components:
           example: Stakeholder 1
         scale:
           type: string
+          example: Architectural
+        architecturalScale:
+          type: string
+          description: >-
+            The value in number:number format, required when scale is
+            'Architectural'
           example: '1:1000'
         type:
           type: string

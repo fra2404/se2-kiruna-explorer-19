@@ -11,6 +11,7 @@ export interface IDocumentResponse {
   title: string;
   stakeholders?: StakeholderEnum[];
   scale?: string;
+  architecturalScale?: string;  //Added due to changing in scale
   type: DocTypeEnum;
   date: string;
   summary: string;

@@ -39,6 +39,10 @@ const documentSchema = new Schema<DocumentDocument>(
       type: String,
       required: true,
     },
+    architecturalScale: {
+      type: String,  // number:number format
+      required: function() { return this.scale === 'Architectural'; }, // Only if scale is 'Architectural'
+    },
     type: {
       type: String,
       required: true,
