@@ -13,11 +13,35 @@ export const validateAddDocument = [
     .withMessage('Stakeholders is required')
     .isString()
     .withMessage('Stakeholders must be a string'),
+  // body('scale')
+  //   .notEmpty()
+  //   .withMessage('Scale is required')
+  //   .isString()
+  //   .withMessage('Scale must be a string'),
+  //**********************************/
   body('scale')
-    .notEmpty()
-    .withMessage('Scale is required')
-    .isString()
-    .withMessage('Scale must be a string'),
+  .notEmpty()
+  .withMessage('Scale is required')
+  .custom((value, { req }) => {
+    // If scale is architectural
+    if (value === 'Architectural') {  //Value must be changed
+      if (!req.body.architecturalScale || !/^\d+:\d+$/.test(req.body.architecturalScale)) {
+        throw new Error('Architectural Scale must be in the  number:number format');
+      }
+    }  else {
+      if (['blueprints/effects', 'text'].includes(value)) {
+        if (req.body.architecturalScale) {
+          throw new Error('Architectural Scale must be empty when scale is a string');
+        }
+      }
+      else if (!['blueprints/effects', 'text'].includes(value)) {
+        throw new Error('Scale must be either blueprints/effects or text when it is not a number');
+      }
+    }
+    return true;
+  }),
+  //**********************************/
+
   body('type')
     .notEmpty()
     .withMessage('Type is required')
@@ -129,7 +153,30 @@ export const validateUpdateDocument = [
     .optional()
     .isString()
     .withMessage('Stakeholders must be a string'),
-  body('scale').optional().isString().withMessage('Scale must be a string'),
+  //body('scale').optional().isString().withMessage('Scale must be a string'),
+  //**********************************/
+  body('scale')
+  .optional()
+  .custom((value, { req }) => {
+    // If scale is architectural
+    if (value === 'Architectural') {  //Value may need to be changed
+      if (!req.body.architecturalScale || !/^\d+:\d+$/.test(req.body.architecturalScale)) {
+        throw new Error('Architectural Scale must be in the  number:number format');
+      }
+    }  else {
+      if (['blueprints/effects', 'text'].includes(value)) {
+        if (req.body.architecturalScale) {
+          throw new Error('Architectural Scale must be empty when scale is a string');
+        }
+      }
+      else if (!['blueprints/effects', 'text'].includes(value)) {
+        throw new Error('Scale must be either blueprints/effects or text when it is not a number');
+      }
+    }
+    return true;
+  }),
+  //**********************************/
+
   body('type')
     .optional()
     .isIn([
