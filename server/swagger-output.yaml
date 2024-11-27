@@ -36,15 +36,12 @@ components:
       properties:
         id:
           type: string
-          description: The ID of the document
           example: 60d0fe4f5311236168a109ca
         title:
           type: string
-          description: The title of the document
           example: Sample Document
         stakeholders:
           type: string
-          description: The stakeholders of the document
           example: Stakeholder 1
         scale:
           type: string
@@ -60,17 +57,10 @@ components:
           example: '1:1000'
         type:
           type: string
-          description: The type of the document
-          enum:
-            - AGREEMENT
-            - CONFLICT
-            - CONSULTATION
-            - DESIGN_DOC
-            - INFORMATIVE_DOC
-            - MATERIAL_EFFECTS
-            - PRESCRIPTIVE_DOC
-            - TECHNICAL_DOC
           example: AGREEMENT
+        date:
+          type: string
+          example: '2024-11-05'
         connections:
           type: array
           items:
@@ -78,35 +68,22 @@ components:
             properties:
               document:
                 type: string
-                description: The ID of the connected document
                 example: 60d0fe4f5311236168a109ca
               type:
                 type: string
-                description: The type of the connection
-                enum:
-                  - LINK1
-                  - LINK2
-                  - LINK3
                 example: LINK1
         language:
           type: string
-          description: The language of the document
           example: English
-        summary:
-          type: string
-          description: The summary of the document
-          example: This is a summary of the document.
-        date:
-          type: string
-          description: The date of the document in the format dd-mm-yyyy
-          example: '2024-11-05'
-        coordinates:
-          type: string
-          $ref: '#/components/schemas/Coordinate'
         media:
           type: array
           items:
             type: string
+        coordinates:
+          type: string
+        summary:
+          type: string
+          example: This is a summary of the document.
     User:
       type: object
       properties:
