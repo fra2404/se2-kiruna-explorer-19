@@ -37,7 +37,7 @@ jobs:
       # 5. Esegui i test Postman e salva il report
       - name: Run Postman Tests
         run: |
-          newman run server/integration/sprint2/API Documentation - KIRUNA Explorer.postman_collection.json \
+          newman run "server/integration/sprint2/API Documentation - KIRUNA Explorer.postman_collection.json" \
             --reporters cli,json,html \
             --reporter-json-export reports/newman-report.json \
             --reporter-html-export reports/newman-report.html
