@@ -12,7 +12,7 @@ export interface IConnection {
 
 export interface IDocumentFilters {
   stakeholders?: StakeholderEnum;
-  scale?: string;
+  scale?: ScaleTypeEnum;
   type?: DocTypeEnum;
   date?: string;
   language?: string;
