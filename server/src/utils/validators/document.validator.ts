@@ -1,6 +1,7 @@
 import { body, param } from 'express-validator';
 import { IConnection } from '@interfaces/document.interface';
 import mongoose from 'mongoose';
+import { ScaleTypeEnum } from '@utils/enums/scale-type-enum';
 
 export const validateAddDocument = [
   body('title')
@@ -13,35 +14,12 @@ export const validateAddDocument = [
     .withMessage('Stakeholders is required')
     .isString()
     .withMessage('Stakeholders must be a string'),
-  // body('scale')
-  //   .notEmpty()
-  //   .withMessage('Scale is required')
-  //   .isString()
-  //   .withMessage('Scale must be a string'),
-  //**********************************/
   body('scale')
   .notEmpty()
   .withMessage('Scale is required')
-  .custom((value, { req }) => {
-    // If scale is architectural
-    if (value === 'Architectural') {  //Value must be changed
-      if (!req.body.architecturalScale || !/^\d+:\d+$/.test(req.body.architecturalScale)) {
-        throw new Error('Architectural Scale must be in the  number:number format');
-      }
-    }  else {
-      if (['blueprints/effects', 'text'].includes(value)) {
-        if (req.body.architecturalScale) {
-          throw new Error('Architectural Scale must be empty when scale is a string');
-        }
-      }
-      else if (!['blueprints/effects', 'text'].includes(value)) {
-        throw new Error('Scale must be either blueprints/effects or text when it is not a number');
-      }
-    }
-    return true;
-  }),
-  //**********************************/
-
+  .isString()
+  .withMessage('Scale must be a string')
+  .custom((value, { req }) => validateScale(value, req.body.architecturalScale)),
   body('type')
     .notEmpty()
     .withMessage('Type is required')
@@ -153,30 +131,10 @@ export const validateUpdateDocument = [
     .optional()
     .isString()
     .withMessage('Stakeholders must be a string'),
-  //body('scale').optional().isString().withMessage('Scale must be a string'),
-  //**********************************/
   body('scale')
   .optional()
-  .custom((value, { req }) => {
-    // If scale is architectural
-    if (value === 'Architectural') {  //Value may need to be changed
-      if (!req.body.architecturalScale || !/^\d+:\d+$/.test(req.body.architecturalScale)) {
-        throw new Error('Architectural Scale must be in the  number:number format');
-      }
-    }  else {
-      if (['blueprints/effects', 'text'].includes(value)) {
-        if (req.body.architecturalScale) {
-          throw new Error('Architectural Scale must be empty when scale is a string');
-        }
-      }
-      else if (!['blueprints/effects', 'text'].includes(value)) {
-        throw new Error('Scale must be either blueprints/effects or text when it is not a number');
-      }
-    }
-    return true;
-  }),
-  //**********************************/
-
+  .isString()
+  .custom((value, { req }) => validateScale(value, req.body.architecturalScale)),
   body('type')
     .optional()
     .isIn([
@@ -258,3 +216,21 @@ export const validateUpdateDocument = [
     .isArray()
     .withMessage('Media must be an array of MediaId'),
 ];
+
+
+const validateScale = (value : ScaleTypeEnum, architecturalScale? : string) => {
+  if (value === ScaleTypeEnum.Architectural) {  
+    if (!architecturalScale || !/^1:\d+$/.test(architecturalScale)) {
+      throw new Error('Architectural Scale must be in the 1:number format');
+    }
+  } else {
+    if ([ScaleTypeEnum.BlueprintMaterialEffects, ScaleTypeEnum.Text, ScaleTypeEnum.Concept].includes(value)) {
+      if (architecturalScale) {
+        throw new Error('Architectural Scale must be empty when scale is a string');
+      }
+    } else if (![ScaleTypeEnum.BlueprintMaterialEffects, ScaleTypeEnum.Text, ScaleTypeEnum.Concept].includes(value)) {
+      throw new Error('Scale must be either blueprint/material effects or text or concept  when it is not a number');
+    }
+  }
+  return true;
+};
