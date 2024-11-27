@@ -1,37 +1,14 @@
+import GradientSVG from '../../components/atoms/GradientSVG';
+
 export default function PrescriptiveDocIcon({
   fillColor,
 }: {
   fillColor: string[] | string;
 }) {
-  const gradientId = 'gradient';
-  const fillColorArray = Array.isArray(fillColor) ? fillColor : [fillColor];
-
   return (
-    <svg
-      version="1.1"
-      id="Layer_1"
-      xmlns="http://www.w3.org/2000/svg"
-      xmlnsXlink="http://www.w3.org/1999/xlink"
-      x="0px"
-      y="0px"
-      width="100%"
-      viewBox="0 0 992 928"
-      enableBackground="new 0 0 992 928"
-      xmlSpace="preserve"
-    >
-      <defs>
-        <linearGradient id={gradientId} x1="0%" y1="0%" x2="100%" y2="100%">
-          {fillColorArray.map((color, index) => (
-            <stop
-              key={index}
-              offset={`${(index / (fillColorArray.length - 1)) * 100}%`}
-              stopColor={color}
-            />
-          ))}
-        </linearGradient>
-      </defs>
+    <GradientSVG fillColor={fillColor}>
       <path
-        fill={`url(#${gradientId})`}
+        fill="currentColor"
         opacity="1.000000"
         stroke="none"
         d="
@@ -103,7 +80,7 @@ export default function PrescriptiveDocIcon({
 		z"
       />
       <path
-        fill={`url(#${gradientId})`}
+        fill="currentColor"
         opacity="1.000000"
         stroke="none"
         d="
@@ -141,6 +118,6 @@ export default function PrescriptiveDocIcon({
 			C387.168884,284.984680 391.789398,289.084595 396.653503,293.462463 
 		z"
       />
-    </svg>
+    </GradientSVG>
   );
 }

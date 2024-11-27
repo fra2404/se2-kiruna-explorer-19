@@ -1,37 +1,14 @@
+import GradientSVG from '../../components/atoms/GradientSVG';
+
 export default function MaterialEffectsIcon({
   fillColor,
 }: {
   fillColor: string[] | string;
 }) {
-  const gradientId = 'gradient';
-  const fillColorArray = Array.isArray(fillColor) ? fillColor : [fillColor];
-
   return (
-    <svg
-      version="1.1"
-      id="Layer_1"
-      xmlns="http://www.w3.org/2000/svg"
-      xmlnsXlink="http://www.w3.org/1999/xlink"
-      x="0px"
-      y="0px"
-      width="100%"
-      viewBox="0 0 992 928"
-      enableBackground="new 0 0 992 928"
-      xmlSpace="preserve"
-    >
-      <defs>
-        <linearGradient id={gradientId} x1="0%" y1="0%" x2="100%" y2="100%">
-          {fillColorArray.map((color, index) => (
-            <stop
-              key={index}
-              offset={`${(index / (fillColorArray.length - 1)) * 100}%`}
-              stopColor={color}
-            />
-          ))}
-        </linearGradient>
-      </defs>
+    <GradientSVG fillColor={fillColor}>
       <path
-        fill={`url(#${gradientId})`}
+        fill="currentColor"
         opacity="1.000000"
         stroke="none"
         d="
@@ -117,7 +94,7 @@ export default function MaterialEffectsIcon({
 		z"
       />
       <path
-        fill={`url(#${gradientId})`}
+        fill="currentColor"
         opacity="1.000000"
         stroke="none"
         d="
@@ -208,7 +185,7 @@ export default function MaterialEffectsIcon({
 		z"
       />
       <path
-        fill={`url(#${gradientId})`}
+        fill="currentColor"
         opacity="1.000000"
         stroke="none"
         d="
@@ -224,7 +201,7 @@ export default function MaterialEffectsIcon({
 		z"
       />
       <path
-        fill={`url(#${gradientId})`}
+        fill="currentColor"
         opacity="1.000000"
         stroke="none"
         d="
@@ -235,6 +212,6 @@ export default function MaterialEffectsIcon({
 			C383.122070,381.514771 382.439728,382.416534 381.470825,383.513458 
 		z"
       />
-    </svg>
+    </GradientSVG>
   );
 }
