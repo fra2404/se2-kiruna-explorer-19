@@ -26,7 +26,7 @@ export const MunicipalityArea: React.FC = () => {
 function convertToLatLngArray(input: number[][][]): LatLng[][] {
   return input.map((layer) => 
     layer.map((coordinatePair) => 
-      new LatLng(coordinatePair[1], coordinatePair[0])
+      new LatLng(coordinatePair[1], coordinatePair[0])    //I invert lat and lng, since in the GeoJSON they are in format [lng, lat]
     )
   );
 }
