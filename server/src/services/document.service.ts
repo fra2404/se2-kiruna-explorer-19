@@ -66,6 +66,7 @@ export const addingDocument = async (
           document: newDocument.id,
           type: connection.type,
         });
+
         await existingDocument.save();
       }
     }
