@@ -1,8 +1,7 @@
 import Modal from 'react-modal';
-import { Marker, Polygon, TileLayer } from 'react-leaflet';
+import { Marker, Polygon } from 'react-leaflet';
 import { useContext, useRef } from 'react';
 import MapStyleContext from '../../../context/MapStyleContext';
-import CustomZoomControl from '../../molecules/ZoomControl';
 import MarkerClusterGroup from 'react-leaflet-markercluster';
 import { IDocument } from '../../../utils/interfaces/document.interface';
 import { renderToString } from 'react-dom/server';
@@ -52,18 +51,6 @@ export const ManageCoordsModal: React.FC<ManageCoordsModalProps> = ({
     >
       <div className="w-full rounded shadow-md border h-full">
         <CustomMap>
-          {mapType === 'osm' ? (
-            <TileLayer
-              attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-              url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
-            />
-          ) : (
-            <TileLayer
-              attribution='ArcGIS'
-              url="https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}"
-            />
-          )}
-
           <MarkerClusterGroup iconCreateFunction={(cluster: any) => {
             return new DivIcon({
               iconSize: [45, 45],
@@ -139,9 +126,6 @@ export const ManageCoordsModal: React.FC<ManageCoordsModalProps> = ({
               }
             })}
           </MarkerClusterGroup>
-
-          <CustomZoomControl />
-
         </CustomMap>
       </div>
     </Modal>
