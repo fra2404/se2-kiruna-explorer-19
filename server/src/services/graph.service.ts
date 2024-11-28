@@ -1,44 +1,9 @@
-import { getAllDocuments } from "./document.service";
-import { ScaleTypeEnum } from "../utils/enums/scale-type-enum";
-import { IDocQuantity, IDocPerYear, IGraphData } from "../interfaces/graph.return.interface";
+import { IGraphData } from "../interfaces/graph.return.interface";
 import { CustomError } from '../utils/customError';
 import Document from '../schemas/document.schema';
 
-export const getGraphDatas = async (): Promise<any | null> => {
+export const getGraphDatas = async (): Promise<IGraphData | null> => {
   try {
-    // const documents = await getAllDocuments();
-    // let maxYear = 0;
-    // let minYear = 0;
-    // let years: string[] = [];
-    // let yearedDocuments = [];
-    // let typedDocuments = [];
-    // let supportQuantity: IDocQuantity;
-    // let supportPerYear: IDocPerYear;
-    // let finalObj: IGraphData;
-
-    // //Study of the years of all documents
-    // for(let i=0; i<documents.length; i++) {
-    //     //Search of the max year
-    //     if(Number( documents[i].date.slice(0, 4) ) > maxYear) {
-    //         maxYear = Number( documents[i].date.slice(0, 4) )
-    //     }
-
-    //     //Search of the min year
-    //     if(Number( documents[i].date.slice(0, 4) ) < minYear) {
-    //         minYear = Number( documents[i].date.slice(0, 4) )
-    //     }
-
-    //     //Collecting all the available years
-    //     if( !years.includes(documents[i].date.slice(0, 4)) ) {
-    //         years.push(documents[i].date.slice(0, 4))
-    //     }
-    // }
-
-    // for(let i=0; i<years.length; i++) {
-    //     yearedDocuments = documents.filter(x => x.date.slice(0, 4) === years[i])
-    // }
-
-    // return finalObj;
 
     const result = await Document.aggregate([
       {
@@ -99,7 +64,19 @@ export const getGraphDatas = async (): Promise<any | null> => {
 
     console.log(result);
 
-    return result;
+    const graphData: IGraphData = {
+      minYear: result[0].minYear,
+      maxYear: result[0].maxYear,
+      infoYear: result[0].data.map((item: any) => ({
+        year: item.year,
+        types: item.type.map((type: any) => ({
+          scale: type.scale,
+          qty: type.qty,
+        })),
+      })),
+    };
+
+    return graphData;
   } catch (error) {
     throw new CustomError("Internal Server Error", 500);
   }
