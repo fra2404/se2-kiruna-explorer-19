@@ -15,6 +15,10 @@ import {
 export const stakeholdersColors = (
   stakeholders: (string | undefined)[],
 ): string[] => {
+  if (stakeholders.length === 0) {
+    return ['#000'];
+  }
+
   const colors = stakeholders.map((stakeholder) => {
     switch (stakeholder ? stakeholder.toLowerCase() : undefined) {
       case 'lkab':

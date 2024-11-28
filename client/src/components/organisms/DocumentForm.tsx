@@ -38,6 +38,7 @@ import './DocumentForm.css';
 import LightDivider from '../atoms/light-divider/light-divider';
 import ModalHeader from '../molecules/ModalHeader';
 import ToggleButton from '../atoms/ToggleButton';
+import { DocumentIcon } from '../molecules/documentsItems/DocumentIcon';
 
 Modal.setAppElement('#root');
 
@@ -95,49 +96,6 @@ const DocumentForm = ({
     });
   };
 
-  const documentTypeOptions = [
-    {
-      value: 'AGREEMENT',
-      label: 'Agreement',
-      icon: <AgreementIcon fillColor="#000" />,
-    },
-    {
-      value: 'CONFLICT',
-      label: 'Conflict',
-      icon: <ConflictIcon fillColor="#000" />,
-    },
-    {
-      value: 'CONSULTATION',
-      label: 'Consultation',
-      icon: <ConsultationIcon fillColor="#000" />,
-    },
-    {
-      value: 'DESIGN_DOC',
-      label: 'Design document',
-      icon: <DesignDocIcon fillColor="#000" />,
-    },
-    {
-      value: 'INFORMATIVE_DOC',
-      label: 'Informative document',
-      icon: <InformativeDocIcon fillColor="#000" />,
-    },
-    {
-      value: 'MATERIAL_EFFECTS',
-      label: 'Material effects',
-      icon: <MaterialEffectsIcon fillColor="#000" />,
-    },
-    {
-      value: 'PRESCRIPTIVE_DOC',
-      label: 'Prescriptive document',
-      icon: <PrescriptiveDocIcon fillColor="#000" />,
-    },
-    {
-      value: 'TECHNICAL_DOC',
-      label: 'Technical document',
-      icon: <TechnicalDocIcon fillColor="#000" />,
-    },
-  ];
-
   // Document information
   const [title, setTitle] = useState(selectedDocument?.title ?? '');
   const [stakeholders, setStakeholders] = useState<string[]>(
@@ -177,6 +135,40 @@ const DocumentForm = ({
   const [coordName, setCoordName] = useState('');
   const [coordNamePopupOpen, setCoordNamePopupOpen] =
     useState(showCoordNamePopup);
+
+  const createDocumentOption = (
+    value: string,
+    label: string,
+    stakeholders: string[] | undefined,
+  ) => ({
+    value,
+    label,
+    icon: (
+      <DocumentIcon
+        type={value}
+        stakeholders={Array.isArray(stakeholders) ? stakeholders : []}
+      />
+    ),
+  });
+
+  const documentTypeOptions = [
+    createDocumentOption('AGREEMENT', 'Agreement', stakeholders),
+    createDocumentOption('CONFLICT', 'Conflict', stakeholders),
+    createDocumentOption('CONSULTATION', 'Consultation', stakeholders),
+    createDocumentOption('DESIGN_DOC', 'Design document', stakeholders),
+    createDocumentOption(
+      'INFORMATIVE_DOC',
+      'Informative document',
+      stakeholders,
+    ),
+    createDocumentOption('MATERIAL_EFFECTS', 'Material effects', stakeholders),
+    createDocumentOption(
+      'PRESCRIPTIVE_DOC',
+      'Prescriptive document',
+      stakeholders,
+    ),
+    createDocumentOption('TECHNICAL_DOC', 'Technical document', stakeholders),
+  ];
 
   // Connection modal : To enter a new connection
   const [connectionModalOpen, setConnectionModalOpen] = useState(false);
