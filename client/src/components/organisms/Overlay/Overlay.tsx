@@ -7,7 +7,10 @@ import FloatingButton from '../../molecules/FloatingButton';
 import DocumentForm from '../DocumentForm';
 import { IDocument } from '../../../utils/interfaces/document.interface';
 import AllDocumentsModal from '../modals/AllDocumentsModal';
-import { FaFolder, FaPlus } from 'react-icons/fa';
+import { FaFolder, FaGlobe, FaPlus } from 'react-icons/fa';
+import { AllMunicipalityDocuments } from '../coordsOverlay/AllMunicipalityDocuments';
+import { useAuth } from '../../../context/AuthContext';
+import { UserRoleEnum } from '../../../utils/interfaces/user.interface';
 
 interface OverlayProps {
   coordinates: any; //Need to pass coordinates to the modal as parameter
@@ -27,11 +30,31 @@ const Overlay: React.FC<OverlayProps> = ({
   documents,
   setDocuments,
 }) => {
+  const [isHoveredMunicipality, setIsHoveredMunicipality] = useState(false);
+  const [showMunicipalityDocuments, setShowMunicipalityDocuments] =
+    useState(false);
+
   const [modalOpen, setModalOpen] = useState(false);
-  const [isHovered, setIsHovered] = useState(false);
+  const [isHoveredNewDocument, setIsHoveredNewDocument] = useState(false);
 
   const [isHoveredSearch, setIsHoveredSearch] = useState(false);
   const [showAllDocuments, setShowAllDocuments] = useState(false);
+
+  const { isLoggedIn, user } = useAuth();
+
+  const municipalityDocumentsModalStyles = {
+    content: {
+      top: '50%',
+      left: '50%',
+      right: 'auto',
+      bottom: 'auto',
+      marginRight: '-50%',
+      transform: 'translate(-50%, -50%)',
+      width: '90%',
+      height: '90vh',
+    },
+    overlay: { zIndex: 1000 },
+  };
 
   return (
     <Container
@@ -45,33 +68,59 @@ const Overlay: React.FC<OverlayProps> = ({
       }}
     >
       <FloatingButton
-        text={isHovered ? '+ New Document' : <FaPlus style={{ display: 'inline' }} />}
-        onMouseEnter={() => setIsHovered(true)}
-        onMouseLeave={() => setIsHovered(false)}
-        onClick={() => {
-          if (!modalOpen) {
-            setModalOpen(true);
-          }
-        }}
-      />
-
-      <FloatingButton
-        onMouseEnter={() => setIsHoveredSearch(true)}
-        onMouseLeave={() => setIsHoveredSearch(false)}
-        onClick={() => {
-          if (!showAllDocuments) {
-            setShowAllDocuments(true);
-          }
-        }}
         text={
-          isHoveredSearch ? (
-            'See All Documents'
+          isHoveredMunicipality ? (
+            'All Municipality Documents'
           ) : (
-            <FaFolder style={{ display: 'inline' }} />
+            <FaGlobe style={{ display: 'inline' }} />
           )
         }
-        className="mt-20"
+        onMouseEnter={() => setIsHoveredMunicipality(true)}
+        onMouseLeave={() => setIsHoveredMunicipality(false)}
+        onClick={() => {
+          if (!modalOpen) {
+            setShowMunicipalityDocuments(true);
+          }
+        }}
       />
+      {isLoggedIn && user && user.role === UserRoleEnum.Uplanner && (
+        <>
+          <FloatingButton
+            text={
+              isHoveredNewDocument ? (
+                '+ New Document'
+              ) : (
+                <FaPlus style={{ display: 'inline' }} />
+              )
+            }
+            onMouseEnter={() => setIsHoveredNewDocument(true)}
+            onMouseLeave={() => setIsHoveredNewDocument(false)}
+            onClick={() => {
+              if (!modalOpen) {
+                setModalOpen(true);
+              }
+            }}
+            className="mt-20"
+          />
+          <FloatingButton
+            onMouseEnter={() => setIsHoveredSearch(true)}
+            onMouseLeave={() => setIsHoveredSearch(false)}
+            onClick={() => {
+              if (!showAllDocuments) {
+                setShowAllDocuments(true);
+              }
+            }}
+            text={
+              isHoveredSearch ? (
+                'See All Documents'
+              ) : (
+                <FaFolder style={{ display: 'inline' }} />
+              )
+            }
+            className="mt-40"
+          />
+        </>
+      )}
 
       <Modal
         style={modalStyles}
@@ -95,6 +144,19 @@ const Overlay: React.FC<OverlayProps> = ({
         onRequestClose={() => setShowAllDocuments(false)}
       >
         <AllDocumentsModal setShowAllDocuments={setShowAllDocuments} />
+      </Modal>
+
+      <Modal
+        style={municipalityDocumentsModalStyles}
+        isOpen={showMunicipalityDocuments}
+        onRequestClose={() => setShowMunicipalityDocuments(false)}
+      >
+        <AllMunicipalityDocuments
+          coordinates={coordinates}
+          setCoordinates={setCoordinates}
+          documents={documents}
+          setDocuments={setDocuments}
+        />
       </Modal>
     </Container>
   );

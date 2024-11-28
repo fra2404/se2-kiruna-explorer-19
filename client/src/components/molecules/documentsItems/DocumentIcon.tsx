@@ -23,7 +23,7 @@ export const stakeholdersColors = (
     switch (stakeholder ? stakeholder.toLowerCase() : undefined) {
       case 'lkab':
         return '#1b1c1f';
-      case 'municipalty':
+      case 'municipality':
         return '#82605c';
       case 'regional authority':
         return '#64242e';

@@ -47,6 +47,8 @@ import {
 import { UserRoleEnum } from '../utils/enums/user-role.enum';
 import { DocTypeEnum } from '../utils/enums/doc-type.enum';
 import { LinkTypeEnum } from '@utils/enums/link-type.enum';
+import { StakeholderEnum } from '@utils/enums/stakeholder.enum';
+import { ScaleTypeEnum } from '@utils/enums/scale-type-enum';
 import { CustomError } from '../utils/customError';
 import {
   DocNotFoundError,
@@ -930,11 +932,11 @@ describe('Tests for document services', () => {
     test('Should return searched documents and relative coordinates and media (if there are any)', async () => {
       //Input mock
       const filters = {
-        language: 'EN',
-        stakeholders: 'Company A',
-        scale: '1:500',
+        stakeholders: StakeholderEnum.ArchitectureFirms,
+        scale: ScaleTypeEnum.Architectural,
         type: DocTypeEnum.Agreement,
-        date: '2000-01-01',
+        date: "2000-01-01",
+        language: "EN"
       };
 
       //Support functions mocking
