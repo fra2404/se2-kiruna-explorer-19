@@ -197,9 +197,12 @@ export const searchDocuments = async (
 
   if (filters) {
     const filterConditions = []; // Array to store filter conditions, initially empty
-    if (filters.stakeholders) {
+    if (filters.stakeholders && 
+        Array.isArray(filters.stakeholders) && 
+        filters.stakeholders.length > 0) {  //conditions added by Mina
       filterConditions.push({
-        stakeholders: { $regex: filters.stakeholders, $options: 'i' },
+       // stakeholders: { $regex: filters.stakeholders, $options: 'i' },
+          stakeholders: {$in: filters.stakeholders},  //changed by Mina
       });
     }
     if (filters.scale) {
