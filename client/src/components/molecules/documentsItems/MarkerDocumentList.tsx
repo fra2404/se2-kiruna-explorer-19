@@ -31,10 +31,15 @@ export const MarkerDocumentList: React.FC<DocumentProps> = ({
     )
   })
   return (
-    <>
+    <div
+      style={{
+        maxHeight: "30vh",
+        overflow: "auto"
+      }}
+    >
       {
         documentList
       }
-    </>
+    </div>
   )
 }

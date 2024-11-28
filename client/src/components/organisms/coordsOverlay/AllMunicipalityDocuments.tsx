@@ -1,11 +1,12 @@
 import React, { useState } from "react";
-import CustomMap from "../../molecules/CustomMap";
-import { MapPopup } from "../../molecules/popups/MapPopup";
+import CustomMap, { kirunaLatLngCoords } from "../../molecules/CustomMap";
 import DocumentForm from "../DocumentForm";
 import { modalStyles } from "../../../pages/KirunaMap";
 import Modal from 'react-modal';
 import { IDocument } from "../../../utils/interfaces/document.interface";
 import { MunicipalityArea } from "../../molecules/MunicipalityArea";
+import { Point } from "./Point";
+import { LatLng } from "leaflet";
 
 interface AllMunicipalityDocumentsProps {
   coordinates: any;
@@ -26,17 +27,16 @@ export const AllMunicipalityDocuments: React.FC<AllMunicipalityDocumentsProps> =
     <>
       <div className="w-full rounded shadow-md border h-full">
         <CustomMap allMunicipality={true}>
-          <MapPopup 
-            name="All Municipality"
-            message="Do you want to add a document associated with all municipality?"
-            markerDocuments={documents.filter((d) => !d.coordinates)}
-            onYesClick={() => {if (!modalOpen) setModalOpen(true);}}
-            onCancelClick={() => {}}
+          <Point
+            id='all_municipality'
+            name='All Municipality'
+            pointCoordinates={kirunaLatLngCoords as LatLng}
+            type='Point'
+            pointDocuments={documents.filter((d) => !d.coordinates)}
             coordinates={coordinates}
             setCoordinates={setCoordinates}
             allDocuments={documents}
             setDocuments={setDocuments}
-            allMunicipality={true}
           />
 
           <MunicipalityArea />
