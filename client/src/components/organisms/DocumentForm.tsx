@@ -6,17 +6,6 @@ import ConnectionForm from './documentConnections/ConnectionForm';
 import ButtonRounded from '../atoms/button/ButtonRounded';
 
 import {
-  AgreementIcon,
-  ConflictIcon,
-  ConsultationIcon,
-  DesignDocIcon,
-  InformativeDocIcon,
-  MaterialEffectsIcon,
-  PrescriptiveDocIcon,
-  TechnicalDocIcon,
-} from '../../assets/icons';
-
-import {
   createCoordinate,
   createDocument,
   editDocument,
@@ -234,15 +223,18 @@ const DocumentForm = ({
 
   const validateStep = () => {
     const newErrors: { [key: string]: string } = {};
+    console.log(!/^1:\d+$/.test(architecturalScale ?? ''))
     if (title.trim() === '') newErrors.title = 'Title is required';
     if (stakeholders.length === 0)
       newErrors.stakeholders = 'Stakeholders are required';
     if (scale === '') newErrors.scale = 'Scale is required';
     if (
-      scale === 'Architectural Style' &&
-      (architecturalScale ?? '').trim() === ''
+      scale === 'ARCHITECTURAL' && (
+        (architecturalScale ?? '').trim() === '' ||
+        !/^1:\d+$/.test(architecturalScale ?? '')
+      )
     )
-      newErrors.architecturalScale = 'Custom Scale is required';
+      newErrors.architecturalScale = 'Custom Scale must be in 1:number format';
     if (issuanceDate.trim() === '')
       newErrors.issuanceDate = 'Issuance date is required';
     if ((docType ?? '').trim() === '')

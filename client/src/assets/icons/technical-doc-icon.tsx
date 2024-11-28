@@ -126,7 +126,9 @@ export default function TechnicalDocIcon({
 		z"
       />
       <path
-        fill="#E6E7E5"
+				style={{
+					fill: "none"
+				}}
         opacity="1.000000"
         stroke="none"
         d="

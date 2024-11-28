@@ -1,3 +1,4 @@
+import { nanoid } from 'nanoid';
 import React from 'react';
 
 interface GradientSVGProps {
@@ -9,7 +10,7 @@ interface GradientSVGProps {
 const GradientSVG: React.FC<GradientSVGProps> = ({
   fillColor,
   children,
-  gradientId = 'gradient',
+  gradientId = nanoid(),
 }) => {
   const fillColorArray = Array.isArray(fillColor) ? fillColor : [fillColor];
 
@@ -31,7 +32,7 @@ const GradientSVG: React.FC<GradientSVGProps> = ({
           {fillColorArray.map((color, index) => (
             <stop
               key={index}
-              offset={`${(index / (fillColorArray.length - 1)) * 100}%`}
+              offset={fillColorArray.length > 1 ? `${(index / (fillColorArray.length - 1)) * 100}%` : '100%'}
               stopColor={color}
             />
           ))}

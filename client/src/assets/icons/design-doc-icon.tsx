@@ -150,7 +150,9 @@ export default function DesignDocIcon({
 		z"
       />
       <path
-        fill="#E6E7E5"
+				style={{
+					fill: "none"
+				}}
         opacity="1.000000"
         stroke="none"
         d="
@@ -185,7 +187,9 @@ export default function DesignDocIcon({
 		z"
       />
       <path
-        fill="#E4E6E4"
+				style={{
+					fill: "none"
+				}}
         opacity="1.000000"
         stroke="none"
         d="
