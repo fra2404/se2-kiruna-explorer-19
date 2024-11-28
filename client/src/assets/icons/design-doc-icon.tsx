@@ -1,9 +1,17 @@
-export default function DesignDocIcon({fillColor}: any) {
-	return (
-		<svg version="1.1" id="Layer_1" xmlns="http://www.w3.org/2000/svg" xmlnsXlink="http://www.w3.org/1999/xlink" x="0px" y="0px"
-			width="100%" viewBox="0 0 920 926" enableBackground="new 0 0 920 926" xmlSpace="preserve">
-		<path fill={fillColor} opacity="1.000000" stroke="none" 
-			d="
+import GradientSVG from '../../components/atoms/GradientSVG';
+
+export default function DesignDocIcon({
+  fillColor,
+}: {
+  fillColor: string[] | string;
+}) {
+  return (
+    <GradientSVG fillColor={fillColor}>
+      <path
+        fill="currentColor"
+        opacity="1.000000"
+        stroke="none"
+        d="
 		M366.999908,864.189941 
 			C350.333252,864.189575 334.160095,863.910217 318.002319,864.288818 
 			C307.400543,864.537109 296.868469,862.832153 287.541473,858.923645 
@@ -59,9 +67,13 @@ export default function DesignDocIcon({fillColor}: any) {
 			C852.796448,860.407776 847.356506,862.430237 842.069397,862.479919 
 			C761.380920,863.238159 680.690063,863.870422 599.998535,864.136353 
 			C522.499817,864.391785 444.999542,864.190735 366.999908,864.189941 
-		z"/>
-		<path fill={fillColor} opacity="1.000000" stroke="none" 
-			d="
+		z"
+      />
+      <path
+        fill="currentColor"
+        opacity="1.000000"
+        stroke="none"
+        d="
 		M281.705688,307.461884 
 			C287.567932,311.816040 293.241272,315.826843 298.818054,319.967682 
 			C306.879974,325.953705 314.914459,331.978577 322.879272,338.092865 
@@ -135,9 +147,15 @@ export default function DesignDocIcon({fillColor}: any) {
 			C257.646118,515.146484 237.377914,515.146484 216.945679,515.146484 
 			C216.945679,550.797180 216.945679,586.185486 216.945679,621.996033 
 			C236.876602,621.996033 256.503235,621.996033 277.070160,621.966003 
-		z"/>
-		<path fill="#E6E7E5" opacity="1.000000" stroke="none" 
-			d="
+		z"
+      />
+      <path
+				style={{
+					fill: "none"
+				}}
+        opacity="1.000000"
+        stroke="none"
+        d="
 		M308.223450,505.096680 
 			C308.614532,496.275635 305.379456,490.007507 297.627411,486.491669 
 			C296.073944,485.787140 294.231171,485.411957 292.520660,485.408295 
@@ -166,9 +184,15 @@ export default function DesignDocIcon({fillColor}: any) {
 			C378.065247,617.813232 378.065247,619.607727 378.065247,621.697632 
 			C354.206268,621.697632 330.793213,621.697632 308.223511,621.697632 
 			C308.223511,582.979797 308.223511,544.281250 308.223450,505.096680 
-		z"/>
-		<path fill="#E4E6E4" opacity="1.000000" stroke="none" 
-			d="
+		z"
+      />
+      <path
+				style={{
+					fill: "none"
+				}}
+        opacity="1.000000"
+        stroke="none"
+        d="
 		M276.600006,621.981018 
 			C256.503235,621.996033 236.876602,621.996033 216.945679,621.996033 
 			C216.945679,586.185486 216.945679,550.797180 216.945679,515.146484 
@@ -176,7 +200,8 @@ export default function DesignDocIcon({fillColor}: any) {
 			C278.715363,516.729675 278.715363,518.306030 278.715363,519.882446 
 			C278.715149,552.213074 278.739807,584.543762 278.644684,616.874146 
 			C278.639709,618.572937 277.618347,620.268799 276.600006,621.981018 
-		z"/>
-		</svg>
-	);
+		z"
+      />
+    </GradientSVG>
+  );
 }

@@ -37,6 +37,8 @@ export const validateAddDocument = [
     .isString()
     .withMessage('Scale must be a string')
     .custom((value, { req }) => validateScale(value, req.body.architecturalScale)),
+  //**********************************/
+
   body('type')
     .notEmpty()
     .withMessage('Type is required')
@@ -86,33 +88,33 @@ export const validateAddDocument = [
   body('date')
     .notEmpty()
     .withMessage('Date is required')
-   // .matches(/^\d{4}-\d{2}-\d{2}$/)
+    // .matches(/^\d{4}-\d{2}-\d{2}$/)
     .matches(/^\d{4}(-\d{2})?(-\d{2})?$/)
     .withMessage('Date must be in the format yyyy, yyyy-mm, or yyyy-mm-dd')
     .custom((value) => {
       return validateDate(value);
     }),
-    // .custom((value) => {
-    //   const [year, month, day] = value.split('-').map(Number);
-    //   const isValidDate = (d: number, m: number, y: number) => {
-    //     const date = new Date(y, m - 1, d);
-    //     return (
-    //       date.getFullYear() === y &&
-    //       date.getMonth() === m - 1 &&
-    //       date.getDate() === d
-    //     );
-    //   };
-    //   if (!isValidDate(day, month, year)) {
-    //     throw new Error('Invalid date');
-    //   }
-    //   const inputDate = new Date(year, month - 1, day);
-    //   const today = new Date();
-    //   today.setHours(0, 0, 0, 0); // Set to midnight to compare only date part
-    //   if (inputDate.getTime() > today.getTime()) {
-    //     throw new Error('Date cannot be in the future');
-    //   }
-    //   return true;
-    // }),
+  // .custom((value) => {
+  //   const [year, month, day] = value.split('-').map(Number);
+  //   const isValidDate = (d: number, m: number, y: number) => {
+  //     const date = new Date(y, m - 1, d);
+  //     return (
+  //       date.getFullYear() === y &&
+  //       date.getMonth() === m - 1 &&
+  //       date.getDate() === d
+  //     );
+  //   };
+  //   if (!isValidDate(day, month, year)) {
+  //     throw new Error('Invalid date');
+  //   }
+  //   const inputDate = new Date(year, month - 1, day);
+  //   const today = new Date();
+  //   today.setHours(0, 0, 0, 0); // Set to midnight to compare only date part
+  //   if (inputDate.getTime() > today.getTime()) {
+  //     throw new Error('Date cannot be in the future');
+  //   }
+  //   return true;
+  // }),
   body('coordinates')
     .optional()
     .isMongoId()
@@ -174,7 +176,11 @@ export const validateUpdateDocument = [
       });
       return true;
     }),
-  body('scale').optional().isString().withMessage('Scale must be a string'),
+  body('scale')
+    .optional()
+    .isString()
+    .withMessage('Scale must be a string')
+    .custom((value, { req }) => validateScale(value, req.body.architecturalScale)),
   body('type')
     .optional()
     .isIn([
@@ -285,5 +291,5 @@ const validateDate = (value: string) => {
     throw new Error('Date cannot be in the future');
   }
 
-  return true; 
+  return true;
 };

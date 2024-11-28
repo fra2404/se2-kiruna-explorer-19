@@ -5,6 +5,7 @@ export interface IDocument {
   title: string;
   stakeholders?: string;
   scale?: string;
+  architecturalScale?: string;
   type: DocTypeEnum;
   date: string;
   summary: string;

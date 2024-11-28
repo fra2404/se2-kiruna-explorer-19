@@ -1,0 +1,8 @@
+.inline-fields {
+  display: flex;
+  gap: 1rem; /* Spazio tra gli elementi */
+}
+
+.inline-fields > div {
+  flex: 1; /* Assicura che gli elementi abbiano la stessa larghezza */
+}

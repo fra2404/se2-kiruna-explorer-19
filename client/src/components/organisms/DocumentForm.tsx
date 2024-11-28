@@ -6,17 +6,6 @@ import ConnectionForm from './documentConnections/ConnectionForm';
 import ButtonRounded from '../atoms/button/ButtonRounded';
 
 import {
-  AgreementIcon,
-  ConflictIcon,
-  ConsultationIcon,
-  DesignDocIcon,
-  InformativeDocIcon,
-  MaterialEffectsIcon,
-  PrescriptiveDocIcon,
-  TechnicalDocIcon,
-} from '../../assets/icons';
-
-import {
   createCoordinate,
   createDocument,
   editDocument,
@@ -38,6 +27,7 @@ import './DocumentForm.css';
 import LightDivider from '../atoms/light-divider/light-divider';
 import ModalHeader from '../molecules/ModalHeader';
 import ToggleButton from '../atoms/ToggleButton';
+import { DocumentIcon } from '../molecules/documentsItems/DocumentIcon';
 
 Modal.setAppElement('#root');
 
@@ -95,57 +85,19 @@ const DocumentForm = ({
     });
   };
 
-  const documentTypeOptions = [
-    {
-      value: 'AGREEMENT',
-      label: 'Agreement',
-      icon: <AgreementIcon fillColor="#000" />,
-    },
-    {
-      value: 'CONFLICT',
-      label: 'Conflict',
-      icon: <ConflictIcon fillColor="#000" />,
-    },
-    {
-      value: 'CONSULTATION',
-      label: 'Consultation',
-      icon: <ConsultationIcon fillColor="#000" />,
-    },
-    {
-      value: 'DESIGN_DOC',
-      label: 'Design document',
-      icon: <DesignDocIcon fillColor="#000" />,
-    },
-    {
-      value: 'INFORMATIVE_DOC',
-      label: 'Informative document',
-      icon: <InformativeDocIcon fillColor="#000" />,
-    },
-    {
-      value: 'MATERIAL_EFFECTS',
-      label: 'Material effects',
-      icon: <MaterialEffectsIcon fillColor="#000" />,
-    },
-    {
-      value: 'PRESCRIPTIVE_DOC',
-      label: 'Prescriptive document',
-      icon: <PrescriptiveDocIcon fillColor="#000" />,
-    },
-    {
-      value: 'TECHNICAL_DOC',
-      label: 'Technical document',
-      icon: <TechnicalDocIcon fillColor="#000" />,
-    },
-  ];
-
   // Document information
   const [title, setTitle] = useState(selectedDocument?.title ?? '');
-  const [stakeholders, setStakeholders] = useState<string | undefined>(
-    selectedDocument?.stakeholders ?? undefined,
+  const [stakeholders, setStakeholders] = useState<string[]>(
+    Array.isArray(selectedDocument?.stakeholders)
+      ? selectedDocument.stakeholders
+      : [],
   );
   const [scale, setScale] = useState<string | undefined>(
     selectedDocument?.scale ?? '',
   );
+  const [architecturalScale, setArchitecturalScale] = useState<
+    string | undefined
+  >(selectedDocument?.architecturalScale ?? '');
   const [issuanceDate, setIssuanceDate] = useState(
     selectedDocument?.date
       ? new Date(selectedDocument.date).toISOString().split('T')[0]
@@ -172,6 +124,40 @@ const DocumentForm = ({
   const [coordName, setCoordName] = useState('');
   const [coordNamePopupOpen, setCoordNamePopupOpen] =
     useState(showCoordNamePopup);
+
+  const createDocumentOption = (
+    value: string,
+    label: string,
+    stakeholders: string[] | undefined,
+  ) => ({
+    value,
+    label,
+    icon: (
+      <DocumentIcon
+        type={value}
+        stakeholders={Array.isArray(stakeholders) ? stakeholders : []}
+      />
+    ),
+  });
+
+  const documentTypeOptions = [
+    createDocumentOption('AGREEMENT', 'Agreement', stakeholders),
+    createDocumentOption('CONFLICT', 'Conflict', stakeholders),
+    createDocumentOption('CONSULTATION', 'Consultation', stakeholders),
+    createDocumentOption('DESIGN_DOC', 'Design document', stakeholders),
+    createDocumentOption(
+      'INFORMATIVE_DOC',
+      'Informative document',
+      stakeholders,
+    ),
+    createDocumentOption('MATERIAL_EFFECTS', 'Material effects', stakeholders),
+    createDocumentOption(
+      'PRESCRIPTIVE_DOC',
+      'Prescriptive document',
+      stakeholders,
+    ),
+    createDocumentOption('TECHNICAL_DOC', 'Technical document', stakeholders),
+  ];
 
   // Connection modal : To enter a new connection
   const [connectionModalOpen, setConnectionModalOpen] = useState(false);
@@ -237,10 +223,18 @@ const DocumentForm = ({
 
   const validateStep = () => {
     const newErrors: { [key: string]: string } = {};
+    console.log(!/^1:\d+$/.test(architecturalScale ?? ''))
     if (title.trim() === '') newErrors.title = 'Title is required';
-    if (stakeholders === '')
+    if (stakeholders.length === 0)
       newErrors.stakeholders = 'Stakeholders are required';
     if (scale === '') newErrors.scale = 'Scale is required';
+    if (
+      scale === 'ARCHITECTURAL' && (
+        (architecturalScale ?? '').trim() === '' ||
+        !/^1:\d+$/.test(architecturalScale ?? '')
+      )
+    )
+      newErrors.architecturalScale = 'Custom Scale must be in 1:number format';
     if (issuanceDate.trim() === '')
       newErrors.issuanceDate = 'Issuance date is required';
     if ((docType ?? '').trim() === '')
@@ -328,6 +322,7 @@ const DocumentForm = ({
       title,
       stakeholders: stakeholders ?? '',
       scale: scale ?? '',
+      architecturalScale: scale === 'ARCHITECTURAL' ? architecturalScale : '',
       type: docType ?? '',
       language,
       summary: description,
@@ -405,7 +400,8 @@ const DocumentForm = ({
           !!errors.title ||
           !!errors.stakeholders ||
           !!errors.scale ||
-          !!errors.issuanceDate
+          !!errors.issuanceDate ||
+          !!errors.customScale
         );
       case 2:
         return !!errors.docType;
@@ -452,12 +448,14 @@ const DocumentForm = ({
                 <Step1
                   title={title}
                   setTitle={setTitle}
-                  stakeholders={stakeholders || ''}
+                  stakeholders={stakeholders}
                   setStakeholders={setStakeholders}
                   scale={scale || ''}
                   setScale={setScale}
                   issuanceDate={issuanceDate}
                   setIssuanceDate={setIssuanceDate}
+                  architecturalScale={architecturalScale || ''}
+                  setArchitecturalScale={setArchitecturalScale}
                   errors={errors}
                 />
               </div>
