@@ -332,7 +332,7 @@ const DocumentForm = ({
       language,
       summary: description,
       date: issuanceDate,
-      coordinates: coordId ?? undefined,
+      coordinates: (coordId && coordId != "") ? coordId : undefined,
       connections: connections.map((conn) => ({
         document: conn.relatedDocument,
         type: conn.type,

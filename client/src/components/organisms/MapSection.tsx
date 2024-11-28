@@ -47,11 +47,14 @@ const MapSection: React.FC<MapSectionProps> = ({
           <InputComponent
             label="Select an area or point that already exists"
             type="select"
-            options={Object.entries(coordinates).map(
-              ([areaId, info]: [string, any]) => {
-                return { value: areaId, label: info['name'] };
-              },
-            )}
+            options={[
+              {value: "", label: "All Municipality"},
+              ...Object.entries(coordinates).map(
+                ([areaId, info]: [string, any]) => {
+                  return { value: areaId, label: info['name'] };
+                },
+              )]
+            }
             defaultValue={selectedCoordIdProp}
             value={selectedCoordId}
             onChange={(v: any) => {
