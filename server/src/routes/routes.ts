@@ -3,7 +3,7 @@ import { userRoutes } from './user.routes';
 import { documentRoutes } from './document.routes';
 import { coordinateRoutes } from './coordinate.routes';
 import { mediaRoutes } from './media.routes';
-import { graphRoutes } from './ghraph.routes';
+import { graphRoutes } from './graph.routes';
 
 const router = express.Router();
 
