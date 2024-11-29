@@ -29,6 +29,8 @@ export const validateAddDocument = [
     .isString()
     .withMessage('Scale must be a string')
     .custom((value, { req }) => validateScale(value, req.body.architecturalScale)),
+  //**********************************/
+
   body('type')
     .notEmpty()
     .withMessage('Type is required')
@@ -264,7 +266,7 @@ const validateDate = (value: string) => {
     throw new Error('Date cannot be in the future');
   }
 
-  return true; 
+  return true;
 };
 
 
