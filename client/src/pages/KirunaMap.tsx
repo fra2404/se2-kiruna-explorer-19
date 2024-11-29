@@ -111,6 +111,10 @@ export default function KirunaMap() {
       <CustomMap>
         <MarkerClusterGroup
           iconCreateFunction={(cluster: any) => {
+            let nDocuments = 0;
+            cluster.getAllChildMarkers().forEach((m: any) => {
+              nDocuments += m.options.children[0].props.markerDocuments.length;
+            });
             return new DivIcon({
               iconSize: [45, 45],
               className: 'pointIcon',
@@ -129,7 +133,7 @@ export default function KirunaMap() {
                     fontWeight: 'bold',
                   }}
                 >
-                  {cluster.getChildCount()}
+                  {nDocuments}
                 </div>,
               ),
             });

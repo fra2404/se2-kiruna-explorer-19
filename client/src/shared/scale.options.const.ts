@@ -1,6 +1,6 @@
 export const scaleOptions = [
     { value: 'ARCHITECTURAL', label: 'Architectural Style' },
-    { value: 'pippo', label: 'pippo' },
-    { value: 'pluto', label: 'pluto' },
-    { value: 'altro', label: 'altro' },
+    { value: 'TEXT', label: 'Text' },
+    { value: 'CONCEPT', label: 'Concept' },
+    { value: 'BLUEPRINT/MATERIAL EFFECTS', label: 'Blueprint/Material effects' },
 ];

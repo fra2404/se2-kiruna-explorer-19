@@ -13,6 +13,7 @@ interface Step5Props {
   coordName: string;
   setCoordName: (name: string) => void;
   MapClickHandler: React.FC;
+  errors: {[key: string]: string}
 }
 
 const Step5: React.FC<Step5Props> = ({
@@ -27,6 +28,7 @@ const Step5: React.FC<Step5Props> = ({
   coordName,
   setCoordName,
   MapClickHandler,
+  errors
 }) => {
   return (
     <MapSection
@@ -41,6 +43,7 @@ const Step5: React.FC<Step5Props> = ({
       coordName={coordName}
       setCoordName={setCoordName}
       MapClickHandler={MapClickHandler}
+      errors={errors}
     />
   );
 };
