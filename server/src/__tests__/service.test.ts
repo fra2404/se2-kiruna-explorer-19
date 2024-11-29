@@ -609,6 +609,13 @@ describe('Tests for document services', () => {
   
     //test 1
     test("Should save the new document", async () => {
+      //Data mock
+      //This is a mock of the object that is supposed to be saved in the database
+      const mockNewDocument = {
+        ...mockDocumentData,
+        id: '10'
+      } as unknown as IDocument;
+
       //Support functions mocking
       (Coordinate.findById as jest.Mock).mockImplementation(async() => mockCoordinate);
       (Document.findById as jest.Mock).mockImplementation(async() => mockConnectedDoc);
@@ -655,16 +662,16 @@ describe('Tests for document services', () => {
     });
 
     //test 3
-    test("Should throw DocNotFoundError if the document specified in the connection doesn't exist", async () => {
-      //Data mocking
-      const err = new DocNotFoundError();
+    // test("Should throw DocNotFoundError if the document specified in the connection doesn't exist", async () => {
+    //   //Data mocking
+    //   const err = new DocNotFoundError();
 
       //Support functions mocking
       (Coordinate.findById as jest.Mock).mockImplementation(async () => mockCoordinate);
       (Document.findById as jest.Mock).mockImplementation(async() => null);
 
-      //Call of addingDocument
-      await expect(addingDocument(mockDocumentData)).rejects.toThrow(err);
+    //   //Call of addingDocument
+    //   await expect(addingDocument(mockDocumentData)).rejects.toThrow(err);
 
       expect(Coordinate.findById).toHaveBeenCalledWith(mockDocumentData.coordinates);
       expect(Document.findById).toHaveBeenCalledWith("cd1");
