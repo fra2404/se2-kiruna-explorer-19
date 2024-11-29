@@ -18,6 +18,7 @@ interface MapSectionProps {
   coordName: string;
   setCoordName: (name: string) => void;
   MapClickHandler: React.FC;
+  errors: {[key: string]: string}
 }
 
 const MapSection: React.FC<MapSectionProps> = ({
@@ -32,6 +33,7 @@ const MapSection: React.FC<MapSectionProps> = ({
   coordName,
   setCoordName,
   MapClickHandler,
+  errors
 }) => {
   const { swedishFlagBlue, satMapMainColor, mapType } =
     useContext(MapStyleContext);
@@ -55,7 +57,7 @@ const MapSection: React.FC<MapSectionProps> = ({
                 },
               )]
             }
-            defaultValue={selectedCoordIdProp}
+            defaultValue={selectedCoordIdProp? selectedCoordId : 'all_municipality'}
             value={selectedCoordId}
             onChange={(v: any) => {
               setSelectedCoordId(v.target.value != 'all_municipality' ? v.target.value : undefined);
@@ -105,6 +107,7 @@ const MapSection: React.FC<MapSectionProps> = ({
               setCoordName={setCoordName}
               setCoordNamePopupOpen={setCoordNamePopupOpen}
               setPosition={setPosition}
+              errors={errors}
             />
           )}
 

@@ -62,7 +62,7 @@ const DropdownModal: React.FC<DropdownModalProps> = ({
       <div>
         <div
           onClick={() => handleNavigate('/')}
-          style={{ padding: '10px', cursor: 'pointer' }}
+          className='p-2.5 cursor-pointer hover:bg-gray-200 rounded-lg'
         >
           Home
         </div>
@@ -71,7 +71,7 @@ const DropdownModal: React.FC<DropdownModalProps> = ({
           (isLoggedIn && user && user.role === UserRoleEnum.Uplanner) && (
             <div
               onClick={() => setManageCoordsModalOpen(true)}
-              style={{ padding: '10px', cursor: 'pointer' }}
+          className='p-2.5 cursor-pointer hover:bg-gray-200 rounded-lg'
             >
               Manage points&areas
             </div>
@@ -80,7 +80,7 @@ const DropdownModal: React.FC<DropdownModalProps> = ({
 
         <div
           onClick={handleLogoutClick}
-          style={{ padding: '10px', cursor: 'pointer' }}
+          className='p-2.5 cursor-pointer hover:bg-gray-200 rounded-lg'
         >
           Logout
         </div>

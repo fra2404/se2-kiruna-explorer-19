@@ -236,6 +236,8 @@ const DocumentForm = ({
       newErrors.issuanceDate = 'Issuance date is required';
     if ((docType ?? '').trim() === '')
       newErrors.docType = 'Document type is required';
+    if(position && !selectedCoordId && !coordName) 
+      newErrors.newPoint = 'A new point must have a valid name'
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
@@ -402,6 +404,8 @@ const DocumentForm = ({
         );
       case 2:
         return !!errors.docType;
+      case 5: 
+        return !!errors.newPoint;
       default:
         return false;
     }
@@ -584,6 +588,7 @@ const DocumentForm = ({
                     coordName={coordName}
                     setCoordName={setCoordName}
                     MapClickHandler={MapClickHandler}
+                    errors={errors}
                   />
                 )}
               </div>

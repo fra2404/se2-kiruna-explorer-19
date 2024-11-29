@@ -1,5 +1,4 @@
 import React, { useState } from 'react';
-import { Container } from 'react-bootstrap';
 import Modal from 'react-modal';
 import { modalStyles } from '../../../pages/KirunaMap';
 import './Overlay.css';
@@ -57,8 +56,7 @@ const Overlay: React.FC<OverlayProps> = ({
   };
 
   return (
-    <Container
-      fluid
+    <div
       style={{
         position: 'absolute',
         top: '50vh',
@@ -83,43 +81,43 @@ const Overlay: React.FC<OverlayProps> = ({
           }
         }}
       />
+
+      <FloatingButton
+        onMouseEnter={() => setIsHoveredSearch(true)}
+        onMouseLeave={() => setIsHoveredSearch(false)}
+        onClick={() => {
+          if (!showAllDocuments) {
+            setShowAllDocuments(true);
+          }
+        }}
+        text={
+          isHoveredSearch ? (
+            'See All Documents'
+          ) : (
+            <FaFolder style={{ display: 'inline' }} />
+          )
+        }
+        className='mt-20'
+      />
+
       {isLoggedIn && user && user.role === UserRoleEnum.Uplanner && (
-        <>
-          <FloatingButton
-            text={
-              isHoveredNewDocument ? (
-                '+ New Document'
-              ) : (
-                <FaPlus style={{ display: 'inline' }} />
-              )
+        <FloatingButton
+          text={
+            isHoveredNewDocument ? (
+              '+ New Document'
+            ) : (
+              <FaPlus style={{ display: 'inline' }} />
+            )
+          }
+          onMouseEnter={() => setIsHoveredNewDocument(true)}
+          onMouseLeave={() => setIsHoveredNewDocument(false)}
+          onClick={() => {
+            if (!modalOpen) {
+              setModalOpen(true);
             }
-            onMouseEnter={() => setIsHoveredNewDocument(true)}
-            onMouseLeave={() => setIsHoveredNewDocument(false)}
-            onClick={() => {
-              if (!modalOpen) {
-                setModalOpen(true);
-              }
-            }}
-            className="mt-20"
-          />
-          <FloatingButton
-            onMouseEnter={() => setIsHoveredSearch(true)}
-            onMouseLeave={() => setIsHoveredSearch(false)}
-            onClick={() => {
-              if (!showAllDocuments) {
-                setShowAllDocuments(true);
-              }
-            }}
-            text={
-              isHoveredSearch ? (
-                'See All Documents'
-              ) : (
-                <FaFolder style={{ display: 'inline' }} />
-              )
-            }
-            className="mt-40"
-          />
-        </>
+          }}
+          className='mt-40'
+        />
       )}
 
       <Modal
@@ -133,7 +131,6 @@ const Overlay: React.FC<OverlayProps> = ({
           documents={documents}
           setDocuments={setDocuments}
           positionProp={undefined}
-          modalOpen={modalOpen}
           setModalOpen={setModalOpen}
         />
       </Modal>
@@ -158,7 +155,7 @@ const Overlay: React.FC<OverlayProps> = ({
           setDocuments={setDocuments}
         />
       </Modal>
-    </Container>
+    </div>
   );
 };
 

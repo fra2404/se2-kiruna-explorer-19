@@ -85,7 +85,7 @@ export const Header: React.FC<HeaderProps> = ({
                   onClick={() => setDropdownOpen(!dropdownOpen)}
                   variant="filled"
                   className="bg-black pr-4 pl-4 d-flex align-items-center"
-                  text={`Welcome, ${user?.name.charAt(0).toUpperCase()} ${dropdownOpen ? '▲' : '▼'}`}
+                  text={`Welcome, ${user?.name} ${dropdownOpen ? '▲' : '▼'}`}
                 />
               </div>
             )}
