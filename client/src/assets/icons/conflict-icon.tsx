@@ -1,9 +1,17 @@
-export default function ConflictIcon({fillColor}: any) {
-	return (
-		<svg version="1.1" id="Layer_1" xmlns="http://www.w3.org/2000/svg" xmlnsXlink="http://www.w3.org/1999/xlink" x="0px" y="0px"
-			width="100%" viewBox="0 0 1024 896" enableBackground="new 0 0 1024 896" xmlSpace="preserve">
-		<path fill={fillColor} opacity="1.000000" stroke="none" 
-			d="
+import GradientSVG from '../../components/atoms/GradientSVG';
+
+export default function ConflictIcon({
+  fillColor,
+}: {
+  fillColor: string[] | string;
+}) {
+  return (
+    <GradientSVG fillColor={fillColor}>
+      <path
+        fill="currentColor"
+        opacity="1.000000"
+        stroke="none"
+        d="
 		M685.208374,591.152832 
 			C686.217346,588.937378 688.155823,588.491089 689.735901,587.678650 
 			C700.152039,582.322876 710.543030,577.054749 721.700928,573.154602 
@@ -30,9 +38,13 @@ export default function ConflictIcon({fillColor}: any) {
 			C635.931702,640.714783 644.635864,627.849792 655.129944,616.380188 
 			C660.660522,610.335449 666.828064,604.828674 673.055054,599.483276 
 			C676.668762,596.381226 680.970520,594.080688 685.208374,591.152832 
-		z"/>
-		<path fill={fillColor} opacity="1.000000" stroke="none" 
-			d="
+		z"
+      />
+      <path
+        fill="currentColor"
+        opacity="1.000000"
+        stroke="none"
+        d="
 		M27.579792,738.999878 
 			C27.497852,728.670837 27.410742,718.841980 27.338202,709.012939 
 			C27.312412,705.518494 28.385824,702.124146 29.015026,698.780823 
@@ -61,9 +73,13 @@ export default function ConflictIcon({fillColor}: any) {
 			C61.815601,851.787476 55.659378,852.543457 49.966297,850.316895 
 			C37.650215,845.500000 27.369226,834.041199 27.516071,819.484619 
 			C27.785006,792.825500 27.584892,766.161743 27.579792,738.999878 
-		z"/>
-		<path fill={fillColor} opacity="1.000000" stroke="none" 
-			d="
+		z"
+      />
+      <path
+        fill="currentColor"
+        opacity="1.000000"
+        stroke="none"
+        d="
 		M218.002991,281.923889 
 			C231.854675,281.225037 245.296951,282.525635 257.513184,287.269440 
 			C265.814301,290.492950 275.196472,292.431396 282.160645,298.911469 
@@ -96,9 +112,13 @@ export default function ConflictIcon({fillColor}: any) {
 			C159.448868,295.306671 166.878799,293.853790 173.325684,289.942688 
 			C181.169785,285.183929 190.001617,284.760040 198.762451,283.339203 
 			C205.057159,282.318359 211.233109,282.056122 218.002991,281.923889 
-		z"/>
-		<path fill={fillColor} opacity="1.000000" stroke="none" 
-			d="
+		z"
+      />
+      <path
+        fill="currentColor"
+        opacity="1.000000"
+        stroke="none"
+        d="
 		M898.918091,495.991821 
 			C893.709839,499.054718 891.537048,504.741943 886.618896,507.726685 
 			C885.425293,508.451050 884.548706,510.091736 883.055908,510.929596 
@@ -133,9 +153,13 @@ export default function ConflictIcon({fillColor}: any) {
 			C930.568298,438.096497 929.455322,443.916321 927.239441,448.916656 
 			C922.919006,458.666046 918.930420,468.607574 913.115784,477.694611 
 			C908.978027,484.161133 903.909241,489.818207 898.918091,495.991821 
-		z"/>
-		<path fill={fillColor} opacity="1.000000" stroke="none" 
-			d="
+		z"
+      />
+      <path
+        fill="currentColor"
+        opacity="1.000000"
+        stroke="none"
+        d="
 		M593.880737,207.119904 
 			C599.956421,213.026474 606.059204,218.524567 610.479980,225.348984 
 			C615.351562,232.869232 617.056030,241.101547 613.446594,249.888138 
@@ -168,7 +192,8 @@ export default function ConflictIcon({fillColor}: any) {
 			C534.615967,147.976959 534.413391,149.687820 537.657837,152.807312 
 			C549.185974,163.891571 560.017578,175.728317 571.892822,186.413391 
 			C579.302002,193.080078 586.531067,199.895279 593.880737,207.119904 
-		z"/>
-		</svg>
-	);
+		z"
+      />
+    </GradientSVG>
+  );
 }

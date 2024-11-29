@@ -35,8 +35,7 @@ export const modalStyles = {
 export default function KirunaMap() {
   const { isLoggedIn, user } = useAuth();
   const { setFeedbackFromError } = useContext(FeedbackContext);
-  const { swedishFlagBlue, swedishFlagYellow } =
-    useContext(MapStyleContext);
+  const { swedishFlagBlue, swedishFlagYellow } = useContext(MapStyleContext);
 
   const [documents, setDocuments] = useState<IDocument[]>([]);
   const [coordinates, setCoordinates] = useState({});
@@ -102,14 +101,12 @@ export default function KirunaMap() {
     <div style={{ width: width, height: height }}>
       <Header setManageCoordsModalOpen={setManageCoordsModalOpen} />
 
-      {isLoggedIn && user && user.role === UserRoleEnum.Uplanner && (
-        <Overlay
-          coordinates={coordinates}
-          setCoordinates={setCoordinates}
-          documents={documents}
-          setDocuments={setDocuments}
-        />
-      )}
+      <Overlay
+        coordinates={coordinates}
+        setCoordinates={setCoordinates}
+        documents={documents}
+        setDocuments={setDocuments}
+      />
 
       <CustomMap>
         <MarkerClusterGroup
@@ -136,28 +133,29 @@ export default function KirunaMap() {
                 </div>,
               ),
             });
-          }}>
-            {Object.entries(coordinates).map(([coordId, coordInfo]: any) => {
-              const filteredDocuments = documents.filter((d) => d.coordinates?._id == coordId);
-              if (filteredDocuments.length > 0) {
-                return (
-                  <Point
-                    key={coordId}
-                    id={coordId}
-                    pointCoordinates={coordInfo.coordinates}
-                    name={coordInfo.name}
-                    type={coordInfo.type}
-                    coordinates={coordinates}
-                    setCoordinates={setCoordinates}
-                    pointDocuments={filteredDocuments}
-                    allDocuments={documents}
-                    setDocuments={setDocuments}
-                  />
-                );
-              }
-            })
-          }
-
+          }}
+        >
+          {Object.entries(coordinates).map(([coordId, coordInfo]: any) => {
+            const filteredDocuments = documents.filter(
+              (d) => d.coordinates?._id == coordId,
+            );
+            if (filteredDocuments.length > 0) {
+              return (
+                <Point
+                  key={coordId}
+                  id={coordId}
+                  pointCoordinates={coordInfo.coordinates}
+                  name={coordInfo.name}
+                  type={coordInfo.type}
+                  coordinates={coordinates}
+                  setCoordinates={setCoordinates}
+                  pointDocuments={filteredDocuments}
+                  allDocuments={documents}
+                  setDocuments={setDocuments}
+                />
+              );
+            }
+          })}
         </MarkerClusterGroup>
 
         {isLoggedIn && user && user.role === UserRoleEnum.Uplanner && (

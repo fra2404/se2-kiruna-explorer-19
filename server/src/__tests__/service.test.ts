@@ -47,6 +47,8 @@ import {
 import { UserRoleEnum } from '../utils/enums/user-role.enum';
 import { DocTypeEnum } from '../utils/enums/doc-type.enum';
 import { LinkTypeEnum } from '@utils/enums/link-type.enum';
+import { StakeholderEnum } from '@utils/enums/stakeholder.enum';
+import { ScaleTypeEnum } from '@utils/enums/scale-type-enum';
 import { CustomError } from '../utils/customError';
 import {
   DocNotFoundError,
@@ -563,31 +565,48 @@ describe('Tests for document services', () => {
       jest.clearAllMocks();
     });
 
-    //Mocked inputs
+    //Mock of the document model
+    //This is needed in order to mock the constructor of Document
+    jest.mock("../schemas/document.schema", () => ({
+      __esModule: true,
+      default: jest.fn(),
+    }));
+
+    //Data mock
     const mockCoordinate = {
-      id: '1',
+      id: 'c1',
       type: 'Point',
       coordinates: [45.123, 7.123],
-      name: 'Test Coordinate 1',
+      name: 'Test Coordinate',
     };
 
+    //Just essentials data are filled in this fake document
+    const mockConnectedDoc = {
+      id: 'cd1',
+      save: jest.fn(),
+      toObject: jest.fn().mockReturnValue(this)
+    } as unknown as IDocument;
+  
     const mockMedia = [
       { id: 'media1', url: 'https://example.com/media1' },
       { id: 'media2', url: 'https://example.com/media2' }
     ];
 
     const mockDocumentData = {
-      stakeholders: "Company A",
-      scale: "1:1000",
-      type: DocTypeEnum.Agreement,
-      date: "2000-01-01",
       title: 'Test Document',
       summary: 'Test summary',
       coordinates: mockCoordinate.id,
-      media: ['media1', 'media2'],
-      connections: []
+      media: ["media1", "media2"],
+      connections: [{document: 'cd1'}]
     } as unknown as IDocument;
 
+    const mockNewDocument = {
+      ...mockDocumentData,
+      id: 'd1',
+      save: jest.fn(),
+      toObject: jest.fn().mockReturnValue(this)
+    } as IDocument;
+  
     //test 1
     test("Should save the new document", async () => {
       //Data mock
@@ -598,31 +617,33 @@ describe('Tests for document services', () => {
       } as unknown as IDocument;
 
       //Support functions mocking
-      (Coordinate.findById as jest.Mock).mockImplementation(async () => mockCoordinate);
-      (MediaDocument.findById as jest.Mock).mockImplementation(async () => mockMedia);
-      (Document.prototype.save as jest.Mock).mockImplementation(async() => mockNewDocument);
-      jest.spyOn(require('../services/document.service'), 'fetchMedia').mockResolvedValue(mockMedia);
-      (Document.prototype.toObject as jest.Mock).mockReturnValueOnce(mockNewDocument);
+      (Coordinate.findById as jest.Mock).mockImplementation(async() => mockCoordinate);
+      (Document.findById as jest.Mock).mockImplementation(async() => mockConnectedDoc);
+      (MediaDocument.findById as jest.Mock)
+        .mockImplementation(async() => mockMedia[0])
+        .mockImplementation(async() => mockMedia[1]);
 
+      //As said, here there is the code to mock the Document obj constructor
+      const MockedDocument = Document as jest.Mocked<typeof Document>;
+      MockedDocument.mockImplementation(() => mockNewDocument as any);
+
+      jest.spyOn(Document.prototype, "save").mockResolvedValue(mockNewDocument);
+      jest.spyOn(require("../services/coordinate.service"), "getCoordinateById")
+        .mockResolvedValue(mockCoordinate);
+      jest.spyOn(require("../services/document.service"), "fetchMedia").mockImplementation(async() => mockMedia);
+    
       //Call of addingDocument
       const result = await addingDocument(mockDocumentData);
 
       expect(Coordinate.findById).toHaveBeenCalledWith(mockCoordinate.id);
+      expect(Document.findById).toHaveBeenCalledWith("cd1");
       expect(MediaDocument.findById).toHaveBeenCalledTimes(2);
-      //expect(fetchMedia).toHaveBeenCalledTimes(2);
-      expect(Document.prototype.save).toHaveBeenCalled();
-      expect(Document.prototype.toObject).toHaveBeenCalled();
+      expect(getCoordinateById).toHaveBeenCalled();
+      expect(fetchMedia).toHaveBeenCalled();
       expect(result).toEqual({
-        id: "10",
-        stakeholders: "Company A",
-        scale: "1:1000",
-        type: DocTypeEnum.Agreement,
-        date: "2000-01-01",
-        title: 'Test Document',
-        summary: 'Test summary',
-        coordinates: null, //wrong!
-        media: null, //wrong!
-        connections: []
+        id: 'd1',
+        coordinates: mockCoordinate,
+        media: mockMedia
       });
     });
 
@@ -637,9 +658,7 @@ describe('Tests for document services', () => {
       //Call of addingDocument
       await expect(addingDocument(mockDocumentData)).rejects.toThrow(err);
 
-      expect(Coordinate.findById).toHaveBeenCalledWith(
-        mockDocumentData.coordinates,
-      );
+      expect(Coordinate.findById).toHaveBeenCalledWith(mockDocumentData.coordinates);
     });
 
     //test 3
@@ -647,19 +666,34 @@ describe('Tests for document services', () => {
     //   //Data mocking
     //   const err = new DocNotFoundError();
 
-    //   //Support functions mocking
-    //   (Coordinate.findById as jest.Mock).mockImplementation(
-    //     async () => '6456e8f9f1e99e2d8c8e84b3',
-    //   );
-    //   (Document.findById as jest.Mock).mockImplementation(async () => null);
+      //Support functions mocking
+      (Coordinate.findById as jest.Mock).mockImplementation(async () => mockCoordinate);
+      (Document.findById as jest.Mock).mockImplementation(async() => null);
 
     //   //Call of addingDocument
     //   await expect(addingDocument(mockDocumentData)).rejects.toThrow(err);
 
-    //   expect(Document.findById).toHaveBeenCalledWith(
-    //     mockDocumentData.connections![0].document,
-    //   );
-    // });
+      expect(Coordinate.findById).toHaveBeenCalledWith(mockDocumentData.coordinates);
+      expect(Document.findById).toHaveBeenCalledWith("cd1");
+    });
+
+    //test 4
+    test("Should throw MediaNotFoundError", async () => {
+      //Data mocking
+      const err = new MediaNotFoundError();
+
+      //Support functions mocking
+      (Coordinate.findById as jest.Mock).mockImplementation(async () => mockCoordinate);
+      (Document.findById as jest.Mock).mockImplementation(async() => mockConnectedDoc);
+      (MediaDocument.findById as jest.Mock).mockImplementation(async() => null);
+
+      //Call of addingDocument
+      await expect(addingDocument(mockDocumentData)).rejects.toThrow(err);
+
+      expect(Coordinate.findById).toHaveBeenCalledWith(mockDocumentData.coordinates);
+      expect(Document.findById).toHaveBeenCalledWith("cd1");
+      expect(MediaDocument.findById).toHaveBeenCalled();
+    });
 
     //TODO: Success case test (test 3)
   }); //addingDocument
@@ -905,11 +939,11 @@ describe('Tests for document services', () => {
     test('Should return searched documents and relative coordinates and media (if there are any)', async () => {
       //Input mock
       const filters = {
-        language: 'EN',
-        stakeholders: 'Company A',
-        scale: '1:500',
+        stakeholders: StakeholderEnum.ArchitectureFirms,
+        scale: ScaleTypeEnum.Architectural,
         type: DocTypeEnum.Agreement,
-        date: '2000-01-01',
+        date: "2000-01-01",
+        language: "EN"
       };
 
       //Support functions mocking

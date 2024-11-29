@@ -507,7 +507,40 @@
 <a name='L442'></a><a href='#L442'>442</a>
 <a name='L443'></a><a href='#L443'>443</a>
 <a name='L444'></a><a href='#L444'>444</a>
-<a name='L445'></a><a href='#L445'>445</a></td><td class="line-coverage quiet"><span class="cline-any cline-neutral">&nbsp;</span>
+<a name='L445'></a><a href='#L445'>445</a>
+<a name='L446'></a><a href='#L446'>446</a>
+<a name='L447'></a><a href='#L447'>447</a>
+<a name='L448'></a><a href='#L448'>448</a>
+<a name='L449'></a><a href='#L449'>449</a>
+<a name='L450'></a><a href='#L450'>450</a>
+<a name='L451'></a><a href='#L451'>451</a>
+<a name='L452'></a><a href='#L452'>452</a>
+<a name='L453'></a><a href='#L453'>453</a>
+<a name='L454'></a><a href='#L454'>454</a>
+<a name='L455'></a><a href='#L455'>455</a>
+<a name='L456'></a><a href='#L456'>456</a>
+<a name='L457'></a><a href='#L457'>457</a>
+<a name='L458'></a><a href='#L458'>458</a>
+<a name='L459'></a><a href='#L459'>459</a>
+<a name='L460'></a><a href='#L460'>460</a>
+<a name='L461'></a><a href='#L461'>461</a>
+<a name='L462'></a><a href='#L462'>462</a>
+<a name='L463'></a><a href='#L463'>463</a>
+<a name='L464'></a><a href='#L464'>464</a>
+<a name='L465'></a><a href='#L465'>465</a></td><td class="line-coverage quiet"><span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -522,7 +555,6 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -827,6 +859,10 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -844,6 +880,10 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -965,7 +1005,6 @@ import {
 // import { addingDocument, deleteDocumentByName, getAllDocuments, getDocumentById, updatingDocument } from '../services/document.service';
 import { IDocument } from '@interfaces/document.interface';
 import { IDocumentResponse } from '@interfaces/document.return.interface';
-import { ICoordinate } from '@interfaces/coordinate.interface';
 import { DocNotFoundError } from '@utils/errors';
 &nbsp;
 /**
@@ -982,11 +1021,24 @@ import { DocNotFoundError } from '@utils/errors';
  *           type: string
  *           description: The title of the document
  *         stakeholders:
- *           type: string
- *           description: The stakeholders of the document
+ *           type: array
+ *             items:
+ *              type: string
+ *              description: The stakeholders of the document
+ *              enum:
+ *                - LKAB
+ *                - Municipalty
+ *                - RegionalAuthority
+ *                - ArchitectureFirms
+ *                - Citizens
+ *                - Others
  *         scale:
  *           type: string
- *           description: The scale of the document
+ *           description: The scale of the document (e.g., 'Architectural', 'blueprints/effects', 'text')
+ *         architecturalScale:
+ *           type: string
+ *           description: The value in number:number format, required when scale is 'Architectural'
+ *           example: "1:1000"
  *         type:
  *           type: string
  *           description: The type of the document
@@ -1239,6 +1291,10 @@ export const getDocumentTypesController = (
  *           example: 'Stakeholder 1'
  *         scale:
  *           type: string
+ *           example: 'Architectural'
+ *         architecturalScale:
+ *           type: string
+ *           description: The value in number:number format, required when scale is 'Architectural'
  *           example: '1:1000'
  *         type:
  *           type: string
@@ -1346,6 +1402,10 @@ export const deleteDocumentController = async (
  *           example: 'Stakeholder 1'
  *         scale:
  *           type: string
+ *           example: 'Architectural'
+ *         architecturalScale:
+ *           type: string
+ *           description: The value in number:number format, required when scale is 'Architectural'
  *           example: '1:1000'
  *         type:
  *           type: string
@@ -1402,7 +1462,7 @@ export const searchDocumentsController = async (
             <div class='footer quiet pad2 space-top1 center small'>
                 Code coverage generated by
                 <a href="https://istanbul.js.org/" target="_blank" rel="noopener noreferrer">istanbul</a>
-                at 2024-11-25T20:11:42.276Z
+                at 2024-11-28T09:38:42.462Z
             </div>
         <script src="../../prettify.js"></script>
         <script>
