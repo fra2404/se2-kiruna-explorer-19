@@ -3,14 +3,13 @@ import Modal from 'react-modal';
 import { useAuth } from '../../context/AuthContext';
 import { UserRoleEnum } from '../../utils/interfaces/user.interface';
 
-
 interface DropdownModalProps {
   isOpen: boolean;
   onRequestClose: () => void;
   navigate: (path: string) => void;
   handleLogout: () => void;
   dropdownRef: React.RefObject<HTMLDivElement>;
-  setManageCoordsModalOpen: (manageCoordsModalOpen: boolean) => void
+  setManageCoordsModalOpen: (manageCoordsModalOpen: boolean) => void;
 }
 
 const DropdownModal: React.FC<DropdownModalProps> = ({
@@ -19,7 +18,7 @@ const DropdownModal: React.FC<DropdownModalProps> = ({
   navigate,
   handleLogout,
   dropdownRef,
-  setManageCoordsModalOpen
+  setManageCoordsModalOpen,
 }) => {
   const dropdownModalStyles = {
     content: {
@@ -62,25 +61,23 @@ const DropdownModal: React.FC<DropdownModalProps> = ({
       <div>
         <div
           onClick={() => handleNavigate('/')}
-          className='p-2.5 cursor-pointer hover:bg-gray-200 rounded-lg'
+          className="p-2.5 cursor-pointer hover:bg-gray-200 rounded-lg"
         >
           Home
         </div>
 
-        {
-          (isLoggedIn && user && user.role === UserRoleEnum.Uplanner) && (
-            <div
-              onClick={() => setManageCoordsModalOpen(true)}
-          className='p-2.5 cursor-pointer hover:bg-gray-200 rounded-lg'
-            >
-              Manage points&areas
-            </div>
-          )
-        }
+        {isLoggedIn && user && user.role === UserRoleEnum.Uplanner && (
+          <div
+            onClick={() => setManageCoordsModalOpen(true)}
+            className="p-2.5 cursor-pointer hover:bg-gray-200 rounded-lg"
+          >
+            Manage points&areas
+          </div>
+        )}
 
         <div
           onClick={handleLogoutClick}
-          className='p-2.5 cursor-pointer hover:bg-gray-200 rounded-lg'
+          className="p-2.5 cursor-pointer hover:bg-gray-200 rounded-lg"
         >
           Logout
         </div>

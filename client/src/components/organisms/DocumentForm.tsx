@@ -226,18 +226,17 @@ const DocumentForm = ({
       newErrors.stakeholders = 'Stakeholders are required';
     if (scale === '') newErrors.scale = 'Scale is required';
     if (
-      scale === 'ARCHITECTURAL' && (
-        (architecturalScale ?? '').trim() === '' ||
-        !/^1:\d+$/.test(architecturalScale ?? '')
-      )
+      scale === 'ARCHITECTURAL' &&
+      ((architecturalScale ?? '').trim() === '' ||
+        !/^1:\d+$/.test(architecturalScale ?? ''))
     )
       newErrors.architecturalScale = 'Custom Scale must be in 1:number format';
     if (issuanceDate.trim() === '')
       newErrors.issuanceDate = 'Issuance date is required';
     if ((docType ?? '').trim() === '')
       newErrors.docType = 'Document type is required';
-    if(position && !selectedCoordId && !coordName) 
-      newErrors.newPoint = 'A new point must have a valid name'
+    if (position && !selectedCoordId && !coordName)
+      newErrors.newPoint = 'A new point must have a valid name';
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
@@ -326,7 +325,7 @@ const DocumentForm = ({
       language,
       summary: description,
       date: issuanceDate,
-      coordinates: (coordId) ? coordId : undefined,
+      coordinates: coordId ?? undefined,
       connections: connections.map((conn) => ({
         document: conn.relatedDocument,
         type: conn.type,
@@ -399,12 +398,13 @@ const DocumentForm = ({
           !!errors.title ||
           !!errors.stakeholders ||
           !!errors.scale ||
+          !!errors.architecturalScale ||
           !!errors.issuanceDate ||
           !!errors.customScale
         );
       case 2:
         return !!errors.docType;
-      case 5: 
+      case 5:
         return !!errors.newPoint;
       default:
         return false;
@@ -417,201 +417,201 @@ const DocumentForm = ({
 
   return (
     <>
-        <div className="relative">
-          <ModalHeader
-            currentStep={currentStep}
-            hasErrors={hasErrors}
-            scrollToStep={scrollToStep}
-            setModalOpen={setModalOpen}
-            selectedDocument={selectedDocument}
-          />
-          <form className="m-6" onSubmit={handleSubmit}>
-            <div className="grid grid-cols-1 gap-x-4 gap-y-2 mt-16">
-              <div
-                onClick={() => handleStepClick(1)}
-                onKeyDown={(e) => {
-                  if (e.key === 'Enter' || e.key === ' ') {
-                    handleStepClick(1);
-                  }
-                }}
-                tabIndex={0} // Ensure the element is focusable
-                ref={stepRefs[0]}
-                className={`header-section ${hasErrors(1) ? 'error' : ''} scroll-margin-top`}
-              >
-                <h3 className="header-text text-xl font-bold mb-2">
-                  Document Info
-                </h3>
-                <Step1
-                  title={title}
-                  setTitle={setTitle}
-                  stakeholders={stakeholders}
-                  setStakeholders={setStakeholders}
-                  scale={scale || ''}
-                  setScale={setScale}
-                  issuanceDate={issuanceDate}
-                  setIssuanceDate={setIssuanceDate}
-                  architecturalScale={architecturalScale || ''}
-                  setArchitecturalScale={setArchitecturalScale}
-                  errors={errors}
-                />
-              </div>
-              <LightDivider />
-              <div
-                onClick={() => handleStepClick(2)}
-                onKeyDown={(e) => {
-                  if (e.key === 'Enter' || e.key === ' ') {
-                    handleStepClick(2);
-                  }
-                }}
-                tabIndex={0} // Ensure the element is focusable
-                ref={stepRefs[1]}
-                className={`header-section ${hasErrors(2) ? 'error' : ''} scroll-margin-top`}
-              >
-                <h3 className="header-text text-xl font-bold mb-2">
-                  Description
-                </h3>
-
-                <Step2
-                  description={description}
-                  setDescription={setDescription}
-                  language={language}
-                  setLanguage={setLanguage}
-                  docType={docType || ''}
-                  setDocType={setDocType}
-                  documentTypeOptions={documentTypeOptions}
-                  errors={errors}
-                />
-              </div>
-              <LightDivider />
-              <div
-                onKeyDown={(e) => {
-                  if (e.key === 'Enter' || e.key === ' ') {
-                    setShowFiles(!showFiles);
-                  }
-                }}
-                tabIndex={0} // Ensure the element is focusable
-                ref={stepRefs[2]}
-                className={`header-section ${hasErrors(3) ? 'error' : ''} scroll-margin-top`}
-              >
-                <h3
-                  className="header-text text-xl font-bold mb-2 cursor-pointer"
-                  onClick={() => setShowFiles(!showFiles)}
-                >
-                  Files
-                  <span className="align-middle">
-                    <ToggleButton
-                      showContent={showFiles}
-                      onToggle={() => setShowFiles(!showFiles)}
-                    />
-                  </span>
-                </h3>
-                {showFiles && (
-                  <Step3
-                    files={files}
-                    setFiles={setFiles}
-                    existingFiles={existingFiles}
-                  />
-                )}
-              </div>
-              <LightDivider />
-              <div
-                onKeyDown={(e) => {
-                  if (e.key === 'Enter' || e.key === ' ') {
-                    setShowConnections(!showConnections);
-                  }
-                }}
-                tabIndex={0} // Ensure the element is focusable
-                ref={stepRefs[3]}
-                className={`header-section ${hasErrors(4) ? 'error' : ''} scroll-margin-top`}
-              >
-                <h3
-                  className="header-text text-xl font-bold mb-2 cursor-pointer"
-                  onClick={() => setShowConnections(!showConnections)}
-                >
-                  Connections
-                  <span className="align-middle">
-                    <ToggleButton
-                      showContent={showConnections}
-                      onToggle={() => setShowConnections(!showConnections)}
-                    />
-                  </span>
-                </h3>
-                {showConnections && (
-                  <Step4
-                    connections={connections}
-                    handleDeleteConnection={handleDeleteConnection}
-                    setConnectionModalOpen={setConnectionModalOpen}
-                    allDocuments={documents}
-                  />
-                )}
-              </div>
-              <LightDivider />
-              <div
-                onKeyDown={(e) => {
-                  if (e.key === 'Enter' || e.key === ' ') {
-                    setShowGeoreferencing(!showGeoreferencing);
-                    setConnectToMap(!connectToMap);
-                  }
-                }}
-                tabIndex={0} // Ensure the element is focusable
-                ref={stepRefs[4]}
-                className={`header-section ${hasErrors(5) ? 'error' : ''} scroll-margin-top`}
-              >
-                <h3
-                  className="header-text text-xl font-bold mb-2 cursor-pointer"
-                  onClick={() => {
-                    setShowGeoreferencing(!showGeoreferencing);
-                    setConnectToMap(!connectToMap);
-                  }}
-                >
-                  Georeferencing
-                  <span className="align-middle">
-                    <ToggleButton
-                      showContent={showGeoreferencing}
-                      onToggle={() => {
-                        setShowGeoreferencing(!showGeoreferencing);
-                        setConnectToMap(!connectToMap);
-                      }}
-                    />
-                  </span>
-                </h3>
-                {showGeoreferencing && (
-                  <Step5
-                    coordinates={coordinates}
-                    selectedCoordIdProp={selectedCoordId || ''}
-                    selectedCoordId={selectedCoordId || ''}
-                    setSelectedCoordId={setSelectedCoordId}
-                    setCoordNamePopupOpen={setCoordNamePopupOpen}
-                    position={position}
-                    setPosition={setPosition}
-                    coordNamePopupOpen={coordNamePopupOpen}
-                    coordName={coordName}
-                    setCoordName={setCoordName}
-                    MapClickHandler={MapClickHandler}
-                    errors={errors}
-                  />
-                )}
-              </div>
-            </div>
-            <div className="flex justify-end mt-4">
-              <ButtonRounded
-                variant="filled"
-                text="Save"
-                className="bg-black text-white text-base pt-2 pb-2 pl-4 pr-4"
-                onClick={handleSubmit}
+      <div className="relative">
+        <ModalHeader
+          currentStep={currentStep}
+          hasErrors={hasErrors}
+          scrollToStep={scrollToStep}
+          setModalOpen={setModalOpen}
+          selectedDocument={selectedDocument}
+        />
+        <form className="m-6" onSubmit={handleSubmit}>
+          <div className="grid grid-cols-1 gap-x-4 gap-y-2 mt-16">
+            <div
+              onClick={() => handleStepClick(1)}
+              onKeyDown={(e) => {
+                if (e.key === 'Enter' || e.key === ' ') {
+                  handleStepClick(1);
+                }
+              }}
+              tabIndex={0} // Ensure the element is focusable
+              ref={stepRefs[0]}
+              className={`header-section ${hasErrors(1) ? 'error' : ''} scroll-margin-top`}
+            >
+              <h3 className="header-text text-xl font-bold mb-2">
+                Document Info
+              </h3>
+              <Step1
+                title={title}
+                setTitle={setTitle}
+                stakeholders={stakeholders}
+                setStakeholders={setStakeholders}
+                scale={scale || ''}
+                setScale={setScale}
+                issuanceDate={issuanceDate}
+                setIssuanceDate={setIssuanceDate}
+                architecturalScale={architecturalScale || ''}
+                setArchitecturalScale={setArchitecturalScale}
+                errors={errors}
               />
             </div>
+            <LightDivider />
+            <div
+              onClick={() => handleStepClick(2)}
+              onKeyDown={(e) => {
+                if (e.key === 'Enter' || e.key === ' ') {
+                  handleStepClick(2);
+                }
+              }}
+              tabIndex={0} // Ensure the element is focusable
+              ref={stepRefs[1]}
+              className={`header-section ${hasErrors(2) ? 'error' : ''} scroll-margin-top`}
+            >
+              <h3 className="header-text text-xl font-bold mb-2">
+                Description
+              </h3>
 
-            {toastMsg.isShown && (
-              <Toast
-                isShown={toastMsg.isShown}
-                message={toastMsg.message}
-                type={toastMsg.type}
-                onClose={hideToastMessage}
+              <Step2
+                description={description}
+                setDescription={setDescription}
+                language={language}
+                setLanguage={setLanguage}
+                docType={docType || ''}
+                setDocType={setDocType}
+                documentTypeOptions={documentTypeOptions}
+                errors={errors}
               />
-            )}
-          </form>
-        </div>
+            </div>
+            <LightDivider />
+            <div
+              onKeyDown={(e) => {
+                if (e.key === 'Enter' || e.key === ' ') {
+                  setShowFiles(!showFiles);
+                }
+              }}
+              tabIndex={0} // Ensure the element is focusable
+              ref={stepRefs[2]}
+              className={`header-section ${hasErrors(3) ? 'error' : ''} scroll-margin-top`}
+            >
+              <h3
+                className="header-text text-xl font-bold mb-2 cursor-pointer"
+                onClick={() => setShowFiles(!showFiles)}
+              >
+                Files
+                <span className="align-middle">
+                  <ToggleButton
+                    showContent={showFiles}
+                    onToggle={() => setShowFiles(!showFiles)}
+                  />
+                </span>
+              </h3>
+              {showFiles && (
+                <Step3
+                  files={files}
+                  setFiles={setFiles}
+                  existingFiles={existingFiles}
+                />
+              )}
+            </div>
+            <LightDivider />
+            <div
+              onKeyDown={(e) => {
+                if (e.key === 'Enter' || e.key === ' ') {
+                  setShowConnections(!showConnections);
+                }
+              }}
+              tabIndex={0} // Ensure the element is focusable
+              ref={stepRefs[3]}
+              className={`header-section ${hasErrors(4) ? 'error' : ''} scroll-margin-top`}
+            >
+              <h3
+                className="header-text text-xl font-bold mb-2 cursor-pointer"
+                onClick={() => setShowConnections(!showConnections)}
+              >
+                Connections
+                <span className="align-middle">
+                  <ToggleButton
+                    showContent={showConnections}
+                    onToggle={() => setShowConnections(!showConnections)}
+                  />
+                </span>
+              </h3>
+              {showConnections && (
+                <Step4
+                  connections={connections}
+                  handleDeleteConnection={handleDeleteConnection}
+                  setConnectionModalOpen={setConnectionModalOpen}
+                  allDocuments={documents}
+                />
+              )}
+            </div>
+            <LightDivider />
+            <div
+              onKeyDown={(e) => {
+                if (e.key === 'Enter' || e.key === ' ') {
+                  setShowGeoreferencing(!showGeoreferencing);
+                  setConnectToMap(!connectToMap);
+                }
+              }}
+              tabIndex={0} // Ensure the element is focusable
+              ref={stepRefs[4]}
+              className={`header-section ${hasErrors(5) ? 'error' : ''} scroll-margin-top`}
+            >
+              <h3
+                className="header-text text-xl font-bold mb-2 cursor-pointer"
+                onClick={() => {
+                  setShowGeoreferencing(!showGeoreferencing);
+                  setConnectToMap(!connectToMap);
+                }}
+              >
+                Georeferencing
+                <span className="align-middle">
+                  <ToggleButton
+                    showContent={showGeoreferencing}
+                    onToggle={() => {
+                      setShowGeoreferencing(!showGeoreferencing);
+                      setConnectToMap(!connectToMap);
+                    }}
+                  />
+                </span>
+              </h3>
+              {showGeoreferencing && (
+                <Step5
+                  coordinates={coordinates}
+                  selectedCoordIdProp={selectedCoordId || ''}
+                  selectedCoordId={selectedCoordId || ''}
+                  setSelectedCoordId={setSelectedCoordId}
+                  setCoordNamePopupOpen={setCoordNamePopupOpen}
+                  position={position}
+                  setPosition={setPosition}
+                  coordNamePopupOpen={coordNamePopupOpen}
+                  coordName={coordName}
+                  setCoordName={setCoordName}
+                  MapClickHandler={MapClickHandler}
+                  errors={errors}
+                />
+              )}
+            </div>
+          </div>
+          <div className="flex justify-end mt-4">
+            <ButtonRounded
+              variant="filled"
+              text="Save"
+              className="bg-black text-white text-base pt-2 pb-2 pl-4 pr-4"
+              onClick={handleSubmit}
+            />
+          </div>
+
+          {toastMsg.isShown && (
+            <Toast
+              isShown={toastMsg.isShown}
+              message={toastMsg.message}
+              type={toastMsg.type}
+              onClose={hideToastMessage}
+            />
+          )}
+        </form>
+      </div>
 
       {showSummary && (
         <Modal
