@@ -44,7 +44,6 @@ interface DocumentFormProps {
   showCoordNamePopup?: boolean;
   documents: IDocument[];
   setDocuments: (documents: IDocument[]) => void;
-  modalOpen: boolean;
   setModalOpen: (open: boolean) => void;
   selectedDocument?: IDocument;
 }
@@ -58,7 +57,6 @@ const DocumentForm = ({
   setDocuments,
   showCoordNamePopup = false,
   selectedDocument,
-  modalOpen,
   setModalOpen,
 }: DocumentFormProps) => {
   const [currentStep, setCurrentStep] = useState(1);
@@ -223,7 +221,6 @@ const DocumentForm = ({
 
   const validateStep = () => {
     const newErrors: { [key: string]: string } = {};
-    console.log(!/^1:\d+$/.test(architecturalScale ?? ''))
     if (title.trim() === '') newErrors.title = 'Title is required';
     if (stakeholders.length === 0)
       newErrors.stakeholders = 'Stakeholders are required';
@@ -327,7 +324,7 @@ const DocumentForm = ({
       language,
       summary: description,
       date: issuanceDate,
-      coordinates: (coordId && coordId != "") ? coordId : undefined,
+      coordinates: (coordId) ? coordId : undefined,
       connections: connections.map((conn) => ({
         document: conn.relatedDocument,
         type: conn.type,
@@ -416,11 +413,6 @@ const DocumentForm = ({
 
   return (
     <>
-      <Modal
-        isOpen={modalOpen}
-        onRequestClose={() => setModalOpen(false)}
-        style={connectionModalStyles}
-      >
         <div className="relative">
           <ModalHeader
             currentStep={currentStep}
@@ -604,9 +596,17 @@ const DocumentForm = ({
                 onClick={handleSubmit}
               />
             </div>
+
+            {toastMsg.isShown && (
+              <Toast
+                isShown={toastMsg.isShown}
+                message={toastMsg.message}
+                type={toastMsg.type}
+                onClose={hideToastMessage}
+              />
+            )}
           </form>
         </div>
-      </Modal>
 
       {showSummary && (
         <Modal
@@ -646,15 +646,6 @@ const DocumentForm = ({
           />
         </div>
       </Modal>
-
-      {toastMsg.isShown && (
-        <Toast
-          isShown={toastMsg.isShown}
-          message={toastMsg.message}
-          type={toastMsg.type}
-          onClose={hideToastMessage}
-        />
-      )}
     </>
   );
 };

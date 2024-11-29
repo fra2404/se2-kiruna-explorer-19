@@ -48,7 +48,7 @@ const MapSection: React.FC<MapSectionProps> = ({
             label="Select an area or point that already exists"
             type="select"
             options={[
-              {value: "", label: "All Municipality"},
+              {value: 'all_municipality', label: 'All Municipality'},
               ...Object.entries(coordinates).map(
                 ([areaId, info]: [string, any]) => {
                   return { value: areaId, label: info['name'] };
@@ -58,7 +58,7 @@ const MapSection: React.FC<MapSectionProps> = ({
             defaultValue={selectedCoordIdProp}
             value={selectedCoordId}
             onChange={(v: any) => {
-              setSelectedCoordId(v.target.value);
+              setSelectedCoordId(v.target.value != 'all_municipality' ? v.target.value : undefined);
               setCoordNamePopupOpen(false);
               if (
                 selectedCoordId &&
