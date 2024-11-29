@@ -210,6 +210,11 @@ export const searchDocuments = async (
         scale: { $regex: filters.scale, $options: 'i' },
       });
     }
+    if (filters.architecturalScale){
+      filterConditions.push({ 
+        architecturalScale: { $regex: filters.architecturalScale, $options: 'i' },
+      })
+    }
     if (filters.type) {
       filterConditions.push({ type: filters.type });
     }
@@ -383,7 +388,7 @@ if (updateData.scale && updateData.scale !== 'ARCHITECTURAL' && updatedDocument.
     id: updatedDocument.id,
     ...documentObject,
     coordinates,
-    media: media || null, //Added By Mina
+    media: media || null, 
   };
 
   return document;

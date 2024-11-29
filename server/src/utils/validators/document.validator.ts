@@ -218,6 +218,16 @@ export const validateSearchDocument = [
  .withMessage('Scale must be a string')
  .isIn(Object.values(ScaleTypeEnum))
  .withMessage('Scale is invalid'),
+ body('architecturalScale')
+ .optional()
+ .isString()
+ .withMessage('Architectural Scale must be a string')
+ .custom((value) => {
+  if (!/^1:\d+$/.test(value)) {
+    throw new Error('Architectural Scale must be in the format 1:number');
+  }
+  return true;
+ })
 ]
 
 
