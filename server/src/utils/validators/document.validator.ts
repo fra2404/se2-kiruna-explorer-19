@@ -18,7 +18,7 @@ export const validateAddDocument = [
     .custom((stakeholders: string[]) => {
       const validStakeholders = [
         'LKAB',
-        'Municipalty',
+        'Municipality',
         'Regional Authority',
         'Architecture Firms',
         'Citizens',
@@ -163,7 +163,7 @@ export const validateUpdateDocument = [
     .custom((stakeholders: string[]) => {
       const validStakeholders = [
         'LKAB',
-        'Municipalty',
+        'Municipality',
         'Regional Authority',
         'Architecture Firms',
         'Citizens',

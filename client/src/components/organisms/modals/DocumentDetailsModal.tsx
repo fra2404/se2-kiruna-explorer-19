@@ -148,7 +148,6 @@ const DocumentDetailsModal: React.FC<DocumentDetailsModalProps> = ({
           setCoordinates={setCoordinates}
           documents={allDocuments}
           setDocuments={setDocuments}
-          modalOpen={modalOpen}
           setModalOpen={setModalOpen}
           selectedDocument={document}
         />

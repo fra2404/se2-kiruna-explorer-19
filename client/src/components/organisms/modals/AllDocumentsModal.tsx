@@ -6,11 +6,19 @@ import Filters from '../../molecules/Filters';
 import API from '../../../API';
 
 interface AllDocumentsModalProps {
-    setShowAllDocuments: (showAllDocuments: boolean) => void;
+  setShowAllDocuments: (showAllDocuments: boolean) => void;
+  coordinates: any;
+  setCoordinates: (coordinates: any) => void;
+  allDocuments: IDocument[];
+  setAllDocuments: (documents: IDocument[]) => void;
 }
 
 const AllDocumentsModal: React.FC<AllDocumentsModalProps> = ({
     setShowAllDocuments,
+    coordinates,
+    setCoordinates,
+    allDocuments,
+    setAllDocuments
 }) => {
 
     const [filters, setFilters] = useState({
@@ -55,7 +63,14 @@ const AllDocumentsModal: React.FC<AllDocumentsModalProps> = ({
                 {
                     documents.length === 0 ? <h1 className='text-sm text-gray-400'>No documents</h1> :
                     documents.map((doc) => (
-                      <DocumentItem key={doc.id} document={doc} />
+                      <DocumentItem 
+                        key={doc.id}
+                        document={doc} 
+                        coordinates={coordinates}
+                        setCoordinates={setCoordinates}
+                        allDocuments={allDocuments}
+                        setDocuments={setAllDocuments}
+                      />
                     ))
                 }
             </div>
