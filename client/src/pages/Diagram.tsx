@@ -4,7 +4,6 @@ import Graph from "react-graph-vis";
 import './Diagram.css';
 import { useState, useEffect, useRef } from "react";
 import API from "../API";
-import { DocumentIcon } from '../components/molecules/documentsItems/DocumentIcon';
 import ErrorImage from '../assets/icons/error.png';
 import AgreementIcon from "../assets/icons/agreement-icon.svg";
 import ConflictIcon from '../assets/icons/conflict-icon.svg';
@@ -14,11 +13,8 @@ import InformativeDocIcon from '../assets/icons/informative-doc-icon.svg';
 import MaterialEffectsIcon from '../assets/icons/material-effects-icon.svg';
 import PrescriptiveDocIcon from '../assets/icons/prescriptive-doc-icon.svg';
 import TechnicalDocIcon from '../assets/icons/technical-doc-icon.svg';
+import "vis-network/styles/vis-network.css";
 
-
-
-let FIT_X_VIEW = 500;
-let FIT_Y_VIEW = 500;
 
 const LABEL_FONT = { size: 25, color: "#000000" };
 const options = {
@@ -36,9 +32,14 @@ const options = {
         dragNodes: false, // Disable dragging of nodes
         dragView: true, // Enable dragging of the view
         zoomView: true, // Enable zooming of the view
+        // Enable navigation buttons
+        navigationButtons: true,
     },
 
 };
+
+const graphBEInfo = await API.getGraphInfo();
+console.log("Graph info: ", graphBEInfo);
 
 const randomColor = () => {
     const red = Math.floor(Math.random() * 256).toString(16).padStart(2, '0');
@@ -66,6 +67,10 @@ const Diagram = () => {
         }
     });
 
+    const label_year = [];
+    const minYear = graphBEInfo.minYear;
+    const maxYear = graphBEInfo.maxYear;
+
 
     useEffect(() => {
         const fetchDocuments = async () => {
@@ -76,12 +81,10 @@ const Diagram = () => {
                 console.error('Error fetching documents:', error);
             }
         };
-
         fetchDocuments();
     }, []);
 
     useEffect(() => {
-
         const connections = [] as any[];
 
         // Here I need to create the nodes with the data retrieved from the API.
@@ -159,15 +162,6 @@ const Diagram = () => {
 
             console.log("The image of the node" + doc.title + " is : ", doc.image);
 
-            // !! Unfortunatly the DocumentIcon component is not working properly, so I need to use the switch case above.
-            // doc.image = (
-            //     <DocumentIcon
-            //         type={doc.type}
-            //         stakeholders={Array.isArray(doc.stakeholders) ? doc.stakeholders : []}
-            //     />
-            // )
-
-
             // Check the connections
             if (doc.connections && doc.connections.length > 0) {
                 doc.connections.forEach((connection: any) => {
@@ -182,17 +176,6 @@ const Diagram = () => {
                     });
                 });
             }
-
-
-
-
-
-
-
-
-
-
-
         });
 
         const nodes_documents = documents
@@ -255,22 +238,20 @@ const Diagram = () => {
         { id: "label_text", label: "Text", color: "#e0df41", scale: "TEXT" },
         { id: "label_concept", label: "Concept", color: "#e0df41", scale: "CONCEPT" },
         { id: "label_architectural", label: "Architectural style", color: "#e0df41", scale: "ARCHITECTURAL" },
-        // { id: "label_architectural2", label: "1:10,000", color: "#e0df41", scale: "1:10,000" },
-        // { id: "label_architectural3", label: "1:5,000", color: "#e0df41", scale: "1:5,000" },
         { id: "label_blueprint", label: "Blueprint/effects", color: "#e0df41", scale: "BLUEPRINT/MATERIAL EFFECTS" },
     ].map(node => ({
         ...node,
-        x: (-0.3) * 1000, // Place the label on the left side of the graph
+        //x: (6) * 1000, // Place the label on the left side of the graph
+        x: (minYear - 2000 - 1) * 1000, // Place the label on the left side of the graph, it depends on the minYear
         y: scaleMapping[node.scale as keyof typeof scaleMapping], // Mapping the scale
         shape: "box",
         font: LABEL_FONT
     }
     ));
 
-    const label_year = [];
-    const minYear = 2000;
-    const maxYear = 2040;
 
+
+    // const endYear = maxYear + 2; // Add 2 years to the max year to make space for the label
     for (let year = minYear; year <= maxYear; year++) {
         label_year.push({
             id: `label_${year}`,
@@ -282,6 +263,7 @@ const Diagram = () => {
             shape: "box",
             font: LABEL_FONT
         });
+        console.log(`Year ${year} has x = ${label_year.find(node => node.year === year)?.x}`);
     }
 
 
@@ -346,8 +328,6 @@ const Diagram = () => {
                         network.on("dragEnd", function () {
                             lastPosition = network.getViewPosition();
                         });
-
-
                     }}
                 />
             )}
