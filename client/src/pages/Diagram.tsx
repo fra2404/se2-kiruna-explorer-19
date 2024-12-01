@@ -235,9 +235,10 @@ const Diagram = () => {
 
 
     useEffect(() => {
-        const network = networkRef.current;
-        if (network) {
+        const network = networkRef.current; // Get the network object from the ref
+        if (network) {  // if the network is available then...
             network.fit({
+                // Filter only the node that are in the current year. In this way the graph will be centered on the current year at launch.
                 nodes: state.graph.nodes.filter((node: any) => {
                     const currentYear = new Date().getFullYear();
                     console.log(`Node year: ${node.year}, Current year: ${currentYear}`);
@@ -245,18 +246,21 @@ const Diagram = () => {
                 }).map((node: any) => node.id),
                 animation: false
             });
+            network.moveTo({ scale: 0.5 })  // Set the initial zoom level
         }
     }, [state.graph.nodes]);
 
 
 
+
+
     return (
-        <>
+        <div style={{ height: "100vh" }}>
             {state.graph && (
                 <Graph
                     graph={state.graph}
                     options={options}
-                    style={{ height: "900px" }}
+                    style={{ height: "100%" }}
                     getNetwork={network => {    // Call the methods inside the Graph component
                         // network.moveTo({ position: { x: FIT_X_VIEW, y: FIT_Y_VIEW }, scale: 0.5 });
                         networkRef.current = network;
@@ -264,7 +268,7 @@ const Diagram = () => {
 
                 />
             )}
-        </>
+        </div>
     );
 
 };
