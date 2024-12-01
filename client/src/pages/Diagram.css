@@ -1,0 +1,5 @@
+.grid-background {
+    background-image: linear-gradient(to right, #e0e0e0 1px, transparent 1px),
+        linear-gradient(to bottom, #e0e0e0 1px, transparent 1px);
+    background-size: 20px 20px;
+}

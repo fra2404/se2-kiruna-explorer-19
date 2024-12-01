@@ -255,7 +255,7 @@ const Diagram = () => {
 
 
     return (
-        <div style={{ height: "100vh" }}>
+        <div style={{ height: "100vh" }} className="grid-background">
             {state.graph && (
                 <Graph
                     graph={state.graph}
