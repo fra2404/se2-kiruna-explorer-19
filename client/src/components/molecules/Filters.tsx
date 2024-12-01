@@ -1,5 +1,9 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import InputComponent from '../atoms/input/input';
+import { stakeholderOptions } from '../../shared/stakeholder.options.const';
+import { documentTypeOptions } from '../../shared/type.options.const';
+import { years, months, getDays } from '../../utils/date';
+import API from '../../API';
 
 interface FiltersProps {
     filters: {
@@ -22,43 +26,17 @@ interface FiltersProps {
 }
 
 const Filters: React.FC<FiltersProps> = ({ filters, setFilters }) => {
-    const documentTypeOptions = [
-        {
-          value: 'AGREEMENT',
-          label: 'Agreement',
-        },
-        {
-          value: 'CONFLICT',
-          label: 'Conflict',
-        },
-        {
-          value: 'CONSULTATION',
-          label: 'Consultation',
-        },
-        {
-          value: 'DESIGN_DOC',
-          label: 'Design document',
-        },
-        {
-          value: 'INFORMATIVE_DOC',
-          label: 'Informative document',
-        },
-        {
-          value: 'MATERIAL_EFFECTS',
-          label: 'Material effects',
-        },
-        {
-          value: 'PRESCRIPTIVE_DOC',
-          label: 'Prescriptive document',
-        },
-        {
-          value: 'TECHNICAL_DOC',
-          label: 'Technical document',
-        },
-    ];
-    
+
+    const [areasOptions, setAreasOptions] = useState([]);
+
+    useEffect(() => {
+        API.getAreas().then((areas) => {
+            setAreasOptions(areas.map((area : any) => ({ value: area.id, label: area.name })));
+        });
+    }, []);
+
     return (
-        <div className="grid grid-cols-3 grid-rows-2 gap-x-3">
+        <div className="grid grid-cols-3 grid-rows-auto gap-x-3">
             {/* Filter by Type */}
             <InputComponent label="Type"
                 type="select"
@@ -74,7 +52,8 @@ const Filters: React.FC<FiltersProps> = ({ filters, setFilters }) => {
             
             {/* Filter by Stakeholders */}
             <InputComponent label="Stakeholders" 
-                type="select"
+                type="multi-select"
+                options={stakeholderOptions}
                 required={false} 
                 placeholder="Enter stakeholders..."
                 value={filters.stakeholders}
@@ -95,6 +74,8 @@ const Filters: React.FC<FiltersProps> = ({ filters, setFilters }) => {
                         setFilters({...filters, area: e.target.value});
                     }
                 }}
+                options={areasOptions}
+                placeholder="Area"
             />
 
             {/* Filter by Date */}
@@ -110,6 +91,8 @@ const Filters: React.FC<FiltersProps> = ({ filters, setFilters }) => {
                             setFilters({...filters, year: e.target.value});
                         }
                     }}
+                    options={years.map((year) => ({ value: year, label: year }))}
+                    placeholder="Year"
                 />
 
                 {/* Month */}
@@ -122,11 +105,13 @@ const Filters: React.FC<FiltersProps> = ({ filters, setFilters }) => {
                             setFilters({...filters, month: e.target.value});
                         }
                     }}
+                    options={months.map((month) => ({ value: month, label: month }))}
+                    placeholder="Month"
                 />
 
                 {/* Day */}
                 <InputComponent label="Day"
-                    type="text"
+                    type="select"
                     required={false}
                     placeholder='Enter day...'
                     value={filters.day}
@@ -135,6 +120,7 @@ const Filters: React.FC<FiltersProps> = ({ filters, setFilters }) => {
                             setFilters({...filters, day: e.target.value});
                         }
                     }}
+                    options={getDays(filters.year, filters.month).map((day) => ({ value: day, label: day }))}
                 />
             </div>
         </div>

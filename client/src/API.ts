@@ -184,6 +184,12 @@ async function getCoordinates() {
     .then((response) => response.json());
 }
 
+async function getAreas() {
+  const coordinates = await getCoordinates();
+  const areas = coordinates.filter((coord: ICoordinate) => coord.type === 'Polygon');
+  return areas;
+}
+
 async function createCoordinate(coord: ICoordinate): Promise<{
   success: boolean;
   coordinate?: { message: string; coordinate: ICoordinate };
@@ -276,9 +282,11 @@ async function searchDocuments(
   searchQuery: string,
   filters: {
     type: string;
-    scale: string;
     stakeholders: string;
-    language: string;
+    area: string;
+    year: string;
+    month: string;
+    day: string;
   },
 ): Promise<IDocument[]> {
   const searchURL =
@@ -288,9 +296,6 @@ async function searchDocuments(
           .split(' ')
           .map((word) => `"${encodeURIComponent(word)}"`)
           .join(',')}]`;
-
-  console.log('Search URL:', searchURL);
-  console.log('Filters sent in body:', filters);
 
   const response = await fetch(searchURL, {
     method: 'POST',
@@ -340,7 +345,8 @@ const API = {
   deleteCoordinate,
   searchDocuments,
   addArea,
-  removeArea
+  removeArea,
+  getAreas,
 };
 
 export {

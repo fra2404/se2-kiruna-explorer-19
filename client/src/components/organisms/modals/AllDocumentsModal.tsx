@@ -59,7 +59,7 @@ const AllDocumentsModal: React.FC<AllDocumentsModalProps> = ({
             <Searchbar searchQuery={searchQuery} setSearchQuery={setSearchQuery}
             handleSearch={handleSearch} />
             
-            <div className=''>
+            <div>
                 {
                     documents.length === 0 ? <h1 className='text-sm text-gray-400'>No documents</h1> :
                     documents.map((doc) => (
