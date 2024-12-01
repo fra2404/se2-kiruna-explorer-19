@@ -35,6 +35,11 @@ const storage = multer.diskStorage({
         const payload = jwt.verify(token, SECRET_KEY) as JwtPayload & {
             folder: string;
         };
+
+        if (!payload.folder || /[<>:"|?*]/.test(payload.folder)) {
+            throw new Error('Nom de dossier invalide');
+        }
+        
         const folderPath = path.join(UPLOAD_DIR, payload.folder);
         fs.mkdir(folderPath, { recursive: true })
             .then(() => cb(null, folderPath))
