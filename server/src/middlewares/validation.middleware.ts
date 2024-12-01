@@ -8,6 +8,7 @@ export const handleValidationErrors = (
 ): void => {
   const errors = validationResult(req);
   if (!errors.isEmpty()) {
+    // console.log('Validation errors:', errors.array());
     res.status(400).json({ errors: errors.array() });
   } else {
     next();

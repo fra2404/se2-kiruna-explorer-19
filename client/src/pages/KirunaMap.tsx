@@ -19,8 +19,10 @@ import { ManageCoordsModal } from '../components/organisms/modals/ManageCoordsMo
 import { renderToString } from 'react-dom/server';
 import { UserRoleEnum } from '../utils/interfaces/user.interface';
 import CustomMap from '../components/molecules/CustomMap';
-import 'leaflet/dist/leaflet.css';
 
+import 'leaflet/dist/leaflet.css';
+import 'leaflet-draw/dist/leaflet.draw.css';
+import 'leaflet-draw';
 
 export const kirunaLatLngCoords: LatLngExpression = [67.85572, 20.22513];
 
@@ -40,6 +42,7 @@ export const modalStyles = {
 };
 
 export default function KirunaMap() {
+
   const { isLoggedIn, user } = useAuth();
   const { setFeedbackFromError } = useContext(FeedbackContext);
   const { swedishFlagBlue, swedishFlagYellow, mapType } =
@@ -114,22 +117,10 @@ export default function KirunaMap() {
           coordinates={coordinates}
           setCoordinates={setCoordinates}
           documents={documents}
-          setDocuments={setDocuments} />
+          setDocuments={setDocuments} 
+        />
 
-        <MapContainer
-          style={{ width: '100%', height: '100%', zIndex: 0 }}
-          center={kirunaLatLngCoords}
-          zoom={13}
-          doubleClickZoom={false}
-          scrollWheelZoom={true}
-          minZoom={9}
-          zoomControl={false}
-          touchZoom={true}
-          maxBounds={[
-            [67.8, 19.9],
-            [67.9, 20.5],
-          ]}
-          maxBoundsViscosity={0.9}>
+        <CustomMap>
           {mapType === 'osm' ? (
             <TileLayer
               attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
@@ -137,97 +128,101 @@ export default function KirunaMap() {
             />
           ) : (
             <TileLayer
-              attribution='ArcGIS'
+              attribution="ArcGIS"
               url="https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}"
             />
           )}
-
-        <MarkerClusterGroup
-          iconCreateFunction={(cluster: any) => {
-            return new DivIcon({
-              iconSize: [45, 45],
-              className: 'pointIcon',
-              html: renderToString(
-                <div
-                  style={{
-                    display: 'flex',
-                    justifyContent: 'center',
-                    alignItems: 'center',
-                    width: '40px',
-                    height: '40px',
-                    backgroundColor: swedishFlagYellow,
-                    color: swedishFlagBlue,
-                    borderRadius: '50%',
-                    fontSize: '20px',
-                    fontWeight: 'bold',
-                  }}
-                >
-                  {cluster.getChildCount()}
-                </div>,
-              ),
-            });
-          }}
-        >
-          {Object.entries(coordinates).map(([coordId, coordInfo]: any) => {
-            const filteredDocuments = documents.filter(
-              (d) => d.coordinates?._id == coordId,
-            );
-
-            if (coordInfo.type == 'Point') {
-              if (filteredDocuments.length > 0) {
-                return (
-                  <Point
-                    key={coordId}
-                    id={coordId}
-                    pointCoordinates={coordInfo.coordinates}
-                    name={coordInfo.name}
-                    coordinates={coordinates}
-                    setCoordinates={setCoordinates}
-                    pointDocuments={filteredDocuments}
-                    allDocuments={documents}
-                    setDocuments={setDocuments}
-                  />
-                );
+  
+          <MarkerClusterGroup
+            iconCreateFunction={(cluster: any) => {
+              return new DivIcon({
+                iconSize: [45, 45],
+                className: 'pointIcon',
+                html: renderToString(
+                  <div
+                    style={{
+                      display: 'flex',
+                      justifyContent: 'center',
+                      alignItems: 'center',
+                      width: '40px',
+                      height: '40px',
+                      backgroundColor: swedishFlagYellow,
+                      color: swedishFlagBlue,
+                      borderRadius: '50%',
+                      fontSize: '20px',
+                      fontWeight: 'bold',
+                    }}
+                  >
+                    {cluster.getChildCount()}
+                  </div>,
+                ),
+              });
+            }}
+          >
+            {Object.entries(coordinates).map(([coordId, coordInfo]: any) => {
+              const filteredDocuments = documents.filter(
+                (d) => d.coordinates?._id == coordId,
+              );
+  
+              if (coordInfo.type == 'Point') {
+                if (filteredDocuments.length > 0) {
+                  return (
+                    <Point
+                      key={coordId}
+                      id={coordId}
+                      pointCoordinates={coordInfo.coordinates}
+                      name={coordInfo.name}
+                      coordinates={coordinates}
+                      setCoordinates={setCoordinates}
+                      pointDocuments={filteredDocuments}
+                      allDocuments={documents}
+                      setDocuments={setDocuments}
+                    />
+                  );
+                }
+              } else {
+                if (filteredDocuments.length > 0) {
+                  return (
+                    <Area
+                      key={coordId}
+                      id={coordId}
+                      areaCoordinates={coordInfo.coordinates}
+                      name={coordInfo.name}
+                      coordinates={coordinates}
+                      setCoordinates={setCoordinates}
+                      areaDocuments={filteredDocuments}
+                      allDocuments={documents}
+                      setDocuments={setDocuments}
+                    />
+                  );
+                }
               }
-            } else {
-              if (filteredDocuments.length > 0) {
-                return (
-                  <Area
-                    key={coordId}
-                    id={coordId}
-                    areaCoordinates={coordInfo.coordinates}
-                    name={coordInfo.name}
-                    coordinates={coordinates}
-                    setCoordinates={setCoordinates}
-                    areaDocuments={filteredDocuments}
-                    allDocuments={documents}
-                    setDocuments={setDocuments}
-                  />
-                );
-              }
-            }
-          })}
-        </MarkerClusterGroup>
+            })}
+          </MarkerClusterGroup>
+  
+          {isLoggedIn && user && user.role === UserRoleEnum.Uplanner && (
+            <ClickMarker
+              coordinates={coordinates}
+              setCoordinates={setCoordinates}
+              documents={documents}
+              setDocuments={setDocuments}
+            />
+          )}
 
-        {isLoggedIn && user && user.role === UserRoleEnum.Uplanner && (
-          <ClickMarker
+          { isLoggedIn && user && user.role === UserRoleEnum.Uplanner &&
+            <DrawingPanel />
+          }
+  
+          <CustomZoomControl />
+  
+          <ManageCoordsModal
+            manageCoordsModalOpen={manageCoordsModalOpen}
+            setManageCoordsModalOpen={setManageCoordsModalOpen}
             coordinates={coordinates}
             setCoordinates={setCoordinates}
             documents={documents}
-            setDocuments={setDocuments}
           />
-        )}
-
-        <CustomZoomControl />
-
-        <ManageCoordsModal
-          manageCoordsModalOpen={manageCoordsModalOpen}
-          setManageCoordsModalOpen={setManageCoordsModalOpen}
-          coordinates={coordinates}
-          setCoordinates={setCoordinates}
-          documents={documents}
-        />
-      </CustomMap>
-    </div>
-  );
-}
+        </CustomMap>
+      </div>
+    );
+  }

@@ -11,7 +11,7 @@ const coordinateSchema = new Schema<ICoordinate>(
     type: {
       type: String,
       required: true,
-      enum: ['Point', 'Polygon'],
+      enum: ['Point', 'Area'],
     },
     coordinates: {
       type: Schema.Types.Mixed,

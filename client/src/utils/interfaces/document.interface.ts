@@ -31,7 +31,7 @@ interface IConnection {
 export interface ICoordinate {
   id?: string;
   _id?: string;
-  type: 'Point' | 'Area';
+  type: 'Point' | 'Polygon';
   coordinates: number[] | number[][];
   name: string;
 }

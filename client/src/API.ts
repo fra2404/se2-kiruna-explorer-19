@@ -306,12 +306,41 @@ async function searchDocuments(
   return documents;
 }
 
+async function addArea(coordinateData: ICoordinate) {
+  const response = await fetch(`${SERVER_URL}/coordinates/create`, {
+    method: 'POST',
+    credentials: 'include',
+    headers: {
+      'Content-type': 'application/json',
+    },
+    body: JSON.stringify(coordinateData),
+  });
+
+  // console.log(response);
+
+  if (response.status === 201) return { message: "Area successfully added", error: false }
+  else if (response.status === 400) return { message: "Validation errors", error: true }
+  return { message: "Internal Server Error", error: true }
+}
+
+async function removeArea(areaId: any) {
+  const response = await fetch(`${SERVER_URL}/coordinates/delete/${areaId}`, {
+    method: 'DELETE',
+    credentials: 'include'
+  });
+
+  if (response.status === 200) return { message: "Area successfully", error: false }
+  return { message: "Error while deleting", error: true }
+}
+
 const API = {
   getDocuments,
   getCoordinates,
   addDocument,
   deleteCoordinate,
   searchDocuments,
+  addArea,
+  removeArea
 };
 
 export {
