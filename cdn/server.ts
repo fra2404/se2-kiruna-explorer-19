@@ -36,10 +36,6 @@ const storage = multer.diskStorage({
             folder: string;
         };
 
-        if (!payload.folder || /[<>:"|?*]/.test(payload.folder)) {
-            throw new Error('Nom de dossier invalide');
-        }
-        
         const folderPath = path.join(UPLOAD_DIR, payload.folder);
         fs.mkdir(folderPath, { recursive: true })
             .then(() => cb(null, folderPath))
@@ -54,7 +50,10 @@ const storage = multer.diskStorage({
         cb(null, `${payload.id}${extension}`); // Usa l'ID passato come nome del file
     },
 });
-const upload = multer({ storage });
+const upload = multer({ 
+    storage,
+    limits: { fileSize: 5 * 1024 * 1024 },
+});
 
 interface JwtPayload {
     id: string;
