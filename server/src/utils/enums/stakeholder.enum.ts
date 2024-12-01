@@ -1,6 +1,6 @@
 export enum StakeholderEnum {
     LKAB = 'LKAB',
-    Municipalty = 'Municipalty',
+    Municipality = 'Municipality',
     RegionalAuthority = 'Regional Authority',
     ArchitectureFirms = 'Architecture Firms',
     Citizens = 'Citizens',
