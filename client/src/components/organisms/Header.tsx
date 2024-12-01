@@ -51,44 +51,46 @@ export const Header: React.FC<HeaderProps> = ({
           pointerEvents: "none"
         }}>
 
-        <div className="flex items-center justify-between" style={{background: "transparent"}}>
-          <div className='flex items-center'>
-            <ButtonRounded variant="filled" className="bg-black p-2"
-              img="./src/assets/logo.png" text={dateTime}
-              style={{
-                width: '220px',
-                minWidth: '220px',
-                maxWidth: '220px',
-                display: 'flex',
-                justifyContent: 'center',
-                alignItems: 'center',
-                pointerEvents: "auto"
-              }}/> 
-            <h1 className={mapType == "osm" ? 'font-bold text-black ml-2 text-2xl' : "font-bold text-white ml-2 text-2xl"}>Kiruna eXplorer</h1>
-          </div>
-          
-          <div className='flex items-center gap-4'>
-            {/* Search Bar and Icon */}
-            <div className='ml-auto' style={{pointerEvents: "auto"}}>
-              {!isLoggedIn && !user ? (
-                <ButtonRounded variant="filled" text="Login"
-                  onClick={() => {
-                    setLoginModalOpen(true);
-                  }} className="bg-black px-6"
-                />
-              ) : (
-                <div ref={dropdownRef}>
-                  <ButtonRounded
-                    onClick={() => setDropdownOpen(!dropdownOpen)}
-                    variant="filled"
-                    className="bg-black pr-4 pl-4 d-flex align-items-center"
-                    text={`Welcome, ${user?.name.charAt(0).toUpperCase()} ${dropdownOpen ? '▲' : '▼'}`}
-                  />
-                </div>
-              )}
-            </div>
-          </div> 
+      <div className="flex items-center justify-between" style={{background: "transparent"}}>
+        <div className='flex items-center'>
+          <ButtonRounded variant="filled" className="bg-black p-2"
+            img="./src/assets/logo.png" text={dateTime}
+            style={{
+              width: '220px',
+              minWidth: '220px',
+              maxWidth: '220px',
+              display: 'flex',
+              justifyContent: 'center',
+              alignItems: 'center',
+              pointerEvents: "auto"
+            }}/>
+          <h1 className={mapType == "osm" ? 'font-bold text-black ml-2 text-2xl' : "font-bold text-white ml-2 text-2xl"}>Kiruna eXplorer</h1>
         </div>
+        
+        <div className='flex items-center gap-4'>
+        
+          {/* Search Bar and Icon */}
+
+          <div className='ml-auto' style={{pointerEvents: "auto"}}>
+            {!isLoggedIn && !user ? (
+              <ButtonRounded variant="filled" text="Login"
+                onClick={() => {
+                  setLoginModalOpen(true);
+                }} className="bg-black pr-4 pl-4"
+              />
+            ) : (
+              <div ref={dropdownRef}>
+                <ButtonRounded
+                  onClick={() => setDropdownOpen(!dropdownOpen)}
+                  variant="filled"
+                  className="bg-black pr-4 pl-4 d-flex align-items-center"
+                  text={`Welcome, ${user?.name} ${dropdownOpen ? '▲' : '▼'}`}
+                />
+              </div>
+            )}
+          </div>
+        </div> 
+      </div>
 
         <LoginModal
           isOpen={loginModalOpen}

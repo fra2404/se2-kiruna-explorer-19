@@ -66,6 +66,7 @@ export const addingDocument = async (
           document: newDocument.id,
           type: connection.type,
         });
+
         await existingDocument.save();
       }
     }
@@ -276,6 +277,14 @@ export const updatingDocument = async (
   if (!updatedDocument) {
     throw new DocNotFoundError();
   }
+
+
+// If the new scale is not 'Architectural' and architecturalScale has a value, delete architecturalScale
+if (updateData.scale && updateData.scale !== 'ARCHITECTURAL' && updatedDocument.architecturalScale) {
+  updatedDocument.architecturalScale = "";
+  await updatedDocument.save(); 
+}
+
 
   if (updateData.coordinates) {
     const existingCoordinate = await Coordinate.findById(

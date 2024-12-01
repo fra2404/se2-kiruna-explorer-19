@@ -1,5 +1,4 @@
 import { useState, useEffect, useContext } from 'react';
-import { TileLayer } from 'react-leaflet';
 import { DivIcon, LatLng } from 'leaflet';
 import API from '../API';
 import FeedbackContext from '../context/FeedbackContext';
@@ -8,9 +7,7 @@ import MapStyleContext from '../context/MapStyleContext';
 import { useAuth } from '../context/AuthContext';
 import Overlay from '../components/organisms/Overlay/Overlay';
 import { Point } from '../components/organisms/coordsOverlay/Point';
-import { Area } from '../components/organisms/coordsOverlay/Area';
 import ClickMarker from '../components/organisms/coordsOverlay/ClickMarker';
-import CustomZoomControl from '../components/molecules/ZoomControl';
 import { Header } from '../components/organisms/Header';
 import DrawingPanel from '../components/molecules/DrawingPanel';
 import { IDocument } from '../utils/interfaces/document.interface';
@@ -23,8 +20,6 @@ import CustomMap from '../components/molecules/CustomMap';
 import 'leaflet/dist/leaflet.css';
 import 'leaflet-draw/dist/leaflet.draw.css';
 import 'leaflet-draw';
-
-export const kirunaLatLngCoords: LatLngExpression = [67.85572, 20.22513];
 
 export const modalStyles = {
   content: {
@@ -45,8 +40,7 @@ export default function KirunaMap() {
 
   const { isLoggedIn, user } = useAuth();
   const { setFeedbackFromError } = useContext(FeedbackContext);
-  const { swedishFlagBlue, swedishFlagYellow, mapType } =
-    useContext(MapStyleContext);
+  const { swedishFlagBlue, swedishFlagYellow } = useContext(MapStyleContext);
 
   const [documents, setDocuments] = useState<IDocument[]>([]);
   const [coordinates, setCoordinates] = useState({});
@@ -113,116 +107,87 @@ export default function KirunaMap() {
       <Header setManageCoordsModalOpen={setManageCoordsModalOpen} />
 
         <Overlay 
-          isLoggedIn={isLoggedIn && user && user.role === UserRoleEnum.Uplanner}
           coordinates={coordinates}
           setCoordinates={setCoordinates}
           documents={documents}
           setDocuments={setDocuments} 
         />
 
-        <CustomMap>
-          {mapType === 'osm' ? (
-            <TileLayer
-              attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-              url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
-            />
-          ) : (
-            <TileLayer
-              attribution="ArcGIS"
-              url="https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}"
-            />
-          )}
-  
-          <MarkerClusterGroup
-            iconCreateFunction={(cluster: any) => {
-              return new DivIcon({
-                iconSize: [45, 45],
-                className: 'pointIcon',
-                html: renderToString(
-                  <div
-                    style={{
-                      display: 'flex',
-                      justifyContent: 'center',
-                      alignItems: 'center',
-                      width: '40px',
-                      height: '40px',
-                      backgroundColor: swedishFlagYellow,
-                      color: swedishFlagBlue,
-                      borderRadius: '50%',
-                      fontSize: '20px',
-                      fontWeight: 'bold',
-                    }}
-                  >
-                    {cluster.getChildCount()}
-                  </div>,
-                ),
-              });
-            }}
-          >
-            {Object.entries(coordinates).map(([coordId, coordInfo]: any) => {
-              const filteredDocuments = documents.filter(
-                (d) => d.coordinates?._id == coordId,
+      <CustomMap>
+        <MarkerClusterGroup
+          iconCreateFunction={(cluster: any) => {
+            let nDocuments = 0;
+            cluster.getAllChildMarkers().forEach((m: any) => {
+              nDocuments += m.options.children[0].props.markerDocuments.length;
+            });
+            return new DivIcon({
+              iconSize: [45, 45],
+              className: 'pointIcon',
+              html: renderToString(
+                <div
+                  style={{
+                    display: 'flex',
+                    justifyContent: 'center',
+                    alignItems: 'center',
+                    width: '40px',
+                    height: '40px',
+                    backgroundColor: swedishFlagYellow,
+                    color: swedishFlagBlue,
+                    borderRadius: '50%',
+                    fontSize: '20px',
+                    fontWeight: 'bold',
+                  }}
+                >
+                  {nDocuments}
+                </div>,
+              ),
+            });
+          }}
+        >
+          {Object.entries(coordinates).map(([coordId, coordInfo]: any) => {
+            const filteredDocuments = documents.filter(
+              (d) => d.coordinates?._id == coordId,
+            );
+            if (filteredDocuments.length > 0) {
+              return (
+                <Point
+                  key={coordId}
+                  id={coordId}
+                  pointCoordinates={coordInfo.coordinates}
+                  name={coordInfo.name}
+                  type={coordInfo.type}
+                  coordinates={coordinates}
+                  setCoordinates={setCoordinates}
+                  pointDocuments={filteredDocuments}
+                  allDocuments={documents}
+                  setDocuments={setDocuments}
+                />
               );
-  
-              if (coordInfo.type == 'Point') {
-                if (filteredDocuments.length > 0) {
-                  return (
-                    <Point
-                      key={coordId}
-                      id={coordId}
-                      pointCoordinates={coordInfo.coordinates}
-                      name={coordInfo.name}
-                      coordinates={coordinates}
-                      setCoordinates={setCoordinates}
-                      pointDocuments={filteredDocuments}
-                      allDocuments={documents}
-                      setDocuments={setDocuments}
-                    />
-                  );
-                }
-              } else {
-                if (filteredDocuments.length > 0) {
-                  return (
-                    <Area
-                      key={coordId}
-                      id={coordId}
-                      areaCoordinates={coordInfo.coordinates}
-                      name={coordInfo.name}
-                      coordinates={coordinates}
-                      setCoordinates={setCoordinates}
-                      areaDocuments={filteredDocuments}
-                      allDocuments={documents}
-                      setDocuments={setDocuments}
-                    />
-                  );
-                }
-              }
-            })}
-          </MarkerClusterGroup>
-  
-          {isLoggedIn && user && user.role === UserRoleEnum.Uplanner && (
-            <ClickMarker
-              coordinates={coordinates}
-              setCoordinates={setCoordinates}
-              documents={documents}
-              setDocuments={setDocuments}
-            />
-          )}
+            }
+          })}
+        </MarkerClusterGroup>
 
-          { isLoggedIn && user && user.role === UserRoleEnum.Uplanner &&
-            <DrawingPanel />
-          }
-  
-          <CustomZoomControl />
-  
-          <ManageCoordsModal
-            manageCoordsModalOpen={manageCoordsModalOpen}
-            setManageCoordsModalOpen={setManageCoordsModalOpen}
+        {isLoggedIn && user && user.role === UserRoleEnum.Uplanner && (
+          <ClickMarker
             coordinates={coordinates}
             setCoordinates={setCoordinates}
             documents={documents}
+            setDocuments={setDocuments}
           />
-        </CustomMap>
-      </div>
-    );
-  }
+        )}
+
+        { isLoggedIn && user && user.role === UserRoleEnum.Uplanner &&
+          <DrawingPanel />
+        }
+
+        <ManageCoordsModal
+          manageCoordsModalOpen={manageCoordsModalOpen}
+          setManageCoordsModalOpen={setManageCoordsModalOpen}
+          coordinates={coordinates}
+          setCoordinates={setCoordinates}
+          documents={documents}
+        />
+      </CustomMap>
+    </div>
+  );
+}
