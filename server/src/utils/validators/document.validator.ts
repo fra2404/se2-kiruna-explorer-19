@@ -28,6 +28,8 @@ export const validateAddDocument = [
     .withMessage('Scale is required')
     .isString()
     .withMessage('Scale must be a string')
+    .isIn(Object.values(ScaleTypeEnum))
+    .withMessage('Scale is invalid')
     .custom((value, { req }) => validateScale(value, req.body.architecturalScale)),
   //**********************************/
 
@@ -136,7 +138,8 @@ export const validateUpdateDocument = [
   .isString()
   .withMessage('Scale must be a string')
   .isIn(Object.values(ScaleTypeEnum))
-  .withMessage('Scale is invalid'),
+  .withMessage('Scale is invalid')
+  .custom((value, { req }) => validateScale(value, req.body.architecturalScale)),
   body('type')
     .optional()
     .isIn([
@@ -241,9 +244,10 @@ const validateScale = (scale: ScaleTypeEnum, architecturalScale?: string) => {
       if (architecturalScale) {
         throw new Error('Architectural Scale must be empty when scale is a string');
       }
-    } else if (![ScaleTypeEnum.BlueprintMaterialEffects, ScaleTypeEnum.Text, ScaleTypeEnum.Concept].includes(scale)) {
-      throw new Error(`Invalid scale: ${scale}`);
-    }
+     } 
+    //else if (![ScaleTypeEnum.BlueprintMaterialEffects, ScaleTypeEnum.Text, ScaleTypeEnum.Concept].includes(scale)) {
+    //   throw new Error(`Invalid scale: ${scale}`);
+    // }
   }
   return true;
 };

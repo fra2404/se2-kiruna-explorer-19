@@ -200,11 +200,11 @@ export const searchDocuments = async (
     if (filters.stakeholders && 
         Array.isArray(filters.stakeholders) && 
         filters.stakeholders.length > 0) {  //conditions added by Mina
-      filterConditions.push({
-       // stakeholders: { $regex: filters.stakeholders, $options: 'i' },
-          stakeholders: {$in: filters.stakeholders},  //changed by Mina
-      });
-    }
+     filterConditions.push({
+    stakeholders: { $all: filters.stakeholders }, // Must contain all elements
+    $expr: { $eq: [{ $size: "$stakeholders" }, filters.stakeholders.length] }, // Length must match exactly
+  });
+}
     if (filters.scale) {
       filterConditions.push({
         scale: { $regex: filters.scale, $options: 'i' },
@@ -212,8 +212,7 @@ export const searchDocuments = async (
     }
     if (filters.architecturalScale){
       filterConditions.push({ 
-        architecturalScale: { $regex: filters.architecturalScale, $options: 'i' },
-      })
+        architecturalScale: filters.architecturalScale });
     }
     if (filters.type) {
       filterConditions.push({ type: filters.type });
