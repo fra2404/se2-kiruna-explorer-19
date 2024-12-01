@@ -1,5 +1,6 @@
 import "../../src/global.js";
 import Graph from "react-graph-vis";
+import './Diagram.css';
 import { useState, useEffect, useRef } from "react";
 import API from "../API";
 import { DocumentIcon } from '../components/molecules/documentsItems/DocumentIcon';
