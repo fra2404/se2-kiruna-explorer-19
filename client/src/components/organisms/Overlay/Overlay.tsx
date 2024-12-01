@@ -140,7 +140,13 @@ const Overlay: React.FC<OverlayProps> = ({
         isOpen={showAllDocuments}
         onRequestClose={() => setShowAllDocuments(false)}
       >
-        <AllDocumentsModal setShowAllDocuments={setShowAllDocuments} />
+        <AllDocumentsModal 
+          setShowAllDocuments={setShowAllDocuments} 
+          coordinates={coordinates}
+          setCoordinates={setCoordinates}
+          allDocuments={documents}
+          setAllDocuments={setDocuments}
+        />
       </Modal>
 
       <Modal
