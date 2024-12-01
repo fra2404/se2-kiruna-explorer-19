@@ -58,6 +58,8 @@ const DocumentDetailsModal: React.FC<DocumentDetailsModalProps> = ({
     return option ? option.label : value;
   };
 
+  const documentLabel = document.scale === 'ARCHITECTURAL' && document.architecturalScale ? ` - ${document.architecturalScale}` : '';
+
   const list = [
     { label: 'Title', content: document.title },
     {
@@ -69,7 +71,7 @@ const DocumentDetailsModal: React.FC<DocumentDetailsModalProps> = ({
     {
       label: 'Scale',
       content: document.scale
-        ? `${getScaleLabel(document.scale)}${document.scale === 'ARCHITECTURAL' && document.architecturalScale ? ` - ${document.architecturalScale}` : ''}`
+        ? `${getScaleLabel(document.scale)}${documentLabel}`
         : 'Unknown',
     },
     { label: 'Issuance Date', content: document.date },

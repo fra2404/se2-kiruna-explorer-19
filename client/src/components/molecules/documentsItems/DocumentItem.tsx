@@ -39,8 +39,8 @@ export const DocumentItem: React.FC<DocumentItemProps> = ({
 
   return (
     <>
-      <div
-        className="flex py-1 cursor-pointer hover:bg-gray-200 rounded-lg"
+      <button
+        className="flex py-1 hover:bg-gray-200 rounded-lg text-start w-full"
         onClick={() => {
           setShowModal(true);
         }}
@@ -55,7 +55,7 @@ export const DocumentItem: React.FC<DocumentItemProps> = ({
           {document.title}
         </span>
         <FaArrowRight className="text-lg self-center font-bold mr-1" />
-      </div>
+      </button>
 
       <Modal
         style={modalStyles}
