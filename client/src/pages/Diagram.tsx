@@ -1,7 +1,12 @@
 import "../../src/global.js";
 import Graph from "react-graph-vis";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import API from "../API";
+import { DocumentIcon } from '../components/molecules/documentsItems/DocumentIcon';
+import errorImage from '../assets/icons/error.png';
+
+let FIT_X_VIEW = 500;
+let FIT_Y_VIEW = 500;
 
 const LABEL_FONT = { size: 25, color: "#000000" };
 const options = {
@@ -20,9 +25,10 @@ const options = {
         dragView: true, // Enable dragging of the view
         zoomView: true, // Enable zooming of the view
     },
+
 };
 
-function randomColor() {
+const randomColor = () => {
     const red = Math.floor(Math.random() * 256).toString(16).padStart(2, '0');
     const green = Math.floor(Math.random() * 256).toString(16).padStart(2, '0');
     const blue = Math.floor(Math.random() * 256).toString(16).padStart(2, '0');
@@ -30,19 +36,26 @@ function randomColor() {
 }
 
 const scaleMapping = {
-    "Text": 100,
-    "Concept": 200,
-    "1:100,000": 300,
+    "Text": 200,
+    "Concept": 300,
+    // "1:100,000": 400,
     "1:10,000": 400,
     "1:5,000": 500,
-    "1:1,000": 600,
+    "Architectural style": 600,
     "Blueprint/effects": 700,
     "default": 50, // Valore di default per testing!
 };
 
+
+
 const Diagram = () => {
     const [documents, setDocuments] = useState<any[]>([]);
-    const [state, setState] = useState({})
+    const [state, setState] = useState({
+        graph: {
+            nodes: [],
+            edges: []
+        }
+    });
 
 
     useEffect(() => {
@@ -65,6 +78,8 @@ const Diagram = () => {
         documents.forEach((doc: any) => {
             // Check the scale
             //TODO: the control on the scale does not work 
+            console.log("Old scale: ", doc.scale);
+            console.log("All doc: ", doc);
             if (doc.scale.toLowerCase() === "text") {
                 console.log("Text");
                 doc.scale = "Text";
@@ -75,7 +90,7 @@ const Diagram = () => {
             }
             else if (doc.scale.toLowerCase() === "architectural style") {
                 console.log("Architectural style");
-                doc.scale = "1:100,000";
+                doc.scale = "Architectural style";
             }
             else if (doc.scale.toLowerCase() === "blueprint/effects") {
                 console.log("Blueprint/effects");
@@ -104,16 +119,38 @@ const Diagram = () => {
             console.log("New scale: ", doc.scale);
             console.log("New date: ", doc.year);
 
+            doc.image = (
+                <DocumentIcon
+                    type={doc.type}
+                    stakeholders={Array.isArray(doc.stakeholders) ? doc.stakeholders : []}
+                />
+            )
+
+
+
+            console.log("The image of the node" + doc.title + " is : ", doc.image);
         });
+
         const nodes_documents = documents.map((doc: any) => ({
             id: doc.id,
-            label: "No title",
+            // label: "No title",
+            // label: doc.title,
+            // TODO: add some info to the label
+            shape: "image",
+            // image: (
+            //     <DocumentIcon
+            //         type={doc.type}
+            //         stakeholders={Array.isArray(doc.stakeholders) ? doc.stakeholders : []}
+            //     />
+            // ),
+            image: errorImage,
+            // image: doc.image,
+            brokenImage: errorImage,
             color: randomColor(),
             year: doc.year,
             scale: doc.scale,
         })).map(node => ({
             ...node,
-
             x: (node.year - 2000) * 1000, // Mapping the year
             y: scaleMapping[node.scale as keyof typeof scaleMapping], // Mapping the scale
         }
@@ -146,7 +183,6 @@ const Diagram = () => {
 
 
         setState({
-            // counter: 5,
             graph: {
                 nodes: allNodes,
                 edges: [
@@ -157,16 +193,14 @@ const Diagram = () => {
 
 
 
-
     const occupiedPositions = [] as any;
 
     const label_style = [
         { id: "label_text", label: "Text", color: "#e0df41", scale: "Text" },
         { id: "label_concept", label: "Concept", color: "#e0df41", scale: "Concept" },
-        { id: "label_architectural", label: "1:100,000", color: "#e0df41", scale: "1:100,000" },
+        { id: "label_architectural", label: "Architectural style", color: "#e0df41", scale: "Architectural style" },
         { id: "label_architectural2", label: "1:10,000", color: "#e0df41", scale: "1:10,000" },
         { id: "label_architectural3", label: "1:5,000", color: "#e0df41", scale: "1:5,000" },
-        { id: "label_architectural4", label: "1:1,000", color: "#e0df41", scale: "1:1,000" },
         { id: "label_blueprint", label: "Blueprint/effects", color: "#e0df41", scale: "Blueprint/effects" },
     ].map(node => ({
         ...node,
@@ -195,11 +229,40 @@ const Diagram = () => {
     }
 
 
+    const networkRef = useRef<any>(null);
+
+
+
+
+    useEffect(() => {
+        const network = networkRef.current;
+        if (network) {
+            network.fit({
+                nodes: state.graph.nodes.filter((node: any) => {
+                    const currentYear = new Date().getFullYear();
+                    console.log(`Node year: ${node.year}, Current year: ${currentYear}`);
+                    return node.year === currentYear;
+                }).map((node: any) => node.id),
+                animation: false
+            });
+        }
+    }, [state.graph.nodes]);
+
+
 
     return (
         <>
             {state.graph && (
-                <Graph graph={state.graph} options={options} style={{ height: "900px" }} />
+                <Graph
+                    graph={state.graph}
+                    options={options}
+                    style={{ height: "900px" }}
+                    getNetwork={network => {    // Call the methods inside the Graph component
+                        // network.moveTo({ position: { x: FIT_X_VIEW, y: FIT_Y_VIEW }, scale: 0.5 });
+                        networkRef.current = network;
+                    }}
+
+                />
             )}
         </>
     );
