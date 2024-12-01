@@ -1,10 +1,21 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import "../../src/global.js";
 import Graph from "react-graph-vis";
 import './Diagram.css';
 import { useState, useEffect, useRef } from "react";
 import API from "../API";
 import { DocumentIcon } from '../components/molecules/documentsItems/DocumentIcon';
-import errorImage from '../assets/icons/error.png';
+import ErrorImage from '../assets/icons/error.png';
+import AgreementIcon from "../assets/icons/agreement-icon.svg";
+import ConflictIcon from '../assets/icons/conflict-icon.svg';
+import ConsultationIcon from '../assets/icons/consultation-icon.svg';
+import DesignDocIcon from '../assets/icons/design-doc-icon.svg';
+import InformativeDocIcon from '../assets/icons/informative-doc-icon.svg';
+import MaterialEffectsIcon from '../assets/icons/material-effects-icon.svg';
+import PrescriptiveDocIcon from '../assets/icons/prescriptive-doc-icon.svg';
+import TechnicalDocIcon from '../assets/icons/technical-doc-icon.svg';
+
+
 
 let FIT_X_VIEW = 500;
 let FIT_Y_VIEW = 500;
@@ -37,13 +48,10 @@ const randomColor = () => {
 }
 
 const scaleMapping = {
-    "Text": 200,
-    "Concept": 300,
-    // "1:100,000": 400,
-    "1:10,000": 400,
-    "1:5,000": 500,
-    "Architectural style": 600,
-    "Blueprint/effects": 700,
+    "TEXT": 200,
+    "CONCEPT": 300,
+    "ARCHITECTURAL": 400,
+    "BLUEPRINT/MATERIAL EFFECTS": 500,
     "default": 50, // Valore di default per testing!
 };
 
@@ -53,8 +61,8 @@ const Diagram = () => {
     const [documents, setDocuments] = useState<any[]>([]);
     const [state, setState] = useState({
         graph: {
-            nodes: [],
-            edges: []
+            nodes: [] as any[],
+            edges: [] as { from: any; to: any; color: string }[]
         }
     });
 
@@ -74,28 +82,25 @@ const Diagram = () => {
 
     useEffect(() => {
 
+        const connections = [] as any[];
+
         // Here I need to create the nodes with the data retrieved from the API.
         // But first I need to map the data to the format that the graph component expects.
         documents.forEach((doc: any) => {
             // Check the scale
-            //TODO: the control on the scale does not work 
             console.log("Old scale: ", doc.scale);
             console.log("All doc: ", doc);
-            if (doc.scale.toLowerCase() === "text") {
-                console.log("Text");
-                doc.scale = "Text";
+            if (doc.scale.toUpperCase() === "TEXT") {
+                doc.scale = "TEXT";
             }
-            else if (doc.scale.toLowerCase() === "concept") {
-                console.log("Concept");
-                doc.scale = "Concept";
+            else if (doc.scale.toUpperCase() === "CONCEPT") {
+                doc.scale = "CONCEPT";
             }
-            else if (doc.scale.toLowerCase() === "architectural style") {
-                console.log("Architectural style");
-                doc.scale = "Architectural style";
+            else if (doc.scale.toUpperCase() === "ARCHITECTURAL") {
+                doc.scale = "ARCHITECTURAL";
             }
-            else if (doc.scale.toLowerCase() === "blueprint/effects") {
-                console.log("Blueprint/effects");
-                doc.scale = "Blueprint/effects";
+            else if (doc.scale.toUpperCase() === "BLUEPRINT/MATERIAL EFFECTS") {
+                doc.scale = "BLUEPRINT/MATERIAL EFFECTS";
             }
 
             if (!doc.scale || !scaleMapping[doc.scale as keyof typeof scaleMapping]) {
@@ -107,55 +112,106 @@ const Diagram = () => {
             if (doc.date) {
                 const date = new Date(doc.date);
                 if (!isNaN(date.getTime())) {
-                    console.log("The year is: ", date.getFullYear());
+                    // console.log("The year is: ", date.getFullYear());
                     doc.year = date.getFullYear();
                 } else {
                     console.log("Invalid date format");
                     doc.year = 2000; // Default year for testing
                 }
             } else {
-                console.log("No date provided");
-                doc.year = 2001; // Default year for testing
+                console.log(`No date provided, the document ${doc.id} will not be displayed`);
+                doc.year = null;
             }
             console.log("New scale: ", doc.scale);
             console.log("New date: ", doc.year);
 
-            doc.image = (
-                <DocumentIcon
-                    type={doc.type}
-                    stakeholders={Array.isArray(doc.stakeholders) ? doc.stakeholders : []}
-                />
-            )
-
-
+            console.log("The type of the document is: ", doc.type);
+            // Check the type of the document
+            switch (doc.type.toUpperCase()) {
+                case "AGREEMENT":
+                    doc.image = AgreementIcon;
+                    break;
+                case "CONFLICT":
+                    doc.image = ConflictIcon;
+                    break;
+                case "CONSULTATION":
+                    doc.image = ConsultationIcon;
+                    break;
+                case "PRESCRIPTIVE_DOC":
+                    doc.image = PrescriptiveDocIcon;
+                    break;
+                case "INFORMATIVE_DOC":
+                    doc.image = InformativeDocIcon;
+                    break;
+                case "DESIGN_DOC":
+                    doc.image = DesignDocIcon;
+                    break;
+                case "TECHNICAL_DOC":
+                    doc.image = TechnicalDocIcon;
+                    break;
+                case "MATERIAL_EFFECTS":
+                    doc.image = MaterialEffectsIcon;
+                    break;
+                default:
+                    doc.image = ErrorImage;
+                    break;
+            }
 
             console.log("The image of the node" + doc.title + " is : ", doc.image);
-        });
 
-        const nodes_documents = documents.map((doc: any) => ({
-            id: doc.id,
-            // label: "No title",
-            // label: doc.title,
-            // TODO: add some info to the label
-            shape: "image",
-            // image: (
+            // !! Unfortunatly the DocumentIcon component is not working properly, so I need to use the switch case above.
+            // doc.image = (
             //     <DocumentIcon
             //         type={doc.type}
             //         stakeholders={Array.isArray(doc.stakeholders) ? doc.stakeholders : []}
             //     />
-            // ),
-            image: errorImage,
-            // image: doc.image,
-            brokenImage: errorImage,
-            color: randomColor(),
-            year: doc.year,
-            scale: doc.scale,
-        })).map(node => ({
-            ...node,
-            x: (node.year - 2000) * 1000, // Mapping the year
-            y: scaleMapping[node.scale as keyof typeof scaleMapping], // Mapping the scale
-        }
-        ));
+            // )
+
+
+            // Check the connections
+            if (doc.connections && doc.connections.length > 0) {
+                doc.connections.forEach((connection: any) => {
+                    console.log("Connection: ", connection)
+                    console.log("Target: ", connection.document)
+                    console.log("Source: ", doc.id)
+                    connections.push({
+                        // state.graph.edges.push({
+                        from: doc.id,
+                        to: connection.document,
+                        color: "#000000"
+                    });
+                });
+            }
+
+
+
+
+
+
+
+
+
+
+
+        });
+
+        const nodes_documents = documents
+            .filter((doc: any) => doc.year !== null) // Filter documents with defined year
+            .map((doc: any) => ({
+                id: doc.id,
+                shape: "image",
+                // image: errorImage,
+                image: doc.image,
+                brokenImage: ErrorImage,
+                color: randomColor(),
+                year: doc.year,
+                scale: doc.scale,
+            }))
+            .map(node => ({
+                ...node,
+                x: (node.year - 2000) * 1000, // Mapping the year
+                y: scaleMapping[node.scale as keyof typeof scaleMapping], // Mapping the scale
+            }));
 
 
         nodes_documents.forEach((node, index) => {
@@ -186,8 +242,7 @@ const Diagram = () => {
         setState({
             graph: {
                 nodes: allNodes,
-                edges: [
-                ]
+                edges: connections
             },
         })
     }, [documents]);
@@ -197,12 +252,12 @@ const Diagram = () => {
     const occupiedPositions = [] as any;
 
     const label_style = [
-        { id: "label_text", label: "Text", color: "#e0df41", scale: "Text" },
-        { id: "label_concept", label: "Concept", color: "#e0df41", scale: "Concept" },
-        { id: "label_architectural", label: "Architectural style", color: "#e0df41", scale: "Architectural style" },
-        { id: "label_architectural2", label: "1:10,000", color: "#e0df41", scale: "1:10,000" },
-        { id: "label_architectural3", label: "1:5,000", color: "#e0df41", scale: "1:5,000" },
-        { id: "label_blueprint", label: "Blueprint/effects", color: "#e0df41", scale: "Blueprint/effects" },
+        { id: "label_text", label: "Text", color: "#e0df41", scale: "TEXT" },
+        { id: "label_concept", label: "Concept", color: "#e0df41", scale: "CONCEPT" },
+        { id: "label_architectural", label: "Architectural style", color: "#e0df41", scale: "ARCHITECTURAL" },
+        // { id: "label_architectural2", label: "1:10,000", color: "#e0df41", scale: "1:10,000" },
+        // { id: "label_architectural3", label: "1:5,000", color: "#e0df41", scale: "1:5,000" },
+        { id: "label_blueprint", label: "Blueprint/effects", color: "#e0df41", scale: "BLUEPRINT/MATERIAL EFFECTS" },
     ].map(node => ({
         ...node,
         x: (-0.3) * 1000, // Place the label on the left side of the graph
@@ -242,7 +297,7 @@ const Diagram = () => {
                 // Filter only the node that are in the current year. In this way the graph will be centered on the current year at launch.
                 nodes: state.graph.nodes.filter((node: any) => {
                     const currentYear = new Date().getFullYear();
-                    console.log(`Node year: ${node.year}, Current year: ${currentYear}`);
+                    // console.log(`Node year: ${node.year}, Current year: ${currentYear}`);
                     return node.year === currentYear;
                 }).map((node: any) => node.id),
                 animation: false
@@ -251,7 +306,9 @@ const Diagram = () => {
         }
     }, [state.graph.nodes]);
 
-
+    let lastPosition = null;
+    const max_zoom = 2;
+    const min_zoom = 0.5;
 
 
 
@@ -265,8 +322,33 @@ const Diagram = () => {
                     getNetwork={network => {    // Call the methods inside the Graph component
                         // network.moveTo({ position: { x: FIT_X_VIEW, y: FIT_Y_VIEW }, scale: 0.5 });
                         networkRef.current = network;
-                    }}
+                        // Limit the zoom
+                        // network.on("zoom", (params) => {
+                        //     if (params.scale < 0.1) {
+                        //         network.moveTo({ scale: 0.1 });
+                        //     } else if (params.scale > 2) {
+                        //         network.moveTo({ scale: 2 });
+                        //     }
+                        // });
 
+                        network.on("zoom", function (params) {
+                            if (params.scale < min_zoom || params.scale > max_zoom) { // adjust this value according to your requirement
+                                network.moveTo({
+                                    position: lastPosition, // use the last position before zoom limit
+                                    scale: params.scale > max_zoom ? max_zoom : min_zoom // this scale prevents zooming out beyond the desired limit
+                                });
+                            } else {
+                                // store the current position as the last position before zoom limit
+                                lastPosition = network.getViewPosition();
+                            }
+                        });
+                        // on pan, store the current position
+                        network.on("dragEnd", function () {
+                            lastPosition = network.getViewPosition();
+                        });
+
+
+                    }}
                 />
             )}
         </div>
