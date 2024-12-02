@@ -28,6 +28,7 @@ import LightDivider from '../atoms/light-divider/light-divider';
 import ModalHeader from '../molecules/ModalHeader';
 import ToggleButton from '../atoms/ToggleButton';
 import { DocumentIcon } from '../molecules/documentsItems/DocumentIcon';
+import useToast from '../../utils/hooks/toast';
 
 Modal.setAppElement('#root');
 
@@ -193,31 +194,33 @@ const DocumentForm = ({
   };
 
   // Toast
-  const [toastMsg, setToastMsg] = useState<{
-    isShown: boolean;
-    type: 'success' | 'error';
-    message: string;
-  }>({
-    isShown: false,
-    type: 'success',
-    message: '',
-  });
+  const { toast, showToast, hideToast } = useToast();
 
-  const showToastMessage = (message: string, type: 'success' | 'error') => {
-    setToastMsg({
-      isShown: true,
-      message,
-      type,
-    });
-  };
+  // const [toastMsg, setToastMsg] = useState<{
+  //   isShown: boolean;
+  //   type: 'success' | 'error';
+  //   message: string;
+  // }>({
+  //   isShown: false,
+  //   type: 'success',
+  //   message: '',
+  // });
 
-  const hideToastMessage = () => {
-    setToastMsg({
-      isShown: false,
-      message: '',
-      type: 'error',
-    });
-  };
+  // const showToastMessage = (message: string, type: 'success' | 'error') => {
+  //   setToastMsg({
+  //     isShown: true,
+  //     message,
+  //     type,
+  //   });
+  // };
+
+  // const hideToastMessage = () => {
+  //   setToastMsg({
+  //     isShown: false,
+  //     message: '',
+  //     type: 'error',
+  //   });
+  // };
 
   const validateStep = () => {
     const newErrors: { [key: string]: string } = {};
@@ -254,7 +257,7 @@ const DocumentForm = ({
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!validateStep()) {
-      showToastMessage('Please fill in all required fields', 'error');
+      showToast('Please fill in all required fields', 'error');
       return;
     }
 
@@ -269,13 +272,13 @@ const DocumentForm = ({
         if (response.document) {
           handleSuccessfulSave(response.document);
         } else {
-          showToastMessage('Failed to create document', 'error');
+          showToast('Failed to create document', 'error');
         }
       } else {
-        showToastMessage('Failed to create document', 'error');
+        showToast('Failed to create document', 'error');
       }
     } catch (error) {
-      showToastMessage('Error creating document:' + error, 'error');
+      showToast('Error creating document:' + error, 'error');
     }
   };
 
@@ -304,10 +307,10 @@ const DocumentForm = ({
           }
           return coordId;
         } else {
-          showToastMessage('Failed to create coordinate', 'error');
+          showToast('Failed to create coordinate', 'error');
         }
       } catch (error) {
-        showToastMessage('Error creating coordinate:' + error, 'error');
+        showToast('Error creating coordinate:' + error, 'error');
       }
     } else {
       return connectToMap ? selectedCoordId : undefined;
@@ -345,7 +348,7 @@ const DocumentForm = ({
   };
 
   const handleSuccessfulSave = (responseDocument: IDocument) => {
-    showToastMessage('Document saved successfully', 'success');
+    showToast('Document saved successfully', 'success');
     setShowSummary(true);
     if (responseDocument) {
       if (!selectedDocument) {
@@ -602,12 +605,12 @@ const DocumentForm = ({
             />
           </div>
 
-          {toastMsg.isShown && (
+          {toast.isShown && (
             <Toast
-              isShown={toastMsg.isShown}
-              message={toastMsg.message}
-              type={toastMsg.type}
-              onClose={hideToastMessage}
+              isShown={toast.isShown}
+              message={toast.message}
+              type={toast.type}
+              onClose={hideToast}
             />
           )}
         </form>

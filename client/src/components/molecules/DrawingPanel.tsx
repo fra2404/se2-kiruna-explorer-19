@@ -8,6 +8,8 @@ import MapStyleContext from "../../context/MapStyleContext";
 import InputComponent from "../atoms/input/input";
 import ButtonRounded from "../atoms/button/ButtonRounded";
 import { ICoordinate } from "../../utils/interfaces/document.interface";
+import useToast from "../../utils/hooks/toast";
+import Toast from "../organisms/Toast";
 
 import 'leaflet/dist/leaflet.css';
 import 'leaflet-draw/dist/leaflet.draw.css';
@@ -20,6 +22,7 @@ const DrawingPanel = () => {
 	const [coordinates, setCoordinates] = useState([]);
 	const [popupPosition, setPopupPosition] = useState(null);
 	const { swedishFlagBlue } = useContext(MapStyleContext);
+	const { toast, showToast, hideToast } = useToast();
 
 	useEffect(() => {
 		if (!featureGroupRef.current) return;
@@ -64,7 +67,8 @@ const DrawingPanel = () => {
 			coordinates: coordinates,
 			name: areaName
 		} as ICoordinate);
-		if (res.error) console.log(res.message);
+		if (res.error) return showToast(res.message, 'error');
+		else showToast(res.message, 'success');
 		setPopupPosition(null);
 		setAreaName('');
 	};
@@ -97,6 +101,14 @@ const DrawingPanel = () => {
 							onClick={handleAddArea} 
 						/>
 				</Popup>
+			}
+
+			{
+				toast.isShown && (
+					<Toast isShown={toast.isShown} message={toast.message} 
+						type={toast.type} onClose={hideToast}
+					/>
+				)
 			}
 		</>
     );
