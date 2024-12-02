@@ -307,12 +307,21 @@ async function searchDocuments(
   return documents;
 }
 
+async function getGraphInfo() {
+  return await fetch(`${SERVER_URL}/graph`, {
+    method: 'GET',
+  })
+    .then(handleInvalidResponse)
+    .then((response) => response.json());
+}
+
 const API = {
   getDocuments,
   getCoordinates,
   addDocument,
   deleteCoordinate,
   searchDocuments,
+  getGraphInfo,
 };
 
 export {
@@ -326,5 +335,6 @@ export {
   createCoordinate,
   searchDocuments,
   addResource,
+  getGraphInfo,
 };
 export default API;
