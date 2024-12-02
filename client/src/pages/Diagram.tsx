@@ -14,9 +14,18 @@ import MaterialEffectsIcon from '../assets/icons/material-effects-icon.svg';
 import PrescriptiveDocIcon from '../assets/icons/prescriptive-doc-icon.svg';
 import TechnicalDocIcon from '../assets/icons/technical-doc-icon.svg';
 import "vis-network/styles/vis-network.css";
+import {
+    swedishFlagBlue,
+    swedishFlagYellow,
+} from '../utils/colors';
+import { IDocument } from "../utils/interfaces/document.interface.js";
+import DocumentDetailsModal from '../components/organisms/modals/DocumentDetailsModal';
+import Modal from 'react-modal';
+
 
 
 const LABEL_FONT = { size: 25, color: "#000000" };
+const YEAR_SPACING = 500;
 const options = {
     autoResize: true,
     layout: {
@@ -32,14 +41,25 @@ const options = {
         dragNodes: false, // Disable dragging of nodes
         dragView: true, // Enable dragging of the view
         zoomView: true, // Enable zooming of the view
-        // Enable navigation buttons
-        navigationButtons: true,
+        navigationButtons: true, // Enable navigation buttons
     },
 
 };
 
+const modalStyles = {
+    content: {
+        top: '50%',
+        left: '50%',
+        right: 'auto',
+        bottom: 'auto',
+        margin: '0 auto',
+        transform: 'translate(-50%, -50%)',
+        width: '90%',
+    },
+    overlay: { zIndex: 1000 },
+};
+
 const graphBEInfo = await API.getGraphInfo();
-console.log("Graph info: ", graphBEInfo);
 
 const randomColor = () => {
     const red = Math.floor(Math.random() * 256).toString(16).padStart(2, '0');
@@ -50,16 +70,23 @@ const randomColor = () => {
 
 const scaleMapping = {
     "TEXT": 200,
-    "CONCEPT": 300,
-    "ARCHITECTURAL": 400,
-    "BLUEPRINT/MATERIAL EFFECTS": 500,
+    "CONCEPT": 400,
+    "ARCHITECTURAL": 600,
+    "BLUEPRINT/MATERIAL EFFECTS": 800,
     "default": 50, // Valore di default per testing!
 };
 
 
 
+
+
+
 const Diagram = () => {
+
+    const [selectedDocument, setSelectedDocument] = useState([]);
+    const [isModalOpen, setIsModalOpen] = useState(false);
     const [documents, setDocuments] = useState<any[]>([]);
+    const [originalDocuments, setOriginalDocuments] = useState<any[]>([]);
     const [state, setState] = useState({
         graph: {
             nodes: [] as any[],
@@ -71,12 +98,29 @@ const Diagram = () => {
     const minYear = graphBEInfo.minYear;
     const maxYear = graphBEInfo.maxYear;
 
+    const openModal = (document: IDocument) => {
+        // Search in the original documents and show the document in the modal 
+        const sdocument = originalDocuments.find((doc) => doc.id === document.id);
+        if (sdocument) {
+            setSelectedDocument([sdocument]);
+            setIsModalOpen(true);
+        }
+    };
+
+    const handleNodeClick = (document: IDocument) => {
+        console.log(`Clicked document is ${document}`)
+        openModal(document);
+    }
+
+
+
 
     useEffect(() => {
         const fetchDocuments = async () => {
             try {
                 const documents = await API.getDocuments();
                 setDocuments(documents);
+                setOriginalDocuments(documents)
             } catch (error) {
                 console.error('Error fetching documents:', error);
             }
@@ -87,8 +131,10 @@ const Diagram = () => {
     useEffect(() => {
         const connections = [] as any[];
 
+
         // Here I need to create the nodes with the data retrieved from the API.
         // But first I need to map the data to the format that the graph component expects.
+
         documents.forEach((doc: any) => {
             // Check the scale
             console.log("Old scale: ", doc.scale);
@@ -192,8 +238,9 @@ const Diagram = () => {
             }))
             .map(node => ({
                 ...node,
-                x: (node.year - 2000) * 1000, // Mapping the year
+                x: (node.year - 2000) * YEAR_SPACING, // Mapping the year
                 y: scaleMapping[node.scale as keyof typeof scaleMapping], // Mapping the scale
+
             }));
 
 
@@ -214,9 +261,9 @@ const Diagram = () => {
             const overlappingNode = occupiedPositions.find((pos: any) => pos.x === node.x && pos.y === node.y);
             if (overlappingNode) {
                 const offsetX = Math.floor(Math.random() * 100) + 100; // Random offset between 100 and 200
-                const offsetY = Math.floor(Math.random() * 20) + 20; // Random offset between 20 and 40
+                const offsetY = Math.floor(Math.random() * 30) + 20; // Random offset between 20 and 50
                 node.x += offsetX;  // Add offset to x position
-                // node.y += offsetY; // Add offset to y position
+                node.y += offsetY; // Add offset to y position
             }
             occupiedPositions.push({ x: node.x, y: node.y });
         });
@@ -235,30 +282,28 @@ const Diagram = () => {
     const occupiedPositions = [] as any;
 
     const label_style = [
-        { id: "label_text", label: "Text", color: "#e0df41", scale: "TEXT" },
-        { id: "label_concept", label: "Concept", color: "#e0df41", scale: "CONCEPT" },
-        { id: "label_architectural", label: "Architectural style", color: "#e0df41", scale: "ARCHITECTURAL" },
-        { id: "label_blueprint", label: "Blueprint/effects", color: "#e0df41", scale: "BLUEPRINT/MATERIAL EFFECTS" },
+        { id: "label_text", label: "Text", scale: "TEXT" },
+        { id: "label_concept", label: "Concept", scale: "CONCEPT" },
+        { id: "label_architectural", label: "Architectural style", scale: "ARCHITECTURAL" },
+        { id: "label_blueprint", label: "Blueprint/effects", scale: "BLUEPRINT/MATERIAL EFFECTS" },
     ].map(node => ({
         ...node,
-        //x: (6) * 1000, // Place the label on the left side of the graph
-        x: (minYear - 2000 - 1) * 1000, // Place the label on the left side of the graph, it depends on the minYear
+        color: swedishFlagBlue,
+        x: (minYear - 2000 - 1) * YEAR_SPACING, // Place the label on the left side of the graph, it depends on the minYear
         y: scaleMapping[node.scale as keyof typeof scaleMapping], // Mapping the scale
         shape: "box",
-        font: LABEL_FONT
-    }
-    ));
+        font: { ...LABEL_FONT, color: "#FFFFFF" },
+    }));
 
 
 
-    // const endYear = maxYear + 2; // Add 2 years to the max year to make space for the label
     for (let year = minYear; year <= maxYear; year++) {
         label_year.push({
             id: `label_${year}`,
             label: `${year}`,
-            color: "#e0df41",
+            color: swedishFlagYellow,
             year: year,
-            x: (year - 2000) * 1000, // Mapping the year
+            x: (year - 2000) * YEAR_SPACING, // Mapping the year
             y: 50, // Place the label on the top side of the graph
             shape: "box",
             font: LABEL_FONT
@@ -290,7 +335,7 @@ const Diagram = () => {
 
     let lastPosition = null;
     const max_zoom = 2;
-    const min_zoom = 0.5;
+    const min_zoom = 0.1;
 
 
 
@@ -300,21 +345,21 @@ const Diagram = () => {
                 <Graph
                     graph={state.graph}
                     options={options}
-                    style={{ height: "100%" }}
-                    getNetwork={network => {    // Call the methods inside the Graph component
+                    events={{
+                        selectNode: function (event) {
+                            const { nodes } = event;
+                            const selectedNode = state.graph.nodes.find(node => node.id === nodes[0]);
+                            if (selectedNode) {
+                                handleNodeClick(selectedNode);
+                            }
+                        }
+                    }}
+                    style={{ height: "100%" }} getNetwork={network => {    // Call the methods inside the Graph component
                         // network.moveTo({ position: { x: FIT_X_VIEW, y: FIT_Y_VIEW }, scale: 0.5 });
                         networkRef.current = network;
-                        // Limit the zoom
-                        // network.on("zoom", (params) => {
-                        //     if (params.scale < 0.1) {
-                        //         network.moveTo({ scale: 0.1 });
-                        //     } else if (params.scale > 2) {
-                        //         network.moveTo({ scale: 2 });
-                        //     }
-                        // });
 
                         network.on("zoom", function (params) {
-                            if (params.scale < min_zoom || params.scale > max_zoom) { // adjust this value according to your requirement
+                            if (params.scale < min_zoom || params.scale > max_zoom) {
                                 network.moveTo({
                                     position: lastPosition, // use the last position before zoom limit
                                     scale: params.scale > max_zoom ? max_zoom : min_zoom // this scale prevents zooming out beyond the desired limit
@@ -331,7 +376,17 @@ const Diagram = () => {
                     }}
                 />
             )}
+            <Modal
+                style={modalStyles}
+                isOpen={isModalOpen}
+                onRequestClose={() => setIsModalOpen(false)}
+            >
+                <DocumentDetailsModal
+                    document={selectedDocument[0]}
+                />
+            </Modal>
         </div>
+
     );
 
 };
