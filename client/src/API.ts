@@ -287,6 +287,9 @@ async function searchDocuments(
     year: string;
     month: string;
     day: string;
+    language: string;
+    scale: string;
+    customScale: string;
   },
 ): Promise<IDocument[]> {
   const searchURL =
@@ -320,8 +323,6 @@ async function addArea(coordinateData: ICoordinate) {
     },
     body: JSON.stringify(coordinateData),
   });
-
-  // console.log(response);
 
   if (response.status === 201) return { message: "Area successfully added", error: false }
   else if (response.status === 400) return { message: "Validation errors", error: true }

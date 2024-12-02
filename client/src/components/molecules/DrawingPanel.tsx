@@ -8,6 +8,8 @@ import MapStyleContext from "../../context/MapStyleContext";
 import InputComponent from "../atoms/input/input";
 import ButtonRounded from "../atoms/button/ButtonRounded";
 import { ICoordinate } from "../../utils/interfaces/document.interface";
+import useToast from "../../utils/hooks/toast";
+import Toast from "../organisms/Toast";
 
 import 'leaflet/dist/leaflet.css';
 import 'leaflet-draw/dist/leaflet.draw.css';
@@ -34,6 +36,7 @@ const DrawingPanel: React.FC<DrawingPanelProps> = ({
 
 	const [isHoveredAddArea, setIsHoveredAddArea] = useState(false);
 	const popupRef = useRef<L.Popup>(null);
+	const { toast, showToast, hideToast } = useToast();
 
 	useEffect(() => {
 		if (!featureGroupRef.current) return;
@@ -73,6 +76,7 @@ const DrawingPanel: React.FC<DrawingPanelProps> = ({
 		} as ICoordinate);
 		if (!res.success) {
 			console.log(res.coordinate?.message);
+			showToast("Could not create the coordinates", 'error');
 			return;
 		}
 		const coordId = res.coordinate?.coordinate._id;
@@ -88,6 +92,7 @@ const DrawingPanel: React.FC<DrawingPanelProps> = ({
 			if(setSelectedCoordId) {
 				setSelectedCoordId(coordId);
 			}
+			showToast("Point/Area successfully created", 'success');
 		}
 
 		featureGroupRef.current.remove();
@@ -163,6 +168,14 @@ const DrawingPanel: React.FC<DrawingPanelProps> = ({
 						/>
 					</div>
 				</Popup>
+			}
+
+			{
+				toast.isShown && (
+					<Toast isShown={toast.isShown} message={toast.message} 
+						type={toast.type} onClose={hideToast}
+					/>
+				)
 			}
 		</>
     );
