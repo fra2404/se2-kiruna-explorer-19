@@ -11,7 +11,8 @@ interface NamePopupProps {
   setCoordName: (name: string) => void;
   setCoordNamePopupOpen: (open: boolean) => void;
   setPosition: (position: LatLng | undefined) => void;
-  errors: {[key: string]: string}
+  errors?: {[key: string]: string}
+  handleAddCoordinate: () => any;
 }
 
 const NamePopup: React.FC<NamePopupProps> = ({
@@ -20,7 +21,8 @@ const NamePopup: React.FC<NamePopupProps> = ({
   setCoordName,
   setCoordNamePopupOpen,
   setPosition,
-  errors
+  errors,
+  handleAddCoordinate
 }) => {
   const popupRef = useRef<L.Popup>(null);
 
@@ -38,7 +40,7 @@ const NamePopup: React.FC<NamePopupProps> = ({
               setCoordName(v.target.value);
             }
           }}
-          error={errors.newPoint}
+          error={errors?.newPoint}
         />
         <div className="flex justify-between">
           <ButtonRounded
@@ -48,6 +50,7 @@ const NamePopup: React.FC<NamePopupProps> = ({
             onClick={() => {
               if (coordName.trim() != '') {
                 setCoordNamePopupOpen(false);
+                handleAddCoordinate();
                 popupRef.current?.remove();
               }
             }}

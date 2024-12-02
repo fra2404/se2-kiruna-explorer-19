@@ -3,13 +3,15 @@ import MapSection from '../../organisms/MapSection';
 
 interface Step5Props {
   coordinates: any;
+  setCoordinates: (coordinates: any) => void;
+  showToastMessage: (message: string, type: "success" | "error") => void;
   selectedCoordIdProp: string;
   selectedCoordId: string;
   setSelectedCoordId: (value: string) => void;
+  coordNamePopupOpen: boolean;
   setCoordNamePopupOpen: (open: boolean) => void;
   position: LatLng | undefined;
   setPosition: (position: LatLng | undefined) => void;
-  coordNamePopupOpen: boolean;
   coordName: string;
   setCoordName: (name: string) => void;
   MapClickHandler: React.FC;
@@ -18,13 +20,15 @@ interface Step5Props {
 
 const Step5: React.FC<Step5Props> = ({
   coordinates,
+  setCoordinates,
+  showToastMessage,
   selectedCoordIdProp,
   selectedCoordId,
   setSelectedCoordId,
+  coordNamePopupOpen,
   setCoordNamePopupOpen,
   position,
   setPosition,
-  coordNamePopupOpen,
   coordName,
   setCoordName,
   MapClickHandler,
@@ -33,6 +37,8 @@ const Step5: React.FC<Step5Props> = ({
   return (
     <MapSection
       coordinates={coordinates}
+      setCoordinates={setCoordinates}
+      showToastMessage={showToastMessage}
       selectedCoordIdProp={selectedCoordIdProp}
       selectedCoordId={selectedCoordId}
       setSelectedCoordId={setSelectedCoordId}

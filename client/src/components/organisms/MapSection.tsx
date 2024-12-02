@@ -5,16 +5,21 @@ import InputComponent from '../atoms/input/input';
 import NamePopup from '../molecules/popups/NamePopup';
 import MapStyleContext from '../../context/MapStyleContext';
 import CustomMap from '../molecules/CustomMap';
+import { ICoordinate } from '../../utils/interfaces/document.interface';
+import { createCoordinate } from '../../API';
+import DrawingPanel from '../molecules/DrawingPanel';
 
 interface MapSectionProps {
   coordinates: any;
+  setCoordinates: (coordinates: any) => void;
+  showToastMessage: (message: string, type: "success" | "error") => void;
   selectedCoordIdProp: string;
   selectedCoordId: string;
   setSelectedCoordId: (value: string) => void;
+  coordNamePopupOpen: boolean;
   setCoordNamePopupOpen: (open: boolean) => void;
   position: LatLng | undefined;
   setPosition: (position: LatLng | undefined) => void;
-  coordNamePopupOpen: boolean;
   coordName: string;
   setCoordName: (name: string) => void;
   MapClickHandler: React.FC;
@@ -23,13 +28,15 @@ interface MapSectionProps {
 
 const MapSection: React.FC<MapSectionProps> = ({
   coordinates,
+  setCoordinates,
+  showToastMessage,
   selectedCoordIdProp,
   selectedCoordId,
   setSelectedCoordId,
+  coordNamePopupOpen,
   setCoordNamePopupOpen,
   position,
   setPosition,
-  coordNamePopupOpen,
   coordName,
   setCoordName,
   MapClickHandler,
@@ -37,6 +44,40 @@ const MapSection: React.FC<MapSectionProps> = ({
 }) => {
   const { swedishFlagBlue, satMapMainColor, mapType } =
     useContext(MapStyleContext);
+
+  const handleAddPoint = async () => {
+    if (position) {
+      const coordData: ICoordinate = {
+        id: '',
+        name: coordName,
+        type: 'Point',
+        coordinates: [position.lat, position.lng],
+      };
+
+      try {
+        const response = await createCoordinate(coordData);
+        if (response.success) {
+          const coordId = response.coordinate?.coordinate._id;
+          if (coordId) {
+            setCoordinates({
+              ...coordinates,
+              [coordId]: {
+                type: response.coordinate?.coordinate.type,
+                coordinates: response.coordinate?.coordinate.coordinates,
+                name: response.coordinate?.coordinate.name,
+              },
+            });
+            setSelectedCoordId(coordId);
+          }
+          return coordId;
+        } else {
+          showToastMessage('Failed to create coordinate', 'error');
+        }
+      } catch (error) {
+        showToastMessage('Error creating coordinate:' + error, 'error');
+      }
+    }
+  }
 
   return (
     <div className="col-span-2">
@@ -108,8 +149,15 @@ const MapSection: React.FC<MapSectionProps> = ({
               setCoordNamePopupOpen={setCoordNamePopupOpen}
               setPosition={setPosition}
               errors={errors}
+              handleAddCoordinate={handleAddPoint}
             />
           )}
+
+          <DrawingPanel 
+            coordinates={coordinates}
+            setCoordinates={setCoordinates}
+            setSelectedCoordId={setSelectedCoordId}
+          />
 
           {selectedCoordId &&
             coordinates[selectedCoordId]['type'] == 'Polygon' && (
@@ -119,7 +167,8 @@ const MapSection: React.FC<MapSectionProps> = ({
                 }}
                 positions={coordinates[selectedCoordId]['coordinates']}
               ></Polygon>
-            )}
+            )
+          }
 
           <MapClickHandler />
           
