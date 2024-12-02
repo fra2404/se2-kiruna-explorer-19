@@ -205,6 +205,20 @@ export const validateUpdateDocument = [
 ];
 
 export const validateSearchDocument = [
+  body()
+  .custom((body) => {
+    const allowedKeys = ['scale', 'stakeholders', 'type', 'architecturalScale', 'date', 'language'];
+    const invalidKeys = Object.keys(body).filter(
+      (key) => !allowedKeys.includes(key)
+    );
+
+    if (invalidKeys.length > 0) {
+      throw new Error(`Invalid keys provided: ${invalidKeys.join(', ')}`);
+    }
+    return true;
+  }),
+
+
   body('stakeholders')
   .optional()
   .isArray()
