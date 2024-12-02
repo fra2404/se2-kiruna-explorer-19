@@ -9,6 +9,7 @@ import { DivIcon } from 'leaflet';
 import { DeleteCoordPopup } from '../../molecules/popups/DeleteCoordPopup';
 import API from '../../../API';
 import CustomMap from '../../molecules/CustomMap';
+import DrawingPanel from '../../molecules/DrawingPanel';
 
 interface ManageCoordsModalProps {
   manageCoordsModalOpen: boolean,
@@ -126,6 +127,8 @@ export const ManageCoordsModal: React.FC<ManageCoordsModalProps> = ({
               }
             })}
           </MarkerClusterGroup>
+
+          <DrawingPanel />
         </CustomMap>
       </div>
     </Modal>

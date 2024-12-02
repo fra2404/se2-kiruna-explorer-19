@@ -58,7 +58,7 @@ const DrawingPanel = () => {
 
 	const handleAddArea = async () => {
 		// Save the coordinates to the database
-		console.log('coordinates', coordinates);
+		if (!areaName) return;
 		const res = await API.addArea({
 			type: 'Polygon',
 			coordinates: coordinates,
@@ -93,7 +93,7 @@ const DrawingPanel = () => {
 						/>
 
 						<ButtonRounded text='Save' variant={undefined}
-							className='bg-black text-white font-semibold'
+							className='bg-black text-white font-semibold px-2'
 							onClick={handleAddArea} 
 						/>
 				</Popup>

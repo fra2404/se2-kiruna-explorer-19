@@ -122,7 +122,9 @@ const MapSection: React.FC<MapSectionProps> = ({
             )}
 
           <MapClickHandler />
+          
         </CustomMap>
+
       </div>
     </div>
   );

@@ -176,9 +176,9 @@ export default function KirunaMap() {
           />
         )}
 
-        { isLoggedIn && user && user.role === UserRoleEnum.Uplanner &&
+        {/* isLoggedIn && user && user.role === UserRoleEnum.Uplanner &&
           <DrawingPanel />
-        }
+      */}
 
         <ManageCoordsModal
           manageCoordsModalOpen={manageCoordsModalOpen}
