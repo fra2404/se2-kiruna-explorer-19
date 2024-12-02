@@ -34,7 +34,7 @@ import { DocNotFoundError } from '@utils/errors';
  *              description: The stakeholders of the document
  *              enum:
  *                - LKAB
- *                - Municipalty
+ *                - Municipality
  *                - RegionalAuthority
  *                - ArchitectureFirms
  *                - Citizens
