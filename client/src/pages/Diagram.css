@@ -1,3 +1,14 @@
+/* This section is needed to add the material icons*/
+/* fallback */
+@font-face {
+    font-family: 'Material Icons';
+    font-style: normal;
+    font-weight: 400;
+    src: url(https://fonts.gstatic.com/s/materialicons/v142/flUhRq6tzZclQEJ-Vdg-IuiaDsNc.woff2) format('woff2');
+}
+
+/* End import */
+
 .grid-background {
     background-image: linear-gradient(to right, #e0e0e0 1px, transparent 1px),
         linear-gradient(to bottom, #e0e0e0 1px, transparent 1px);
@@ -20,14 +31,34 @@ div.vis-network div.vis-navigation div.vis-button:hover {
 }
 
 .vis-button:after {
+    background-color: #000000 !important;
+    /* Material UI primary color */
+    color: white !important;
+    border-radius: 100% !important;
+    width: 36px;
+    height: 36px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0px 3px 1px -2px rgba(0, 0, 0, 0.2), 0px 2px 2px 0px rgba(0, 0, 0, 0.14), 0px 1px 5px 0px rgba(0, 0, 0, 0.12) !important;
     font-size: 2em;
-    color: gray;
-}
-
-.div.vis-button.vis-up {
-    display: block;
 
 }
+
+.vis-button.vis-right:after {
+    font-family: 'Material Icons' !important;
+    content: '\e5c8';
+    color: white !important;
+}
+
+
+.vis-button.vis-left:after {
+    font-family: 'Material Icons' !important;
+    content: '\e5c4';
+    color: white !important;
+}
+
+
 
 .vis-button.vis-down {
     display: none !important;
@@ -37,38 +68,30 @@ div.vis-network div.vis-navigation div.vis-button:hover {
     display: none !important;
 }
 
-.vis-button.vis-zoomExtends {
-    display: none !important;
-}
-
 .vis-button:hover:after {
     font-size: 2em;
     color: lightgray;
 }
 
-.vis-button.vis-up:after {
-    content: "▲";
-}
-
-
-.vis-button.vis-left:after {
-    content: "◀";
-}
-
-.vis-button.vis-right:after {
-    content: "▶";
-}
 
 .vis-button.vis-zoomIn:after {
-    content: "+";
-    font-weight: bold;
+    /* content: "+"; */
+    /* font-weight: bold; */
+    font-family: 'Material Icons' !important;
+    content: '\e8ff';
+    color: white !important;
 }
 
 .vis-button.vis-zoomOut:after {
     content: "−";
-    font-weight: bold;
+    /* font-weight: bold; */
+    font-family: 'Material Icons' !important;
+    content: '\e900';
+    color: white !important;
 }
 
 .vis-button.vis-zoomExtends:after {
-    content: "⤧";
+    font-family: 'Material Icons' !important;
+    content: '\e56b';
+    color: white !important;
 }
