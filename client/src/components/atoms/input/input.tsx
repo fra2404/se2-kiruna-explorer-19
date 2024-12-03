@@ -94,7 +94,7 @@ const InputComponent: React.FC<InputComponentProps> = ({
     options.find((option) => option.value === defaultValue) || null,
   );
   const [selectedOptions, setSelectedOptions] = useState<Option[]>(
-    Array.isArray(value) ? (value as Option[]) : [],
+    Array.isArray(value) ? (value) : [],
   );
   const [isTouched, setIsTouched] = useState<boolean>(false);
   const [showPassword, setShowPassword] = useState(false);
@@ -236,7 +236,7 @@ const InputComponent: React.FC<InputComponentProps> = ({
           <input
             className={inputClassName}
             type={
-              type === 'password' ? (showPassword ? 'text' : 'password') : type
+              (type === 'password' && showPassword) ? 'text' : type
             }
             placeholder={placeholder}
             required={required}

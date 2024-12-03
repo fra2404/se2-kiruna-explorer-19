@@ -31,7 +31,7 @@ const GradientSVG: React.FC<GradientSVGProps> = ({
         <linearGradient id={gradientId} x1="0%" y1="0%" x2="100%" y2="100%">
           {fillColorArray.map((color, index) => (
             <stop
-              key={index}
+              key={nanoid()}
               offset={fillColorArray.length > 1 ? `${(index / (fillColorArray.length - 1)) * 100}%` : '100%'}
               stopColor={color}
             />

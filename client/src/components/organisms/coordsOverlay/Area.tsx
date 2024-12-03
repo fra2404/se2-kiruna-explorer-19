@@ -17,14 +17,12 @@ export const Area: React.FC<AreaProps> = ({
   const {swedishFlagBlue, satMapMainColor, mapType} = useContext(MapStyleContext);
 
   return (
-    <>
-      <Polygon
-        key={id}
-        pathOptions={{ color: mapType == "sat" ? satMapMainColor : swedishFlagBlue }}
-        positions={areaCoordinates as unknown as LatLng[]}
-        ref={areaRef}
-      >
-      </Polygon>
-    </>
+    <Polygon
+      key={id}
+      pathOptions={{ color: mapType == "sat" ? satMapMainColor : swedishFlagBlue }}
+      positions={areaCoordinates as unknown as LatLng[]}
+      ref={areaRef}
+    >
+    </Polygon>
   );
 };
