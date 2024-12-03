@@ -38,7 +38,7 @@ const options = {
         enabled: false // Disable physics to prevent nodes from moving
     },
     interaction: {
-        dragNodes: false, // Disable dragging of nodes
+        dragNodes: true, // Enable dragging nodes (improves the readability)
         dragView: true, // Enable dragging of the view
         zoomView: true, // Enable zooming of the view
         navigationButtons: true, // Enable navigation buttons
@@ -89,7 +89,7 @@ const Diagram = () => {
         }
     });
 
-    const label_year = [];
+    const label_year = [] as any[];
     const minYear = graphBEInfo.minYear;
     const maxYear = graphBEInfo.maxYear;
 
@@ -105,8 +105,6 @@ const Diagram = () => {
     const handleNodeClick = (document: IDocument) => {
         openModal(document);
     }
-
-
 
 
     useEffect(() => {
@@ -143,7 +141,6 @@ const Diagram = () => {
             else if (doc.scale.toUpperCase() === "BLUEPRINT/MATERIAL EFFECTS") {
                 doc.scale = "BLUEPRINT/MATERIAL EFFECTS";
             }
-
             if (!doc.scale || !scaleMapping[doc.scale as keyof typeof scaleMapping]) {
                 doc.scale = "default";
             }
@@ -191,12 +188,34 @@ const Diagram = () => {
             }
 
             // Check the connections
+            let connectionColor = "#000000";
+            let dashesType = false as boolean | number[] | undefined;   // In case of an array the first element is the lenght of the dash, the second is the space between the dashes
+
             if (doc.connections && doc.connections.length > 0) {
                 doc.connections.forEach((connection: any) => {
+                    // Modify the style of the connections according to their type
+                    console.log(`Connection type: ${connection.type}`);
+                    if (connection.type.toUpperCase() === "DIRECT") {
+                        console.log("Direct connection");
+                        // connectionColor = "#00FF00";
+                    } else if (connection.type.toUpperCase() === "COLLATERAL") {
+                        // connectionColor = "#FF0000";
+                        dashesType = [2, 2]; // This is good for collateral connections
+                    } else if (connection.type.toUpperCase() === "PROJECTION") {
+                        // connectionColor = "#FF00FF";
+                        dashesType = [1, 3];
+                    } else if (connection.type.toUpperCase() === "UPDATE") {
+                        // connectionColor = "#0000FF";
+                        dashesType = [2, 1, 1];
+                    }
+
+
                     connections.push({
+                        ...connection,
                         from: doc.id,
                         to: connection.document,
-                        color: "#000000"
+                        color: connectionColor,
+                        dashes: dashesType,
                     });
                 });
             }
