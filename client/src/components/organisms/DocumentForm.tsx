@@ -454,16 +454,19 @@ const DocumentForm = ({
                   setShowFiles(!showFiles);
                 }
               }}
+              onClick={() => handleStepClick(3)}
               tabIndex={0} // Ensure the element is focusable
               ref={stepRefs[2]}
               className={`header-section ${hasErrors(3) ? 'error' : ''} scroll-margin-top`}
             >
               <h3
                 className="header-text text-xl font-bold mb-2 cursor-pointer"
-                onClick={() => setShowFiles(!showFiles)}
+                onClick={() => {
+                  setShowFiles(!showFiles)} 
+                }
               >
-                Files
-                <span className="align-middle">
+                Files{/*
+                */}<span className="align-middle">
                   <ToggleButton
                     showContent={showFiles}
                     onToggle={() => setShowFiles(!showFiles)}
@@ -485,6 +488,7 @@ const DocumentForm = ({
                   setShowConnections(!showConnections);
                 }
               }}
+              onClick={() => handleStepClick(4)}
               tabIndex={0} // Ensure the element is focusable
               ref={stepRefs[3]}
               className={`header-section ${hasErrors(4) ? 'error' : ''} scroll-margin-top`}
@@ -493,8 +497,8 @@ const DocumentForm = ({
                 className="header-text text-xl font-bold mb-2 cursor-pointer"
                 onClick={() => setShowConnections(!showConnections)}
               >
-                Connections
-                <span className="align-middle">
+                Connections{/*
+                */}<span className="align-middle">
                   <ToggleButton
                     showContent={showConnections}
                     onToggle={() => setShowConnections(!showConnections)}
@@ -518,6 +522,7 @@ const DocumentForm = ({
                   setConnectToMap(!connectToMap);
                 }
               }}
+              onClick={() => handleStepClick(5)}
               tabIndex={0} // Ensure the element is focusable
               ref={stepRefs[4]}
               className={`header-section ${hasErrors(5) ? 'error' : ''} scroll-margin-top`}
@@ -529,8 +534,8 @@ const DocumentForm = ({
                   setConnectToMap(!connectToMap);
                 }}
               >
-                Georeferencing
-                <span className="align-middle">
+                Georeferencing{/*
+                */}<span className="align-middle">
                   <ToggleButton
                     showContent={showGeoreferencing}
                     onToggle={() => {

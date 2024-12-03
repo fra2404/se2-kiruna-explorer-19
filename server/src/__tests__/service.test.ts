@@ -44,6 +44,9 @@ import {
   updateMediaMetadata,
   getMediaMetadataById,
 } from '@services/media.service';
+import { 
+  getGraphDatas 
+} from '../services/graph.service';
 
 import { UserRoleEnum } from '../utils/enums/user-role.enum';
 import { DocTypeEnum } from '../utils/enums/doc-type.enum';
@@ -64,6 +67,7 @@ jest.mock('../schemas/user.schema'); //suite n#1
 jest.mock('../schemas/coordinate.schema'); //suite n#2
 jest.mock('../schemas/document.schema'); //suite n#3
 jest.mock('../schemas/media.schema'); //suite n#4
+jest.mock('../schemas/document.schema'); //suite n#5
 
 jest.mock('bcrypt'); //Used in suite n#1
 jest.mock('jsonwebtoken'); //Used in suite n#1
@@ -1649,4 +1653,133 @@ describe('Tests for media services', () => {
       expect(Media.findByIdAndUpdate).toHaveBeenCalled();
     });
   }); //updateMediaMetadata
+  /* ************************************************** */
+
+  //getMediaMetadataById
+  describe('Tests for getMediaMetadataById', () => {
+    afterEach(() => {
+      jest.clearAllMocks();
+    });
+
+    //Data mock
+    const mockMedia = {
+      id: "media1",
+      filename: "test.pdf",
+      relativeUrl: "example/url",
+      type: "document",
+      mimetype: "application/pdf",
+      pages: 10
+    };
+
+    //test 1
+    test("Should return the media metadata", async () => {
+      //Support functions mocking
+      (Media.findById as jest.Mock).mockImplementation(async() => mockMedia);
+  
+      //Call of getMediaMetadataById
+      const result = await getMediaMetadataById("media1");
+  
+      expect(Media.findById).toHaveBeenCalledWith("media1");
+      expect(result).toEqual({
+        id: mockMedia.id,
+        filename: mockMedia.filename,
+        url: mockMedia.relativeUrl,
+        type: mockMedia.type,
+        mimetype: mockMedia.mimetype,
+        pages: mockMedia.pages
+      });
+    });
+  
+    //test 2
+    test("Should throw an error if the media is not found", async () => {
+      //Data mock
+      const err = new Error("Media not found");
+      
+      //Support functions mock
+      (Media.findById as jest.Mock).mockImplementation(async() => null);
+  
+      //Call of getMediaMetadataById + result check
+      await expect(getMediaMetadataById("invalid-id")).rejects.toThrowError(err);
+      expect(Media.findById).toHaveBeenCalledWith("invalid-id");
+    });
+  }); //getMediaMetadataById
 }); //END OF MEDIA SERVICES
+
+/* ******************************************* Suite n#5 - GRAPH ******************************************* */
+describe('Tests for graph services', () => {
+  //getGraphDatas
+  describe('Tests for getGraphDatas', () => {
+    afterEach(() => {
+      jest.clearAllMocks();
+    });
+
+    //Returned data mock
+    const mockAggregate = jest.fn().mockImplementation(async() => [
+      {
+        minYear: '2010',
+        maxYear: '2020',
+        data: [
+          {
+            year: '2010',
+            type: [
+              { scale: 'scale1', qty: 5 },
+              { scale: 'scale2', qty: 3 },
+            ],
+          },
+          {
+            year: '2020',
+            type: [
+              { scale: 'scale1', qty: 7 },
+              { scale: 'scale2', qty: 2 },
+            ],
+          },
+        ],
+      },
+    ]);
+
+    //test 1
+    test('Should retrive all the data needed to build the graph', async () => {
+      //Support functions mocking
+      (Document.aggregate as jest.Mock).mockImplementation(mockAggregate);
+
+      //Call of getGraphDatas
+      const result = await getGraphDatas();
+
+      expect(result).toEqual({
+        minYear: '2010',
+        maxYear: '2020',
+        infoYear: [
+          {
+            year: '2010',
+            types: [
+              { scale: 'scale1', qty: 5 },
+              { scale: 'scale2', qty: 3 },
+            ],
+          },
+          {
+            year: '2020',
+            types: [
+              { scale: 'scale1', qty: 7 },
+              { scale: 'scale2', qty: 2 },
+            ],
+          },
+        ],
+      });
+
+      expect(Document.aggregate).toHaveBeenCalled();
+    });
+
+    //test 2
+    test('Should throw an error if the connection fails', async () => {
+      //Data mock
+      const err = new CustomError("Internal Server Error", 500);
+
+      //Support functions mocking
+      (Document.aggregate as jest.Mock).mockImplementation(async() => err);
+  
+      //Call of getGraphDatas + result checks
+      await expect(getGraphDatas()).rejects.toThrow(err);
+    });
+  }); //getGraphDatas
+  /* ************************************************** */
+}) //END OF GRAPH SERVICES
