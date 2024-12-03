@@ -244,7 +244,11 @@ export const validateSearchDocument = [
     throw new Error('Architectural Scale must be in the format 1:number');
   }
   return true;
- })
+ }),
+ body('coordinates')
+    .optional()
+    .isMongoId()
+    .withMessage('Coordinates must be a valid MongoDB ObjectId'),
 ]
 
 
