@@ -8,19 +8,19 @@ import Toast from '../Toast';
 import useToast from '../../../utils/hooks/toast';
 
 interface AllDocumentsModalProps {
-  setShowAllDocuments: (showAllDocuments: boolean) => void;
-  coordinates: any;
-  setCoordinates: (coordinates: any) => void;
-  allDocuments: IDocument[];
-  setAllDocuments: (documents: IDocument[]) => void;
+    setShowAllDocumentsModal: (showAllDocumentsModal: boolean) => void;
+    coordinates: any;
+    setCoordinates: (coordinates: any) => void;
+    allDocuments: IDocument[];
+    setAllDocuments: (allDocuments: IDocument[]) => void;
 }
 
 const AllDocumentsModal: React.FC<AllDocumentsModalProps> = ({
-    setShowAllDocuments,
+    setShowAllDocumentsModal,
     coordinates,
     setCoordinates,
     allDocuments,
-    setAllDocuments
+    setAllDocuments,
 }) => {
 
     const [filters, setFilters] = useState({
@@ -64,7 +64,7 @@ const AllDocumentsModal: React.FC<AllDocumentsModalProps> = ({
             <div className='flex flex-col'>
                 <div className='flex justify-between'>
                     <h1 className='text-2xl font-bold'>All Documents</h1>
-                    <button onClick={()=>setShowAllDocuments(false)}
+                    <button onClick={()=>setShowAllDocumentsModal(false)}
                     className='bg-black text-white font-semibold px-2 rounded'>Close</button>
                 </div>
 

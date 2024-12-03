@@ -9,13 +9,12 @@ import Overlay from '../components/organisms/Overlay/Overlay';
 import { Point } from '../components/organisms/coordsOverlay/Point';
 import ClickMarker from '../components/organisms/coordsOverlay/ClickMarker';
 import { Header } from '../components/organisms/Header';
-import DrawingPanel from '../components/molecules/DrawingPanel';
-import { IDocument } from '../utils/interfaces/document.interface';
 import MarkerClusterGroup from 'react-leaflet-markercluster';
 import { ManageCoordsModal } from '../components/organisms/modals/ManageCoordsModal';
 import { renderToString } from 'react-dom/server';
 import { UserRoleEnum } from '../utils/interfaces/user.interface';
 import CustomMap from '../components/molecules/CustomMap';
+import useDocuments from '../utils/hooks/documents';
 
 import 'leaflet/dist/leaflet.css';
 import 'leaflet-draw/dist/leaflet.draw.css';
@@ -42,9 +41,9 @@ export default function KirunaMap() {
   const { setFeedbackFromError } = useContext(FeedbackContext);
   const { swedishFlagBlue, swedishFlagYellow } = useContext(MapStyleContext);
 
-  const [documents, setDocuments] = useState<IDocument[]>([]);
   const [coordinates, setCoordinates] = useState({});
-  const [shouldRefresh, setShouldRefresh] = useState(true);
+
+  const { documents, setDocuments, refreshDocuments, isLoading, error } = useDocuments();
 
   //Manages the coords modal
   const [manageCoordsModalOpen, setManageCoordsModalOpen] = useState(false);
@@ -81,15 +80,6 @@ export default function KirunaMap() {
       });
   }, []);
 
-  useEffect(() => {
-    API.getDocuments()
-      .then((documents) => {
-        setDocuments(documents);
-      })
-      .then(() => setShouldRefresh(false))
-      .catch((e) => setFeedbackFromError(e));
-  }, [shouldRefresh]);
-
   const [width, setWidth] = useState(window.innerWidth);
   const [height, setHeight] = useState(window.innerHeight);
 
@@ -110,7 +100,7 @@ export default function KirunaMap() {
           coordinates={coordinates}
           setCoordinates={setCoordinates}
           documents={documents}
-          setDocuments={setDocuments} 
+          setDocuments={setDocuments}
         />
 
       <CustomMap>
@@ -160,7 +150,7 @@ export default function KirunaMap() {
                   setCoordinates={setCoordinates}
                   pointDocuments={filteredDocuments}
                   allDocuments={documents}
-                  setDocuments={setDocuments}
+                  setDocuments={setDocuments} 
                 />
               );
             }
@@ -175,10 +165,6 @@ export default function KirunaMap() {
             setDocuments={setDocuments}
           />
         )}
-
-        {/* isLoggedIn && user && user.role === UserRoleEnum.Uplanner &&
-          <DrawingPanel />
-      */}
 
         <ManageCoordsModal
           manageCoordsModalOpen={manageCoordsModalOpen}

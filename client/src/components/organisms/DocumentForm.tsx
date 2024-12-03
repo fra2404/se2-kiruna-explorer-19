@@ -196,32 +196,6 @@ const DocumentForm = ({
   // Toast
   const { toast, showToast, hideToast } = useToast();
 
-  // const [toastMsg, setToastMsg] = useState<{
-  //   isShown: boolean;
-  //   type: 'success' | 'error';
-  //   message: string;
-  // }>({
-  //   isShown: false,
-  //   type: 'success',
-  //   message: '',
-  // });
-
-  // const showToastMessage = (message: string, type: 'success' | 'error') => {
-  //   setToastMsg({
-  //     isShown: true,
-  //     message,
-  //     type,
-  //   });
-  // };
-
-  // const hideToastMessage = () => {
-  //   setToastMsg({
-  //     isShown: false,
-  //     message: '',
-  //     type: 'error',
-  //   });
-  // };
-
   const validateStep = () => {
     const newErrors: { [key: string]: string } = {};
     if (title.trim() === '') newErrors.title = 'Title is required';

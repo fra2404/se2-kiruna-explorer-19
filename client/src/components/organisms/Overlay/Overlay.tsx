@@ -33,7 +33,7 @@ const Overlay: React.FC<OverlayProps> = ({
   const [isHoveredNewDocument, setIsHoveredNewDocument] = useState(false);
 
   const [isHoveredSearch, setIsHoveredSearch] = useState(false);
-  const [showAllDocuments, setShowAllDocuments] = useState(false);
+  const [showAllDocumentsModal, setShowAllDocumentsModal] = useState(false);
   const { isLoggedIn, user } = useAuth();
 
   const municipalityDocumentsModalStyles = {
@@ -51,8 +51,7 @@ const Overlay: React.FC<OverlayProps> = ({
   };
 
   return (
-    <div
-      style={{
+    <div style={{
         position: 'absolute',
         top: '50vh',
         left: 0,
@@ -81,8 +80,8 @@ const Overlay: React.FC<OverlayProps> = ({
         onMouseEnter={() => setIsHoveredSearch(true)}
         onMouseLeave={() => setIsHoveredSearch(false)}
         onClick={() => {
-          if (!showAllDocuments) {
-            setShowAllDocuments(true);
+          if (!showAllDocumentsModal) {
+            setShowAllDocumentsModal(true);
           }
         }}
         text={
@@ -124,23 +123,23 @@ const Overlay: React.FC<OverlayProps> = ({
           coordinates={coordinates}
           setCoordinates={setCoordinates}
           documents={documents}
-          setDocuments={setDocuments}
           positionProp={undefined}
           setModalOpen={setModalOpen}
+          setDocuments={setDocuments} 
         />
       </Modal>
 
       <Modal
         style={modalStyles}
-        isOpen={showAllDocuments}
-        onRequestClose={() => setShowAllDocuments(false)}
+        isOpen={showAllDocumentsModal}
+        onRequestClose={() => setShowAllDocumentsModal(false)}
       >
         <AllDocumentsModal 
-          setShowAllDocuments={setShowAllDocuments} 
+          setShowAllDocumentsModal={setShowAllDocumentsModal} 
           coordinates={coordinates}
           setCoordinates={setCoordinates}
           allDocuments={documents}
-          setAllDocuments={setDocuments}
+          setAllDocuments={setDocuments} 
         />
       </Modal>
 
@@ -153,7 +152,7 @@ const Overlay: React.FC<OverlayProps> = ({
           coordinates={coordinates}
           setCoordinates={setCoordinates}
           documents={documents}
-          setDocuments={setDocuments}
+          setDocuments={setDocuments} 
         />
       </Modal>
     </div>
