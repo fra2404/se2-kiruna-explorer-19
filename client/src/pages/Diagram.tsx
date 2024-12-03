@@ -23,6 +23,7 @@ import {
 import { IDocument } from "../utils/interfaces/document.interface.js";
 import DocumentDetailsModal from '../components/organisms/modals/DocumentDetailsModal';
 import Modal from 'react-modal';
+import Legend from './Legend';
 
 const LABEL_FONT = { size: 25, color: "#000000" };
 const YEAR_SPACING = 500;
@@ -30,9 +31,6 @@ const options = {
     autoResize: true,
     layout: {
         hierarchical: false
-    },
-    edges: {
-        color: "#000000"
     },
     physics: {
         enabled: false // Disable physics to prevent nodes from moving
@@ -43,7 +41,6 @@ const options = {
         zoomView: true, // Enable zooming of the view
         navigationButtons: true, // Enable navigation buttons
     },
-
 };
 
 const modalStyles = {
@@ -73,7 +70,7 @@ const scaleMapping = {
     "CONCEPT": 400,
     "ARCHITECTURAL": 600,
     "BLUEPRINT/MATERIAL EFFECTS": 800,
-    "default": 50, // Valore di default per testing!
+    "default": 50,
 };
 
 const Diagram = () => {
@@ -122,11 +119,7 @@ const Diagram = () => {
 
     useEffect(() => {
         const connections = [] as any[];
-
-
-        // Here I need to create the nodes with the data retrieved from the API.
-        // But first I need to map the data to the format that the graph component expects.
-
+        // Map the data from the BE to the format that the graph component expects.
         documents.forEach((doc: any) => {
             // Check the scale
             if (doc.scale.toUpperCase() === "TEXT") {
@@ -188,7 +181,7 @@ const Diagram = () => {
             }
 
             // Check the connections
-            let connectionColor = "#000000";
+            const connectionColor = "#000000";
             let dashesType = false as boolean | number[] | undefined;   // In case of an array the first element is the lenght of the dash, the second is the space between the dashes
 
             if (doc.connections && doc.connections.length > 0) {
@@ -208,7 +201,6 @@ const Diagram = () => {
                         // connectionColor = "#0000FF";
                         dashesType = [2, 1, 1];
                     }
-
 
                     connections.push({
                         ...connection,
@@ -283,6 +275,7 @@ const Diagram = () => {
         y: scaleMapping[node.scale as keyof typeof scaleMapping], // Mapping the scale
         shape: "box",
         font: { ...LABEL_FONT, color: "#FFFFFF" },
+
     }));
 
 
@@ -303,9 +296,6 @@ const Diagram = () => {
 
 
     const networkRef = useRef<any>(null);
-
-
-
 
     useEffect(() => {
         const network = networkRef.current; // Get the network object from the ref
@@ -334,6 +324,13 @@ const Diagram = () => {
 
     return (
         <div style={{ height: "100vh", position: "relative" }} className="grid-background">
+
+
+            <div style={{ position: "absolute", top: "10px", left: "10px", zIndex: 10 }}>
+                <Legend />
+
+            </div>
+
             {/* Button to navigate to the home */}
             <div style={{ position: "absolute", top: "10px", right: "10px", zIndex: 10 }}>
                 <ButtonRounded
@@ -360,7 +357,8 @@ const Diagram = () => {
                             }
                         }
                     }}
-                    style={{ height: "100%" }} getNetwork={network => {    // Call the methods inside the Graph component
+                    style={{ height: "100%" }}
+                    getNetwork={network => {    // Call the methods inside the Graph component
                         // network.moveTo({ position: { x: FIT_X_VIEW, y: FIT_Y_VIEW }, scale: 0.5 });
                         networkRef.current = network;
 
@@ -379,6 +377,7 @@ const Diagram = () => {
                         network.on("dragEnd", function () {
                             lastPosition = network.getViewPosition();
                         });
+
                     }}
                 />
             )}
@@ -392,10 +391,7 @@ const Diagram = () => {
                 />
             </Modal>
         </div>
-
-
     );
-
 };
 
 export default Diagram;
