@@ -298,8 +298,6 @@ async function searchDocuments(
           .map((word) => `"${encodeURIComponent(word)}"`)
           .join(',')}]`;
 
-    console.log('Search URL:', searchURL);
-
     let formattedFilters;
     if (filters.scale === '') {
       formattedFilters = {
@@ -322,8 +320,6 @@ async function searchDocuments(
     } else {
       formattedFilters = filters;
     }
-
-    console.log('Filters sent in body:', formattedFilters);
 
     const response = await fetch(searchURL, {
       method: 'POST',

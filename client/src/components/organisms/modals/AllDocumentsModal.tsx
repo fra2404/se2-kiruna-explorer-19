@@ -6,6 +6,7 @@ import Filters from '../../molecules/Filters';
 import API from '../../../API';
 import Toast from '../Toast';
 import useToast from '../../../utils/hooks/toast';
+import mongoose from 'mongoose';
 
 interface AllDocumentsModalProps {
     setShowAllDocumentsModal: (showAllDocumentsModal: boolean) => void;
@@ -59,13 +60,25 @@ const AllDocumentsModal: React.FC<AllDocumentsModalProps> = ({
         }
     }, [filters.year, filters.month, filters.day, setDate]);
 
-    const handleSearch = async () => {
-        if (
+    const isNotValidateArchitecturalScale = () => {
+        return (
             filters.scale === 'ARCHITECTURAL' &&
             ((filters.architecturalScale ?? '').trim() === '' ||
               !/^1:\d+$/.test(filters.architecturalScale ?? ''))
-        ) {
+        );
+    }
+
+    const isValidateCoordinates = () => {
+        return filters.coordinates === "" || mongoose.Types.ObjectId.isValid(filters.coordinates);
+    };
+
+    const handleSearch = async () => {
+        if (isNotValidateArchitecturalScale()) {
             showToast('Invalid architectural scale', 'error');
+            return;
+        }
+        if (!isValidateCoordinates()) {
+            showToast('Invalid coordinates', 'error');
             return;
         }
         let wellFormedFilters = {

@@ -38,9 +38,6 @@ const Filters: React.FC<FiltersProps> = ({ filters, setFilters }) => {
     const [activeTab, setActiveTab] = useState(0);
 
     useEffect(() => {
-        // API.getAreas().then((areas) => {
-        //     setAreasOptions(areas.map((area : any) => ({ value: area.id, label: area.name })));
-        // });
         API.getCoordinates().then((coordinates) => {
             setCoordinatesOptions(coordinates.map((coordinate: any) => ({ value: coordinate._id, label: coordinate.name })));
         });
