@@ -269,6 +269,8 @@ export const getMediaMetadataByIdController = async (
   try {
     const mediaMetadata = await getMediaMetadataById(req.params.mediaId);
 
+    console.log(mediaMetadata)
+
     if (!mediaMetadata) {
       throw new MediaNotFoundError();
     }

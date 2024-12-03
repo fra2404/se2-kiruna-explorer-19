@@ -14,6 +14,7 @@ import {
   validateDocumentId,
   validateDocumentType,
   validateUpdateDocument,
+  validateSearchDocument,
 } from '@utils/validators/document.validator';
 import { handleValidationErrors } from '@middlewares/validation.middleware';
 
@@ -34,7 +35,7 @@ router.post(
 
 router.get('/', getAllDocumentsController); //Get All Documents
 
-router.post('/search', searchDocumentsController); //Search Document
+router.post('/search', validateSearchDocument, handleValidationErrors, searchDocumentsController); //Search Document
 
 router.get('/:id', validateDocumentId, getDocumentByIdController); // Get Document by ID
 
