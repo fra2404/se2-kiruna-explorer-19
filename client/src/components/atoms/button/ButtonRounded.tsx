@@ -1,5 +1,4 @@
-import { Button } from '@material-tailwind/react';
-import { ButtonProps } from '@material-tailwind/react';
+import { Button, ButtonProps } from '@material-tailwind/react';
 import { Col, Row } from 'react-bootstrap';
 
 interface ButtonRoundedProps {

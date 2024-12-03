@@ -446,11 +446,11 @@ const DocumentForm = ({
                 setTitle={setTitle}
                 stakeholders={stakeholders}
                 setStakeholders={setStakeholders}
-                scale={scale || ''}
+                scale={scale ?? ''}
                 setScale={setScale}
                 issuanceDate={issuanceDate}
                 setIssuanceDate={setIssuanceDate}
-                architecturalScale={architecturalScale || ''}
+                architecturalScale={architecturalScale ?? ''}
                 setArchitecturalScale={setArchitecturalScale}
                 errors={errors}
               />
@@ -476,7 +476,7 @@ const DocumentForm = ({
                 setDescription={setDescription}
                 language={language}
                 setLanguage={setLanguage}
-                docType={docType || ''}
+                docType={docType ?? ''}
                 setDocType={setDocType}
                 documentTypeOptions={documentTypeOptions}
                 errors={errors}
@@ -583,8 +583,8 @@ const DocumentForm = ({
               {showGeoreferencing && (
                 <Step5
                   coordinates={coordinates}
-                  selectedCoordIdProp={selectedCoordId || ''}
-                  selectedCoordId={selectedCoordId || ''}
+                  selectedCoordIdProp={selectedCoordId ?? ''}
+                  selectedCoordId={selectedCoordId ?? ''}
                   setSelectedCoordId={setSelectedCoordId}
                   setCoordNamePopupOpen={setCoordNamePopupOpen}
                   position={position}
