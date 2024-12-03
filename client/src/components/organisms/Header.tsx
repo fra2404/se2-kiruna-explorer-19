@@ -25,7 +25,7 @@ export const Header: React.FC<HeaderProps> = ({
   // const [showSearchBar, setShowSearchBar] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
 
-  const {mapType} = useContext(MapStyleContext);
+  const { mapType } = useContext(MapStyleContext);
 
   useEffect(() => {
     const interval = setInterval(() => {
@@ -52,7 +52,7 @@ export const Header: React.FC<HeaderProps> = ({
         pointerEvents: "none"
       }}>
 
-      <div className="flex items-center justify-between" style={{background: "transparent"}}>
+      <div className="flex items-center justify-between" style={{ background: "transparent" }}>
         <div className='flex items-center'>
           <ButtonRounded variant="filled" className="bg-black p-2"
             img="./src/assets/logo.png" text={dateTime}
@@ -64,15 +64,22 @@ export const Header: React.FC<HeaderProps> = ({
               justifyContent: 'center',
               alignItems: 'center',
               pointerEvents: "auto"
-            }}/>
+            }} />
           <h1 className={mapType == "osm" ? 'font-bold text-black ml-2 text-2xl' : "font-bold text-white ml-2 text-2xl"}>Kiruna eXplorer</h1>
         </div>
-        
-        <div className='flex items-center gap-4'>
-        
-          {/* Search Bar and Icon */}
 
-          <div className='ml-auto' style={{pointerEvents: "auto"}}>
+        <div className='flex items-center gap-4'>
+          {/* Button to switch to the diagram view */}
+          <ButtonRounded
+            variant="filled"
+            text="Go to graph"
+            className="bg-black pr-4 pl-4 d-flex align-items-center"
+            onClick={() => navigate('/diagram')}
+            style={{ pointerEvents: "auto" }}
+          />
+          {/* Login/logout button */}
+
+          <div className='ml-auto' style={{ pointerEvents: "auto" }}>
             {!isLoggedIn && !user ? (
               <ButtonRounded variant="filled" text="Login"
                 onClick={() => {
@@ -90,7 +97,7 @@ export const Header: React.FC<HeaderProps> = ({
               </div>
             )}
           </div>
-        </div> 
+        </div>
       </div>
 
       <LoginModal
