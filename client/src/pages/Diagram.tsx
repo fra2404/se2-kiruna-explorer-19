@@ -13,6 +13,8 @@ import InformativeDocIcon from '../assets/icons/informative-doc-icon.svg';
 import MaterialEffectsIcon from '../assets/icons/material-effects-icon.svg';
 import PrescriptiveDocIcon from '../assets/icons/prescriptive-doc-icon.svg';
 import TechnicalDocIcon from '../assets/icons/technical-doc-icon.svg';
+import ButtonRounded from "../components/atoms/button/ButtonRounded";
+import { useNavigate } from 'react-router-dom';
 import "vis-network/styles/vis-network.css";
 import {
     swedishFlagBlue,
@@ -21,8 +23,6 @@ import {
 import { IDocument } from "../utils/interfaces/document.interface.js";
 import DocumentDetailsModal from '../components/organisms/modals/DocumentDetailsModal';
 import Modal from 'react-modal';
-
-
 
 const LABEL_FONT = { size: 25, color: "#000000" };
 const YEAR_SPACING = 500;
@@ -76,14 +76,9 @@ const scaleMapping = {
     "default": 50, // Valore di default per testing!
 };
 
-
-
-
-
-
 const Diagram = () => {
-
-    const [selectedDocument, setSelectedDocument] = useState([]);
+    const navigate = useNavigate();
+    const [selectedDocument, setSelectedDocument] = useState<IDocument[]>([]);
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [documents, setDocuments] = useState<any[]>([]);
     const [originalDocuments, setOriginalDocuments] = useState<any[]>([]);
@@ -108,7 +103,6 @@ const Diagram = () => {
     };
 
     const handleNodeClick = (document: IDocument) => {
-        console.log(`Clicked document is ${document}`)
         openModal(document);
     }
 
@@ -337,10 +331,27 @@ const Diagram = () => {
     const max_zoom = 2;
     const min_zoom = 0.1;
 
+    const handleNodeClickButton = () => {
+        console.log("Button clicked!");
+        navigate('/');
+    }
 
 
     return (
-        <div style={{ height: "100vh" }} className="grid-background">
+        <div style={{ height: "100vh", position: "relative" }} className="grid-background">
+            {/* Button to navigate to the home */}
+            <div style={{ position: "absolute", top: "10px", right: "10px", zIndex: 10 }}>
+                <ButtonRounded
+                    variant="filled"
+                    text="Go to homepage"
+                    className="bg-black pr-4 pl-4 d-flex align-items-center"
+                    onClick={handleNodeClickButton}
+
+                ></ButtonRounded>
+            </div>
+
+
+
             {state.graph && (
                 <Graph
                     graph={state.graph}
@@ -386,6 +397,7 @@ const Diagram = () => {
                 />
             </Modal>
         </div>
+
 
     );
 
