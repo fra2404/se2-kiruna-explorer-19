@@ -1,4 +1,4 @@
-import React, { useContext } from 'react';
+import React, { useContext, useRef } from 'react';
 import { Marker, Tooltip, Polygon } from 'react-leaflet';
 import { LatLng } from 'leaflet';
 import InputComponent from '../atoms/input/input';
@@ -44,6 +44,9 @@ const MapSection: React.FC<MapSectionProps> = ({
 }) => {
   const { swedishFlagBlue, satMapMainColor, mapType } =
     useContext(MapStyleContext);
+
+  const featureGroupRef = useRef<L.FeatureGroup>(null);
+  const popupRef = useRef<L.Popup>(null);
 
   const handleAddPoint = async () => {
     if (position) {
@@ -101,6 +104,8 @@ const MapSection: React.FC<MapSectionProps> = ({
             defaultValue={selectedCoordIdProp? selectedCoordId : 'all_municipality'}
             value={selectedCoordId}
             onChange={(v: any) => {
+              popupRef.current?.remove();
+              featureGroupRef.current?.remove();
               setSelectedCoordId(v.target.value != 'all_municipality' ? v.target.value : undefined);
               setCoordNamePopupOpen(false);
               if (
@@ -157,6 +162,10 @@ const MapSection: React.FC<MapSectionProps> = ({
             coordinates={coordinates}
             setCoordinates={setCoordinates}
             setSelectedCoordId={setSelectedCoordId}
+            setPosition={setPosition}
+            setCoordName={setCoordName}
+            featureGroupRef={featureGroupRef}
+            popupRef={popupRef}
           />
 
           {selectedCoordId &&

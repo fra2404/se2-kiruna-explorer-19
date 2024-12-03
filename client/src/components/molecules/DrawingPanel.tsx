@@ -1,6 +1,6 @@
-import { useEffect, useRef, useState, useContext } from "react";
+import { useEffect, useState, useContext } from "react";
 import { useMap, FeatureGroup, Popup } from "react-leaflet";
-import L from "leaflet";
+import L, { LatLng } from "leaflet";
 
 import { PiPolygonFill } from "react-icons/pi";
 import { createCoordinate } from "../../API"
@@ -20,22 +20,28 @@ interface DrawingPanelProps {
 	coordinates: any;
 	setCoordinates: (coordinates: any) => void;
 	setSelectedCoordId?: (value: string) => void;
+	setPosition: (position: LatLng | undefined) => void;
+	setCoordName: (name: string) => void;
+	popupRef: React.MutableRefObject<any>;
+	featureGroupRef: React.MutableRefObject<any>;
 }
 
 const DrawingPanel: React.FC<DrawingPanelProps> = ({
 	coordinates,
 	setCoordinates,
-	setSelectedCoordId
+	setSelectedCoordId,
+	setPosition,
+	setCoordName,
+	popupRef,
+	featureGroupRef
 }) => {
 	const map = useMap();
-	const featureGroupRef = useRef<any>(null);
 	const [areaName, setAreaName] = useState('');
 	const [newAreaCoordinates, setNewAreaCoordinates] = useState([]);
 	const [popupPosition, setPopupPosition] = useState(null);
 	const { swedishFlagBlue, satMapMainColor, mapType } = useContext(MapStyleContext);
 
 	const [isHoveredAddArea, setIsHoveredAddArea] = useState(false);
-	const popupRef = useRef<L.Popup>(null);
 	const { toast, showToast, hideToast } = useToast();
 
 	useEffect(() => {
@@ -122,7 +128,14 @@ const DrawingPanel: React.FC<DrawingPanelProps> = ({
 						}
 						onMouseEnter={() => setIsHoveredAddArea(true)}
 						onMouseLeave={() => setIsHoveredAddArea(false)}
-						onClick={handleDrawPolygon}
+						onClick={() => {
+							setPosition(undefined);
+							if(setSelectedCoordId) {
+								setSelectedCoordId('');
+							}
+							setCoordName('');
+							handleDrawPolygon();
+						}}
 						className="floating-button-left"
 					/>
 				</div>

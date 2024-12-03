@@ -44,6 +44,10 @@ export const ManageCoordsModal: React.FC<ManageCoordsModalProps> = ({
   const {swedishFlagBlue, swedishFlagYellow, satMapMainColor, mapType} = useContext(MapStyleContext);
   const markerRef = useRef<L.Marker>(null);
   const polygonRef = useRef<L.Polygon>(null);
+  
+  //Refs needed for area drawing
+  const popupRef = useRef<L.Popup>(null);
+  const featureGroupRef = useRef<L.FeatureGroup>(null);
 
   // Georeferencing information
   const [position, setPosition] = useState<LatLng | undefined>(undefined);
@@ -191,6 +195,10 @@ export const ManageCoordsModal: React.FC<ManageCoordsModalProps> = ({
           <DrawingPanel 
             coordinates={coordinates}
             setCoordinates={setCoordinates}
+            setPosition={setPosition}
+            setCoordName={setCoordName}
+            featureGroupRef={featureGroupRef}
+            popupRef={popupRef}
           />
 
           <MapClickHandler />
