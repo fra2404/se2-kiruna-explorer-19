@@ -6,7 +6,6 @@ import ConnectionForm from './documentConnections/ConnectionForm';
 import ButtonRounded from '../atoms/button/ButtonRounded';
 
 import {
-  createCoordinate,
   createDocument,
   editDocument,
   addResource,
@@ -19,7 +18,6 @@ import Step4 from '../molecules/steps/Step4';
 import Step5 from '../molecules/steps/Step5';
 import Step6 from '../molecules/steps/Step6';
 import {
-  ICoordinate,
   IDocument,
 } from '../../utils/interfaces/document.interface';
 
@@ -236,9 +234,8 @@ const DocumentForm = ({
     }
 
     const media_ids = await handleSaveResource();
-    const coordId = await handleCoordinate();
 
-    const documentData = createDocumentData(media_ids, coordId);
+    const documentData = createDocumentData(media_ids);
 
     try {
       const response = await saveDocument(documentData);
@@ -256,42 +253,7 @@ const DocumentForm = ({
     }
   };
 
-  const handleCoordinate = async () => {
-    if (!selectedCoordId && position && connectToMap) {
-      const coordData: ICoordinate = {
-        id: '',
-        name: coordName,
-        type: 'Point',
-        coordinates: [position.lat, position.lng],
-      };
-
-      try {
-        const response = await createCoordinate(coordData);
-        if (response.success) {
-          const coordId = response.coordinate?.coordinate._id;
-          if (coordId) {
-            setCoordinates({
-              ...coordinates,
-              [coordId]: {
-                type: response.coordinate?.coordinate.type,
-                coordinates: response.coordinate?.coordinate.coordinates,
-                name: response.coordinate?.coordinate.name,
-              },
-            });
-          }
-          return coordId;
-        } else {
-          showToast('Failed to create coordinate', 'error');
-        }
-      } catch (error) {
-        showToast('Error creating coordinate:' + error, 'error');
-      }
-    } else {
-      return connectToMap ? selectedCoordId : undefined;
-    }
-  };
-
-  const createDocumentData = (media_ids: string[], coordId?: string) => {
+  const createDocumentData = (media_ids: string[]) => {
     return {
       id: selectedDocument?.id ?? '',
       title,
@@ -302,7 +264,7 @@ const DocumentForm = ({
       language,
       summary: description,
       date: issuanceDate,
-      coordinates: coordId ?? undefined,
+      coordinates: connectToMap ? selectedCoordId : undefined,
       connections: connections.map((conn) => ({
         document: conn.relatedDocument,
         type: conn.type,
@@ -560,6 +522,8 @@ const DocumentForm = ({
               {showGeoreferencing && (
                 <Step5
                   coordinates={coordinates}
+                  setCoordinates={setCoordinates}
+                  showToastMessage={showToast}
                   selectedCoordIdProp={selectedCoordId || ''}
                   selectedCoordId={selectedCoordId || ''}
                   setSelectedCoordId={setSelectedCoordId}

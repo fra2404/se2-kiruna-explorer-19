@@ -74,6 +74,7 @@ const Overlay: React.FC<OverlayProps> = ({
             setShowMunicipalityDocuments(true);
           }
         }}
+        className='floating-button-right'
       />
 
       <FloatingButton
@@ -91,7 +92,7 @@ const Overlay: React.FC<OverlayProps> = ({
             <FaFolder style={{ display: 'inline' }} />
           )
         }
-        className="mt-20"
+        className="floating-button-right mt-20"
       />
 
       {isLoggedIn && user && user.role === UserRoleEnum.Uplanner && (
@@ -110,7 +111,7 @@ const Overlay: React.FC<OverlayProps> = ({
               setModalOpen(true);
             }
           }}
-          className='mt-40'
+          className='floating-button-right mt-40'
         />
       )}
 

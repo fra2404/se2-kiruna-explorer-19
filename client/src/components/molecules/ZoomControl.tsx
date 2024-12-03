@@ -5,7 +5,7 @@ import MapSwitch from '../atoms/map-switch/MapSwitch';
 
 function CustomZoomControl() {
   const map = useMap();
-  const [zoom, setZoom] = useState(map.getZoom());
+  const [_zoom, setZoom] = useState(map.getZoom());
 
   const handleZoomIn = () => {
     map.zoomIn();
