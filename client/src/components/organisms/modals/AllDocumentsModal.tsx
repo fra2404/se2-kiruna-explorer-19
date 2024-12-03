@@ -68,7 +68,7 @@ const AllDocumentsModal: React.FC<AllDocumentsModalProps> = ({
             showToast('Invalid architectural scale', 'error');
             return;
         }
-        const wellFormedFilters = {
+        let wellFormedFilters = {
             type: filters.type,
             stakeholders: filters.stakeholders,
             coordinates: filters.coordinates,
@@ -76,7 +76,7 @@ const AllDocumentsModal: React.FC<AllDocumentsModalProps> = ({
             language: filters.language,
             scale: filters.scale,
             architecturalScale: filters.architecturalScale,
-        }
+        };
         const documents = await API.searchDocuments(searchQuery, wellFormedFilters);
         setDocuments(documents);
     };

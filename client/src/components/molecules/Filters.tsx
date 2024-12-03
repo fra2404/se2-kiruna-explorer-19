@@ -88,7 +88,7 @@ const Filters: React.FC<FiltersProps> = ({ filters, setFilters }) => {
                     value={filters.coordinates}
                     onChange={(e) => {
                         if ('target' in e) {
-                            handleFilterChange('area', e.target.value);
+                            handleFilterChange('coordinates', e.target.value);
                         }
                     }}
                     options={coordinatesOptions}

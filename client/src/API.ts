@@ -299,7 +299,31 @@ async function searchDocuments(
           .join(',')}]`;
 
     console.log('Search URL:', searchURL);
-    console.log('Filters sent in body:', filters);
+
+    let formattedFilters;
+    if (filters.scale === '') {
+      formattedFilters = {
+        type: filters.type,
+        stakeholders: filters.stakeholders,
+        coordinates: filters.coordinates,
+        date: filters.date,
+        language: filters.language,
+      };
+    }
+    else if (filters.architecturalScale === '') {
+      formattedFilters = {
+        type: filters.type,
+        stakeholders: filters.stakeholders,
+        coordinates: filters.coordinates,
+        date: filters.date,
+        language: filters.language,
+        scale: filters.scale,
+      };
+    } else {
+      formattedFilters = filters;
+    }
+
+    console.log('Filters sent in body:', formattedFilters);
 
     const response = await fetch(searchURL, {
       method: 'POST',
@@ -307,7 +331,7 @@ async function searchDocuments(
       headers: {
         'Content-Type': 'application/json',
       },
-      body: JSON.stringify(filters),
+      body: JSON.stringify(formattedFilters),
     });
     if (!response.ok) throw new Error('Failed to fetch documents');
 

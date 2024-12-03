@@ -17,6 +17,7 @@ export interface IDocumentFilters {
   type?: DocTypeEnum;
   date?: string;
   language?: string;
+  coordinates?: string; 
 }
 
 export interface IDocument {
