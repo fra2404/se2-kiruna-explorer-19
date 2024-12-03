@@ -282,17 +282,15 @@ async function searchDocuments(
   searchQuery: string,
   filters: {
     type: string;
-    stakeholders: string;
-    area: string;
-    year: string;
-    month: string;
-    day: string;
+    stakeholders: string[];
+    coordinates: string;
+    date: string;
     language: string;
     scale: string;
-    customScale: string;
+    architecturalScale: string;
   },
 ): Promise<IDocument[]> {
-  const searchURL =
+    const searchURL =
     searchQuery.trim() === ''
       ? `${SERVER_URL}/documents/search`
       : `${SERVER_URL}/documents/search?keywords=[${searchQuery
@@ -300,18 +298,21 @@ async function searchDocuments(
           .map((word) => `"${encodeURIComponent(word)}"`)
           .join(',')}]`;
 
-  const response = await fetch(searchURL, {
-    method: 'POST',
-    credentials: 'include',
-    headers: {
-      'Content-Type': 'application/json',
-    },
-    body: JSON.stringify(filters),
-  });
-  if (!response.ok) throw new Error('Failed to fetch documents');
+    console.log('Search URL:', searchURL);
+    console.log('Filters sent in body:', filters);
 
-  const documents = await response.json();
-  return documents;
+    const response = await fetch(searchURL, {
+      method: 'POST',
+      credentials: 'include',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(filters),
+    });
+    if (!response.ok) throw new Error('Failed to fetch documents');
+
+    const documents = await response.json();
+    return documents;
 }
 
 async function addArea(coordinateData: ICoordinate) {

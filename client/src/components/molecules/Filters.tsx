@@ -10,40 +10,47 @@ import { Tabs, Tab, Box } from '@mui/material';
 interface FiltersProps {
     filters: {
         type: string,
-        stakeholders: string,
-        area: string,
+        stakeholders: string[],
+        coordinates: string,
         year: string,
         month: string,
         day: string,
         language: string,
         scale: string,
-        customScale: string,
+        architecturalScale: string,
     };
     setFilters: (
         filters: { 
             type: string, 
-            stakeholders: string,
-            area: string,
+            stakeholders: string[],
+            coordinates: string,
             year: string,
             month: string,
             day: string,
             language: string,
             scale: string,
-            customScale: string,
+            architecturalScale: string,
     }) => void;
 }
 
 const Filters: React.FC<FiltersProps> = ({ filters, setFilters }) => {
-    const [areasOptions, setAreasOptions] = useState([]);
+    const [coordinatesOptions, setCoordinatesOptions] = useState([]);
     const [activeTab, setActiveTab] = useState(0);
 
     useEffect(() => {
-        API.getAreas().then((areas) => {
-            setAreasOptions(areas.map((area : any) => ({ value: area.id, label: area.name })));
+        // API.getAreas().then((areas) => {
+        //     setAreasOptions(areas.map((area : any) => ({ value: area.id, label: area.name })));
+        // });
+        API.getCoordinates().then((coordinates) => {
+            setCoordinatesOptions(coordinates.map((coordinate: any) => ({ value: coordinate.id, label: coordinate.name })));
         });
     }, []);
 
     const handleFilterChange = (key: any, value: any) => {
+        if (key === 'stakeholders') {
+            setFilters({ ...filters, stakeholders: [...filters.stakeholders, value] });
+            return;
+        }
         setFilters({ ...filters, [key]: value });
     }
 
@@ -67,7 +74,7 @@ const Filters: React.FC<FiltersProps> = ({ filters, setFilters }) => {
                     options={stakeholderOptions}
                     required={false} 
                     placeholder="Enter stakeholders..."
-                    value={filters.stakeholders}
+                    value={filters.stakeholders.map((stakeholder) => ({ value: stakeholder, label: stakeholder }))}
                     onChange={(e) => {
                         if ('target' in e) {
                             handleFilterChange('stakeholders', e.target.value);
@@ -78,14 +85,14 @@ const Filters: React.FC<FiltersProps> = ({ filters, setFilters }) => {
                 <InputComponent label="Area / Points"
                     type="select"
                     required={false}
-                    value={filters.area}
+                    value={filters.coordinates}
                     onChange={(e) => {
                         if ('target' in e) {
                             handleFilterChange('area', e.target.value);
                         }
                     }}
-                    options={areasOptions}
-                    placeholder="Area"
+                    options={coordinatesOptions}
+                    placeholder="Area & Points"
                 />
             </Box>
         )
@@ -169,10 +176,10 @@ const Filters: React.FC<FiltersProps> = ({ filters, setFilters }) => {
                             <InputComponent
                                 label="Custom Scale"
                                 type="text"
-                                value={filters.customScale}
+                                value={filters.architecturalScale}
                                 onChange={(v) => {
                                     if ('target' in v) {
-                                        handleFilterChange('customScale', v.target.value);
+                                        handleFilterChange('architecturalScale', v.target.value);
                                     }
                                 }}
                                 required={false}

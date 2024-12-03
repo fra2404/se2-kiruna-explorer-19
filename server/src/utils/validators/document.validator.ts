@@ -207,7 +207,7 @@ export const validateUpdateDocument = [
 export const validateSearchDocument = [
   body()
   .custom((body) => {
-    const allowedKeys = ['scale', 'stakeholders', 'type', 'architecturalScale', 'date', 'language'];
+    const allowedKeys = ['scale', 'stakeholders', 'type', 'architecturalScale', 'date', 'language', 'coordinates'];
     const invalidKeys = Object.keys(body).filter(
       (key) => !allowedKeys.includes(key)
     );

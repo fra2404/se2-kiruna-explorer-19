@@ -25,18 +25,19 @@ const AllDocumentsModal: React.FC<AllDocumentsModalProps> = ({
 
     const [filters, setFilters] = useState({
         type: '',
-        stakeholders: '',
-        area: '',
+        stakeholders: [],
+        coordinates: '',
         year: '',
         month: '',
         day: '',
         language: '',
         scale: '',
-        customScale: '',
+        architecturalScale: '',
     });
     const [searchQuery, setSearchQuery] = useState('');
     const [documents, setDocuments] = useState<IDocument[]>([]);
     const { toast, showToast, hideToast } = useToast();
+    const [date, setDate] = useState('');
 
     useEffect(() => {
         const fetchDocuments = async () => {
@@ -46,16 +47,37 @@ const AllDocumentsModal: React.FC<AllDocumentsModalProps> = ({
         fetchDocuments();
     }, []);
 
+    useEffect(() => {
+        if (filters.year && filters.month && filters.day) {
+            setDate(`${filters.year}-${filters.month}-${filters.day}`);
+        } else if (filters.year && filters.month) {
+            setDate(`${filters.year}-${filters.month}`);
+        } else if (filters.year) {
+            setDate(filters.year);
+        } else {
+            setDate('');
+        }
+    }, [filters.year, filters.month, filters.day, setDate]);
+
     const handleSearch = async () => {
         if (
             filters.scale === 'ARCHITECTURAL' &&
-            ((filters.customScale ?? '').trim() === '' ||
-              !/^1:\d+$/.test(filters.customScale ?? ''))
-          ) {
+            ((filters.architecturalScale ?? '').trim() === '' ||
+              !/^1:\d+$/.test(filters.architecturalScale ?? ''))
+        ) {
             showToast('Invalid architectural scale', 'error');
             return;
-          }
-        const documents = await API.searchDocuments(searchQuery, filters);
+        }
+        const wellFormedFilters = {
+            type: filters.type,
+            stakeholders: filters.stakeholders,
+            coordinates: filters.coordinates,
+            date,
+            language: filters.language,
+            scale: filters.scale,
+            architecturalScale: filters.architecturalScale,
+        }
+        const documents = await API.searchDocuments(searchQuery, wellFormedFilters);
         setDocuments(documents);
     };
 
