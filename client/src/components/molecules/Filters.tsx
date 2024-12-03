@@ -42,7 +42,7 @@ const Filters: React.FC<FiltersProps> = ({ filters, setFilters }) => {
         //     setAreasOptions(areas.map((area : any) => ({ value: area.id, label: area.name })));
         // });
         API.getCoordinates().then((coordinates) => {
-            setCoordinatesOptions(coordinates.map((coordinate: any) => ({ value: coordinate.id, label: coordinate.name })));
+            setCoordinatesOptions(coordinates.map((coordinate: any) => ({ value: coordinate._id, label: coordinate.name })));
         });
     }, []);
 
