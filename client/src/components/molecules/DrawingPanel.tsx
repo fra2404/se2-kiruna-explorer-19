@@ -15,7 +15,6 @@ import 'leaflet/dist/leaflet.css';
 import 'leaflet-draw/dist/leaflet.draw.css';
 import 'leaflet-draw';
 import FloatingButton from "./FloatingButton";
-import { DiCelluloid } from "react-icons/di";
 
 interface DrawingPanelProps {
 	coordinates: any;
