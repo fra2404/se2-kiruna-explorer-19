@@ -131,8 +131,6 @@ const Diagram = () => {
 
         documents.forEach((doc: any) => {
             // Check the scale
-            console.log("Old scale: ", doc.scale);
-            console.log("All doc: ", doc);
             if (doc.scale.toUpperCase() === "TEXT") {
                 doc.scale = "TEXT";
             }
@@ -147,7 +145,6 @@ const Diagram = () => {
             }
 
             if (!doc.scale || !scaleMapping[doc.scale as keyof typeof scaleMapping]) {
-                console.log("Invalid scale");
                 doc.scale = "default";
             }
 
@@ -155,20 +152,13 @@ const Diagram = () => {
             if (doc.date) {
                 const date = new Date(doc.date);
                 if (!isNaN(date.getTime())) {
-                    // console.log("The year is: ", date.getFullYear());
                     doc.year = date.getFullYear();
-                } else {
-                    console.log("Invalid date format");
-                    doc.year = 2000; // Default year for testing
                 }
             } else {
                 console.log(`No date provided, the document ${doc.id} will not be displayed`);
-                doc.year = null;
+                doc.year = null;    // If the date is not provided, the document will not be displayed
             }
-            console.log("New scale: ", doc.scale);
-            console.log("New date: ", doc.year);
 
-            console.log("The type of the document is: ", doc.type);
             // Check the type of the document
             switch (doc.type.toUpperCase()) {
                 case "AGREEMENT":
@@ -200,16 +190,10 @@ const Diagram = () => {
                     break;
             }
 
-            console.log("The image of the node" + doc.title + " is : ", doc.image);
-
             // Check the connections
             if (doc.connections && doc.connections.length > 0) {
                 doc.connections.forEach((connection: any) => {
-                    console.log("Connection: ", connection)
-                    console.log("Target: ", connection.document)
-                    console.log("Source: ", doc.id)
                     connections.push({
-                        // state.graph.edges.push({
                         from: doc.id,
                         to: connection.document,
                         color: "#000000"
@@ -223,7 +207,6 @@ const Diagram = () => {
             .map((doc: any) => ({
                 id: doc.id,
                 shape: "image",
-                // image: errorImage,
                 image: doc.image,
                 brokenImage: ErrorImage,
                 color: randomColor(),
@@ -241,13 +224,9 @@ const Diagram = () => {
         nodes_documents.forEach((node, index) => {
             const overlappingNode = occupiedPositions.find((pos: any) => pos.x === node.x && pos.y === node.y);
             if (overlappingNode) {
-                // TODO: decide if the offset should be only on the x axis or also on the y axis
                 const offsetX = Math.floor(Math.random() * 100) + 100; // Random offset between 100 and 200
-                const offsetY = Math.floor(Math.random() * 20) + 20; // Random offset between 20 and 40
                 node.x += offsetX;  // Add offset to x position
-                // node.y += offsetY; // Add offset to y position
             }
-            // occupiedPositions.push({ x: node.x, y: node.y });   // ?? I don't think this is needed.
         });
 
         const allNodes = [...nodes_documents, ...label_style, ...label_year];
@@ -270,8 +249,6 @@ const Diagram = () => {
             },
         })
     }, [documents]);
-
-
 
     const occupiedPositions = [] as any;
 
@@ -318,7 +295,6 @@ const Diagram = () => {
                 // Filter only the node that are in the current year. In this way the graph will be centered on the current year at launch.
                 nodes: state.graph.nodes.filter((node: any) => {
                     const currentYear = new Date().getFullYear();
-                    // console.log(`Node year: ${node.year}, Current year: ${currentYear}`);
                     return node.year === currentYear;
                 }).map((node: any) => node.id),
                 animation: false
