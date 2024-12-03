@@ -197,15 +197,30 @@ export const searchDocuments = async (
 
   if (filters) {
     const filterConditions = []; // Array to store filter conditions, initially empty
-    if (filters.stakeholders) {
-      filterConditions.push({
-        stakeholders: { $regex: filters.stakeholders, $options: 'i' },
-      });
-    }
+    if (filters.stakeholders && 
+        Array.isArray(filters.stakeholders) && 
+        filters.stakeholders.length > 0) {  
+          if (filters.stakeholders.length === 1) {
+            // Single item-look for any array containing this item
+            filterConditions.push({
+              stakeholders: { $in: filters.stakeholders },
+            });
+          } else {
+            // Multiple items- look for exact combination in any order
+            filterConditions.push({
+              stakeholders: { $all: filters.stakeholders }, // Contains all items
+              $expr: { $eq: [{ $size: "$stakeholders" }, filters.stakeholders.length] }, // Exact size match
+            });
+          }
+        }
     if (filters.scale) {
       filterConditions.push({
         scale: { $regex: filters.scale, $options: 'i' },
       });
+    }
+    if (filters.architecturalScale){
+      filterConditions.push({ 
+        architecturalScale: filters.architecturalScale });
     }
     if (filters.type) {
       filterConditions.push({ type: filters.type });
@@ -380,7 +395,7 @@ if (updateData.scale && updateData.scale !== 'ARCHITECTURAL' && updatedDocument.
     id: updatedDocument.id,
     ...documentObject,
     coordinates,
-    media: media || null, //Added By Mina
+    media: media || null, 
   };
 
   return document;
