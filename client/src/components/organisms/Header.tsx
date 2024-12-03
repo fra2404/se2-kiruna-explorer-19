@@ -6,8 +6,6 @@ import { LoginModal } from './modals/LoginModal';
 import DropdownModal from '../molecules/DropdownModal';
 import ButtonRounded from '../atoms/button/ButtonRounded';
 import MapStyleContext from '../../context/MapStyleContext';
-// import { FaSearch } from 'react-icons/fa';
-// import Searchbar from '../molecules/Searchbar';
 
 interface HeaderProps {
   setManageCoordsModalOpen: (manageCoordsModalOpen: boolean) => void
@@ -22,7 +20,6 @@ export const Header: React.FC<HeaderProps> = ({
 
   const [loginModalOpen, setLoginModalOpen] = useState(false);
   const [dropdownOpen, setDropdownOpen] = useState(false);
-  // const [showSearchBar, setShowSearchBar] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
 
   const {mapType} = useContext(MapStyleContext);

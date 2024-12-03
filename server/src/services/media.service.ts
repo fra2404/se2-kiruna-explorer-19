@@ -80,7 +80,6 @@ export const uploadMediaService = async (
     // Step 6: Return presigned URL
     return presignedUrl;
   } catch (error) {
-    //console.error('Error in uploadMediaService:', error);
     throw new CustomError('Internal Server Error', 500);
   }
 };
