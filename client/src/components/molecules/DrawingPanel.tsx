@@ -15,6 +15,7 @@ import 'leaflet/dist/leaflet.css';
 import 'leaflet-draw/dist/leaflet.draw.css';
 import 'leaflet-draw';
 import FloatingButton from "./FloatingButton";
+import { DiCelluloid } from "react-icons/di";
 
 interface DrawingPanelProps {
 	coordinates: any;
@@ -115,8 +116,9 @@ const DrawingPanel: React.FC<DrawingPanelProps> = ({
 						width: '100%',
 						height: '100%',
 						zIndex: 1000,
+						display: 'flex',
+						alignItems: 'center'
 					}}
-					className="content-center"
 				>
 					<FloatingButton
 						text={
