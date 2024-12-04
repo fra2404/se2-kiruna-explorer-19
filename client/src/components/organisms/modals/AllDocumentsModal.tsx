@@ -82,14 +82,15 @@ const AllDocumentsModal: React.FC<AllDocumentsModalProps> = ({
             return;
         }
         let wellFormedFilters = {
-            type: filters.type,
-            stakeholders: filters.stakeholders,
-            coordinates: filters.coordinates,
-            date,
-            language: filters.language,
-            scale: filters.scale,
-            architecturalScale: filters.architecturalScale,
+            type: filters.type || undefined,
+            stakeholders: filters.stakeholders || undefined,
+            coordinates: filters.coordinates || undefined,
+            date: date || undefined,
+            language: filters.language || undefined,
+            scale: filters.scale || undefined,
+            architecturalScale: filters.scale == 'ARCHITECTURAL' ? filters.architecturalScale : undefined,
         };
+        console.log(wellFormedFilters);
         const documents = await API.searchDocuments(searchQuery, wellFormedFilters);
         setDocuments(documents);
     };

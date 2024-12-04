@@ -73,9 +73,18 @@ const Filters: React.FC<FiltersProps> = ({ filters, setFilters }) => {
                     placeholder="Enter stakeholders..."
                     value={filters.stakeholders.map((stakeholder) => ({ value: stakeholder, label: stakeholder }))}
                     onChange={(e) => {
-                        if ('target' in e) {
-                            handleFilterChange('stakeholders', e.target.value);
-                        }
+                        setFilters(
+                            e 
+                            ? (() => {
+                                if(Array.isArray(e)) {
+                                    return { ...filters, stakeholders: e.map((option) => option.value) };
+                                }
+                                else {
+                                    return { ...filters, stakeholders: [] };
+                                }
+                            })()
+                            : {...filters, stakeholders: []},
+                        );
                     }}
                 />
 

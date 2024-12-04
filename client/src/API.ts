@@ -281,13 +281,13 @@ async function addResource(file: File) {
 async function searchDocuments(
   searchQuery: string,
   filters: {
-    type: string;
-    stakeholders: string[];
-    coordinates: string;
-    date: string;
-    language: string;
-    scale: string;
-    architecturalScale: string;
+    type: string | undefined;
+    stakeholders: string[] | undefined;
+    coordinates: string | undefined;
+    date: string | undefined;
+    language: string | undefined;
+    scale: string | undefined;
+    architecturalScale: string | undefined;
   },
 ): Promise<IDocument[]> {
     const searchURL =
