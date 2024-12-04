@@ -7,6 +7,7 @@ import {
   TbBrandGoogleMaps,
 } from 'react-icons/tb';
 import { MdOutlineUploadFile } from 'react-icons/md';
+import { nanoid } from 'nanoid';
 
 interface ModalHeaderProps {
   currentStep: number;
@@ -67,29 +68,31 @@ const ModalHeader: React.FC<ModalHeaderProps> = ({
             label: 'Georeferencing',
             icon: <TbBrandGoogleMaps color="#000" />,
           },
-        ].map((item, i) => (
-          <div key={i} className="flex flex-col items-center mx-2">
-            <button
-              onClick={() => scrollToStep(i + 1)}
-              onKeyDown={(e) => {
-                if (e.key === 'Enter' || e.key === ' ') {
-                  scrollToStep(i + 1);
-                }
-              }}
-              className={`p-2 rounded-full ${
-                hasErrors(i + 1)
-                  ? 'bg-red-500 text-white'
-                  : currentStep === i + 1
-                    ? 'bg-swedish-flag-yellow'
-                    : 'bg-gray-300 text-gray-700'
-              }`}
-              tabIndex={0} // Ensure the element is focusable
-            >
-              {item.icon}
-            </button>
-            <span className="mt-1 text-center">{item.label}</span>
-          </div>
-        ))}
+        ].map((item, i) => {
+          const bg = currentStep === i + 1 ? 'bg-swedish-flag-yellow' : 'bg-gray-300 text-gray-700';
+          
+          return(
+            <div key={nanoid()} className="flex flex-col items-center mx-2">
+              <button
+                onClick={() => scrollToStep(i + 1)}
+                onKeyDown={(e) => {
+                  if (e.key === 'Enter' || e.key === ' ') {
+                    scrollToStep(i + 1);
+                  }
+                }}
+                className={`p-2 rounded-full ${
+                  hasErrors(i + 1)
+                    ? 'bg-red-500 text-white'
+                    : bg
+                }`}
+                tabIndex={0} // Ensure the element is focusable
+              >
+                {item.icon}
+              </button>
+              <span className="mt-1 text-center">{item.label}</span>
+            </div>
+          )
+        })}
       </div>
     </div>
   );

@@ -28,7 +28,7 @@ export const addCoordinateService = async (
     await newCoordinate.save();
     return newCoordinate.toObject() as ICoordinate;
   } catch (error) {
-    //console.error('Error adding coordinate:', error);
+    // console.log('Error adding coordinate:', error);
     throw new CustomError('Internal Server Error', 500);
   }
 };

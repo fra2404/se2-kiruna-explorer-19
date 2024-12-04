@@ -1,9 +1,17 @@
-export default function TechnicalDocIcon({fillColor}: any) {
-	return (
-		<svg version="1.1" id="Layer_1" xmlns="http://www.w3.org/2000/svg" xmlnsXlink="http://www.w3.org/1999/xlink" x="0px" y="0px"
-			width="100%" viewBox="0 0 1006 840" enableBackground="new 0 0 1006 840" xmlSpace="preserve">
-		<path fill={fillColor} opacity="1.000000" stroke="none" 
-			d="
+import GradientSVG from '../../components/atoms/GradientSVG';
+
+export default function TechnicalDocIcon({
+  fillColor,
+}: {
+  fillColor: string[] | string;
+}) {
+  return (
+    <GradientSVG fillColor={fillColor}>
+      <path
+        fill="currentColor"
+        opacity="1.000000"
+        stroke="none"
+        d="
 		M429.999878,782.795166 
 			C397.002197,782.794739 364.495911,783.233032 332.010651,782.597839 
 			C317.135529,782.306946 303.060181,777.531982 292.473785,766.397827 
@@ -115,9 +123,15 @@ export default function TechnicalDocIcon({fillColor}: any) {
 			C299.370117,272.720154 297.720367,270.766113 292.110657,270.760040 
 			C282.110809,270.749176 272.103943,270.977020 262.114319,270.657501 
 			C257.578522,270.512421 254.356445,271.399750 253.172791,277.064667 
-		z"/>
-		<path fill="#E6E7E5" opacity="1.000000" stroke="none" 
-			d="
+		z"
+      />
+      <path
+				style={{
+					fill: "none"
+				}}
+        opacity="1.000000"
+        stroke="none"
+        d="
 		M253.184540,276.624481 
 			C254.356445,271.399750 257.578522,270.512421 262.114319,270.657501 
 			C272.103943,270.977020 282.110809,270.749176 292.110657,270.760040 
@@ -189,9 +203,13 @@ export default function TechnicalDocIcon({fillColor}: any) {
 			C273.984283,333.330841 263.044891,334.091278 253.107697,336.813507 
 			C229.516571,343.276184 211.493927,357.765961 199.719284,379.438110 
 			C192.134003,393.399384 189.189865,408.588440 188.827560,425.303040 
-		z"/>
-		<path fill={fillColor} opacity="1.000000" stroke="none" 
-			d="
+		z"
+      />
+      <path
+        fill="currentColor"
+        opacity="1.000000"
+        stroke="none"
+        d="
 		M188.827255,424.828186 
 			C189.189865,408.588440 192.134003,393.399384 199.719284,379.438110 
 			C211.493927,357.765961 229.516571,343.276184 253.107697,336.813507 
@@ -207,7 +225,8 @@ export default function TechnicalDocIcon({fillColor}: any) {
 			C211.086655,481.811127 199.630081,467.031647 193.607574,448.521484 
 			C191.822083,443.033783 191.313126,437.132721 190.187195,431.427399 
 			C189.782425,429.376373 189.283508,427.343964 188.827255,424.828186 
-		z"/>
-		</svg>
-	);
+		z"
+      />
+    </GradientSVG>
+  );
 }

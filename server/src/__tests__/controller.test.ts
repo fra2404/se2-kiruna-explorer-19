@@ -25,7 +25,12 @@ import {
 import {
   uploadMediaService,
   updateMediaMetadata,
+  getMediaMetadataById
 } from '@services/media.service';
+import { 
+  getGraphDatas 
+} from "../services/graph.service";
+
 import {
   getUsers,
   createUser,
@@ -51,7 +56,11 @@ import {
 import {
   uploadMediaController,
   UpdateMediaController,
+  getMediaMetadataByIdController
 } from '../controllers/media.controllers';
+import { 
+  getGraphConstruction 
+} from "../controllers/graph.controllers";
 
 import { IUserResponse } from '../interfaces/user.return.interface';
 import { CustomRequest } from '../interfaces/customRequest.interface';
@@ -64,11 +73,13 @@ import {
   PositionError,
   MediaNotFoundError,
 } from '@utils/errors';
+import { mock } from 'node:test';
 
 jest.mock('../services/user.service'); //For suite n#1
 jest.mock('../services/document.service'); //For suite n#2
 jest.mock('../services/coordinate.service'); //For suite n#3
 jest.mock('../services/media.service'); //For suite n#4
+jest.mock('../services/graph.service'); //For suite n#5
 
 /* ******************************************* Suite n#1 - USERS ******************************************* */
 describe('Tests for user controllers', () => {
@@ -1371,4 +1382,151 @@ describe('Tests for media controllers', () => {
       expect(next).toHaveBeenCalledWith(err);
     });
   }); //UpdateMediaController
+  /* ************************************************** */
+
+  //getMediaMetadataByIdController
+  describe("getMediaMetadataByIdController", () => {
+    afterEach(() => {
+      jest.clearAllMocks();
+    });
+  
+    //Connection mocking
+    beforeEach(() => {
+      req = {
+        params: {
+          mediaId: 'media1'
+        }
+      };
+
+      res = {
+        status: jest.fn().mockReturnThis(),
+        json: jest.fn(),
+      } as unknown as Response;
+
+      next = jest.fn();
+    });
+
+    //Data mock
+    const mockMediaMetadata = {
+      id: "media1",
+      filename: "test.pdf",
+      url: "example/url",
+      type: "document",
+      mimetype: "application/pdf",
+      pages: 10
+    };
+  
+    //test 1
+    test("Should return media metadata", async () => {
+      //Support functions mock
+      (getMediaMetadataById as jest.Mock).mockImplementation(async() => mockMediaMetadata);
+
+      //Call of getMediaMetadataByIdController
+      await getMediaMetadataByIdController(req as Request, res as Response, next);
+  
+      expect(getMediaMetadataById).toHaveBeenCalledWith("media1");
+      expect(res.status).toHaveBeenCalledWith(200);
+      expect(res.json).toHaveBeenCalledWith({
+        message: "Media metadata retrieved successfully",
+        data: mockMediaMetadata,
+      });
+    });
+  
+    //test 2
+    //MediaNotFoundError also triggers the next error branch!
+    test("Should throw MediaNotFoundError", async () => {
+      //Data mock
+      const err = new MediaNotFoundError();
+      
+      //Support functions metod
+      //getMediaMetadataById was designed not to throw an error but to return null if nothing is retrieved
+      (getMediaMetadataById as jest.Mock).mockImplementation(async() => null);
+
+      //Call of getMediaMetadataByIdController
+      await getMediaMetadataByIdController(req as Request, res as Response, next);
+  
+      expect(getMediaMetadataById).toHaveBeenCalledWith("media1");
+      expect(next).toHaveBeenCalledWith(err);
+    });
+  }); //getMediaMetadataByIdController
 }); //END OF MEDIA CONTROLLERS
+
+/* ******************************************* Suite n#5 - GRAPH ******************************************* */
+describe('Tests for graph controllers', () => {
+  //Connetion objects mock
+  let req: Partial<Request>;
+  let res: Partial<Response>;
+  let next: NextFunction;
+  
+  //getGraphConstruction
+  describe('Tests for getGraphConstruction', () => {
+    afterEach(() => {
+      jest.clearAllMocks();
+    });
+
+    //Connection mocking
+    beforeEach(() => {
+      req = {} as unknown as Request;
+
+      res = {
+        status: jest.fn().mockReturnThis(),
+        json: jest.fn(),
+      } as unknown as Response;
+
+      next = jest.fn();
+    });
+
+    //test 1
+    test("Should return the data needed to build the graph", async () => {
+      //Return value mock
+      const mockData = {
+        minYear: '2010',
+        maxYear: '2020',
+        infoYear: [
+          {
+            year: '2010',
+            types: [
+              { scale: 'scale1', qty: 5 },
+              { scale: 'scale2', qty: 3 },
+            ],
+          },
+          {
+            year: '2020',
+            types: [
+              { scale: 'scale1', qty: 7 },
+              { scale: 'scale2', qty: 2 },
+            ],
+          },
+        ],
+      };
+
+      //Support functions mocking
+      (getGraphDatas as jest.Mock).mockImplementation(() => mockData);
+  
+      //Call of getGraphConstruction
+      await getGraphConstruction(req as Request, res as Response, next);
+  
+      expect(getGraphDatas).toHaveBeenCalled();
+      expect(res.status).toHaveBeenCalledWith(200);
+      expect(res.json).toHaveBeenCalledWith(mockData);
+    });
+
+    //test 2
+    test("Should throw an error if the connection fails", async () => {
+      //Data mock
+      const err = new CustomError("Internal Server Error", 500);
+
+      //Support functions mocking
+      jest.spyOn(require("../services/graph.service"), "getGraphDatas").mockRejectedValue(err);
+  
+      //Call of getGraphDatas
+      await getGraphConstruction(req as Request, res as Response, next);
+
+      expect(getGraphDatas).toHaveBeenCalled();
+      expect(next).toHaveBeenCalledWith(err);
+      expect(res.status).not.toHaveBeenCalled();
+      expect(res.json).not.toHaveBeenCalled();
+    });
+  }); //getGraphConstruction
+  /* ************************************************** */
+}) //END OF GRAPH CONTROLLERS

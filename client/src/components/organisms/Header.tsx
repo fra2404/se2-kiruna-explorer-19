@@ -6,8 +6,7 @@ import { LoginModal } from './modals/LoginModal';
 import DropdownModal from '../molecules/DropdownModal';
 import ButtonRounded from '../atoms/button/ButtonRounded';
 import MapStyleContext from '../../context/MapStyleContext';
-// import { FaSearch } from 'react-icons/fa';
-// import Searchbar from '../molecules/Searchbar';
+
 
 interface HeaderProps {
   setManageCoordsModalOpen: (manageCoordsModalOpen: boolean) => void
@@ -42,15 +41,15 @@ export const Header: React.FC<HeaderProps> = ({
 
   return (
     <div className="p-3"
-      style={{
-        position: 'absolute',
-        top: 0,
-        left: 0,
-        width: "100%",
-        zIndex: 10,
-        background: "transparent",
-        pointerEvents: "none"
-      }}>
+        style={{
+          position: 'absolute',
+          top: 0,
+          left: 0,
+          width: "100%",
+          zIndex: 10,
+          background: "transparent",
+          pointerEvents: "none"
+        }}>
 
       <div className="flex items-center justify-between" style={{background: "transparent"}}>
         <div className='flex items-center'>
@@ -85,7 +84,7 @@ export const Header: React.FC<HeaderProps> = ({
                   onClick={() => setDropdownOpen(!dropdownOpen)}
                   variant="filled"
                   className="bg-black pr-4 pl-4 d-flex align-items-center"
-                  text={`Welcome, ${user?.name.charAt(0).toUpperCase()} ${dropdownOpen ? '▲' : '▼'}`}
+                  text={`Welcome, ${user?.name} ${dropdownOpen ? '▲' : '▼'}`}
                 />
               </div>
             )}
@@ -93,20 +92,20 @@ export const Header: React.FC<HeaderProps> = ({
         </div> 
       </div>
 
-      <LoginModal
-        isOpen={loginModalOpen}
-        onRequestClose={() => setLoginModalOpen(false)}
-        setLoginModalOpen={setLoginModalOpen}
-      />
+        <LoginModal
+          isOpen={loginModalOpen}
+          onRequestClose={() => setLoginModalOpen(false)}
+          setLoginModalOpen={setLoginModalOpen}
+        />
 
-      <DropdownModal
-        isOpen={dropdownOpen}
-        onRequestClose={() => setDropdownOpen(false)}
-        navigate={navigate}
-        handleLogout={handleLogout}
-        dropdownRef={dropdownRef}
-        setManageCoordsModalOpen={setManageCoordsModalOpen}
-      />
+        <DropdownModal
+          isOpen={dropdownOpen}
+          onRequestClose={() => setDropdownOpen(false)}
+          navigate={navigate}
+          handleLogout={handleLogout}
+          dropdownRef={dropdownRef}
+          setManageCoordsModalOpen={setManageCoordsModalOpen}
+        />
     </div>
   );
 }

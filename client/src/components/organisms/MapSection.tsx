@@ -1,41 +1,86 @@
-import React, { useContext } from 'react';
-import { TileLayer, Marker, Tooltip, Polygon } from 'react-leaflet';
+import React, { useContext, useRef } from 'react';
+import { Marker, Tooltip, Polygon } from 'react-leaflet';
 import { LatLng } from 'leaflet';
 import InputComponent from '../atoms/input/input';
 import NamePopup from '../molecules/popups/NamePopup';
 import MapStyleContext from '../../context/MapStyleContext';
 import CustomMap from '../molecules/CustomMap';
-import CustomZoomControl from '../molecules/ZoomControl';
+import { ICoordinate } from '../../utils/interfaces/document.interface';
+import { createCoordinate } from '../../API';
+import DrawingPanel from '../molecules/DrawingPanel';
 
 interface MapSectionProps {
   coordinates: any;
+  setCoordinates: (coordinates: any) => void;
+  showToastMessage: (message: string, type: "success" | "error") => void;
   selectedCoordIdProp: string;
   selectedCoordId: string;
   setSelectedCoordId: (value: string) => void;
+  coordNamePopupOpen: boolean;
   setCoordNamePopupOpen: (open: boolean) => void;
   position: LatLng | undefined;
   setPosition: (position: LatLng | undefined) => void;
-  coordNamePopupOpen: boolean;
   coordName: string;
   setCoordName: (name: string) => void;
   MapClickHandler: React.FC;
+  errors: {[key: string]: string}
 }
 
 const MapSection: React.FC<MapSectionProps> = ({
   coordinates,
+  setCoordinates,
+  showToastMessage,
   selectedCoordIdProp,
   selectedCoordId,
   setSelectedCoordId,
+  coordNamePopupOpen,
   setCoordNamePopupOpen,
   position,
   setPosition,
-  coordNamePopupOpen,
   coordName,
   setCoordName,
   MapClickHandler,
+  errors
 }) => {
   const { swedishFlagBlue, satMapMainColor, mapType } =
     useContext(MapStyleContext);
+
+  const featureGroupRef = useRef<L.FeatureGroup>(null);
+  const popupRef = useRef<L.Popup>(null);
+
+  const handleAddPoint = async () => {
+    if (position) {
+      const coordData: ICoordinate = {
+        id: '',
+        name: coordName,
+        type: 'Point',
+        coordinates: [position.lat, position.lng],
+      };
+
+      try {
+        const response = await createCoordinate(coordData);
+        if (response.success) {
+          const coordId = response.coordinate?.coordinate._id;
+          if (coordId) {
+            setCoordinates({
+              ...coordinates,
+              [coordId]: {
+                type: response.coordinate?.coordinate.type,
+                coordinates: response.coordinate?.coordinate.coordinates,
+                name: response.coordinate?.coordinate.name,
+              },
+            });
+            setSelectedCoordId(coordId);
+          }
+          return coordId;
+        } else {
+          showToastMessage('Failed to create coordinate', 'error');
+        }
+      } catch (error) {
+        showToastMessage('Error creating coordinate:' + error, 'error');
+      }
+    }
+  }
 
   return (
     <div className="col-span-2">
@@ -48,15 +93,20 @@ const MapSection: React.FC<MapSectionProps> = ({
           <InputComponent
             label="Select an area or point that already exists"
             type="select"
-            options={Object.entries(coordinates).map(
-              ([areaId, info]: [string, any]) => {
-                return { value: areaId, label: info['name'] };
-              },
-            )}
-            defaultValue={selectedCoordIdProp}
+            options={[
+              {value: 'all_municipality', label: 'All Municipality'},
+              ...Object.entries(coordinates).map(
+                ([areaId, info]: [string, any]) => {
+                  return { value: areaId, label: info['name'] };
+                },
+              )]
+            }
+            defaultValue={selectedCoordIdProp? selectedCoordId : 'all_municipality'}
             value={selectedCoordId}
             onChange={(v: any) => {
-              setSelectedCoordId(v.target.value);
+              popupRef.current?.remove();
+              featureGroupRef.current?.remove();
+              setSelectedCoordId(v.target.value != 'all_municipality' ? v.target.value : undefined);
               setCoordNamePopupOpen(false);
               if (
                 selectedCoordId &&
@@ -76,18 +126,6 @@ const MapSection: React.FC<MapSectionProps> = ({
         </div>
 
         <CustomMap center={position}>
-          {mapType === 'osm' ? (
-            <TileLayer
-              attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-              url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
-            />
-          ) : (
-            <TileLayer
-              attribution="ArcGIS"
-              url="https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}"
-            />
-          )}
-
           {(position ??
             (selectedCoordId &&
               coordinates[selectedCoordId]['type'] == 'Point')) && (
@@ -115,8 +153,20 @@ const MapSection: React.FC<MapSectionProps> = ({
               setCoordName={setCoordName}
               setCoordNamePopupOpen={setCoordNamePopupOpen}
               setPosition={setPosition}
+              errors={errors}
+              handleAddCoordinate={handleAddPoint}
             />
           )}
+
+          <DrawingPanel 
+            coordinates={coordinates}
+            setCoordinates={setCoordinates}
+            setSelectedCoordId={setSelectedCoordId}
+            setPosition={setPosition}
+            setCoordName={setCoordName}
+            featureGroupRef={featureGroupRef}
+            popupRef={popupRef}
+          />
 
           {selectedCoordId &&
             coordinates[selectedCoordId]['type'] == 'Polygon' && (
@@ -126,12 +176,13 @@ const MapSection: React.FC<MapSectionProps> = ({
                 }}
                 positions={coordinates[selectedCoordId]['coordinates']}
               ></Polygon>
-            )}
+            )
+          }
 
           <MapClickHandler />
-
-          <CustomZoomControl />
+          
         </CustomMap>
+
       </div>
     </div>
   );

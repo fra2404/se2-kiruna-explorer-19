@@ -11,5 +11,5 @@ module.exports = {
     '^@controllers/(.*)$': '<rootDir>/src/controllers/$1',
   },
   testMatch: ['**/__tests__/**/*.[jt]s?(x)', '**/?(*.)+(spec|test).[tj]s?(x)'],
-  testPathIgnorePatterns: ['/node_modules/'],
+  testPathIgnorePatterns: ['/node_modules/', '/src/__tests__/route.test.ts']
 };

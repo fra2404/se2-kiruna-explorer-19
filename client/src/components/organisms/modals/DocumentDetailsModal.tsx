@@ -9,6 +9,7 @@ import { IDocument } from '../../../utils/interfaces/document.interface';
 import { useState } from 'react';
 import { CDN_URL } from '../../../utils/constants';
 import { nanoid } from 'nanoid';
+import { scaleOptions } from '../../../shared/scale.options.const';
 
 interface DocumentDetailsModalProps {
   document: IDocument;
@@ -25,6 +26,7 @@ const DocumentDetailsModal: React.FC<DocumentDetailsModalProps> = ({
   allDocuments,
   setDocuments,
 }) => {
+  console.log('DocumentDetailsModal - document:', document);
   const { isLoggedIn, user } = useAuth();
   const [modalOpen, setModalOpen] = useState(false);
 
@@ -51,10 +53,27 @@ const DocumentDetailsModal: React.FC<DocumentDetailsModalProps> = ({
     }
   };
 
+  const getScaleLabel = (value: string): string => {
+    const option = scaleOptions.find((option) => option.value === value);
+    return option ? option.label : value;
+  };
+
+  const documentLabel = document.scale === 'ARCHITECTURAL' && document.architecturalScale ? ` - ${document.architecturalScale}` : '';
+
   const list = [
     { label: 'Title', content: document.title },
-    { label: 'Stakeholders', content: document.stakeholders },
-    { label: 'Scale', content: document.scale },
+    {
+      label: 'Stakeholders',
+      content: Array.isArray(document.stakeholders)
+        ? document.stakeholders.join(' - ')
+        : document.stakeholders,
+    },
+    {
+      label: 'Scale',
+      content: document.scale
+        ? `${getScaleLabel(document.scale)}${documentLabel}`
+        : 'Unknown',
+    },
     { label: 'Issuance Date', content: document.date },
     { label: 'Type', content: matchType(document.type) },
     { label: 'Connections', content: document.connections?.length.toString() },
@@ -84,7 +103,9 @@ const DocumentDetailsModal: React.FC<DocumentDetailsModalProps> = ({
         <div className="col-span-2 px-2">
           <DocumentIcon
             type={document.type}
-            stakeholders={document.stakeholders}
+            stakeholders={
+              Array.isArray(document.stakeholders) ? document.stakeholders : []
+            }
           />
         </div>
 
@@ -129,7 +150,6 @@ const DocumentDetailsModal: React.FC<DocumentDetailsModalProps> = ({
           setCoordinates={setCoordinates}
           documents={allDocuments}
           setDocuments={setDocuments}
-          modalOpen={modalOpen}
           setModalOpen={setModalOpen}
           selectedDocument={document}
         />
