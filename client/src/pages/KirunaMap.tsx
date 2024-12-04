@@ -94,7 +94,10 @@ export default function KirunaMap() {
 
   return (
     <div style={{ width: width, height: height }}>
-      <Header setManageCoordsModalOpen={setManageCoordsModalOpen} />
+      <Header 
+        page='map'
+        setManageCoordsModalOpen={setManageCoordsModalOpen} 
+      />
 
         <Overlay 
           coordinates={coordinates}
