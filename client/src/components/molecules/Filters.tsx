@@ -162,8 +162,8 @@ const Filters: React.FC<FiltersProps> = ({ filters, setFilters }) => {
                     placeholder="Language"
                 />
 
-                <div className="col-span-2 grid grid-cols-3 gap-2">
-                    <div className={filters.scale !== 'ARCHITECTURAL' ? 'col-span-3' : 'col-span-1'}>
+                <div className="col-span-2 grid grid-cols-2 gap-2">
+                    <div className={filters.scale !== 'ARCHITECTURAL' ? 'col-span-2' : 'col-span-1'}>
                         <InputComponent 
                             label="Scale type"
                             type="select" options={scaleOptions}
@@ -178,7 +178,7 @@ const Filters: React.FC<FiltersProps> = ({ filters, setFilters }) => {
 
                     {/* Custom Scale Input */}
                     {filters.scale === 'ARCHITECTURAL' &&
-                        <div className="col-span-2">
+                        <div className="col-span-1">
                             <InputComponent
                                 label="Custom Scale"
                                 type="text"
