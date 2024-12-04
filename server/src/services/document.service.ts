@@ -14,7 +14,9 @@ import { DocTypeEnum } from '@utils/enums/doc-type.enum';
 import { CustomError } from '@utils/customError';
 import { getMediaMetadataById } from './media.service';
 import { ObjectId } from 'mongoose';
+import { ObjectId as MongoObjectId } from 'mongodb';
 import { IReturnMedia } from '@interfaces/media.return.interface';
+
 
 //addDocument(Story 1)
 export const addingDocument = async (
@@ -232,6 +234,11 @@ export const searchDocuments = async (
       filterConditions.push({
         language: { $regex: filters.language, $options: 'i' },
       });
+    }
+
+    if (filters.coordinates) {
+      const coordinatesId = new MongoObjectId(filters.coordinates)
+      filterConditions.push({ coordinates: { $eq: coordinatesId } });
     }
     // Ignore the filters that are not in the document schema
     if (filterConditions.length > 0) {

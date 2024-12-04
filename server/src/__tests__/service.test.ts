@@ -50,7 +50,6 @@ import {
 
 import { UserRoleEnum } from '../utils/enums/user-role.enum';
 import { DocTypeEnum } from '../utils/enums/doc-type.enum';
-import { LinkTypeEnum } from '@utils/enums/link-type.enum';
 import { StakeholderEnum } from '@utils/enums/stakeholder.enum';
 import { ScaleTypeEnum } from '@utils/enums/scale-type-enum';
 import { CustomError } from '../utils/customError';
@@ -60,7 +59,6 @@ import {
   PositionError,
   MediaNotFoundError,
 } from '../utils/errors';
-import { mock } from 'node:test';
 
 //MOCKS
 jest.mock('../schemas/user.schema'); //suite n#1
@@ -652,6 +650,7 @@ describe('Tests for document services', () => {
     const mockNewDocument = {
       ...mockDocumentData,
       id: 'd1',
+      scale: ScaleTypeEnum.BlueprintMaterialEffects,
       save: jest.fn(),
       toObject: jest.fn().mockReturnValue(this)
     } as IDocument;
@@ -929,7 +928,7 @@ describe('Tests for document services', () => {
         id: '1',
         title: 'Test Document 1',
         summary: 'Summary 1',
-        stakeholders: 'Company A',
+        stakeholders: StakeholderEnum.ArchitectureFirms,
         scale: '1:500',
         type: DocTypeEnum.Agreement,
         date: '2000-01-01',
@@ -940,21 +939,21 @@ describe('Tests for document services', () => {
         toObject: jest.fn().mockReturnValue({
           title: 'Test Document 1',
           summary: 'Summary 1',
-          stakeholders: 'Company A',
+          stakeholders: StakeholderEnum.ArchitectureFirms,
           scale: '1:500',
           type: DocTypeEnum.Agreement,
           date: '2000-01-01',
           language: 'EN',
           media: ['media1', 'media2'],
-          coordinates: '1',
+          coordinates: '1'
         }),
       },
       {
         id: '2',
         title: 'Test Document 2',
         summary: 'Summary 2',
-        stakeholders: 'Company B',
-        scale: '1:1000',
+        stakeholders: StakeholderEnum.Citizens,
+        scale: ScaleTypeEnum.Architectural,
         type: DocTypeEnum.Conflict,
         date: '2000-01-02',
         language: 'EN',
@@ -964,13 +963,13 @@ describe('Tests for document services', () => {
         toObject: jest.fn().mockReturnValue({
           title: 'Test Document 2',
           summary: 'Summary 2',
-          stakeholders: 'Company B',
-          scale: '1:1000',
+          stakeholders: StakeholderEnum.Citizens,
+          scale: ScaleTypeEnum.Architectural,
           type: DocTypeEnum.Conflict,
           date: '2000-01-02',
           language: 'EN',
           media: ['media3'],
-          coordinates: '',
+          coordinates: ''
         }),
       },
     ];
@@ -981,6 +980,7 @@ describe('Tests for document services', () => {
       const filters = {
         stakeholders: StakeholderEnum.ArchitectureFirms,
         scale: ScaleTypeEnum.Architectural,
+        architecturalScale: "Test value",
         type: DocTypeEnum.Agreement,
         date: "2000-01-01",
         language: "EN"
@@ -997,6 +997,14 @@ describe('Tests for document services', () => {
         .spyOn(require('../services/document.service'), 'fetchMedia')
         .mockResolvedValueOnce(mockMedia);
 
+      //*******************************************************************
+      /*
+      The stakeholder filter can't be tested because the if-else block that manage its logic is under a length
+      condition. "stakeholder" in the filter object is a variable, but only vectors got the "length" prop, so
+      that block is nevere accessed.
+      */
+      //*******************************************************************
+
       //Call of searchDocuments
       //In order to navigate each if-else block of searchDocuments, all possible filters are added
       //This strategy is followed to increase total coverage, the test would have also worked with just one filter
@@ -1010,7 +1018,7 @@ describe('Tests for document services', () => {
           id: '1',
           title: 'Test Document 1',
           summary: 'Summary 1',
-          stakeholders: 'Company A',
+          stakeholders: StakeholderEnum.ArchitectureFirms,
           scale: '1:500',
           type: DocTypeEnum.Agreement,
           date: '2000-01-01',
@@ -1367,7 +1375,6 @@ describe('Tests for document services', () => {
     });
 
     //Mocked data
-
     //Just essential fields are filled
     const mockDocuments = [
       {

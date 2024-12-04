@@ -1,8 +1,14 @@
 import { Request, Response, NextFunction } from 'express';
-import checkHeader from '../middlewares/checkHeader.middleware'; // Modifica il percorso in base alla tua struttura
 import { jest } from '@jest/globals';
 
-//Mock of the objs that will be used for the connection
+import { IDocument } from '@interfaces/document.interface';
+import checkHeader from '../middlewares/checkHeader.middleware';
+import { errorHandler } from '../middlewares/errorHandler.middleware';
+import documentSchema from '@schemas/document.schema';
+
+import { CustomError } from '@utils/customError';
+
+//Mock of the objs that will be used for the connection - for suite n#1
 let req: Partial<Request>;
 let res: Partial<Response>;
 let next: NextFunction;
@@ -66,4 +72,54 @@ describe('Test for the middlewares', () => {
         });
     }); //checkHeader
     /* ************************************************** */
+
+    //errorHandler
+    describe('Test for the errorHandler middleware', () => {
+        afterEach(() => {
+            jest.clearAllMocks();
+        });
+
+        beforeEach(() => {
+            req = {} as unknown as Request;
+
+            res = {
+                status: jest.fn().mockReturnThis(),
+                json: jest.fn()
+            } as unknown as Response;
+
+            next = jest.fn();
+        });
+
+        //test 1
+        test('Should set 400 as the status of the response if a CustomError is triggered', () => {
+            //Data mock
+            const err = new CustomError('Test error', 400, ["Invalid input"]);
+            
+            //Call of errorHandler
+            errorHandler(err, req as Request, res as Response, next);
+        
+            expect(res.status).toHaveBeenCalledWith(400);
+            expect(res.json).toHaveBeenCalledWith({
+                message: 'Test error',
+                errors: ['Invalid input']
+            });
+            expect(next).not.toHaveBeenCalled();
+          });
+        
+          //test 2
+          it('Should set 500 as the status of the response if an Error is triggered', () => {
+            //Data mock
+            const err = new Error();
+        
+            //Call of errorHandler
+            errorHandler(err as CustomError, req as Request, res as Response, next);
+        
+            expect(res.status).toHaveBeenCalledWith(500);
+            expect(res.json).toHaveBeenCalledWith({
+                message: "Internal Server Error",
+                errors: []
+            });
+            expect(next).not.toHaveBeenCalled();
+          });
+    }); //errorHandler
 });

@@ -1,3 +1,10 @@
+//READ ME:
+/*
+Because of the complexity of unit testing the routes, it was decided to test them just with the integration testing.
+For this reason this file's suite won't be runned along with the others.
+For more informations go check the "jest.config.js" were the path of this suite was excluded.
+*/
+
 import express from 'express';
 import request from 'supertest';
 import { Request, Response, NextFunction } from 'express';
@@ -133,7 +140,7 @@ jest.mock('@utils/validators/user.validator', () => ({
 }));
 
 /* ******************************************* Suite n#0 - MAIN ******************************************* */
-describe('Tests for the main routes', () => {
+describe.skip('Tests for the main routes', () => {
   //Resources restoring
   beforeEach(() => {
     app.use('/', router);
@@ -171,7 +178,7 @@ describe('Tests for the main routes', () => {
 }); //END OF MAIN ROUTES
 
 /* ******************************************* Suite n#1 - USER ******************************************* */
-describe('Tests for user routes', () => {
+describe.skip('Tests for user routes', () => {
   //Mock of the objects that will be use to test controllers
   let req: Partial<CustomRequest>;
   let res: Partial<Response>;
@@ -214,7 +221,7 @@ describe('Tests for user routes', () => {
 }); //END OF USER ROUTES
 
 /* ******************************************* Suite n#2 - DOCUMENT ******************************************* */
-describe('Tests for document routes', () => {
+describe.skip('Tests for document routes', () => {
   //Mock of the objects that will be use to test controllers
   let req: Partial<CustomRequest>;
   let res: Partial<Response>;

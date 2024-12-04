@@ -1,6 +1,6 @@
 export interface ICoordinate extends Document {
   id: string;
-  type: 'Point' | 'Area';
+  type: 'Point' | 'Polygon';
   coordinates: number[] | number[][];
   name: string;
 }

@@ -62,8 +62,6 @@ export const getGraphDatas = async (): Promise<IGraphData | null> => {
       },
     ]);
 
-    console.log(result);
-
     const graphData: IGraphData = {
       minYear: result[0].minYear,
       maxYear: result[0].maxYear,

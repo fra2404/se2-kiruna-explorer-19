@@ -14,10 +14,10 @@ export const validateCoordinate: ValidationChain[] = [
         !value.every(Number.isFinite)
       ) {
         throw new Error(
-          'Coordinates for Point must be an array of two numbers [longitude, latitude]',
+          'Coordinates for Point must be an array of two numbers [latitude, longitude]',
         );
       }
-      const [longitude, latitude] = value;
+      const [latitude, longitude] = value;
       if (
         longitude < -180 ||
         longitude > 180 ||
