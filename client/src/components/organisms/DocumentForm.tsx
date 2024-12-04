@@ -65,6 +65,9 @@ const DocumentForm = ({
   const [showSummary, setShowSummary] = useState(false);
   const [errors, setErrors] = useState<{ [key: string]: string }>({});
 
+  const featureGroupRef = useRef<L.FeatureGroup>(null);
+  const popupRef = useRef<L.Popup>(null);
+
   const stepRefs = [
     useRef<HTMLDivElement>(null),
     useRef<HTMLDivElement>(null),
@@ -368,11 +371,6 @@ const DocumentForm = ({
           <div className="grid grid-cols-1 gap-x-4 gap-y-2 mt-16">
             <div
               onClick={() => handleStepClick(1)}
-              onKeyDown={(e) => {
-                if (e.key === 'Enter' || e.key === ' ') {
-                  handleStepClick(1);
-                }
-              }}
               tabIndex={0} // Ensure the element is focusable
               ref={stepRefs[0]}
               className={`header-section ${hasErrors(1) ? 'error' : ''} scroll-margin-top`}
@@ -397,11 +395,6 @@ const DocumentForm = ({
             <LightDivider />
             <div
               onClick={() => handleStepClick(2)}
-              onKeyDown={(e) => {
-                if (e.key === 'Enter' || e.key === ' ') {
-                  handleStepClick(2);
-                }
-              }}
               tabIndex={0} // Ensure the element is focusable
               ref={stepRefs[1]}
               className={`header-section ${hasErrors(2) ? 'error' : ''} scroll-margin-top`}
@@ -423,11 +416,6 @@ const DocumentForm = ({
             </div>
             <LightDivider />
             <div
-              onKeyDown={(e) => {
-                if (e.key === 'Enter' || e.key === ' ') {
-                  setShowFiles(!showFiles);
-                }
-              }}
               onClick={() => handleStepClick(3)}
               tabIndex={0} // Ensure the element is focusable
               ref={stepRefs[2]}
@@ -457,11 +445,6 @@ const DocumentForm = ({
             </div>
             <LightDivider />
             <div
-              onKeyDown={(e) => {
-                if (e.key === 'Enter' || e.key === ' ') {
-                  setShowConnections(!showConnections);
-                }
-              }}
               onClick={() => handleStepClick(4)}
               tabIndex={0} // Ensure the element is focusable
               ref={stepRefs[3]}
@@ -490,12 +473,6 @@ const DocumentForm = ({
             </div>
             <LightDivider />
             <div
-              onKeyDown={(e) => {
-                if (e.key === 'Enter' || e.key === ' ') {
-                  setShowGeoreferencing(!showGeoreferencing);
-                  setConnectToMap(!connectToMap);
-                }
-              }}
               onClick={() => handleStepClick(5)}
               tabIndex={0} // Ensure the element is focusable
               ref={stepRefs[4]}
@@ -506,6 +483,8 @@ const DocumentForm = ({
                 onClick={() => {
                   setShowGeoreferencing(!showGeoreferencing);
                   setConnectToMap(!connectToMap);
+                  featureGroupRef.current?.remove();
+                  popupRef.current?.remove();
                 }}
               >
                 Georeferencing{/*
@@ -535,6 +514,8 @@ const DocumentForm = ({
                   setCoordName={setCoordName}
                   MapClickHandler={MapClickHandler}
                   errors={errors}
+                  featureGroupRef={featureGroupRef}
+                  popupRef={popupRef}
                 />
               )}
             </div>

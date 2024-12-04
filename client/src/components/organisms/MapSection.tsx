@@ -1,4 +1,4 @@
-import React, { useContext, useRef } from 'react';
+import React, { useContext } from 'react';
 import { Marker, Tooltip, Polygon } from 'react-leaflet';
 import { LatLng } from 'leaflet';
 import InputComponent from '../atoms/input/input';
@@ -23,7 +23,9 @@ interface MapSectionProps {
   coordName: string;
   setCoordName: (name: string) => void;
   MapClickHandler: React.FC;
-  errors: {[key: string]: string}
+  errors: {[key: string]: string};
+  featureGroupRef: React.RefObject<L.FeatureGroup>;
+  popupRef:  React.RefObject<L.Popup>;
 }
 
 const MapSection: React.FC<MapSectionProps> = ({
@@ -40,13 +42,12 @@ const MapSection: React.FC<MapSectionProps> = ({
   coordName,
   setCoordName,
   MapClickHandler,
-  errors
+  errors,
+  featureGroupRef,
+  popupRef
 }) => {
   const { swedishFlagBlue, satMapMainColor, mapType } =
     useContext(MapStyleContext);
-
-  const featureGroupRef = useRef<L.FeatureGroup>(null);
-  const popupRef = useRef<L.Popup>(null);
 
   const handleAddPoint = async () => {
     if (position) {

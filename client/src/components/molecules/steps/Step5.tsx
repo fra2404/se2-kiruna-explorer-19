@@ -15,7 +15,9 @@ interface Step5Props {
   coordName: string;
   setCoordName: (name: string) => void;
   MapClickHandler: React.FC;
-  errors: {[key: string]: string}
+  errors: {[key: string]: string};
+  featureGroupRef: React.RefObject<L.FeatureGroup>;
+  popupRef:  React.RefObject<L.Popup>;
 }
 
 const Step5: React.FC<Step5Props> = ({
@@ -32,7 +34,9 @@ const Step5: React.FC<Step5Props> = ({
   coordName,
   setCoordName,
   MapClickHandler,
-  errors
+  errors,
+  featureGroupRef,
+  popupRef
 }) => {
   return (
     <MapSection
@@ -50,6 +54,8 @@ const Step5: React.FC<Step5Props> = ({
       setCoordName={setCoordName}
       MapClickHandler={MapClickHandler}
       errors={errors}
+      featureGroupRef={featureGroupRef}
+      popupRef={popupRef}
     />
   );
 };
