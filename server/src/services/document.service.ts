@@ -23,13 +23,17 @@ export const addingDocument = async (
   documentData: IDocument,
 ): Promise<IDocumentResponse | null> => {
   // Check existence of Coordinate in DB
+
+  // if (documentData.coordinates) {
+  //   const existingCoordinate = await Coordinate.findById(
+  //     documentData.coordinates,
+  //   );
+  //   if (!existingCoordinate) {
+  //     throw new PositionError();
+  //   }
+  // }
   if (documentData.coordinates) {
-    const existingCoordinate = await Coordinate.findById(
-      documentData.coordinates,
-    );
-    if (!existingCoordinate) {
-      throw new PositionError();
-    }
+    await validateCoordinateExistence(documentData.coordinates);
   }
 
   // Check existence of Connection in DB
@@ -307,14 +311,18 @@ if (updateData.scale && updateData.scale !== 'ARCHITECTURAL' && updatedDocument.
   await updatedDocument.save(); 
 }
 
+  // Check existence of Coordinate in DB
 
+  // if (updateData.coordinates) {
+  //   const existingCoordinate = await Coordinate.findById(
+  //     updateData.coordinates,
+  //   );
+  //   if (!existingCoordinate) {
+  //     throw new PositionError();
+  //   }
+  // }
   if (updateData.coordinates) {
-    const existingCoordinate = await Coordinate.findById(
-      updateData.coordinates,
-    );
-    if (!existingCoordinate) {
-      throw new PositionError();
-    }
+    await validateCoordinateExistence(updateData.coordinates); 
   }
 
   ////Added By Mina
@@ -493,4 +501,14 @@ export const fetchMedia = async (
     );
   }
   return null;
+};
+
+
+
+// Validate existence of coordinate 
+export const validateCoordinateExistence = async (coordinateId: ObjectId) => {
+  const existingCoordinate = await Coordinate.findById(coordinateId);
+  if (!existingCoordinate) {
+    throw new PositionError();
+  }
 };
