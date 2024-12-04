@@ -9,10 +9,14 @@ import MapStyleContext from '../../context/MapStyleContext';
 
 
 interface HeaderProps {
-  setManageCoordsModalOpen: (manageCoordsModalOpen: boolean) => void
+  page: string;
+  headerRef?: any;
+  setManageCoordsModalOpen?: (manageCoordsModalOpen: boolean) => void
 }
 
 export const Header: React.FC<HeaderProps> = ({
+  page,
+  headerRef,
   setManageCoordsModalOpen
 }) => {
   const [dateTime, setDateTime] = useState(new Date().toLocaleString());
@@ -39,16 +43,19 @@ export const Header: React.FC<HeaderProps> = ({
   };
 
   return (
-    <div className="p-3"
-        style={{
-          position: 'absolute',
-          top: 0,
-          left: 0,
-          width: "100%",
-          zIndex: 10,
-          background: "transparent",
-          pointerEvents: "none"
-        }}>
+    <div 
+      ref={headerRef}
+      className="p-3"
+      style={{
+        position: 'absolute',
+        top: 0,
+        left: 0,
+        width: "100%",
+        zIndex: 10,
+        background: "transparent",
+        pointerEvents: "none"
+      }}
+    >
 
       <div className="flex items-center justify-between" style={{ background: "transparent" }}>
         <div className='flex items-center'>
@@ -63,16 +70,16 @@ export const Header: React.FC<HeaderProps> = ({
               alignItems: 'center',
               pointerEvents: "auto"
             }} />
-          <h1 className={mapType == "osm" ? 'font-bold text-black ml-2 text-2xl' : "font-bold text-white ml-2 text-2xl"}>Kiruna eXplorer</h1>
+          <h1 className={mapType == "osm" || page != 'map' ? 'font-bold text-black ml-2 text-2xl' : "font-bold text-white ml-2 text-2xl"}>Kiruna eXplorer</h1>
         </div>
 
         <div className='flex items-center gap-4'>
           {/* Button to switch to the diagram view */}
           <ButtonRounded
             variant="filled"
-            text="Go to graph"
+            text={page == 'map' ? "Go to graph" : 'Go to homepage'}
             className="bg-black pr-4 pl-4 d-flex align-items-center"
-            onClick={() => navigate('/diagram')}
+            onClick={() => navigate(page == 'map' ? '/diagram' : '/')}
             style={{ pointerEvents: "auto" }}
           />
           {/* Login/logout button */}
@@ -111,6 +118,7 @@ export const Header: React.FC<HeaderProps> = ({
           handleLogout={handleLogout}
           dropdownRef={dropdownRef}
           setManageCoordsModalOpen={setManageCoordsModalOpen}
+          page={page}
         />
     </div>
   );

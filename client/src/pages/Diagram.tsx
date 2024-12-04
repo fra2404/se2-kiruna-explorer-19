@@ -13,8 +13,6 @@ import InformativeDocIcon from '../assets/icons/informative-doc-icon.svg';
 import MaterialEffectsIcon from '../assets/icons/material-effects-icon.svg';
 import PrescriptiveDocIcon from '../assets/icons/prescriptive-doc-icon.svg';
 import TechnicalDocIcon from '../assets/icons/technical-doc-icon.svg';
-import ButtonRounded from "../components/atoms/button/ButtonRounded";
-import { useNavigate } from 'react-router-dom';
 import "vis-network/styles/vis-network.css";
 import {
     swedishFlagBlue,
@@ -26,8 +24,9 @@ import Modal from 'react-modal';
 import Legend from './Legend';
 import { LatLng } from "leaflet";
 import FeedbackContext from "../context/FeedbackContext.js";
+import { Header } from "../components/organisms/Header.js";
 
-const LABEL_FONT = { size: 25, color: "#000000" };
+const LABEL_FONT = { size: 35, color: "#000000" };
 const YEAR_SPACING = 500;
 const options = {
     autoResize: true,
@@ -67,17 +66,9 @@ const randomColor = () => {
     return `#${red}${green}${blue}`;
 }
 
-const scaleMapping = {
-    "TEXT": 200,
-    "CONCEPT": 400,
-    "ARCHITECTURAL": 600,
-    "BLUEPRINT/MATERIAL EFFECTS": 800,
-    "default": 50,
-};
-
 const Diagram = () => {
-    const navigate = useNavigate();
     const { setFeedbackFromError } = useContext(FeedbackContext);
+    const headerRef = useRef<HTMLDivElement>(null);
     const [selectedDocument, setSelectedDocument] = useState<IDocument[]>([]);
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [documents, setDocuments] = useState<any[]>([]);
@@ -153,6 +144,28 @@ const Diagram = () => {
           });
       }, []);
 
+    let architecturalScales: [{id:string, label: string, scale: string}] = [];
+    let lastMap = 600;
+    let architecturalScalesMapping: any = {};
+
+    documents.filter((d) => d.scale == 'ARCHITECTURAL' && d.architecturalScale).sort((a, b) => {
+        return b.architecturalScale.split(':')[1] - a.architecturalScale.split(':')[1];
+    }).forEach((d) => {
+      if(!(architecturalScales.map((s) => s.id).includes(d.architecturalScale))) {
+        architecturalScales.push({ id: d.architecturalScale, label: d.architecturalScale, scale: d.architecturalScale})
+        architecturalScalesMapping[d.architecturalScale] = lastMap;
+        lastMap += 200;
+      }
+    });
+
+    const scaleMapping = {
+      "TEXT": 200,
+      "CONCEPT": 400,
+      ...architecturalScalesMapping,
+      "BLUEPRINT/MATERIAL EFFECTS": lastMap,
+      "default": 50,
+    };
+
     useEffect(() => {
         const connections = [] as any[];
         // Map the data from the BE to the format that the graph component expects.
@@ -165,12 +178,12 @@ const Diagram = () => {
                 doc.scale = "CONCEPT";
             }
             else if (doc.scale.toUpperCase() === "ARCHITECTURAL") {
-                doc.scale = "ARCHITECTURAL";
+                doc.scale = 'ARCHITECTURAL';
             }
             else if (doc.scale.toUpperCase() === "BLUEPRINT/MATERIAL EFFECTS") {
                 doc.scale = "BLUEPRINT/MATERIAL EFFECTS";
             }
-            if (!doc.scale || !scaleMapping[doc.scale as keyof typeof scaleMapping]) {
+            if (!doc.scale) {
                 doc.scale = "default";
             }
 
@@ -255,11 +268,12 @@ const Diagram = () => {
                 color: randomColor(),
                 year: doc.year,
                 scale: doc.scale,
+                architecturalScale: doc.architecturalScale
             }))
             .map(node => ({
                 ...node,
                 x: (node.year - 2000) * YEAR_SPACING, // Mapping the year
-                y: scaleMapping[node.scale as keyof typeof scaleMapping], // Mapping the scale
+                y: scaleMapping[node.scale == 'ARCHITECTURAL' ? node.architecturalScale : node.scale as keyof typeof scaleMapping], // Mapping the scale
 
             }));
 
@@ -298,7 +312,7 @@ const Diagram = () => {
     const label_style = [
         { id: "label_text", label: "Text", scale: "TEXT" },
         { id: "label_concept", label: "Concept", scale: "CONCEPT" },
-        { id: "label_architectural", label: "Architectural style", scale: "ARCHITECTURAL" },
+        ...architecturalScales,
         { id: "label_blueprint", label: "Blueprint/effects", scale: "BLUEPRINT/MATERIAL EFFECTS" },
     ].map(node => ({
         ...node,
@@ -309,8 +323,6 @@ const Diagram = () => {
         font: { ...LABEL_FONT, color: "#FFFFFF" },
 
     }));
-
-
 
     for (let year = minYear; year <= maxYear; year++) {
         label_year.push({
@@ -325,7 +337,6 @@ const Diagram = () => {
         });
         console.log(`Year ${year} has x = ${label_year.find(node => node.year === year)?.x}`);
     }
-
 
     const networkRef = useRef<any>(null);
 
@@ -344,44 +355,28 @@ const Diagram = () => {
         }
     }, [state.graph.nodes]);
 
-    let lastPosition = null;
+    let lastPosition: any = null;
     const max_zoom = 2;
     const min_zoom = 0.1;
-
-    const handleNodeClickButton = () => {
-        console.log("Button clicked!");
-        navigate('/');
-    }
 
 
     return (
         <div style={{ height: "100vh", position: "relative" }} className="grid-background">
+            <Header 
+              headerRef={headerRef}
+              page='graph'
+            />
 
-
-            <div style={{ position: "absolute", top: "10px", left: "10px", zIndex: 10 }}>
+            <div style={{ position: "absolute", top: `${headerRef.current?.offsetHeight ? headerRef.current?.offsetHeight + 10 : 0}px`, left: "10px", zIndex: 10 }}>
                 <Legend />
-
             </div>
-
-            {/* Button to navigate to the home */}
-            <div style={{ position: "absolute", top: "10px", right: "10px", zIndex: 10 }}>
-                <ButtonRounded
-                    variant="filled"
-                    text="Go to homepage"
-                    className="bg-black pr-4 pl-4 d-flex align-items-center"
-                    onClick={handleNodeClickButton}
-
-                ></ButtonRounded>
-            </div>
-
-
 
             {state.graph && (
                 <Graph
                     graph={state.graph}
                     options={options}
                     events={{
-                        selectNode: function (event) {
+                        selectNode: function (event: { nodes: any; }) {
                             const { nodes } = event;
                             const selectedNode = state.graph.nodes.find(node => node.id === nodes[0]);
                             if (selectedNode) {
@@ -391,7 +386,6 @@ const Diagram = () => {
                     }}
                     style={{ height: "100%" }}
                     getNetwork={network => {    // Call the methods inside the Graph component
-                        // network.moveTo({ position: { x: FIT_X_VIEW, y: FIT_Y_VIEW }, scale: 0.5 });
                         networkRef.current = network;
 
                         network.on("zoom", function (params) {

@@ -75,8 +75,6 @@ div.vis-network div.vis-navigation div.vis-button:hover {
 
 
 .vis-button.vis-zoomIn:after {
-    /* content: "+"; */
-    /* font-weight: bold; */
     font-family: 'Material Icons' !important;
     content: '\e8ff';
     color: white !important;
@@ -84,7 +82,6 @@ div.vis-network div.vis-navigation div.vis-button:hover {
 
 .vis-button.vis-zoomOut:after {
     content: "−";
-    /* font-weight: bold; */
     font-family: 'Material Icons' !important;
     content: '\e900';
     color: white !important;
