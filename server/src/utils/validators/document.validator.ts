@@ -2,6 +2,7 @@ import { body, param } from 'express-validator';
 import { IConnection } from '@interfaces/document.interface';
 import mongoose from 'mongoose';
 import { ScaleTypeEnum } from '@utils/enums/scale-type-enum';
+import { StakeholderEnum } from '@utils/enums/stakeholder.enum';
 
 
 export const validateAddDocument = [
@@ -15,27 +16,20 @@ export const validateAddDocument = [
     .withMessage('Stakeholders is required')
     .isArray()
     .withMessage('Stakeholders must be an array')
-    .custom((stakeholders: string[]) => {
-      const validStakeholders = [
-        'LKAB',
-        'Municipality',
-        'Regional Authority',
-        'Architecture Firms',
-        'Citizens',
-        'Others',
-      ];
-      stakeholders.forEach((stakeholder) => {
-        if (!validStakeholders.includes(stakeholder)) {
-          throw new Error(`Invalid stakeholder: ${stakeholder}`);
-        }
-      });
-      return true;
-    }),
+    .custom((value) => {
+       return validateStakeholderEmptiness(value);
+  }
+  )
+    .custom((value) => {
+       return validateStakeholderContent(value);
+  }),
   body('scale')
     .notEmpty()
     .withMessage('Scale is required')
     .isString()
     .withMessage('Scale must be a string')
+    .isIn(Object.values(ScaleTypeEnum))
+    .withMessage('Scale is invalid')
     .custom((value, { req }) => validateScale(value, req.body.architecturalScale)),
   //**********************************/
 
@@ -88,33 +82,11 @@ export const validateAddDocument = [
   body('date')
     .notEmpty()
     .withMessage('Date is required')
-    // .matches(/^\d{4}-\d{2}-\d{2}$/)
     .matches(/^\d{4}(-\d{2})?(-\d{2})?$/)
     .withMessage('Date must be in the format yyyy, yyyy-mm, or yyyy-mm-dd')
     .custom((value) => {
       return validateDate(value);
     }),
-  // .custom((value) => {
-  //   const [year, month, day] = value.split('-').map(Number);
-  //   const isValidDate = (d: number, m: number, y: number) => {
-  //     const date = new Date(y, m - 1, d);
-  //     return (
-  //       date.getFullYear() === y &&
-  //       date.getMonth() === m - 1 &&
-  //       date.getDate() === d
-  //     );
-  //   };
-  //   if (!isValidDate(day, month, year)) {
-  //     throw new Error('Invalid date');
-  //   }
-  //   const inputDate = new Date(year, month - 1, day);
-  //   const today = new Date();
-  //   today.setHours(0, 0, 0, 0); // Set to midnight to compare only date part
-  //   if (inputDate.getTime() > today.getTime()) {
-  //     throw new Error('Date cannot be in the future');
-  //   }
-  //   return true;
-  // }),
   body('coordinates')
     .optional()
     .isMongoId()
@@ -154,33 +126,20 @@ export const validateUpdateDocument = [
     .optional()
     .isArray()
     .withMessage('Stakeholders must be an array')
-    .custom((stakeholders) => {
-      if (Array.isArray(stakeholders) && stakeholders.length === 0) {
-        throw new Error('Stakeholders cannot be an empty array');
-      }
-      return true;
-    })
-    .custom((stakeholders: string[]) => {
-      const validStakeholders = [
-        'LKAB',
-        'Municipality',
-        'Regional Authority',
-        'Architecture Firms',
-        'Citizens',
-        'Others',
-      ];
-      stakeholders.forEach((stakeholder) => {
-        if (!validStakeholders.includes(stakeholder)) {
-          throw new Error(`Invalid stakeholder: ${stakeholder}`);
-        }
-      });
-      return true;
-    }),
+    .custom((value) => {
+      return validateStakeholderEmptiness(value);
+   }
+   )
+   .custom((value) => {
+      return validateStakeholderContent(value);
+   }),
   body('scale')
-    .optional()
-    .isString()
-    .withMessage('Scale must be a string')
-    .custom((value, { req }) => validateScale(value, req.body.architecturalScale)),
+  .optional()
+  .isString()
+  .withMessage('Scale must be a string')
+  .isIn(Object.values(ScaleTypeEnum))
+  .withMessage('Scale is invalid')
+  .custom((value, { req }) => validateScale(value, req.body.architecturalScale)),
   body('type')
     .optional()
     .isIn([
@@ -245,20 +204,68 @@ export const validateUpdateDocument = [
     .withMessage('Media must be an array of MediaId'),
 ];
 
+export const validateSearchDocument = [
+  body()
+  .custom((body) => {
+    const allowedKeys = ['scale', 'stakeholders', 'type', 'architecturalScale', 'date', 'language', 'coordinates'];
+    const invalidKeys = Object.keys(body).filter(
+      (key) => !allowedKeys.includes(key)
+    );
 
-const validateScale = (value: ScaleTypeEnum, architecturalScale?: string) => {
-  if (value === ScaleTypeEnum.Architectural) {
+    if (invalidKeys.length > 0) {
+      throw new Error(`Invalid keys provided: ${invalidKeys.join(', ')}`);
+    }
+    return true;
+  }),
+
+
+  body('stakeholders')
+  .optional()
+  .isArray()
+  .withMessage('Stakeholders must be an array')
+//   .custom((value) => {
+//     return validateStakeholderEmptiness(value);
+//  })  //I do not know if needed or I should consider empty array like not filtering by stakeholder?!
+ .custom((value) => {
+    return validateStakeholderContent(value);
+ }),
+ body('scale')
+ .optional()
+ .isString()
+ .withMessage('Scale must be a string')
+ .isIn(Object.values(ScaleTypeEnum))
+ .withMessage('Scale is invalid'),
+ body('architecturalScale')
+ .optional()
+ .isString()
+ .withMessage('Architectural Scale must be a string')
+ .custom((value) => {
+  if (!/^1:\d+$/.test(value)) {
+    throw new Error('Architectural Scale must be in the format 1:number');
+  }
+  return true;
+ }),
+ body('coordinates')
+    .optional()
+    .isMongoId()
+    .withMessage('Coordinates must be a valid MongoDB ObjectId'),
+]
+
+
+const validateScale = (scale: ScaleTypeEnum, architecturalScale?: string) => {
+  if (scale === ScaleTypeEnum.Architectural) {
     if (!architecturalScale || !/^1:\d+$/.test(architecturalScale)) {
       throw new Error('Architectural Scale must be in the 1:number format');
     }
   } else {
-    if ([ScaleTypeEnum.BlueprintMaterialEffects, ScaleTypeEnum.Text, ScaleTypeEnum.Concept].includes(value)) {
+    if ([ScaleTypeEnum.BlueprintMaterialEffects, ScaleTypeEnum.Text, ScaleTypeEnum.Concept].includes(scale)) {
       if (architecturalScale) {
         throw new Error('Architectural Scale must be empty when scale is a string');
       }
-    } else if (![ScaleTypeEnum.BlueprintMaterialEffects, ScaleTypeEnum.Text, ScaleTypeEnum.Concept].includes(value)) {
-      throw new Error('Scale must be either blueprint/material effects or text or concept  when it is not a number');
-    }
+     } 
+    //else if (![ScaleTypeEnum.BlueprintMaterialEffects, ScaleTypeEnum.Text, ScaleTypeEnum.Concept].includes(scale)) {
+    //   throw new Error(`Invalid scale: ${scale}`);
+    // }
   }
   return true;
 };
@@ -279,7 +286,7 @@ const validateDate = (value: string) => {
   if (day) {
     const date = new Date(year, month - 1, day); // check if complete date is valid
     if (date.getFullYear() !== year || date.getMonth() !== month - 1 || date.getDate() !== day) {
-      throw new Error('Invalid date');
+      throw new Error('Date is invalid');
     }
   }
 
@@ -293,3 +300,21 @@ const validateDate = (value: string) => {
 
   return true;
 };
+
+
+const validateStakeholderContent = (stakeholders: string[]) =>{
+  const validStakeholders: string[] = Object.values(StakeholderEnum)
+  stakeholders.forEach((stakeholder) => {
+    if (!validStakeholders.includes(stakeholder)) {
+      throw new Error(`Invalid stakeholder: ${stakeholder}`);
+    }
+  });
+  return true;
+}
+
+const validateStakeholderEmptiness = (stakeholders :string[]) =>{
+    if (Array.isArray(stakeholders) && stakeholders.length === 0) {
+      throw new Error('Stakeholders cannot be an empty array');
+    }
+    return true;
+}

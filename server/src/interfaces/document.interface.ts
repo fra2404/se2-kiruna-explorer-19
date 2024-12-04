@@ -13,9 +13,11 @@ export interface IConnection {
 export interface IDocumentFilters {
   stakeholders?: StakeholderEnum;
   scale?: ScaleTypeEnum;
+  architecturalScale?: string; //Added due to changing in scale
   type?: DocTypeEnum;
   date?: string;
   language?: string;
+  coordinates?: string; 
 }
 
 export interface IDocument {

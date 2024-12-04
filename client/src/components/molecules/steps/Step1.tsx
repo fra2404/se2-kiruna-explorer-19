@@ -3,6 +3,7 @@ import InputComponent from '../../atoms/input/input';
 import './Step1.css';
 import { stakeholderOptions } from '../../../shared/stakeholder.options.const';
 import { scaleOptions } from '../../../shared/scale.options.const';
+import { years, months, getDays } from '../../../utils/date';
 
 interface Step1Props {
   title: string;
@@ -71,29 +72,6 @@ const Step1: React.FC<Step1Props> = ({
       setSelectedDay('');
     }
   }, [selectedMonth]);
-
-  const getDaysInMonth = (year: number, month: number) => {
-    return new Date(year, month, 0).getDate();
-  };
-
-  const years = Array.from({ length: 100 }, (_, i) =>
-    (new Date().getFullYear() - i).toString(),
-  );
-  const months = Array.from({ length: 12 }, (_, i) =>
-    (i + 1).toString().padStart(2, '0'),
-  );
-  const days =
-    selectedYear && selectedMonth
-      ? Array.from(
-          {
-            length: getDaysInMonth(
-              parseInt(selectedYear),
-              parseInt(selectedMonth),
-            ),
-          },
-          (_, i) => (i + 1).toString().padStart(2, '0'),
-        )
-      : [];
 
   return (
     <>
@@ -230,7 +208,7 @@ const Step1: React.FC<Step1Props> = ({
               )
             }
             disabled={!selectedYear || !selectedMonth}
-            options={days.map((day) => ({ value: day, label: day }))}
+            options={getDays(selectedYear, selectedMonth).map((day) => ({ value: day, label: day }))}
             placeholder="Day"
           />
         </div>

@@ -1,4 +1,4 @@
-import { ReactNode, createContext } from "react"
+import { ReactNode, createContext, useMemo } from "react"
 import { municipalityCoordinates } from "../utils/municipalityCoordinates"
 
 interface MunicipalityCoordinatesContextType {
@@ -12,11 +12,13 @@ const MunicipalityCoordinatesContext = createContext<MunicipalityCoordinatesCont
 export const MunicipalityCoordinatesProvider: React.FC<{children: ReactNode}> = ({
   children
 }) => {
+  const v = useMemo(() => ({
+    municipalityCoordinates
+  }), [])
+
   return(
     <MunicipalityCoordinatesContext.Provider
-      value={{
-        municipalityCoordinates
-      }}
+      value={v}
     >
       {children}
     </MunicipalityCoordinatesContext.Provider>

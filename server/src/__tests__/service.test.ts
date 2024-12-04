@@ -44,10 +44,12 @@ import {
   updateMediaMetadata,
   getMediaMetadataById,
 } from '@services/media.service';
+import { 
+  getGraphDatas 
+} from '../services/graph.service';
 
 import { UserRoleEnum } from '../utils/enums/user-role.enum';
 import { DocTypeEnum } from '../utils/enums/doc-type.enum';
-import { LinkTypeEnum } from '@utils/enums/link-type.enum';
 import { StakeholderEnum } from '@utils/enums/stakeholder.enum';
 import { ScaleTypeEnum } from '@utils/enums/scale-type-enum';
 import { CustomError } from '../utils/customError';
@@ -57,13 +59,13 @@ import {
   PositionError,
   MediaNotFoundError,
 } from '../utils/errors';
-import { mock } from 'node:test';
 
 //MOCKS
 jest.mock('../schemas/user.schema'); //suite n#1
 jest.mock('../schemas/coordinate.schema'); //suite n#2
 jest.mock('../schemas/document.schema'); //suite n#3
 jest.mock('../schemas/media.schema'); //suite n#4
+jest.mock('../schemas/document.schema'); //suite n#5
 
 jest.mock('bcrypt'); //Used in suite n#1
 jest.mock('jsonwebtoken'); //Used in suite n#1
@@ -648,6 +650,7 @@ describe('Tests for document services', () => {
     const mockNewDocument = {
       ...mockDocumentData,
       id: 'd1',
+      scale: ScaleTypeEnum.BlueprintMaterialEffects,
       save: jest.fn(),
       toObject: jest.fn().mockReturnValue(this)
     } as IDocument;
@@ -925,7 +928,7 @@ describe('Tests for document services', () => {
         id: '1',
         title: 'Test Document 1',
         summary: 'Summary 1',
-        stakeholders: 'Company A',
+        stakeholders: StakeholderEnum.ArchitectureFirms,
         scale: '1:500',
         type: DocTypeEnum.Agreement,
         date: '2000-01-01',
@@ -936,21 +939,21 @@ describe('Tests for document services', () => {
         toObject: jest.fn().mockReturnValue({
           title: 'Test Document 1',
           summary: 'Summary 1',
-          stakeholders: 'Company A',
+          stakeholders: StakeholderEnum.ArchitectureFirms,
           scale: '1:500',
           type: DocTypeEnum.Agreement,
           date: '2000-01-01',
           language: 'EN',
           media: ['media1', 'media2'],
-          coordinates: '1',
+          coordinates: '1'
         }),
       },
       {
         id: '2',
         title: 'Test Document 2',
         summary: 'Summary 2',
-        stakeholders: 'Company B',
-        scale: '1:1000',
+        stakeholders: StakeholderEnum.Citizens,
+        scale: ScaleTypeEnum.Architectural,
         type: DocTypeEnum.Conflict,
         date: '2000-01-02',
         language: 'EN',
@@ -960,13 +963,13 @@ describe('Tests for document services', () => {
         toObject: jest.fn().mockReturnValue({
           title: 'Test Document 2',
           summary: 'Summary 2',
-          stakeholders: 'Company B',
-          scale: '1:1000',
+          stakeholders: StakeholderEnum.Citizens,
+          scale: ScaleTypeEnum.Architectural,
           type: DocTypeEnum.Conflict,
           date: '2000-01-02',
           language: 'EN',
           media: ['media3'],
-          coordinates: '',
+          coordinates: ''
         }),
       },
     ];
@@ -977,6 +980,7 @@ describe('Tests for document services', () => {
       const filters = {
         stakeholders: StakeholderEnum.ArchitectureFirms,
         scale: ScaleTypeEnum.Architectural,
+        architecturalScale: "Test value",
         type: DocTypeEnum.Agreement,
         date: "2000-01-01",
         language: "EN"
@@ -993,6 +997,14 @@ describe('Tests for document services', () => {
         .spyOn(require('../services/document.service'), 'fetchMedia')
         .mockResolvedValueOnce(mockMedia);
 
+      //*******************************************************************
+      /*
+      The stakeholder filter can't be tested because the if-else block that manage its logic is under a length
+      condition. "stakeholder" in the filter object is a variable, but only vectors got the "length" prop, so
+      that block is nevere accessed.
+      */
+      //*******************************************************************
+
       //Call of searchDocuments
       //In order to navigate each if-else block of searchDocuments, all possible filters are added
       //This strategy is followed to increase total coverage, the test would have also worked with just one filter
@@ -1006,7 +1018,7 @@ describe('Tests for document services', () => {
           id: '1',
           title: 'Test Document 1',
           summary: 'Summary 1',
-          stakeholders: 'Company A',
+          stakeholders: StakeholderEnum.ArchitectureFirms,
           scale: '1:500',
           type: DocTypeEnum.Agreement,
           date: '2000-01-01',
@@ -1363,7 +1375,6 @@ describe('Tests for document services', () => {
     });
 
     //Mocked data
-
     //Just essential fields are filled
     const mockDocuments = [
       {
@@ -1649,4 +1660,133 @@ describe('Tests for media services', () => {
       expect(Media.findByIdAndUpdate).toHaveBeenCalled();
     });
   }); //updateMediaMetadata
+  /* ************************************************** */
+
+  //getMediaMetadataById
+  describe('Tests for getMediaMetadataById', () => {
+    afterEach(() => {
+      jest.clearAllMocks();
+    });
+
+    //Data mock
+    const mockMedia = {
+      id: "media1",
+      filename: "test.pdf",
+      relativeUrl: "example/url",
+      type: "document",
+      mimetype: "application/pdf",
+      pages: 10
+    };
+
+    //test 1
+    test("Should return the media metadata", async () => {
+      //Support functions mocking
+      (Media.findById as jest.Mock).mockImplementation(async() => mockMedia);
+  
+      //Call of getMediaMetadataById
+      const result = await getMediaMetadataById("media1");
+  
+      expect(Media.findById).toHaveBeenCalledWith("media1");
+      expect(result).toEqual({
+        id: mockMedia.id,
+        filename: mockMedia.filename,
+        url: mockMedia.relativeUrl,
+        type: mockMedia.type,
+        mimetype: mockMedia.mimetype,
+        pages: mockMedia.pages
+      });
+    });
+  
+    //test 2
+    test("Should throw an error if the media is not found", async () => {
+      //Data mock
+      const err = new Error("Media not found");
+      
+      //Support functions mock
+      (Media.findById as jest.Mock).mockImplementation(async() => null);
+  
+      //Call of getMediaMetadataById + result check
+      await expect(getMediaMetadataById("invalid-id")).rejects.toThrowError(err);
+      expect(Media.findById).toHaveBeenCalledWith("invalid-id");
+    });
+  }); //getMediaMetadataById
 }); //END OF MEDIA SERVICES
+
+/* ******************************************* Suite n#5 - GRAPH ******************************************* */
+describe('Tests for graph services', () => {
+  //getGraphDatas
+  describe('Tests for getGraphDatas', () => {
+    afterEach(() => {
+      jest.clearAllMocks();
+    });
+
+    //Returned data mock
+    const mockAggregate = jest.fn().mockImplementation(async() => [
+      {
+        minYear: '2010',
+        maxYear: '2020',
+        data: [
+          {
+            year: '2010',
+            type: [
+              { scale: 'scale1', qty: 5 },
+              { scale: 'scale2', qty: 3 },
+            ],
+          },
+          {
+            year: '2020',
+            type: [
+              { scale: 'scale1', qty: 7 },
+              { scale: 'scale2', qty: 2 },
+            ],
+          },
+        ],
+      },
+    ]);
+
+    //test 1
+    test('Should retrive all the data needed to build the graph', async () => {
+      //Support functions mocking
+      (Document.aggregate as jest.Mock).mockImplementation(mockAggregate);
+
+      //Call of getGraphDatas
+      const result = await getGraphDatas();
+
+      expect(result).toEqual({
+        minYear: '2010',
+        maxYear: '2020',
+        infoYear: [
+          {
+            year: '2010',
+            types: [
+              { scale: 'scale1', qty: 5 },
+              { scale: 'scale2', qty: 3 },
+            ],
+          },
+          {
+            year: '2020',
+            types: [
+              { scale: 'scale1', qty: 7 },
+              { scale: 'scale2', qty: 2 },
+            ],
+          },
+        ],
+      });
+
+      expect(Document.aggregate).toHaveBeenCalled();
+    });
+
+    //test 2
+    test('Should throw an error if the connection fails', async () => {
+      //Data mock
+      const err = new CustomError("Internal Server Error", 500);
+
+      //Support functions mocking
+      (Document.aggregate as jest.Mock).mockImplementation(async() => err);
+  
+      //Call of getGraphDatas + result checks
+      await expect(getGraphDatas()).rejects.toThrow(err);
+    });
+  }); //getGraphDatas
+  /* ************************************************** */
+}) //END OF GRAPH SERVICES

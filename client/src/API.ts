@@ -2,7 +2,6 @@ import { ICoordinate, IDocument } from './utils/interfaces/document.interface';
 import { IUser } from './utils/interfaces/user.interface';
 
 const SERVER_URL = 'http://localhost:5001/api'; // endpoint of the server
-const CDN_URL = 'http://localhost:3004'; // endpoint of the CDN
 
 async function login(
   email: string,
@@ -185,6 +184,12 @@ async function getCoordinates() {
     .then((response) => response.json());
 }
 
+async function getAreas() {
+  const coordinates = await getCoordinates();
+  const areas = coordinates.filter((coord: ICoordinate) => coord.type === 'Polygon');
+  return areas;
+}
+
 async function createCoordinate(coord: ICoordinate): Promise<{
   success: boolean;
   coordinate?: { message: string; coordinate: ICoordinate };
@@ -276,13 +281,16 @@ async function addResource(file: File) {
 async function searchDocuments(
   searchQuery: string,
   filters: {
-    type: string;
-    scale: string;
-    stakeholders: string;
-    language: string;
+    type: string | undefined;
+    stakeholders: string[] | undefined;
+    coordinates: string | undefined;
+    date: string | undefined;
+    language: string | undefined;
+    scale: string | undefined;
+    architecturalScale: string | undefined;
   },
 ): Promise<IDocument[]> {
-  const searchURL =
+    const searchURL =
     searchQuery.trim() === ''
       ? `${SERVER_URL}/documents/search`
       : `${SERVER_URL}/documents/search?keywords=[${searchQuery
@@ -290,21 +298,66 @@ async function searchDocuments(
           .map((word) => `"${encodeURIComponent(word)}"`)
           .join(',')}]`;
 
-  console.log('Search URL:', searchURL);
-  console.log('Filters sent in body:', filters);
+    let formattedFilters;
+    if (filters.scale === '') {
+      formattedFilters = {
+        type: filters.type,
+        stakeholders: filters.stakeholders,
+        coordinates: filters.coordinates,
+        date: filters.date,
+        language: filters.language,
+      };
+    }
+    else if (filters.architecturalScale === '') {
+      formattedFilters = {
+        type: filters.type,
+        stakeholders: filters.stakeholders,
+        coordinates: filters.coordinates,
+        date: filters.date,
+        language: filters.language,
+        scale: filters.scale,
+      };
+    } else {
+      formattedFilters = filters;
+    }
 
-  const response = await fetch(searchURL, {
+    const response = await fetch(searchURL, {
+      method: 'POST',
+      credentials: 'include',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(formattedFilters),
+    });
+    if (!response.ok) throw new Error('Failed to fetch documents');
+
+    const documents = await response.json();
+    return documents;
+}
+
+async function addArea(coordinateData: ICoordinate) {
+  const response = await fetch(`${SERVER_URL}/coordinates/create`, {
     method: 'POST',
     credentials: 'include',
     headers: {
-      'Content-Type': 'application/json',
+      'Content-type': 'application/json',
     },
-    body: JSON.stringify(filters),
+    body: JSON.stringify(coordinateData),
   });
-  if (!response.ok) throw new Error('Failed to fetch documents');
 
-  const documents = await response.json();
-  return documents;
+  if (response.status === 201) return { message: "Area successfully added", error: false }
+  else if (response.status === 400) return { message: "Validation errors", error: true }
+  return { message: "Internal Server Error", error: true }
+}
+
+async function removeArea(areaId: any) {
+  const response = await fetch(`${SERVER_URL}/coordinates/delete/${areaId}`, {
+    method: 'DELETE',
+    credentials: 'include'
+  });
+
+  if (response.status === 200) return { message: "Area successfully", error: false }
+  return { message: "Error while deleting", error: true }
 }
 
 async function getGraphInfo() {
@@ -322,6 +375,9 @@ const API = {
   deleteCoordinate,
   searchDocuments,
   getGraphInfo,
+  addArea,
+  removeArea,
+  getAreas,
 };
 
 export {

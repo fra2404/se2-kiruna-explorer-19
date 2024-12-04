@@ -162,7 +162,6 @@ export const Point: React.FC<PointProps> = ({
           documents={allDocuments}
           setDocuments={setDocuments}
           selectedCoordIdProp={id != 'all_municipality' ? selectedPointId : undefined}
-          modalOpen={modalOpen}
           setModalOpen={setModalOpen}
         />
       </Modal>

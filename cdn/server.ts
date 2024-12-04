@@ -35,6 +35,7 @@ const storage = multer.diskStorage({
         const payload = jwt.verify(token, SECRET_KEY) as JwtPayload & {
             folder: string;
         };
+
         const folderPath = path.join(UPLOAD_DIR, payload.folder);
         fs.mkdir(folderPath, { recursive: true })
             .then(() => cb(null, folderPath))
@@ -49,7 +50,10 @@ const storage = multer.diskStorage({
         cb(null, `${payload.id}${extension}`); // Usa l'ID passato come nome del file
     },
 });
-const upload = multer({ storage });
+const upload = multer({ 
+    storage,
+    limits: { fileSize: 5 * 1024 * 1024 }, // Limit file size to 5MB
+});
 
 interface JwtPayload {
     id: string;
