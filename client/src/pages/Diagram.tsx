@@ -2,7 +2,7 @@
 import "../../src/global.js";
 import Graph from "react-graph-vis";
 import './Diagram.css';
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef, useContext } from "react";
 import API from "../API";
 import ErrorImage from '../assets/icons/error.png';
 import AgreementIcon from "../assets/icons/agreement-icon.svg";
@@ -24,6 +24,8 @@ import { IDocument } from "../utils/interfaces/document.interface.js";
 import DocumentDetailsModal from '../components/organisms/modals/DocumentDetailsModal';
 import Modal from 'react-modal';
 import Legend from './Legend';
+import { LatLng } from "leaflet";
+import FeedbackContext from "../context/FeedbackContext.js";
 
 const LABEL_FONT = { size: 25, color: "#000000" };
 const YEAR_SPACING = 500;
@@ -75,9 +77,11 @@ const scaleMapping = {
 
 const Diagram = () => {
     const navigate = useNavigate();
+    const { setFeedbackFromError } = useContext(FeedbackContext);
     const [selectedDocument, setSelectedDocument] = useState<IDocument[]>([]);
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [documents, setDocuments] = useState<any[]>([]);
+    const [coordinates, setCoordinates] = useState({});
     const [originalDocuments, setOriginalDocuments] = useState<any[]>([]);
     const [state, setState] = useState({
         graph: {
@@ -116,6 +120,38 @@ const Diagram = () => {
         };
         fetchDocuments();
     }, []);
+
+    useEffect(() => {
+        API.getCoordinates()
+          .then((coords) => {
+            const result: {
+              [id: string]: {
+                type: string;
+                coordinates: LatLng | LatLng[] | LatLng[][];
+                name: string;
+              };
+            } = {};
+            coords.forEach(
+              (c: {
+                _id: string;
+                type: string;
+                coordinates: LatLng | LatLng[] | LatLng[][];
+                name: string;
+              }) => {
+                result[c._id] = {
+                  type: c.type,
+                  coordinates: c.coordinates,
+                  name: c.name,
+                };
+              },
+            );
+            setCoordinates(result);
+          })
+          .catch((e) => {
+            console.log(e);
+            setFeedbackFromError(e);
+          });
+      }, []);
 
     useEffect(() => {
         const connections = [] as any[];
@@ -190,15 +226,11 @@ const Diagram = () => {
                     console.log(`Connection type: ${connection.type}`);
                     if (connection.type.toUpperCase() === "DIRECT") {
                         console.log("Direct connection");
-                        // connectionColor = "#00FF00";
                     } else if (connection.type.toUpperCase() === "COLLATERAL") {
-                        // connectionColor = "#FF0000";
                         dashesType = [2, 2]; // This is good for collateral connections
                     } else if (connection.type.toUpperCase() === "PROJECTION") {
-                        // connectionColor = "#FF00FF";
                         dashesType = [1, 3];
                     } else if (connection.type.toUpperCase() === "UPDATE") {
-                        // connectionColor = "#0000FF";
                         dashesType = [2, 1, 1];
                     }
 
@@ -232,7 +264,7 @@ const Diagram = () => {
             }));
 
 
-        nodes_documents.forEach((node, index) => {
+        nodes_documents.forEach((node) => {
             const overlappingNode = occupiedPositions.find((pos: any) => pos.x === node.x && pos.y === node.y);
             if (overlappingNode) {
                 const offsetX = Math.floor(Math.random() * 100) + 100; // Random offset between 100 and 200
@@ -388,6 +420,10 @@ const Diagram = () => {
             >
                 <DocumentDetailsModal
                     document={selectedDocument[0]}
+                    coordinates={coordinates}
+                    setCoordinates={setCoordinates}
+                    allDocuments={documents}
+                    setDocuments={setDocuments}
                 />
             </Modal>
         </div>

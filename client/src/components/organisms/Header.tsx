@@ -21,7 +21,6 @@ export const Header: React.FC<HeaderProps> = ({
 
   const [loginModalOpen, setLoginModalOpen] = useState(false);
   const [dropdownOpen, setDropdownOpen] = useState(false);
-  // const [showSearchBar, setShowSearchBar] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
 
   const { mapType } = useContext(MapStyleContext);
