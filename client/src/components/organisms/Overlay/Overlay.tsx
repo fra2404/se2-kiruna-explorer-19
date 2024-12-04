@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import Modal from 'react-modal';
+
 import { modalStyles } from '../../../pages/KirunaMap';
-import './Overlay.css';
 import FloatingButton from '../../molecules/FloatingButton';
 import DocumentForm from '../DocumentForm';
 import { IDocument } from '../../../utils/interfaces/document.interface';
@@ -10,6 +10,7 @@ import { FaFolder, FaGlobe, FaPlus } from 'react-icons/fa';
 import { AllMunicipalityDocuments } from '../coordsOverlay/AllMunicipalityDocuments';
 import { useAuth } from '../../../context/AuthContext';
 import { UserRoleEnum } from '../../../utils/interfaces/user.interface';
+import './Overlay.css';
 
 interface OverlayProps {
   coordinates: any; //Need to pass coordinates to the modal as parameter
@@ -17,11 +18,6 @@ interface OverlayProps {
   documents: IDocument[];
   setDocuments: (documents: IDocument[]) => void;
 }
-
-// <div key={index} className='border-b p-2 pb-1 cursor-pointer hover:bg-gray-100 rounded last:border-none'>
-//   <h1 className='text-sm font-bold'>{doc.title}</h1>
-//   <p className='text-sm mt-1'>{doc.summary?.slice(0, 200)}...</p>
-// </div>
 
 const Overlay: React.FC<OverlayProps> = ({
   coordinates,
@@ -37,8 +33,7 @@ const Overlay: React.FC<OverlayProps> = ({
   const [isHoveredNewDocument, setIsHoveredNewDocument] = useState(false);
 
   const [isHoveredSearch, setIsHoveredSearch] = useState(false);
-  const [showAllDocuments, setShowAllDocuments] = useState(false);
-
+  const [showAllDocumentsModal, setShowAllDocumentsModal] = useState(false);
   const { isLoggedIn, user } = useAuth();
 
   const municipalityDocumentsModalStyles = {
@@ -56,8 +51,7 @@ const Overlay: React.FC<OverlayProps> = ({
   };
 
   return (
-    <div
-      style={{
+    <div style={{
         position: 'absolute',
         top: '50vh',
         left: 0,
@@ -80,14 +74,15 @@ const Overlay: React.FC<OverlayProps> = ({
             setShowMunicipalityDocuments(true);
           }
         }}
+        className='floating-button-right'
       />
 
       <FloatingButton
         onMouseEnter={() => setIsHoveredSearch(true)}
         onMouseLeave={() => setIsHoveredSearch(false)}
         onClick={() => {
-          if (!showAllDocuments) {
-            setShowAllDocuments(true);
+          if (!showAllDocumentsModal) {
+            setShowAllDocumentsModal(true);
           }
         }}
         text={
@@ -97,7 +92,7 @@ const Overlay: React.FC<OverlayProps> = ({
             <FaFolder style={{ display: 'inline' }} />
           )
         }
-        className='mt-20'
+        className="floating-button-right mt-20"
       />
 
       {isLoggedIn && user && user.role === UserRoleEnum.Uplanner && (
@@ -116,7 +111,7 @@ const Overlay: React.FC<OverlayProps> = ({
               setModalOpen(true);
             }
           }}
-          className='mt-40'
+          className='floating-button-right mt-40'
         />
       )}
 
@@ -129,23 +124,23 @@ const Overlay: React.FC<OverlayProps> = ({
           coordinates={coordinates}
           setCoordinates={setCoordinates}
           documents={documents}
-          setDocuments={setDocuments}
           positionProp={undefined}
           setModalOpen={setModalOpen}
+          setDocuments={setDocuments} 
         />
       </Modal>
 
       <Modal
         style={modalStyles}
-        isOpen={showAllDocuments}
-        onRequestClose={() => setShowAllDocuments(false)}
+        isOpen={showAllDocumentsModal}
+        onRequestClose={() => setShowAllDocumentsModal(false)}
       >
         <AllDocumentsModal 
-          setShowAllDocuments={setShowAllDocuments} 
+          setShowAllDocumentsModal={setShowAllDocumentsModal} 
           coordinates={coordinates}
           setCoordinates={setCoordinates}
           allDocuments={documents}
-          setAllDocuments={setDocuments}
+          setAllDocuments={setDocuments} 
         />
       </Modal>
 
@@ -158,7 +153,7 @@ const Overlay: React.FC<OverlayProps> = ({
           coordinates={coordinates}
           setCoordinates={setCoordinates}
           documents={documents}
-          setDocuments={setDocuments}
+          setDocuments={setDocuments} 
         />
       </Modal>
     </div>

@@ -70,10 +70,9 @@ const ClickMarker: React.FC<ClickMarkerProps> = ({
           coordinates={coordinates}
           setCoordinates={setCoordinates}
           documents={documents}
-          setDocuments={setDocuments}
+          setDocuments={setDocuments} 
           positionProp={position}
           showCoordNamePopup={true}
-          modalOpen={modalOpen}
           setModalOpen={setModalOpen}
         />
       </Modal>
