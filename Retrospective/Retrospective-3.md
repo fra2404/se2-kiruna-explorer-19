@@ -77,7 +77,7 @@
 
 - What caused your errors in estimation (if any)?
   - For the tasks related to the diagram, estimation errors were caused by its complexity. We could not effectively estimate the time needed to implement it before starting to work on it, since we didn't know yet the technology to use.
-  - Code review: problems on code meant that we spent more time than estimated on code reviews.
+  - Code review: problems on code meant that some tasks required multiple reviews, leading us to spend more time than estimated.
   - Unxepected issues while developing new features that increased the time spent on that feature.
 
 - What lessons did you learn (both positive and negative) in this sprint?
