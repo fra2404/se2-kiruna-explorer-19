@@ -1,11 +1,11 @@
 import { useMap } from 'react-leaflet';
 import { useState } from 'react';
 import ButtonRounded from '../atoms/button/ButtonRounded';
-import MapSwitch from '../atoms/MapSwitch';
+import MapSwitch from '../atoms/map-switch/MapSwitch';
 
 function CustomZoomControl() {
   const map = useMap();
-  const [zoom, setZoom] = useState(map.getZoom());
+  const [_zoom, setZoom] = useState(map.getZoom());
 
   const handleZoomIn = () => {
     map.zoomIn();
@@ -19,12 +19,17 @@ function CustomZoomControl() {
 
   return (
     <div
-      style={{ pointerEvents: 'auto', position: 'absolute', display: 'flex', flexDirection: 'column', alignItems: 'center', zIndex: 1000 }}
+      style={{
+        pointerEvents: 'auto',
+        position: 'absolute',
+        display: 'flex',
+        flexDirection: 'column',
+        alignItems: 'center',
+        zIndex: 1000,
+      }}
       className="leaflet-bottom leaflet-left flex flex-row mb-4 ml-4 "
     >
-      <div
-        style={{ pointerEvents: 'auto' }}
-      >
+      <div style={{ pointerEvents: 'auto' }}>
         <ButtonRounded
           variant="filled"
           text="+"

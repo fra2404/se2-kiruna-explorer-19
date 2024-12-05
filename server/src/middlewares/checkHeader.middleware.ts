@@ -1,7 +1,7 @@
 import { Request, Response, NextFunction } from 'express';
 
 const checkHeader = (req: Request, res: Response, next: NextFunction): void => {
-  const expectedHeaderValue = process.env.API_KEY || 'my-api-key'; // Usa una variabile d'ambiente per il valore atteso
+  const expectedHeaderValue = process.env.API_KEY || 'my-api-key'; // An environmental variable is used for the expected value
   const headerValue = req.headers['x-api-key'];
 
   if (!headerValue) {

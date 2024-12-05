@@ -1,5 +1,7 @@
 import { DocTypeEnum } from '@utils/enums/doc-type.enum';
+import { StakeholderEnum } from '@utils/enums/stakeholder.enum';
 import { LinkTypeEnum } from '@utils/enums/link-type.enum';
+import { ScaleTypeEnum } from '@utils/enums/scale-type-enum';
 import { ObjectId } from 'mongoose';
 
 export interface IConnection {
@@ -9,22 +11,25 @@ export interface IConnection {
 }
 
 export interface IDocumentFilters {
-  stakeholders?: string;
-  scale?: string;
+  stakeholders?: StakeholderEnum;
+  scale?: ScaleTypeEnum;
+  architecturalScale?: string; //Added due to changing in scale
   type?: DocTypeEnum;
   date?: string;
   language?: string;
+  coordinates?: string; 
 }
 
 export interface IDocument {
   title: string;
-  stakeholders: string;
-  scale: string;
+  stakeholders: StakeholderEnum[];
+  scale: ScaleTypeEnum;
+  architecturalScale?: string;  //Added due to changing in scale
   type: DocTypeEnum;
   date: string;
   connections?: IConnection[];
   language?: string;
-  media?: ObjectId[]; //changed By Mina
+  media?: ObjectId[];
   coordinates?: ObjectId;
   summary: string;
 

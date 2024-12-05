@@ -4,15 +4,20 @@ import { AuthProvider } from './context/AuthContext.tsx';
 import { ModalProvider } from './context/ModalContext.tsx';
 import { MapStyleProvider } from './context/MapStyleContext.tsx';
 import KirunaMap from './pages/KirunaMap.tsx';
+import { MunicipalityCoordinatesProvider } from './context/MunicipalityCoordinatesContext.tsx';
+import Diagram from './pages/Diagram.tsx';
 
 function App() {
   return (
     <AuthProvider>
       <ModalProvider>
         <MapStyleProvider>
-          <Routes>
-            <Route path="/" element={<KirunaMap />} />
-          </Routes>
+          <MunicipalityCoordinatesProvider>
+            <Routes>
+              <Route path="/" element={<KirunaMap />} />
+              <Route path="/diagram" element={<Diagram />} />
+            </Routes>
+          </MunicipalityCoordinatesProvider>
         </MapStyleProvider>
       </ModalProvider>
     </AuthProvider>

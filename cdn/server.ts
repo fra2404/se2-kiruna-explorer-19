@@ -16,9 +16,9 @@ const envFile = process.env.DOCKER_ENV ? '.env.docker' : '.env.local';
 dotenv.config({ path: envFile });
 
 const app = express();
-const PORT = process.env.PORT || 3005;
+const PORT = process.env.PORT ?? 3005;
 const UPLOAD_DIR = path.join(__dirname, 'uploads');
-const SECRET_KEY = process.env.SECRET_KEY || 'your_secret_key';
+const SECRET_KEY = process.env.SECRET_KEY ?? 'your_secret_key';
 const cache = new NodeCache({ stdTTL: 600 }); // Cache with a TTL of 10 minutes
 
 app.use(
@@ -28,28 +28,18 @@ app.use(
     }),
 );
 
-// Cors
-app.use(
-    cors({
-        origin: true,
-        credentials: true,
-    }),
-);
-
 // Configuration of multer for file handling
 const storage = multer.diskStorage({
-    destination: async (req, _file, cb) => {
-        try {
-            const token = req.query.token as string;
-            const payload = jwt.verify(token, SECRET_KEY) as JwtPayload & {
-                folder: string;
-            };
-            const folderPath = path.join(UPLOAD_DIR, payload.folder);
-            await fs.mkdir(folderPath, { recursive: true });
-            cb(null, folderPath);
-        } catch (error) {
-            cb(error as Error, 'error');
-        }
+    destination: (req, _file, cb) => {
+        const token = req.query.token as string;
+        const payload = jwt.verify(token, SECRET_KEY) as JwtPayload & {
+            folder: string;
+        };
+
+        const folderPath = path.join(UPLOAD_DIR, payload.folder);
+        fs.mkdir(folderPath, { recursive: true })
+            .then(() => cb(null, folderPath))
+            .catch((error) => cb(error as Error, 'error'));
     },
     filename: (req, file, cb) => {
         const token = req.query.token as string;
@@ -60,7 +50,10 @@ const storage = multer.diskStorage({
         cb(null, `${payload.id}${extension}`); // Usa l'ID passato come nome del file
     },
 });
-const upload = multer({ storage });
+const upload = multer({ 
+    storage,
+    limits: { fileSize: 5 * 1024 * 1024 }, // Limit file size to 5MB
+});
 
 interface JwtPayload {
     id: string;
@@ -232,12 +225,12 @@ app.post(
             // Call the external API with the metadata
             try {
                 const apiResponse = await axios.put(
-                    process.env.SERVER || 'http://localhost:5001/api/media/update',
+                    process.env.SERVER ?? 'http://localhost:5001/api/media/update',
                     fileMetadata,
                     {
                         headers: {
                             'Content-Type': 'application/json',
-                            'x-api-key': process.env.API_KEY || 'my-api-key',
+                            'x-api-key': process.env.API_KEY ?? 'my-api-key',
                         },
                     },
                 );

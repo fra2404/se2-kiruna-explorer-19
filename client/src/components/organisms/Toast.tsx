@@ -21,7 +21,7 @@ const Toast: React.FC<ToastProps> = ({ isShown, message, type, onClose }) => {
 
   return (
     <div
-      className={`absolute bottom-6 right-6 transition-all duration-400 z-10 ${
+      className={`absolute bottom-0 right-0 transition-all duration-400 z-50 ${
         isShown ? 'block' : 'hidden'
       }`}
     >

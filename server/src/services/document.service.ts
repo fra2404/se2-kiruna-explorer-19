@@ -14,7 +14,9 @@ import { DocTypeEnum } from '@utils/enums/doc-type.enum';
 import { CustomError } from '@utils/customError';
 import { getMediaMetadataById } from './media.service';
 import { ObjectId } from 'mongoose';
+import { ObjectId as MongoObjectId } from 'mongodb';
 import { IReturnMedia } from '@interfaces/media.return.interface';
+
 
 //addDocument(Story 1)
 export const addingDocument = async (
@@ -66,6 +68,7 @@ export const addingDocument = async (
           document: newDocument.id,
           type: connection.type,
         });
+
         await existingDocument.save();
       }
     }
@@ -196,15 +199,30 @@ export const searchDocuments = async (
 
   if (filters) {
     const filterConditions = []; // Array to store filter conditions, initially empty
-    if (filters.stakeholders) {
-      filterConditions.push({
-        stakeholders: { $regex: filters.stakeholders, $options: 'i' },
-      });
-    }
+    if (filters.stakeholders && 
+        Array.isArray(filters.stakeholders) && 
+        filters.stakeholders.length > 0) {  
+          if (filters.stakeholders.length === 1) {
+            // Single item-look for any array containing this item
+            filterConditions.push({
+              stakeholders: { $in: filters.stakeholders },
+            });
+          } else {
+            // Multiple items- look for exact combination in any order
+            filterConditions.push({
+              stakeholders: { $all: filters.stakeholders }, // Contains all items
+              $expr: { $eq: [{ $size: "$stakeholders" }, filters.stakeholders.length] }, // Exact size match
+            });
+          }
+        }
     if (filters.scale) {
       filterConditions.push({
         scale: { $regex: filters.scale, $options: 'i' },
       });
+    }
+    if (filters.architecturalScale){
+      filterConditions.push({ 
+        architecturalScale: filters.architecturalScale });
     }
     if (filters.type) {
       filterConditions.push({ type: filters.type });
@@ -216,6 +234,11 @@ export const searchDocuments = async (
       filterConditions.push({
         language: { $regex: filters.language, $options: 'i' },
       });
+    }
+
+    if (filters.coordinates) {
+      const coordinatesId = new MongoObjectId(filters.coordinates)
+      filterConditions.push({ coordinates: { $eq: coordinatesId } });
     }
     // Ignore the filters that are not in the document schema
     if (filterConditions.length > 0) {
@@ -276,6 +299,14 @@ export const updatingDocument = async (
   if (!updatedDocument) {
     throw new DocNotFoundError();
   }
+
+
+// If the new scale is not 'Architectural' and architecturalScale has a value, delete architecturalScale
+if (updateData.scale && updateData.scale !== 'ARCHITECTURAL' && updatedDocument.architecturalScale) {
+  updatedDocument.architecturalScale = "";
+  await updatedDocument.save(); 
+}
+
 
   if (updateData.coordinates) {
     const existingCoordinate = await Coordinate.findById(
@@ -371,7 +402,7 @@ export const updatingDocument = async (
     id: updatedDocument.id,
     ...documentObject,
     coordinates,
-    media: media || null, //Added By Mina
+    media: media || null, 
   };
 
   return document;

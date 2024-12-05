@@ -1,24 +1,11 @@
-import { useState } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import { useMapEvents } from 'react-leaflet';
 import { LatLng } from 'leaflet';
 import Modal from 'react-modal';
-
 import ConnectionForm from './documentConnections/ConnectionForm';
 import ButtonRounded from '../atoms/button/ButtonRounded';
 
 import {
-  AgreementIcon,
-  ConflictIcon,
-  ConsultationIcon,
-  DesignDocIcon,
-  InformativeDocIcon,
-  MaterialEffectsIcon,
-  PrescriptiveDocIcon,
-  TechnicalDocIcon,
-} from '../../assets/icons';
-
-import {
-  createCoordinate,
   createDocument,
   editDocument,
   addResource,
@@ -31,9 +18,15 @@ import Step4 from '../molecules/steps/Step4';
 import Step5 from '../molecules/steps/Step5';
 import Step6 from '../molecules/steps/Step6';
 import {
-  ICoordinate,
   IDocument,
 } from '../../utils/interfaces/document.interface';
+
+import './DocumentForm.css';
+import LightDivider from '../atoms/light-divider/light-divider';
+import ModalHeader from '../molecules/ModalHeader';
+import ToggleButton from '../atoms/ToggleButton';
+import { DocumentIcon } from '../molecules/documentsItems/DocumentIcon';
+import useToast from '../../utils/hooks/toast';
 
 Modal.setAppElement('#root');
 
@@ -50,7 +43,6 @@ interface DocumentFormProps {
   showCoordNamePopup?: boolean;
   documents: IDocument[];
   setDocuments: (documents: IDocument[]) => void;
-  modalOpen: boolean;
   setModalOpen: (open: boolean) => void;
   selectedDocument?: IDocument;
 }
@@ -64,90 +56,108 @@ const DocumentForm = ({
   setDocuments,
   showCoordNamePopup = false,
   selectedDocument,
+  setModalOpen,
 }: DocumentFormProps) => {
   const [currentStep, setCurrentStep] = useState(1);
   const [connectToMap, setConnectToMap] = useState(
     !!positionProp || !!selectedCoordIdProp,
   );
+  const [showSummary, setShowSummary] = useState(false);
+  const [errors, setErrors] = useState<{ [key: string]: string }>({});
 
-  const documentTypeOptions = [
-    {
-      value: 'AGREEMENT',
-      label: 'Agreement',
-      icon: <AgreementIcon fillColor="#000" />,
-    },
-    {
-      value: 'CONFLICT',
-      label: 'Conflict',
-      icon: <ConflictIcon fillColor="#000" />,
-    },
-    {
-      value: 'CONSULTATION',
-      label: 'Consultation',
-      icon: <ConsultationIcon fillColor="#000" />,
-    },
-    {
-      value: 'DESIGN_DOC',
-      label: 'Design document',
-      icon: <DesignDocIcon fillColor="#000" />,
-    },
-    {
-      value: 'INFORMATIVE_DOC',
-      label: 'Informative document',
-      icon: <InformativeDocIcon fillColor="#000" />,
-    },
-    {
-      value: 'MATERIAL_EFFECTS',
-      label: 'Material effects',
-      icon: <MaterialEffectsIcon fillColor="#000" />,
-    },
-    {
-      value: 'PRESCRIPTIVE_DOC',
-      label: 'Prescriptive document',
-      icon: <PrescriptiveDocIcon fillColor="#000" />,
-    },
-    {
-      value: 'TECHNICAL_DOC',
-      label: 'Technical document',
-      icon: <TechnicalDocIcon fillColor="#000" />,
-    },
+  const featureGroupRef = useRef<L.FeatureGroup>(null);
+  const popupRef = useRef<L.Popup>(null);
+
+  const stepRefs = [
+    useRef<HTMLDivElement>(null),
+    useRef<HTMLDivElement>(null),
+    useRef<HTMLDivElement>(null),
+    useRef<HTMLDivElement>(null),
+    useRef<HTMLDivElement>(null),
   ];
 
+  const scrollToStep = (step: number) => {
+    setCurrentStep(step);
+    stepRefs[step - 1].current?.scrollIntoView({
+      behavior: 'smooth',
+      block: 'start',
+      inline: 'nearest',
+    });
+  };
+
   // Document information
-  const [title, setTitle] = useState(selectedDocument?.title || '');
-  const [stakeholders, setStakeholders] = useState<string | undefined>(
-    selectedDocument?.stakeholders || undefined,
+  const [title, setTitle] = useState(selectedDocument?.title ?? '');
+  const [stakeholders, setStakeholders] = useState<string[]>(
+    Array.isArray(selectedDocument?.stakeholders)
+      ? selectedDocument.stakeholders
+      : [],
   );
   const [scale, setScale] = useState<string | undefined>(
-    selectedDocument?.scale || '',
+    selectedDocument?.scale ?? '',
   );
+  const [architecturalScale, setArchitecturalScale] = useState<
+    string | undefined
+  >(selectedDocument?.architecturalScale ?? '');
   const [issuanceDate, setIssuanceDate] = useState(
     selectedDocument?.date
       ? new Date(selectedDocument.date).toISOString().split('T')[0]
       : new Date().toISOString().split('T')[0],
   );
   const [docType, setDocType] = useState<string | undefined>(
-    selectedDocument?.type || undefined,
+    selectedDocument?.type ?? undefined,
   );
-  //const [numPages, setNumPages] = useState(0);
   const [connections, setConnections] = useState<Connection[]>(
     selectedDocument?.connections?.map((c) => {
       return { type: c.type, relatedDocument: c.document };
     }) || [],
   );
-  const [language, setLanguage] = useState(selectedDocument?.language || '');
+  const [language, setLanguage] = useState(selectedDocument?.language ?? '');
   const [description, setDescription] = useState(
-    selectedDocument?.summary || '',
+    selectedDocument?.summary ?? '',
   );
 
   // Georeferencing information
   const [position, setPosition] = useState<LatLng | undefined>(positionProp);
   const [selectedCoordId, setSelectedCoordId] = useState<string | undefined>(
     selectedCoordIdProp,
-  ); //If the user selected an area, this variable contains the id of that area
+  );
   const [coordName, setCoordName] = useState('');
   const [coordNamePopupOpen, setCoordNamePopupOpen] =
     useState(showCoordNamePopup);
+
+  const createDocumentOption = (
+    value: string,
+    label: string,
+    stakeholders: string[] | undefined,
+  ) => ({
+    value,
+    label,
+    icon: (
+      <DocumentIcon
+        type={value}
+        stakeholders={Array.isArray(stakeholders) ? stakeholders : []}
+      />
+    ),
+  });
+
+  const documentTypeOptions = [
+    createDocumentOption('AGREEMENT', 'Agreement', stakeholders),
+    createDocumentOption('CONFLICT', 'Conflict', stakeholders),
+    createDocumentOption('CONSULTATION', 'Consultation', stakeholders),
+    createDocumentOption('DESIGN_DOC', 'Design document', stakeholders),
+    createDocumentOption(
+      'INFORMATIVE_DOC',
+      'Informative document',
+      stakeholders,
+    ),
+    createDocumentOption('MATERIAL_EFFECTS', 'Material effects', stakeholders),
+    createDocumentOption(
+      'PRESCRIPTIVE_DOC',
+      'Prescriptive document',
+      stakeholders,
+    ),
+    createDocumentOption('TECHNICAL_DOC', 'Technical document', stakeholders),
+  ];
 
   // Connection modal : To enter a new connection
   const [connectionModalOpen, setConnectionModalOpen] = useState(false);
@@ -161,12 +171,19 @@ const DocumentForm = ({
       transform: 'translate(-50%, -50%)',
       width: '80%',
       maxWidth: '700px',
+      maxHeight: '90vh',
+      overflowY: 'auto' as React.CSSProperties['overflowY'],
     },
     overlay: { zIndex: 1000 },
   };
 
   // Original resources data
   const [files, setFiles] = useState<File[]>([]);
+  const [showFiles, setShowFiles] = useState(!!selectedDocument?.media?.length);
+  const [showConnections, setShowConnections] = useState(!!connections.length);
+  const [showGeoreferencing, setShowGeoreferencing] = useState(
+    !!positionProp || !!selectedCoordIdProp,
+  );
 
   const handleAddConnection = (connection: Connection) => {
     setConnections([...connections, connection]);
@@ -177,73 +194,36 @@ const DocumentForm = ({
     setConnections(updatedConnections);
   };
 
-  // const handleEditConnection = (
-  //   index: number,
-  //   updatedConnection: Connection,
-  // ) => {
-  //   const updatedConnections = connections.map((conn, i) =>
-  //     i === index ? updatedConnection : conn,
-  //   );
-  //   setConnections(updatedConnections);
-  // };
-
   // Toast
-  const [toastMsg, setToastMsg] = useState<{
-    isShown: boolean;
-    type: 'success' | 'error';
-    message: string;
-  }>({
-    isShown: false,
-    type: 'success',
-    message: '',
-  });
-
-  const showToastMessage = (message: string, type: 'success' | 'error') => {
-    setToastMsg({
-      isShown: true,
-      message,
-      type,
-    });
-  };
-
-  const hideToastMessage = () => {
-    setToastMsg({
-      isShown: false,
-      message: '',
-      type: 'error',
-    });
-  };
+  const { toast, showToast, hideToast } = useToast();
 
   const validateStep = () => {
-    switch (currentStep) {
-      case 1:
-        return (
-          title.trim() !== '' &&
-          stakeholders !== '' &&
-          scale !== '' &&
-          issuanceDate.trim() !== ''
-        );
-      case 2:
-        return (docType ?? '').trim() !== '';
-      default:
-        return true;
-    }
-  };
-
-  const handleNextStep = () => {
-    if (validateStep()) {
-      console.log(currentStep);
-      setCurrentStep(currentStep + 1);
-    } else {
-      showToastMessage('Please fill in all required fields', 'error');
-    }
+    const newErrors: { [key: string]: string } = {};
+    if (title.trim() === '') newErrors.title = 'Title is required';
+    if (stakeholders.length === 0)
+      newErrors.stakeholders = 'Stakeholders are required';
+    if (scale === '') newErrors.scale = 'Scale is required';
+    if (
+      scale === 'ARCHITECTURAL' &&
+      ((architecturalScale ?? '').trim() === '' ||
+        !/^1:\d+$/.test(architecturalScale ?? ''))
+    )
+      newErrors.architecturalScale = 'Custom Scale must be in 1:number format';
+    if (issuanceDate.trim() === '')
+      newErrors.issuanceDate = 'Issuance date is required';
+    if ((docType ?? '').trim() === '')
+      newErrors.docType = 'Document type is required';
+    if (position && !selectedCoordId && !coordName)
+      newErrors.newPoint = 'A new point must have a valid name';
+    setErrors(newErrors);
+    return Object.keys(newErrors).length === 0;
   };
 
   const handleSaveResource = async () => {
     const media_ids: string[] = [];
     // Call here the API to save the media file for each file:
-    for (let i = 0; i < files.length; i++) {
-      const token = await addResource(files[i]);
+    for (let f of files) {
+      const token = await addResource(f);
       media_ids.push(token);
     }
     return media_ids;
@@ -251,57 +231,43 @@ const DocumentForm = ({
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    let coordId: string | undefined = undefined;
-
-    // Call here the API to save the media files
-    const media_ids = await handleSaveResource();
-
-    //If selectedCoordId is undefined, this means that we are adding the document into a new point. We need to save this point in the DB
-    if (!selectedCoordId && position && connectToMap) {
-      const coordData: ICoordinate = {
-        id: '',
-        name: coordName,
-        type: 'Point', //TODO: will be changed at story 9, to give the possibility to also create areas
-        coordinates: [position.lat, position.lng], //TODO: will be changed at story 9, to give the possibility to also create areas
-      };
-
-      try {
-        const response = await createCoordinate(coordData);
-        console.log(response);
-        if (response.success) {
-          coordId = response.coordinate?.coordinate._id;
-          if (coordId)
-            setCoordinates({
-              ...coordinates,
-              [coordId]: {
-                type: response.coordinate?.coordinate.type,
-                coordinates: response.coordinate?.coordinate.coordinates,
-                name: response.coordinate?.coordinate.name,
-              },
-            });
-        } else {
-          console.log('Failed to create coordinate');
-          showToastMessage('Failed to create coordinate', 'error');
-        }
-      } catch (error) {
-        console.error('Error creating coordinate:', error);
-        showToastMessage('Error creating coordinate:' + error, 'error');
-      }
-    } else {
-      if (connectToMap) coordId = selectedCoordId;
-      else coordId = undefined;
+    if (!validateStep()) {
+      showToast('Please fill in all required fields', 'error');
+      return;
     }
 
-    const documentData = {
-      id: selectedDocument?.id || '',
+    const media_ids = await handleSaveResource();
+
+    const documentData = createDocumentData(media_ids);
+
+    try {
+      const response = await saveDocument(documentData);
+      if (response.success) {
+        if (response.document) {
+          handleSuccessfulSave(response.document);
+        } else {
+          showToast('Failed to create document', 'error');
+        }
+      } else {
+        showToast('Failed to create document', 'error');
+      }
+    } catch (error) {
+      showToast('Error creating document:' + error, 'error');
+    }
+  };
+
+  const createDocumentData = (media_ids: string[]) => {
+    return {
+      id: selectedDocument?.id ?? '',
       title,
-      stakeholders: stakeholders || '',
-      scale: scale || '',
-      type: docType || '',
+      stakeholders: stakeholders ?? '',
+      scale: scale ?? '',
+      architecturalScale: scale === 'ARCHITECTURAL' ? architecturalScale : '',
+      type: docType ?? '',
       language,
       summary: description,
       date: issuanceDate,
-      coordinates: coordId || undefined,
+      coordinates: connectToMap ? selectedCoordId : undefined,
       connections: connections.map((conn) => ({
         document: conn.relatedDocument,
         type: conn.type,
@@ -310,53 +276,32 @@ const DocumentForm = ({
         ? [...selectedDocument.media.map((m) => m.id), ...media_ids]
         : media_ids,
     };
+  };
 
-    try {
-      let response;
-      if (!selectedDocument) {
-        response = await createDocument(documentData);
-      } else {
-        response = await editDocument(documentData);
-      }
-      if (response.success) {
-        showToastMessage('Document saved successfully', 'success');
-
-        setCurrentStep(6);
-        if (response.document) {
-          const responseDocument = response.document; //Typescript is not able to detect that the value response.document will still be defined in the "else" branch. So, we have to put it in a variable
-          if (!selectedDocument) {
-            setDocuments(documents.concat(responseDocument));
-          } else {
-            setDocuments(
-              documents.map((doc: IDocument) => {
-                return doc.id == selectedDocument.id ? responseDocument : doc;
-              }),
-            );
-          }
-        }
-        if (response.document) {
-          const responseDocument = response.document; //Typescript is not able to detect that the value response.document will still be defined in the "else" branch. So, we have to put it in a variable
-          if (!selectedDocument) {
-            setDocuments(documents.concat(responseDocument));
-          } else {
-            setDocuments(
-              documents.map((doc: IDocument) => {
-                return doc.id == selectedDocument.id ? responseDocument : doc;
-              }),
-            );
-          }
-        }
-      } else {
-        console.log('Failed to create document');
-        showToastMessage('Failed to create document', 'error');
-      }
-    } catch (error) {
-      console.error('Error creating document:', error);
-      showToastMessage('Error creating document:' + error, 'error');
+  const saveDocument = async (documentData: any) => {
+    if (!selectedDocument) {
+      return await createDocument(documentData);
+    } else {
+      return await editDocument(documentData);
     }
   };
 
-  // Handle document position
+  const handleSuccessfulSave = (responseDocument: IDocument) => {
+    showToast('Document saved successfully', 'success');
+    setShowSummary(true);
+    if (responseDocument) {
+      if (!selectedDocument) {
+        setDocuments(documents.concat(responseDocument));
+      } else {
+        setDocuments(
+          documents.map((doc: IDocument) => {
+            return doc.id == selectedDocument.id ? responseDocument : doc;
+          }),
+        );
+      }
+    }
+  };
+
   function MapClickHandler() {
     useMapEvents({
       dblclick(e) {
@@ -370,116 +315,248 @@ const DocumentForm = ({
 
   const existingFiles = selectedDocument?.media || [];
 
-  const renderStep = () => {
-    switch (currentStep) {
+  useEffect(() => {
+    const handleScroll = () => {
+      stepRefs.forEach((ref, index) => {
+        if (ref.current) {
+          const rect = ref.current.getBoundingClientRect();
+          if (rect.top >= 0 && rect.bottom <= window.innerHeight) {
+            setCurrentStep(index + 1);
+          }
+        }
+      });
+    };
+
+    window.addEventListener('scroll', handleScroll);
+    return () => {
+      window.removeEventListener('scroll', handleScroll);
+    };
+  }, []);
+
+  const hasErrors = (step: number) => {
+    switch (step) {
       case 1:
         return (
-          <Step1
-            title={title}
-            setTitle={setTitle}
-            stakeholders={stakeholders || ''}
-            setStakeholders={setStakeholders}
-            scale={scale || ''}
-            setScale={setScale}
-            issuanceDate={issuanceDate}
-            setIssuanceDate={setIssuanceDate}
-          />
+          !!errors.title ||
+          !!errors.stakeholders ||
+          !!errors.scale ||
+          !!errors.architecturalScale ||
+          !!errors.issuanceDate ||
+          !!errors.customScale
         );
       case 2:
-        return (
-          <Step2
-            description={description}
-            setDescription={setDescription}
-            language={language}
-            setLanguage={setLanguage}
-            docType={docType || ''}
-            setDocType={setDocType}
-            documentTypeOptions={documentTypeOptions}
-          />
-        );
-      case 3:
-        return (
-          <Step3
-            files={files}
-            setFiles={setFiles}
-            existingFiles={existingFiles}
-          />
-        );
-      case 4:
-        return (
-          <Step4
-            connections={connections}
-            handleDeleteConnection={handleDeleteConnection}
-            setConnectionModalOpen={setConnectionModalOpen}
-            connectToMap={connectToMap}
-            setConnectToMap={setConnectToMap}
-            allDocuments={documents}
-          />
-        );
+        return !!errors.docType;
       case 5:
-        return (
-          <Step5
-            coordinates={coordinates}
-            selectedCoordIdProp={selectedCoordId || ''}
-            selectedCoordId={selectedCoordId || ''}
-            setSelectedCoordId={setSelectedCoordId}
-            setCoordNamePopupOpen={setCoordNamePopupOpen}
-            position={position}
-            setPosition={setPosition}
-            coordNamePopupOpen={coordNamePopupOpen}
-            coordName={coordName}
-            setCoordName={setCoordName}
-            MapClickHandler={MapClickHandler}
-          />
-        );
-      case 6:
-        return <Step6 />;
+        return !!errors.newPoint;
       default:
-        return null;
+        return false;
     }
+  };
+
+  const handleStepClick = (step: number) => {
+    setCurrentStep(step);
   };
 
   return (
     <>
-      <div className="w-full rounded shadow-md border">
-        <h2 className="text-center text-2xl font-bold mt-6">
-          {selectedDocument ? 'Edit document' : 'Create a new document'}
-        </h2>
+      <div className="relative">
+        <ModalHeader
+          currentStep={currentStep}
+          hasErrors={hasErrors}
+          scrollToStep={scrollToStep}
+          setModalOpen={setModalOpen}
+          selectedDocument={selectedDocument}
+        />
         <form className="m-6" onSubmit={handleSubmit}>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-x-4 gap-y-2">
-            {renderStep()}
+          <div className="grid grid-cols-1 gap-x-4 gap-y-2 mt-16">
+            <div
+              onClick={() => handleStepClick(1)}
+              tabIndex={0} // Ensure the element is focusable
+              ref={stepRefs[0]}
+              className={`header-section ${hasErrors(1) ? 'error' : ''} scroll-margin-top`}
+            >
+              <h3 className="header-text text-xl font-bold mb-2">
+                Document Info
+              </h3>
+              <Step1
+                title={title}
+                setTitle={setTitle}
+                stakeholders={stakeholders}
+                setStakeholders={setStakeholders}
+                scale={scale || ''}
+                setScale={setScale}
+                issuanceDate={issuanceDate}
+                setIssuanceDate={setIssuanceDate}
+                architecturalScale={architecturalScale || ''}
+                setArchitecturalScale={setArchitecturalScale}
+                errors={errors}
+              />
+            </div>
+            <LightDivider />
+            <div
+              onClick={() => handleStepClick(2)}
+              tabIndex={0} // Ensure the element is focusable
+              ref={stepRefs[1]}
+              className={`header-section ${hasErrors(2) ? 'error' : ''} scroll-margin-top`}
+            >
+              <h3 className="header-text text-xl font-bold mb-2">
+                Description
+              </h3>
 
-            {/* Navigation buttons */}
-            <div className="col-span-2 flex justify-between mt-4">
-              {currentStep > 1 && currentStep < 6 && (
-                <ButtonRounded
-                  variant="outlined"
-                  text="Previous"
-                  className="text-base pt-2 pb-2 pl-4 pr-4"
-                  onClick={() => setCurrentStep(currentStep - 1)}
+              <Step2
+                description={description}
+                setDescription={setDescription}
+                language={language}
+                setLanguage={setLanguage}
+                docType={docType || ''}
+                setDocType={setDocType}
+                documentTypeOptions={documentTypeOptions}
+                errors={errors}
+              />
+            </div>
+            <LightDivider />
+            <div
+              onClick={() => handleStepClick(3)}
+              tabIndex={0} // Ensure the element is focusable
+              ref={stepRefs[2]}
+              className={`header-section ${hasErrors(3) ? 'error' : ''} scroll-margin-top`}
+            >
+              <h3
+                className="header-text text-xl font-bold mb-2 cursor-pointer"
+                onClick={() => {
+                  setShowFiles(!showFiles)} 
+                }
+              >
+                Files{/*
+                */}<span className="align-middle">
+                  <ToggleButton
+                    showContent={showFiles}
+                    onToggle={() => setShowFiles(!showFiles)}
+                  />
+                </span>
+              </h3>
+              {showFiles && (
+                <Step3
+                  files={files}
+                  setFiles={setFiles}
+                  existingFiles={existingFiles}
                 />
               )}
-              {/** (connectToMap ? 5 : 4) */}
-              {currentStep < (connectToMap ? 5 : 4) && (
-                <ButtonRounded
-                  variant="filled"
-                  text="Next"
-                  className="bg-black text-white text-base pt-2 pb-2 pl-4 pr-4"
-                  onClick={handleNextStep}
+            </div>
+            <LightDivider />
+            <div
+              onClick={() => handleStepClick(4)}
+              tabIndex={0} // Ensure the element is focusable
+              ref={stepRefs[3]}
+              className={`header-section ${hasErrors(4) ? 'error' : ''} scroll-margin-top`}
+            >
+              <h3
+                className="header-text text-xl font-bold mb-2 cursor-pointer"
+                onClick={() => setShowConnections(!showConnections)}
+              >
+                Connections{/*
+                */}<span className="align-middle">
+                  <ToggleButton
+                    showContent={showConnections}
+                    onToggle={() => setShowConnections(!showConnections)}
+                  />
+                </span>
+              </h3>
+              {showConnections && (
+                <Step4
+                  connections={connections}
+                  handleDeleteConnection={handleDeleteConnection}
+                  setConnectionModalOpen={setConnectionModalOpen}
+                  allDocuments={documents}
                 />
               )}
-              {currentStep === (connectToMap ? 5 : 4) && (
-                <ButtonRounded
-                  variant="filled"
-                  text="Save"
-                  className="bg-black text-white text-base pt-2 pb-2 pl-4 pr-4"
-                  onClick={handleSubmit}
+            </div>
+            <LightDivider />
+            <div
+              onClick={() => handleStepClick(5)}
+              tabIndex={0} // Ensure the element is focusable
+              ref={stepRefs[4]}
+              className={`header-section ${hasErrors(5) ? 'error' : ''} scroll-margin-top`}
+            >
+              <h3
+                className="header-text text-xl font-bold mb-2 cursor-pointer"
+                onClick={() => {
+                  setShowGeoreferencing(!showGeoreferencing);
+                  setConnectToMap(!connectToMap);
+                  featureGroupRef.current?.remove();
+                  popupRef.current?.remove();
+                }}
+              >
+                Georeferencing{/*
+                */}<span className="align-middle">
+                  <ToggleButton
+                    showContent={showGeoreferencing}
+                    onToggle={() => {
+                      setShowGeoreferencing(!showGeoreferencing);
+                      setConnectToMap(!connectToMap);
+                    }}
+                  />
+                </span>
+              </h3>
+              {showGeoreferencing && (
+                <Step5
+                  coordinates={coordinates}
+                  setCoordinates={setCoordinates}
+                  showToastMessage={showToast}
+                  selectedCoordIdProp={selectedCoordId || ''}
+                  selectedCoordId={selectedCoordId || ''}
+                  setSelectedCoordId={setSelectedCoordId}
+                  setCoordNamePopupOpen={setCoordNamePopupOpen}
+                  position={position}
+                  setPosition={setPosition}
+                  coordNamePopupOpen={coordNamePopupOpen}
+                  coordName={coordName}
+                  setCoordName={setCoordName}
+                  MapClickHandler={MapClickHandler}
+                  errors={errors}
+                  featureGroupRef={featureGroupRef}
+                  popupRef={popupRef}
                 />
               )}
             </div>
           </div>
+          <div className="flex justify-end mt-4">
+            <ButtonRounded
+              variant="filled"
+              text="Save"
+              className="bg-black text-white text-base pt-2 pb-2 pl-4 pr-4"
+              onClick={handleSubmit}
+            />
+          </div>
+
+          {toast.isShown && (
+            <Toast
+              isShown={toast.isShown}
+              message={toast.message}
+              type={toast.type}
+              onClose={hideToast}
+            />
+          )}
         </form>
       </div>
+
+      {showSummary && (
+        <Modal
+          isOpen={true}
+          onRequestClose={() => setShowSummary(false)}
+          style={connectionModalStyles}
+        >
+          <div className="relative">
+            <button
+              onClick={() => setShowSummary(false)}
+              className="absolute top-0 right-0 p-2 text-xl text-gray-500 hover:text-gray-700"
+            >
+              &times;
+            </button>
+            <Step6 />
+          </div>
+        </Modal>
+      )}
 
       <Modal
         style={connectionModalStyles}
@@ -501,15 +578,6 @@ const DocumentForm = ({
           />
         </div>
       </Modal>
-
-      {toastMsg.isShown && (
-        <Toast
-          isShown={toastMsg.isShown}
-          message={toastMsg.message}
-          type={toastMsg.type}
-          onClose={hideToastMessage}
-        />
-      )}
     </>
   );
 };

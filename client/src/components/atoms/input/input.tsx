@@ -16,6 +16,7 @@ interface InputComponentProps {
   type:
     | 'text'
     | 'select'
+    | 'multi-select'
     | 'radio'
     | 'password'
     | 'email'
@@ -25,20 +26,22 @@ interface InputComponentProps {
   options?: Option[];
   required?: boolean;
   name?: string;
-  value?: string | Option;
+  value?: string | Option | Option[];
   defaultValue?: string;
   checked?: boolean;
   onChange?: (
     event:
       | ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>
-      | Option,
+      | Option
+      | Option[],
   ) => void;
   onValidityChange?: (isValid: boolean) => void;
   disabled?: boolean;
   max?: string;
   maxLength?: number;
   returnObject?: boolean;
-  onKeyDown?: (event: React.KeyboardEvent<HTMLInputElement>) => void; // Aggiungi questa proprietà
+  onKeyDown?: (event: React.KeyboardEvent<HTMLInputElement>) => void;
+  error?: string;
 }
 
 const mockFlags = {
@@ -82,12 +85,16 @@ const InputComponent: React.FC<InputComponentProps> = ({
   max,
   maxLength,
   returnObject = false,
-  onKeyDown, // Aggiungi questa proprietà
+  onKeyDown,
+  error,
 }) => {
   const [isEmailValid, setIsEmailValid] = useState<boolean>(true);
   const [isFieldEmpty, setIsFieldEmpty] = useState<boolean>(false);
   const [selectedOption, setSelectedOption] = useState<Option | null>(
     options.find((option) => option.value === defaultValue) || null,
+  );
+  const [selectedOptions, setSelectedOptions] = useState<Option[]>(
+    Array.isArray(value) ? (value) : [],
   );
   const [isTouched, setIsTouched] = useState<boolean>(false);
   const [showPassword, setShowPassword] = useState(false);
@@ -167,27 +174,48 @@ const InputComponent: React.FC<InputComponentProps> = ({
 
   const inputClassName = `shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline ${
     type === 'email' && !isEmailValid && isTouched ? 'border-red-500' : ''
-  } ${isFieldEmpty && isTouched ? 'border-red-500' : ''}`;
+  } ${isFieldEmpty && isTouched ? 'border-red-500' : ''} ${
+    error ? 'border-red-500' : ''
+  }`;
 
   const togglePasswordVisibility = () => {
     setShowPassword(!showPassword);
   };
 
   const handleSelectChange = (selectedOption: Option | null) => {
-    setSelectedOption(selectedOption);
-    if (onChange) {
-      if (returnObject) {
-        if (selectedOption) {
-          onChange(selectedOption); // Passa l'intero oggetto selezionato
-        }
-      } else {
+    if (selectedOption && selectedOption.value === '') {
+      setSelectedOption(null);
+      if (onChange) {
         onChange({
           target: {
-            value: selectedOption ? selectedOption.value : '',
+            value: '',
             name,
           } as any,
         } as ChangeEvent<HTMLSelectElement>);
       }
+    } else {
+      setSelectedOption(selectedOption);
+      if (onChange) {
+        if (returnObject) {
+          if (selectedOption) {
+            onChange(selectedOption); // Passa l'intero oggetto selezionato
+          }
+        } else {
+          onChange({
+            target: {
+              value: selectedOption ? selectedOption.value : '',
+              name,
+            } as any,
+          } as ChangeEvent<HTMLSelectElement>);
+        }
+      }
+    }
+  };
+
+  const handleMultiSelectChange = (selectedOptions: Option[]) => {
+    setSelectedOptions(selectedOptions);
+    if (onChange) {
+      onChange(selectedOptions);
     }
   };
 
@@ -208,7 +236,7 @@ const InputComponent: React.FC<InputComponentProps> = ({
           <input
             className={inputClassName}
             type={
-              type === 'password' ? (showPassword ? 'text' : 'password') : type
+              (type === 'password' && showPassword) ? 'text' : type
             }
             placeholder={placeholder}
             required={required}
@@ -218,7 +246,7 @@ const InputComponent: React.FC<InputComponentProps> = ({
             onBlur={handleBlur}
             disabled={disabled}
             max={type === 'date' ? max : undefined}
-            onKeyDown={onKeyDown} // Aggiungi questa proprietà
+            onKeyDown={onKeyDown}
           />
           {type === 'password' && (
             <button
@@ -265,10 +293,54 @@ const InputComponent: React.FC<InputComponentProps> = ({
             }),
             valueContainer: (provided) => ({
               ...provided,
-              padding: '0',
+              padding: '0 0 0 10px',
               height: '2.5rem',
               display: 'flex',
               alignItems: 'center',
+            }),
+            input: (provided) => ({
+              ...provided,
+              margin: '0',
+              padding: '0',
+            }),
+            singleValue: (provided) => ({
+              ...provided,
+              display: 'flex',
+              alignItems: 'center',
+            }),
+            menuPortal: (provided) => ({ ...provided, zIndex: 9999 }),
+          }}
+        />
+      )}
+      {type === 'multi-select' && (
+        <Select
+          isMulti
+          className="shadow appearance-none rounded w-full text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+          options={options}
+          onChange={(selectedOptions) =>
+            handleMultiSelectChange(selectedOptions as Option[])
+          }
+          value={selectedOptions}
+          defaultValue={options.filter((option) =>
+            (value as Option[]).includes(option),
+          )}
+          isDisabled={disabled}
+          getOptionLabel={(option) => option.label}
+          getOptionValue={(option) => option.value}
+          menuPortalTarget={document.body}
+          styles={{
+            control: (provided) => ({
+              ...provided,
+              minHeight: '2.5rem',
+              height: 'auto',
+            }),
+            valueContainer: (provided) => ({
+              ...provided,
+              padding: '0 0 0 10px',
+              height: 'auto',
+              display: 'flex',
+              alignItems: 'center',
+              flexWrap: 'wrap',
             }),
             input: (provided) => ({
               ...provided,
@@ -290,7 +362,7 @@ const InputComponent: React.FC<InputComponentProps> = ({
             <label key={option.value} className="inline-flex items-center mt-2">
               <input
                 type="radio"
-                name={name || label}
+                name={name ?? label}
                 value={option.value}
                 checked={value === option.value}
                 required={required}
@@ -322,6 +394,7 @@ const InputComponent: React.FC<InputComponentProps> = ({
       {!isFieldEmpty && !isEmailValid && type === 'email' && isTouched && (
         <span className="text-red-500 text-xs italic">Email non valida</span>
       )}
+      {error && <span className="text-red-500 text-xs italic">{error}</span>}
     </div>
   );
 };

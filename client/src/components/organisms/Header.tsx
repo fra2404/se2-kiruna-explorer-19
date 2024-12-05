@@ -6,14 +6,17 @@ import { LoginModal } from './modals/LoginModal';
 import DropdownModal from '../molecules/DropdownModal';
 import ButtonRounded from '../atoms/button/ButtonRounded';
 import MapStyleContext from '../../context/MapStyleContext';
-// import { FaSearch } from 'react-icons/fa';
-// import Searchbar from '../molecules/Searchbar';
+
 
 interface HeaderProps {
-  setManageCoordsModalOpen: (manageCoordsModalOpen: boolean) => void
+  page: string;
+  headerRef?: any;
+  setManageCoordsModalOpen?: (manageCoordsModalOpen: boolean) => void
 }
 
 export const Header: React.FC<HeaderProps> = ({
+  page,
+  headerRef,
   setManageCoordsModalOpen
 }) => {
   const [dateTime, setDateTime] = useState(new Date().toLocaleString());
@@ -22,10 +25,9 @@ export const Header: React.FC<HeaderProps> = ({
 
   const [loginModalOpen, setLoginModalOpen] = useState(false);
   const [dropdownOpen, setDropdownOpen] = useState(false);
-  // const [showSearchBar, setShowSearchBar] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
 
-  const {mapType} = useContext(MapStyleContext);
+  const { mapType } = useContext(MapStyleContext);
 
   useEffect(() => {
     const interval = setInterval(() => {
@@ -41,7 +43,9 @@ export const Header: React.FC<HeaderProps> = ({
   };
 
   return (
-    <div className="p-3"
+    <div 
+      ref={headerRef}
+      className="p-3"
       style={{
         position: 'absolute',
         top: 0,
@@ -50,9 +54,10 @@ export const Header: React.FC<HeaderProps> = ({
         zIndex: 10,
         background: "transparent",
         pointerEvents: "none"
-      }}>
+      }}
+    >
 
-      <div className="flex items-center justify-between" style={{background: "transparent"}}>
+      <div className="flex items-center justify-between" style={{ background: "transparent" }}>
         <div className='flex items-center'>
           <ButtonRounded variant="filled" className="bg-black p-2"
             img="./src/assets/logo.png" text={dateTime}
@@ -64,15 +69,22 @@ export const Header: React.FC<HeaderProps> = ({
               justifyContent: 'center',
               alignItems: 'center',
               pointerEvents: "auto"
-            }}/>
-          <h1 className={mapType == "osm" ? 'font-bold text-black ml-2 text-2xl' : "font-bold text-white ml-2 text-2xl"}>Kiruna eXplorer</h1>
+            }} />
+          <h1 className={mapType == "osm" || page != 'map' ? 'font-bold text-black ml-2 text-2xl' : "font-bold text-white ml-2 text-2xl"}>Kiruna eXplorer</h1>
         </div>
-        
-        <div className='flex items-center gap-4'>
-        
-          {/* Search Bar and Icon */}
 
-          <div className='ml-auto' style={{pointerEvents: "auto"}}>
+        <div className='flex items-center gap-4'>
+          {/* Button to switch to the diagram view */}
+          <ButtonRounded
+            variant="filled"
+            text={page == 'map' ? "Go to graph" : 'Go to homepage'}
+            className="bg-black pr-4 pl-4 d-flex align-items-center"
+            onClick={() => navigate(page == 'map' ? '/diagram' : '/')}
+            style={{ pointerEvents: "auto" }}
+          />
+          {/* Login/logout button */}
+
+          <div className='ml-auto' style={{ pointerEvents: "auto" }}>
             {!isLoggedIn && !user ? (
               <ButtonRounded variant="filled" text="Login"
                 onClick={() => {
@@ -85,28 +97,29 @@ export const Header: React.FC<HeaderProps> = ({
                   onClick={() => setDropdownOpen(!dropdownOpen)}
                   variant="filled"
                   className="bg-black pr-4 pl-4 d-flex align-items-center"
-                  text={`Welcome, ${user?.name.charAt(0).toUpperCase()} ${dropdownOpen ? '▲' : '▼'}`}
+                  text={`Welcome, ${user?.name} ${dropdownOpen ? '▲' : '▼'}`}
                 />
               </div>
             )}
           </div>
-        </div> 
+        </div>
       </div>
 
-      <LoginModal
-        isOpen={loginModalOpen}
-        onRequestClose={() => setLoginModalOpen(false)}
-        setLoginModalOpen={setLoginModalOpen}
-      />
+        <LoginModal
+          isOpen={loginModalOpen}
+          onRequestClose={() => setLoginModalOpen(false)}
+          setLoginModalOpen={setLoginModalOpen}
+        />
 
-      <DropdownModal
-        isOpen={dropdownOpen}
-        onRequestClose={() => setDropdownOpen(false)}
-        navigate={navigate}
-        handleLogout={handleLogout}
-        dropdownRef={dropdownRef}
-        setManageCoordsModalOpen={setManageCoordsModalOpen}
-      />
+        <DropdownModal
+          isOpen={dropdownOpen}
+          onRequestClose={() => setDropdownOpen(false)}
+          navigate={navigate}
+          handleLogout={handleLogout}
+          dropdownRef={dropdownRef}
+          setManageCoordsModalOpen={setManageCoordsModalOpen}
+          page={page}
+        />
     </div>
   );
 }

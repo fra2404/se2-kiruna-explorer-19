@@ -3,47 +3,60 @@ import MapSection from '../../organisms/MapSection';
 
 interface Step5Props {
   coordinates: any;
+  setCoordinates: (coordinates: any) => void;
+  showToastMessage: (message: string, type: "success" | "error") => void;
   selectedCoordIdProp: string;
   selectedCoordId: string;
   setSelectedCoordId: (value: string) => void;
+  coordNamePopupOpen: boolean;
   setCoordNamePopupOpen: (open: boolean) => void;
   position: LatLng | undefined;
   setPosition: (position: LatLng | undefined) => void;
-  coordNamePopupOpen: boolean;
   coordName: string;
   setCoordName: (name: string) => void;
   MapClickHandler: React.FC;
+  errors: {[key: string]: string};
+  featureGroupRef: React.RefObject<L.FeatureGroup>;
+  popupRef:  React.RefObject<L.Popup>;
 }
 
 const Step5: React.FC<Step5Props> = ({
   coordinates,
+  setCoordinates,
+  showToastMessage,
   selectedCoordIdProp,
   selectedCoordId,
   setSelectedCoordId,
+  coordNamePopupOpen,
   setCoordNamePopupOpen,
   position,
   setPosition,
-  coordNamePopupOpen,
   coordName,
   setCoordName,
   MapClickHandler,
+  errors,
+  featureGroupRef,
+  popupRef
 }) => {
   return (
-    <>
-      <MapSection
-        coordinates={coordinates}
-        selectedCoordIdProp={selectedCoordIdProp}
-        selectedCoordId={selectedCoordId}
-        setSelectedCoordId={setSelectedCoordId}
-        setCoordNamePopupOpen={setCoordNamePopupOpen}
-        position={position}
-        setPosition={setPosition}
-        coordNamePopupOpen={coordNamePopupOpen}
-        coordName={coordName}
-        setCoordName={setCoordName}
-        MapClickHandler={MapClickHandler}
-      />
-    </>
+    <MapSection
+      coordinates={coordinates}
+      setCoordinates={setCoordinates}
+      showToastMessage={showToastMessage}
+      selectedCoordIdProp={selectedCoordIdProp}
+      selectedCoordId={selectedCoordId}
+      setSelectedCoordId={setSelectedCoordId}
+      setCoordNamePopupOpen={setCoordNamePopupOpen}
+      position={position}
+      setPosition={setPosition}
+      coordNamePopupOpen={coordNamePopupOpen}
+      coordName={coordName}
+      setCoordName={setCoordName}
+      MapClickHandler={MapClickHandler}
+      errors={errors}
+      featureGroupRef={featureGroupRef}
+      popupRef={popupRef}
+    />
   );
 };
 

@@ -1,15 +1,16 @@
 import Modal from 'react-modal';
-import { kirunaLatLngCoords } from '../../../pages/KirunaMap';
-import { MapContainer, Marker, Polygon, TileLayer } from 'react-leaflet';
-import { useContext, useRef } from 'react';
+import { Marker, Polygon, useMapEvents } from 'react-leaflet';
+import { useContext, useRef, useState } from 'react';
 import MapStyleContext from '../../../context/MapStyleContext';
-import CustomZoomControl from '../../molecules/ZoomControl';
 import MarkerClusterGroup from 'react-leaflet-markercluster';
-import { IDocument } from '../../../utils/interfaces/document.interface';
+import { ICoordinate, IDocument } from '../../../utils/interfaces/document.interface';
 import { renderToString } from 'react-dom/server';
-import { DivIcon } from 'leaflet';
+import { DivIcon, LatLng } from 'leaflet';
 import { DeleteCoordPopup } from '../../molecules/popups/DeleteCoordPopup';
-import API from '../../../API';
+import API, { createCoordinate } from '../../../API';
+import CustomMap from '../../molecules/CustomMap';
+import DrawingPanel from '../../molecules/DrawingPanel';
+import NamePopup from '../../molecules/popups/NamePopup';
 
 interface ManageCoordsModalProps {
   manageCoordsModalOpen: boolean,
@@ -43,6 +44,58 @@ export const ManageCoordsModal: React.FC<ManageCoordsModalProps> = ({
   const {swedishFlagBlue, swedishFlagYellow, satMapMainColor, mapType} = useContext(MapStyleContext);
   const markerRef = useRef<L.Marker>(null);
   const polygonRef = useRef<L.Polygon>(null);
+  
+  //Refs needed for area drawing
+  const popupRef = useRef<L.Popup>(null);
+  const featureGroupRef = useRef<L.FeatureGroup>(null);
+
+  // Georeferencing information
+  const [position, setPosition] = useState<LatLng | undefined>(undefined);
+  const [coordName, setCoordName] = useState('');
+  const [coordNamePopupOpen, setCoordNamePopupOpen] = useState(false);
+
+  function MapClickHandler() {
+    useMapEvents({
+      dblclick(e) {
+        setPosition(e.latlng);
+        setCoordNamePopupOpen(true);
+      },
+    });
+    return null;
+  }
+
+  const handleAddPoint = async () => {
+    if (position) {
+      const coordData: ICoordinate = {
+        id: '',
+        name: coordName,
+        type: 'Point',
+        coordinates: [position.lat, position.lng],
+      };
+
+      try {
+        const response = await createCoordinate(coordData);
+        if (response.success) {
+          const coordId = response.coordinate?.coordinate._id;
+          if (coordId) {
+            setCoordinates({
+              ...coordinates,
+              [coordId]: {
+                type: response.coordinate?.coordinate.type,
+                coordinates: response.coordinate?.coordinate.coordinates,
+                name: response.coordinate?.coordinate.name,
+              },
+            });
+          }
+          return coordId;
+        } else {
+          console.log('Failed to create coordinate');
+        }
+      } catch (error) {
+        console.log('Error creating coordinate:');
+      }
+    }
+  }
 
   return(
     <Modal
@@ -51,34 +104,7 @@ export const ManageCoordsModal: React.FC<ManageCoordsModalProps> = ({
       onRequestClose={() => setManageCoordsModalOpen(false)}
     >
       <div className="w-full rounded shadow-md border h-full">
-        <MapContainer
-          style={{ width: '100%', height: '100%', zIndex: 10 }}
-          center={kirunaLatLngCoords}
-          zoom={13}
-          doubleClickZoom={false}
-          scrollWheelZoom={true}
-          minZoom={9}
-          zoomControl={false}
-          touchZoom={true}
-          maxBounds={[
-            [67.8, 19.9],
-            [67.9, 20.5],
-          ]}
-          maxBoundsViscosity={0.9}
-        >
-          
-          {mapType === 'osm' ? (
-            <TileLayer
-              attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-              url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
-            />
-          ) : (
-            <TileLayer
-              attribution='ArcGIS'
-              url="https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}"
-            />
-          )}
-
+        <CustomMap>
           <MarkerClusterGroup iconCreateFunction={(cluster: any) => {
             return new DivIcon({
               iconSize: [45, 45],
@@ -155,9 +181,28 @@ export const ManageCoordsModal: React.FC<ManageCoordsModalProps> = ({
             })}
           </MarkerClusterGroup>
 
-          <CustomZoomControl />
+          {coordNamePopupOpen && position && (
+            <NamePopup
+              position={position}
+              coordName={coordName}
+              setCoordName={setCoordName}
+              setCoordNamePopupOpen={setCoordNamePopupOpen}
+              setPosition={setPosition}
+              handleAddCoordinate={handleAddPoint}
+            />
+          )}
 
-        </MapContainer>
+          <DrawingPanel 
+            coordinates={coordinates}
+            setCoordinates={setCoordinates}
+            setPosition={setPosition}
+            setCoordName={setCoordName}
+            featureGroupRef={featureGroupRef}
+            popupRef={popupRef}
+          />
+
+          <MapClickHandler />
+        </CustomMap>
       </div>
     </Modal>
   );

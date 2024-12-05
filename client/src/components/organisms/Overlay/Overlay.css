@@ -1,7 +1,5 @@
 .floating-button {
-  position: fixed;
-  top: 50%;
-  right: 1rem;
+  position: absolute;
   transform: translateY(-50%);
   z-index: 1000;
   transition:
@@ -16,4 +14,12 @@
   transition:
     transform 0.4s cubic-bezier(0.68, -0.55, 0.27, 1.55),
     opacity 0.4s ease;
+}
+
+.floating-button-right {
+  right: 1rem;
+}
+
+.floating-button-left {
+  left: 1rem;
 }
