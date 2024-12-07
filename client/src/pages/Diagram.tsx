@@ -25,6 +25,9 @@ import Legend from './Legend';
 import { LatLng } from "leaflet";
 import FeedbackContext from "../context/FeedbackContext.js";
 import { Header } from "../components/organisms/Header.js";
+import { useParams } from "react-router-dom";
+
+
 
 const LABEL_FONT = { size: 35, color: "#000000" };
 const YEAR_SPACING = 500;
@@ -84,6 +87,8 @@ const Diagram = () => {
     const label_year = [] as any[];
     const minYear = graphBEInfo.minYear;
     const maxYear = graphBEInfo.maxYear;
+    const networkRef = useRef<any>(null);
+    const { id } = useParams();
 
     const openModal = (document: IDocument) => {
         // Search in the original documents and show the document in the modal 
@@ -114,56 +119,56 @@ const Diagram = () => {
 
     useEffect(() => {
         API.getCoordinates()
-          .then((coords) => {
-            const result: {
-              [id: string]: {
-                type: string;
-                coordinates: LatLng | LatLng[] | LatLng[][];
-                name: string;
-              };
-            } = {};
-            coords.forEach(
-              (c: {
-                _id: string;
-                type: string;
-                coordinates: LatLng | LatLng[] | LatLng[][];
-                name: string;
-              }) => {
-                result[c._id] = {
-                  type: c.type,
-                  coordinates: c.coordinates,
-                  name: c.name,
-                };
-              },
-            );
-            setCoordinates(result);
-          })
-          .catch((e) => {
-            console.log(e);
-            setFeedbackFromError(e);
-          });
-      }, []);
+            .then((coords) => {
+                const result: {
+                    [id: string]: {
+                        type: string;
+                        coordinates: LatLng | LatLng[] | LatLng[][];
+                        name: string;
+                    };
+                } = {};
+                coords.forEach(
+                    (c: {
+                        _id: string;
+                        type: string;
+                        coordinates: LatLng | LatLng[] | LatLng[][];
+                        name: string;
+                    }) => {
+                        result[c._id] = {
+                            type: c.type,
+                            coordinates: c.coordinates,
+                            name: c.name,
+                        };
+                    },
+                );
+                setCoordinates(result);
+            })
+            .catch((e) => {
+                console.log(e);
+                setFeedbackFromError(e);
+            });
+    }, []);
 
-    let architecturalScales: [{id:string, label: string, scale: string}] = [];
-    let lastMap = 600;
-    let architecturalScalesMapping: any = {};
+    const architecturalScales: [{ id: string, label: string, scale: string }] = [];
+    let lastMap = 600;  // Starting Y position for the architectural scales
+    const architecturalScalesMapping: any = {};
 
     documents.filter((d) => d.scale == 'ARCHITECTURAL' && d.architecturalScale).sort((a, b) => {
         return b.architecturalScale.split(':')[1] - a.architecturalScale.split(':')[1];
     }).forEach((d) => {
-      if(!(architecturalScales.map((s) => s.id).includes(d.architecturalScale))) {
-        architecturalScales.push({ id: d.architecturalScale, label: d.architecturalScale, scale: d.architecturalScale})
-        architecturalScalesMapping[d.architecturalScale] = lastMap;
-        lastMap += 200;
-      }
+        if (!(architecturalScales.map((s) => s.id).includes(d.architecturalScale))) {
+            architecturalScales.push({ id: d.architecturalScale, label: d.architecturalScale, scale: d.architecturalScale })
+            architecturalScalesMapping[d.architecturalScale] = lastMap;
+            lastMap += 200;
+        }
     });
 
     const scaleMapping = {
-      "TEXT": 200,
-      "CONCEPT": 400,
-      ...architecturalScalesMapping,
-      "BLUEPRINT/MATERIAL EFFECTS": lastMap,
-      "default": 50,
+        "TEXT": 200,
+        "CONCEPT": 400,
+        ...architecturalScalesMapping,
+        "BLUEPRINT/MATERIAL EFFECTS": lastMap,
+        "default": 50,
     };
 
     useEffect(() => {
@@ -225,6 +230,7 @@ const Diagram = () => {
                     doc.image = MaterialEffectsIcon;
                     break;
                 default:
+                    // Here I will add a default image for the documents that do not have an image (new types)
                     doc.image = ErrorImage;
                     break;
             }
@@ -335,22 +341,35 @@ const Diagram = () => {
             shape: "box",
             font: LABEL_FONT
         });
-        console.log(`Year ${year} has x = ${label_year.find(node => node.year === year)?.x}`);
     }
-
-    const networkRef = useRef<any>(null);
 
     useEffect(() => {
         const network = networkRef.current; // Get the network object from the ref
+
         if (network) {  // if the network is available then...
-            network.fit({
-                // Filter only the node that are in the current year. In this way the graph will be centered on the current year at launch.
-                nodes: state.graph.nodes.filter((node: any) => {
-                    const currentYear = new Date().getFullYear();
-                    return node.year === currentYear;
-                }).map((node: any) => node.id),
-                animation: false
-            });
+            // If a params is defined in the URL, then the graph will be centered on that node
+            if (id) {
+                network.fit({
+                    nodes: state.graph.nodes.filter((node: any) => {
+                        return node.id === id;
+                    }).map((node: any) => node.id),
+                    animation: false
+                });    // Fit the graph to the node
+            }
+            // Else center based on the current year
+            else {
+                network.fit({
+                    // Filter only the node that are in the current year. In this way the graph will be centered on the current year at launch.
+                    nodes: state.graph.nodes.filter((node: any) => {
+                        const currentYear = new Date().getFullYear();
+                        return node.year === currentYear;
+                    }).map((node: any) => node.id),
+                    animation: false
+                });
+
+            }
+
+
             network.moveTo({ scale: 0.5 })  // Set the initial zoom level
         }
     }, [state.graph.nodes]);
@@ -362,9 +381,9 @@ const Diagram = () => {
 
     return (
         <div style={{ height: "100vh", position: "relative" }} className="grid-background">
-            <Header 
-              headerRef={headerRef}
-              page='graph'
+            <Header
+                headerRef={headerRef}
+                page='graph'
             />
 
             <div style={{ position: "absolute", top: `${headerRef.current?.offsetHeight ? headerRef.current?.offsetHeight + 10 : 0}px`, left: "10px", zIndex: 10 }}>
