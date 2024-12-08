@@ -6,6 +6,7 @@ import { LoginModal } from './modals/LoginModal';
 import DropdownModal from '../molecules/DropdownModal';
 import ButtonRounded from '../atoms/button/ButtonRounded';
 import MapStyleContext from '../../context/MapStyleContext';
+import { Sidebar } from './Sidebar';
 
 
 interface HeaderProps {
@@ -101,6 +102,10 @@ export const Header: React.FC<HeaderProps> = ({
                 />
               </div>
             )}
+          </div>
+
+          <div className='ml-auto' style={{ pointerEvents: "auto" }}>
+            <Sidebar />
           </div>
         </div>
       </div>

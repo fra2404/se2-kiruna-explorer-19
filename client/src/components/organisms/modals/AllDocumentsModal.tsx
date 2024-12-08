@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { IDocument } from '../../../utils/interfaces/document.interface';
 import { DocumentItem } from '../../molecules/documentsItems/DocumentItem';
 import Searchbar from '../../molecules/Searchbar';
-import Filters from '../../molecules/Filters';
+import Filters from '../../molecules/filters/Filters';
 import API from '../../../API';
 import Toast from '../Toast';
 import useToast from '../../../utils/hooks/toast';
@@ -24,7 +24,17 @@ const AllDocumentsModal: React.FC<AllDocumentsModalProps> = ({
     setAllDocuments,
 }) => {
 
-    const [filters, setFilters] = useState({
+    const [filters, setFilters] = useState<{
+      type: string;
+      stakeholders: string[];
+      coordinates: string;
+      year: string;
+      month: string;
+      day: string;
+      language: string;
+      scale: string;
+      architecturalScale: string;
+  }>({
         type: '',
         stakeholders: [],
         coordinates: '',
@@ -90,7 +100,6 @@ const AllDocumentsModal: React.FC<AllDocumentsModalProps> = ({
             scale: filters.scale || undefined,
             architecturalScale: filters.scale == 'ARCHITECTURAL' ? filters.architecturalScale : undefined,
         };
-        console.log(wellFormedFilters);
         const documents = await API.searchDocuments(searchQuery, wellFormedFilters);
         setDocuments(documents);
     };
