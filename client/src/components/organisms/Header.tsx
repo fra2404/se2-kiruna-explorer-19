@@ -7,18 +7,21 @@ import DropdownModal from '../molecules/DropdownModal';
 import ButtonRounded from '../atoms/button/ButtonRounded';
 import MapStyleContext from '../../context/MapStyleContext';
 import { Sidebar } from './Sidebar';
+import { IDocument } from '../../utils/interfaces/document.interface';
 
 
 interface HeaderProps {
   page: string;
   headerRef?: any;
-  setManageCoordsModalOpen?: (manageCoordsModalOpen: boolean) => void
+  setManageCoordsModalOpen?: (manageCoordsModalOpen: boolean) => void;
+  setFilteredDocuments: (documents: IDocument[]) => void;
 }
 
 export const Header: React.FC<HeaderProps> = ({
   page,
   headerRef,
-  setManageCoordsModalOpen
+  setManageCoordsModalOpen,
+  setFilteredDocuments,
 }) => {
   const [dateTime, setDateTime] = useState(new Date().toLocaleString());
   const navigate = useNavigate();
@@ -105,7 +108,9 @@ export const Header: React.FC<HeaderProps> = ({
           </div>
 
           <div className='ml-auto' style={{ pointerEvents: "auto" }}>
-            <Sidebar />
+            <Sidebar
+              setFilteredDocuments={setFilteredDocuments}
+            />
           </div>
         </div>
       </div>

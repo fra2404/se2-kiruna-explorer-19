@@ -60,7 +60,7 @@ const Filters: React.FC<FiltersProps> = ({ filters, setFilters }) => {
                     value={filters.type}
                     onChange={(e) => {
                         if ('target' in e) {
-                            handleFilterChange('type', e.target.value);
+                          handleFilterChange('type', e.target.value);
                         }
                     }}
                     required={false}

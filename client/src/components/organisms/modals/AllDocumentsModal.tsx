@@ -6,7 +6,6 @@ import Filters from '../../molecules/filters/Filters';
 import API from '../../../API';
 import Toast from '../Toast';
 import useToast from '../../../utils/hooks/toast';
-import mongoose from 'mongoose';
 
 interface AllDocumentsModalProps {
     setShowAllDocumentsModal: (showAllDocumentsModal: boolean) => void;
@@ -23,128 +22,87 @@ const AllDocumentsModal: React.FC<AllDocumentsModalProps> = ({
     allDocuments,
     setAllDocuments,
 }) => {
-
-    const [filters, setFilters] = useState<{
-      type: string;
-      stakeholders: string[];
-      coordinates: string;
-      year: string;
-      month: string;
-      day: string;
-      language: string;
-      scale: string;
-      architecturalScale: string;
+  const [filters, setFilters] = useState<{
+    type: string;
+    stakeholders: string[];
+    coordinates: string;
+    year: string;
+    month: string;
+    day: string;
+    language: string;
+    scale: string;
+    architecturalScale: string;
   }>({
-        type: '',
-        stakeholders: [],
-        coordinates: '',
-        year: '',
-        month: '',
-        day: '',
-        language: '',
-        scale: '',
-        architecturalScale: '',
-    });
-    const [searchQuery, setSearchQuery] = useState('');
-    const [documents, setDocuments] = useState<IDocument[]>([]);
-    const { toast, showToast, hideToast } = useToast();
-    const [date, setDate] = useState('');
+    type: '',
+    stakeholders: [],
+    coordinates: '',
+    year: '',
+    month: '',
+    day: '',
+    language: '',
+    scale: '',
+    architecturalScale: '',
+  });
 
-    useEffect(() => {
-        const fetchDocuments = async () => {
-            const documents = await API.getDocuments();
-            setDocuments(documents);
-        }
-        fetchDocuments();
-    }, []);
+  const [searchQuery, setSearchQuery] = useState('');
+  const [filteredDocuments, setFilteredDocuments] = useState<IDocument[]>([]);
 
-    useEffect(() => {
-        if (filters.year && filters.month && filters.day) {
-            setDate(`${filters.year}-${filters.month}-${filters.day}`);
-        } else if (filters.year && filters.month) {
-            setDate(`${filters.year}-${filters.month}`);
-        } else if (filters.year) {
-            setDate(filters.year);
-        } else {
-            setDate('');
-        }
-    }, [filters.year, filters.month, filters.day, setDate]);
+  const {toast, showToast, hideToast} = useToast();
 
-    const isNotValidateArchitecturalScale = () => {
-        return (
-            filters.scale === 'ARCHITECTURAL' &&
-            ((filters.architecturalScale ?? '').trim() === '' ||
-              !/^1:\d+$/.test(filters.architecturalScale ?? ''))
-        );
+  useEffect(() => {
+    const fetchDocuments = async () => {
+      const documents = await API.getDocuments();
+      setFilteredDocuments(documents);
     }
+    fetchDocuments();
+  }, []);
 
-    const isValidateCoordinates = () => {
-        return filters.coordinates === "" || mongoose.Types.ObjectId.isValid(filters.coordinates);
-    };
+  return (
+    <>
+      <div className='flex flex-col'>
+        <div className='flex justify-between'>
+          <h1 className='text-2xl font-bold'>All Documents</h1>
+          <button onClick={()=>setShowAllDocumentsModal(false)}
+          className='bg-black text-white font-semibold px-2 rounded'>Close</button>
+        </div>
 
-    const handleSearch = async () => {
-        if (isNotValidateArchitecturalScale()) {
-            showToast('Invalid architectural scale', 'error');
-            return;
-        }
-        if (!isValidateCoordinates()) {
-            showToast('Invalid coordinates', 'error');
-            return;
-        }
-        let wellFormedFilters = {
-            type: filters.type || undefined,
-            stakeholders: filters.stakeholders || undefined,
-            coordinates: filters.coordinates || undefined,
-            date: date || undefined,
-            language: filters.language || undefined,
-            scale: filters.scale || undefined,
-            architecturalScale: filters.scale == 'ARCHITECTURAL' ? filters.architecturalScale : undefined,
-        };
-        const documents = await API.searchDocuments(searchQuery, wellFormedFilters);
-        setDocuments(documents);
-    };
-
-    return (
-        <>
-            <div className='flex flex-col'>
-                <div className='flex justify-between'>
-                    <h1 className='text-2xl font-bold'>All Documents</h1>
-                    <button onClick={()=>setShowAllDocumentsModal(false)}
-                    className='bg-black text-white font-semibold px-2 rounded'>Close</button>
-                </div>
-
-                <h2 className='text-xl'>Filters</h2>            
-                <Filters filters={filters} setFilters={setFilters} />
-                
-                <Searchbar searchQuery={searchQuery} setSearchQuery={setSearchQuery}
-                handleSearch={handleSearch} />
-                
-                <div>
-                    {
-                        documents.length === 0 ? <h1 className='text-sm text-gray-400'>No documents</h1> :
-                        documents.map((doc) => (
-                        <DocumentItem 
-                            key={doc.id}
-                            document={doc} 
-                            coordinates={coordinates}
-                            setCoordinates={setCoordinates}
-                            allDocuments={allDocuments}
-                            setDocuments={setAllDocuments}
-                        />
-                        ))
-                    }
-                </div>
-            </div> 
-            
-            {
-                toast.isShown && (
-                    <Toast isShown={toast.isShown} message={toast.message} 
-                        type={toast.type} onClose={hideToast}
-                    />
-                )
-            }
-        </>
-    )
+        <h2 className='text-xl'>Filters</h2>            
+        <Filters filters={filters} setFilters={setFilters} />
+        
+        <Searchbar 
+          searchQuery={searchQuery} 
+          setSearchQuery={setSearchQuery}
+          filters={filters}
+          setFilteredDocuments={setFilteredDocuments}
+          showToast={showToast}
+        />
+        
+        <div>
+          {
+            filteredDocuments.length === 0 ? <h1 className='text-sm text-gray-400'>No documents</h1> :
+            filteredDocuments.map((doc) => (
+            <DocumentItem 
+              key={doc.id}
+              document={doc} 
+              coordinates={coordinates}
+              setCoordinates={setCoordinates}
+              allDocuments={allDocuments}
+              setDocuments={setAllDocuments}
+            />
+            ))
+          }
+        </div>
+      </div> 
+      
+      {
+        toast.isShown && (
+          <Toast isShown={toast.isShown} message={toast.message} 
+            type={toast.type} onClose={hideToast}
+          />
+        )
+      }
+    </>
+  )
 }
 
 export default AllDocumentsModal;

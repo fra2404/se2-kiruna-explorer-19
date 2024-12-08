@@ -23,7 +23,7 @@ const Overlay: React.FC<OverlayProps> = ({
   coordinates,
   setCoordinates,
   documents,
-  setDocuments,
+  setDocuments
 }) => {
   const [isHoveredMunicipality, setIsHoveredMunicipality] = useState(false);
   const [showMunicipalityDocuments, setShowMunicipalityDocuments] =
@@ -56,6 +56,7 @@ const Overlay: React.FC<OverlayProps> = ({
         top: '50vh',
         left: 0,
         width: '100%',
+        transform: '350ms',
         zIndex: 1000,
       }}
     >
