@@ -15,7 +15,7 @@ export const MunicipalityArea: React.FC = () => {
     return (
       <Area 
         key={n}
-        id="Kiruna Municipaity"
+        id="Kiruna Municipality"
         areaCoordinates={c}
         areaRef={areaRef}
       />
