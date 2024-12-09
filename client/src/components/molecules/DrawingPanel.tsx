@@ -15,6 +15,7 @@ import 'leaflet/dist/leaflet.css';
 import 'leaflet-draw/dist/leaflet.draw.css';
 import 'leaflet-draw';
 import FloatingButton from "./FloatingButton";
+import MunicipalityCoordinatesContext from "../../context/MunicipalityCoordinatesContext";
 
 interface DrawingPanelProps {
 	coordinates: any;
@@ -40,6 +41,7 @@ const DrawingPanel: React.FC<DrawingPanelProps> = ({
 	const [newAreaCoordinates, setNewAreaCoordinates] = useState([]);
 	const [popupPosition, setPopupPosition] = useState(null);
 	const { swedishFlagBlue, satMapMainColor, mapType } = useContext(MapStyleContext);
+	const {isMarkerInsideKiruna} = useContext(MunicipalityCoordinatesContext);
 
 	const [isHoveredAddArea, setIsHoveredAddArea] = useState(false);
 	const { toast, showToast, hideToast } = useToast();
@@ -153,34 +155,56 @@ const DrawingPanel: React.FC<DrawingPanelProps> = ({
 						}
 					}}
 				>
-					<InputComponent label="Enter the name of the new area"
-						type="text" value={areaName} onChange={(v) => {
-							if ('target' in v) {
-								setAreaName(v.target.value);
-							}
-						}} 
-						required={true} 
-					/>
+					{
+						validateArea(newAreaCoordinates, isMarkerInsideKiruna) ?
+						<>
+							<InputComponent label="Enter the name of the new area"
+								type="text" value={areaName} onChange={(v) => {
+									if ('target' in v) {
+										setAreaName(v.target.value);
+									}
+								}} 
+								required={true} 
+							/>
 
-					<div className="flex justify-between">
-						<ButtonRounded
-							variant="filled"
-							text="Confirm"
-							className="bg-black text-white text-xs pt-2 pb-2 pl-3 pr-3"
-							onClick={handleAddArea}
-						/>
-						<ButtonRounded
-							variant="outlined"
-							text="Cancel"
-							className="text-xs pt-2 pb-2 pl-3 pr-3"
-							onClick={() => {
-								setPopupPosition(null);
-								setAreaName('');
-								featureGroupRef.current.remove()
-								popupRef.current?.remove();
-							}}
-						/>
-					</div>
+							<div className="flex justify-between">
+								<ButtonRounded
+									variant="filled"
+									text="Confirm"
+									className="bg-black text-white text-xs pt-2 pb-2 pl-3 pr-3"
+									onClick={handleAddArea}
+								/>
+								<ButtonRounded
+									variant="outlined"
+									text="Cancel"
+									className="text-xs pt-2 pb-2 pl-3 pr-3"
+									onClick={() => {
+										setPopupPosition(null);
+										setAreaName('');
+										featureGroupRef.current.remove();
+										popupRef.current?.remove();
+									}}
+								/>
+							</div>
+						</>
+						:
+						<>
+							<span className='text-red-500 text-base'>
+								Error: area is outside of Kiruna Borders
+							</span>
+							<br /><br />
+							<ButtonRounded
+								variant="outlined"
+								text="Cancel"
+								className="text-base pt-2 pb-2 pl-3 pr-3"
+								onClick={() => {
+									setPopupPosition(null);
+									featureGroupRef.current.remove();
+									popupRef.current?.remove();
+								}}
+							/>
+						</>
+					}
 				</Popup>
 			}
 
@@ -196,3 +220,15 @@ const DrawingPanel: React.FC<DrawingPanelProps> = ({
 }
 
 export default DrawingPanel;
+
+function validateArea(areaCoordinates: number[][], isMarkerInsideKiruna: (position: LatLng) => boolean) {
+	let valid = false;
+	
+	for (let p of areaCoordinates) {
+		valid = isMarkerInsideKiruna({lat: p[0], lng: p[1]} as LatLng);
+		if(!valid)
+			return false;
+	}
+
+	return valid;
+}
