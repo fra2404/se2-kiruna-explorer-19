@@ -63,22 +63,23 @@ export const Header: React.FC<HeaderProps> = ({
 
       <div className="flex items-center justify-between" style={{ background: "transparent" }}>
         <div className='flex items-center'>
-          <ButtonRounded variant="filled" className="bg-black p-2"
-            img="./src/assets/logo.png" text={dateTime}
+          <img src="./src/assets/logo.png" className='h-12 border border-black rounded-full '/>
+          <h1 className={mapType == "osm" || page != 'map' ? 'font-bold text-black ml-2 text-3xl' : "font-bold text-white ml-2 text-3xl"}>Kiruna eXplorer</h1>
+        </div>
+
+        <div className='flex items-center gap-4'>
+          {/* Date and time */}
+          <ButtonRounded variant="filled" className="bg-black p-3"
+            text={dateTime}
             style={{
-              width: '220px',
-              minWidth: '220px',
-              maxWidth: '220px',
               display: 'flex',
               justifyContent: 'center',
               alignItems: 'center',
               pointerEvents: "auto"
-            }} />
-          <h1 className={mapType == "osm" || page != 'map' ? 'font-bold text-black ml-2 text-2xl' : "font-bold text-white ml-2 text-2xl"}>Kiruna eXplorer</h1>
-        </div>
+            }} 
+          />
 
-        <div className='flex items-center gap-4'>
-          {/* Button to switch to the diagram view */}
+          {/* Button to switch the map/diagram view */}
           <ButtonRounded
             variant="filled"
             text={page == 'map' ? "Go to graph" : 'Go to homepage'}
@@ -86,8 +87,8 @@ export const Header: React.FC<HeaderProps> = ({
             onClick={() => navigate(page == 'map' ? '/diagram' : '/')}
             style={{ pointerEvents: "auto" }}
           />
-          {/* Login/logout button */}
 
+          {/* Login/logout button */}
           <div className='ml-auto' style={{ pointerEvents: "auto" }}>
             {!isLoggedIn && !user ? (
               <ButtonRounded variant="filled" text="Login"
@@ -107,6 +108,7 @@ export const Header: React.FC<HeaderProps> = ({
             )}
           </div>
 
+          {/* Sidebar button */}
           <div className='ml-auto' style={{ pointerEvents: "auto" }}>
             <Sidebar
               setFilteredDocuments={setFilteredDocuments}
