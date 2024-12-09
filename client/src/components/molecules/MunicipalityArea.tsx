@@ -2,6 +2,8 @@ import React, { useContext, useRef } from "react";
 import MunicipalityCoordinatesContext from "../../context/MunicipalityCoordinatesContext";
 import { Area } from "../organisms/coordsOverlay/Area";
 import { LatLng } from "leaflet";
+import { Polyline } from "react-leaflet";
+import MapStyleContext from "../../context/MapStyleContext";
 
 export const MunicipalityArea: React.FC = () => {
   const {municipalityCoordinates} = useContext(MunicipalityCoordinatesContext);
@@ -21,6 +23,25 @@ export const MunicipalityArea: React.FC = () => {
   })
 
   return municipalityArea;
+}
+
+export const MunicipalityAreaOutline: React.FC = () => {
+  const {municipalityCoordinates} = useContext(MunicipalityCoordinatesContext);
+  const { swedishFlagBlue, satMapMainColor, mapType } = useContext(MapStyleContext);
+  
+  const convertedMunicipality = convertToLatLngArray(municipalityCoordinates);
+
+  const municipalityOutline = Object.entries(convertedMunicipality).map(([n, c]) => {
+    return (
+      <Polyline
+        key={n}
+        positions={c}
+        pathOptions={{color: mapType == 'sat' ? satMapMainColor : swedishFlagBlue}}
+      />
+    )
+  })
+
+  return municipalityOutline;
 }
 
 function convertToLatLngArray(input: number[][][]): LatLng[][] {
