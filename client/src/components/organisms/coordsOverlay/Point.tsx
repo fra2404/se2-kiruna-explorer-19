@@ -20,7 +20,9 @@ interface PointProps {
   setCoordinates: (coordinates: any) => void;
   pointDocuments: IDocument[];
   allDocuments: IDocument[];
-  setDocuments: (documents: IDocument[]) => void;
+  setAllDocuments: (documents: IDocument[]) => void;
+  filteredDocuments: IDocument[];
+  setFilteredDocuments: (filteredDocuments: IDocument[]) => void;
 }
 
 export const Point: React.FC<PointProps> = ({
@@ -32,7 +34,9 @@ export const Point: React.FC<PointProps> = ({
   setCoordinates,
   pointDocuments,
   allDocuments,
-  setDocuments
+  setAllDocuments,
+  filteredDocuments,
+  setFilteredDocuments
 }) => {
   const [modalOpen, setModalOpen] = useState(false);
   const [selectedPointId, setSelectedPointId] = useState('');
@@ -139,7 +143,7 @@ export const Point: React.FC<PointProps> = ({
           coordinates={coordinates}
           setCoordinates={setCoordinates}
           allDocuments={allDocuments}
-          setDocuments={setDocuments}
+          setDocuments={setAllDocuments}
         />
 
         {(type=='Polygon') &&
@@ -160,7 +164,9 @@ export const Point: React.FC<PointProps> = ({
           coordinates={coordinates}
           setCoordinates={setCoordinates}
           documents={allDocuments}
-          setDocuments={setDocuments}
+          setDocuments={setAllDocuments}
+          filteredDocuments={filteredDocuments}
+          setFilteredDocuments={setFilteredDocuments}
           selectedCoordIdProp={id != 'all_municipality' ? selectedPointId : undefined}
           setModalOpen={setModalOpen}
         />

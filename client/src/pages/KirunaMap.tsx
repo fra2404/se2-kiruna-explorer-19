@@ -169,7 +169,9 @@ export default function KirunaMap() {
                   setCoordinates={setCoordinates}
                   pointDocuments={coordDocuments}
                   allDocuments={allDocuments}
-                  setDocuments={setAllDocuments} 
+                  setAllDocuments={setAllDocuments}
+                  filteredDocuments={filteredDocuments}
+                  setFilteredDocuments={setFilteredDocuments}
                 />
               );
             }
