@@ -16,6 +16,8 @@ interface OverlayProps {
   setCoordinates: (coordinates: any) => void;
   documents: IDocument[];
   setDocuments: (documents: IDocument[]) => void;
+  filteredDocuments: IDocument[];
+  setFilteredDocuments: (filteredDocuments: IDocument[]) => void;
   sidebarVisible: boolean
 }
 
@@ -24,6 +26,8 @@ const Overlay: React.FC<OverlayProps> = ({
   setCoordinates,
   documents,
   setDocuments,
+  filteredDocuments,
+  setFilteredDocuments,
   sidebarVisible
 }) => {
   const [isHoveredMunicipality, setIsHoveredMunicipality] = useState(false);
@@ -105,10 +109,12 @@ const Overlay: React.FC<OverlayProps> = ({
         <DocumentForm
           coordinates={coordinates}
           setCoordinates={setCoordinates}
-          documents={documents}
           positionProp={undefined}
           setModalOpen={setModalOpen}
-          setDocuments={setDocuments} 
+          documents={documents}
+          setDocuments={setDocuments}
+          filteredDocuments={filteredDocuments}
+          setFilteredDocuments={setFilteredDocuments}
         />
       </Modal>
 
@@ -122,6 +128,8 @@ const Overlay: React.FC<OverlayProps> = ({
           setCoordinates={setCoordinates}
           documents={documents}
           setDocuments={setDocuments} 
+          filteredDocuments={filteredDocuments}
+          setFilteredDocuments={setFilteredDocuments}
         />
       </Modal>
     </div>

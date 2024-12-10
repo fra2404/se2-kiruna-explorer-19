@@ -120,6 +120,8 @@ export default function KirunaMap() {
           documents={allDocuments}
           setDocuments={setAllDocuments}
           sidebarVisible={sidebarVisible}
+          filteredDocuments={filteredDocuments}
+          setFilteredDocuments={setFilteredDocuments}
         />
 
       <CustomMap>

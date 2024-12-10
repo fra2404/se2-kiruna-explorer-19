@@ -144,6 +144,8 @@ export const Point: React.FC<PointProps> = ({
           setCoordinates={setCoordinates}
           allDocuments={allDocuments}
           setDocuments={setAllDocuments}
+          filteredDocuments={filteredDocuments}
+          setFilteredDocuments={setFilteredDocuments}
         />
 
         {(type=='Polygon') &&
