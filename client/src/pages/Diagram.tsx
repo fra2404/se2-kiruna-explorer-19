@@ -62,13 +62,6 @@ const modalStyles = {
 
 const graphBEInfo = await API.getGraphInfo();
 
-const randomColor = () => {
-    const red = Math.floor(Math.random() * 256).toString(16).padStart(2, '0');
-    const green = Math.floor(Math.random() * 256).toString(16).padStart(2, '0');
-    const blue = Math.floor(Math.random() * 256).toString(16).padStart(2, '0');
-    return `#${red}${green}${blue}`;
-}
-
 const Diagram = () => {
     const { setFeedbackFromError } = useContext(FeedbackContext);
     const headerRef = useRef<HTMLDivElement>(null);
@@ -89,6 +82,10 @@ const Diagram = () => {
     const maxYear = graphBEInfo.maxYear;
     const networkRef = useRef<any>(null);
     const { id } = useParams();
+
+    let lastPosition: any = null;
+    const max_zoom = 2;
+    const min_zoom = 0.1;
 
     const openModal = (document: IDocument) => {
         // Search in the original documents and show the document in the modal 
@@ -271,7 +268,6 @@ const Diagram = () => {
                 shape: "image",
                 image: doc.image,
                 brokenImage: ErrorImage,
-                color: randomColor(),
                 year: doc.year,
                 scale: doc.scale,
                 architecturalScale: doc.architecturalScale
@@ -354,7 +350,7 @@ const Diagram = () => {
                         return node.id === id;
                     }).map((node: any) => node.id),
                     animation: false
-                });    // Fit the graph to the node
+                });
             }
             // Else center based on the current year
             else {
@@ -369,14 +365,11 @@ const Diagram = () => {
 
             }
 
-
             network.moveTo({ scale: 0.5 })  // Set the initial zoom level
         }
-    }, [state.graph.nodes]);
+    }, [id, state.graph.nodes]);
 
-    let lastPosition: any = null;
-    const max_zoom = 2;
-    const min_zoom = 0.1;
+
 
 
     return (
