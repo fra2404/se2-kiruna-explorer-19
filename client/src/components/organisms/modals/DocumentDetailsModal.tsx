@@ -16,7 +16,9 @@ interface DocumentDetailsModalProps {
   coordinates: any;
   setCoordinates: (coordinates: any) => void;
   allDocuments: IDocument[];
-  setDocuments: (documents: IDocument[]) => void;
+  setAllDocuments: (documents: IDocument[]) => void;
+  filteredDocuments: IDocument[];
+  setFilteredDocuments: (documents: IDocument[]) => void;
 }
 
 const DocumentDetailsModal: React.FC<DocumentDetailsModalProps> = ({
@@ -24,7 +26,9 @@ const DocumentDetailsModal: React.FC<DocumentDetailsModalProps> = ({
   coordinates,
   setCoordinates,
   allDocuments,
-  setDocuments,
+  setAllDocuments,
+  filteredDocuments,
+  setFilteredDocuments
 }) => {
   console.log('DocumentDetailsModal - document:', document);
   const { isLoggedIn, user } = useAuth();
@@ -149,7 +153,9 @@ const DocumentDetailsModal: React.FC<DocumentDetailsModalProps> = ({
           coordinates={coordinates}
           setCoordinates={setCoordinates}
           documents={allDocuments}
-          setDocuments={setDocuments}
+          setDocuments={setAllDocuments}
+          filteredDocuments={filteredDocuments}
+          setFilteredDocuments={setFilteredDocuments}
           setModalOpen={setModalOpen}
           selectedDocument={document}
         />

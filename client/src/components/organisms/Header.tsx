@@ -13,14 +13,28 @@ import { IDocument } from '../../utils/interfaces/document.interface';
 interface HeaderProps {
   page: string;
   headerRef?: any;
+  sidebarVisible: boolean;
+  setSidebarVisible: (sidebarVisible: boolean) => void;
   setManageCoordsModalOpen?: (manageCoordsModalOpen: boolean) => void;
+  coordinates: any;
+  setCoordinates: (coordinates: any) => void;
+  allDocuments: IDocument[];
+  setAllDocuments: (allDocuments: IDocument[]) => void;
+  filteredDocuments: IDocument[];
   setFilteredDocuments: (documents: IDocument[]) => void;
 }
 
 export const Header: React.FC<HeaderProps> = ({
   page,
   headerRef,
+  sidebarVisible,
+  setSidebarVisible,
   setManageCoordsModalOpen,
+  coordinates,
+  setCoordinates,
+  allDocuments,
+  setAllDocuments,
+  filteredDocuments,
   setFilteredDocuments,
 }) => {
   const [dateTime, setDateTime] = useState(new Date().toLocaleString());
@@ -63,7 +77,7 @@ export const Header: React.FC<HeaderProps> = ({
 
       <div className="flex items-center justify-between" style={{ background: "transparent" }}>
         <div className='flex items-center'>
-          <img src="./src/assets/logo.png" className='h-12 border border-black rounded-full '/>
+          <img src='./src/assets/logo.png' alt='Logo' className='h-12 border border-black rounded-full '/>
           <h1 className={mapType == "osm" || page != 'map' ? 'font-bold text-black ml-2 text-3xl' : "font-bold text-white ml-2 text-3xl"}>Kiruna eXplorer</h1>
         </div>
 
@@ -108,9 +122,16 @@ export const Header: React.FC<HeaderProps> = ({
             )}
           </div>
 
-          {/* Sidebar button */}
+          {/* Sidebar */}
           <div className='ml-auto' style={{ pointerEvents: "auto" }}>
             <Sidebar
+              sidebarVisible={sidebarVisible}
+              setSidebarVisible={setSidebarVisible}
+              coordinates={coordinates}
+              setCoordinates={setCoordinates}
+              allDocuments={allDocuments}
+              setAllDocuments={setAllDocuments}
+              filteredDocuments={filteredDocuments}
               setFilteredDocuments={setFilteredDocuments}
             />
           </div>

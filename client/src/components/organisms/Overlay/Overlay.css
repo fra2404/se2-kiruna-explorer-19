@@ -23,3 +23,24 @@
 .floating-button-left {
   left: 1rem;
 }
+
+@media screen and (min-width: 1280px) {
+  .mr-button {
+    margin-right: 40%;
+    transition: 350ms;
+  }
+}
+
+@media screen and (min-width: 1024px) and (max-width: 1279px) {
+  .mr-button {
+    margin-right: 66.666667%;
+    transition: 350ms;
+  }
+}
+
+@media screen and (max-width: 1023px) {
+  .mr-button {
+    margin-right: 100%;
+    transition: 350ms;
+  }
+}

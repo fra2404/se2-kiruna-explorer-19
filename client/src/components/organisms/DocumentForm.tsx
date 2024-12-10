@@ -44,6 +44,8 @@ interface DocumentFormProps {
   showCoordNamePopup?: boolean;
   documents: IDocument[];
   setDocuments: (documents: IDocument[]) => void;
+  filteredDocuments: IDocument[];
+  setFilteredDocuments: (documents: IDocument[]) => void;
   setModalOpen: (open: boolean) => void;
   selectedDocument?: IDocument;
 }
@@ -55,6 +57,8 @@ const DocumentForm = ({
   setCoordinates,
   documents,
   setDocuments,
+  filteredDocuments,
+  setFilteredDocuments,
   showCoordNamePopup = false,
   selectedDocument,
   setModalOpen,
@@ -303,6 +307,11 @@ const DocumentForm = ({
             return doc.id == selectedDocument.id ? responseDocument : doc;
           }),
         );
+        setFilteredDocuments(
+          filteredDocuments.map((doc: IDocument) => {
+            return doc.id == selectedDocument.id ? responseDocument : doc;
+          }),
+        )
       }
     }
   };

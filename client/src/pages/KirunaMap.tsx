@@ -48,6 +48,9 @@ export default function KirunaMap() {
   //Manages the coords modal
   const [manageCoordsModalOpen, setManageCoordsModalOpen] = useState(false);
 
+  //Manages the sidebar
+  const [sidebarVisible, setSidebarVisible] = useState(false);
+
   useEffect(() => {
   API.getCoordinates()
     .then((coords) => {
@@ -100,7 +103,14 @@ export default function KirunaMap() {
     >
       <Header 
         page='map'
-        setManageCoordsModalOpen={setManageCoordsModalOpen} 
+        sidebarVisible={sidebarVisible}
+        setSidebarVisible={setSidebarVisible}
+        setManageCoordsModalOpen={setManageCoordsModalOpen}
+        coordinates={coordinates}
+        setCoordinates={setCoordinates}
+        allDocuments={allDocuments}
+        setAllDocuments={setAllDocuments}
+        filteredDocuments={filteredDocuments}
         setFilteredDocuments={setFilteredDocuments}
       />
 
@@ -109,6 +119,7 @@ export default function KirunaMap() {
           setCoordinates={setCoordinates}
           documents={allDocuments}
           setDocuments={setAllDocuments}
+          sidebarVisible={sidebarVisible}
         />
 
       <CustomMap>

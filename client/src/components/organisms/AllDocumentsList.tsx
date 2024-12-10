@@ -1,26 +1,28 @@
 import React, { useEffect, useState } from 'react';
-import { IDocument } from '../../../utils/interfaces/document.interface';
-import { DocumentItem } from '../../molecules/documentsItems/DocumentItem';
-import Searchbar from '../../molecules/Searchbar';
-import Filters from '../../molecules/filters/Filters';
-import API from '../../../API';
-import Toast from '../Toast';
-import useToast from '../../../utils/hooks/toast';
+import { IDocument } from '../../utils/interfaces/document.interface';
+import { DocumentItem } from '../molecules/documentsItems/DocumentItem';
+import Searchbar from '../molecules/Searchbar';
+import Filters from '../molecules/filters/Filters';
+import API from '../../API';
+import Toast from './Toast';
+import useToast from '../../utils/hooks/toast';
 
-interface AllDocumentsModalProps {
-    setShowAllDocumentsModal: (showAllDocumentsModal: boolean) => void;
+interface AllDocumentsListProps {
     coordinates: any;
     setCoordinates: (coordinates: any) => void;
     allDocuments: IDocument[];
     setAllDocuments: (allDocuments: IDocument[]) => void;
+    filteredDocuments: IDocument[];
+    setFilteredDocuments: (documents: IDocument[]) => void;
 }
 
-const AllDocumentsModal: React.FC<AllDocumentsModalProps> = ({
-    setShowAllDocumentsModal,
+const AllDocumentsList: React.FC<AllDocumentsListProps> = ({
     coordinates,
     setCoordinates,
     allDocuments,
     setAllDocuments,
+    filteredDocuments,
+    setFilteredDocuments
 }) => {
   const [filters, setFilters] = useState<{
     type: string;
@@ -45,7 +47,6 @@ const AllDocumentsModal: React.FC<AllDocumentsModalProps> = ({
   });
 
   const [searchQuery, setSearchQuery] = useState('');
-  const [filteredDocuments, setFilteredDocuments] = useState<IDocument[]>([]);
 
   const {toast, showToast, hideToast} = useToast();
 
@@ -62,8 +63,6 @@ const AllDocumentsModal: React.FC<AllDocumentsModalProps> = ({
       <div className='flex flex-col'>
         <div className='flex justify-between'>
           <h1 className='text-2xl font-bold'>All Documents</h1>
-          <button onClick={()=>setShowAllDocumentsModal(false)}
-          className='bg-black text-white font-semibold px-2 rounded'>Close</button>
         </div>
 
         <h2 className='text-xl'>Filters</h2>            
@@ -87,7 +86,9 @@ const AllDocumentsModal: React.FC<AllDocumentsModalProps> = ({
               coordinates={coordinates}
               setCoordinates={setCoordinates}
               allDocuments={allDocuments}
-              setDocuments={setAllDocuments}
+              setAllDocuments={setAllDocuments}
+              filteredDocuments={filteredDocuments}
+              setFilteredDocuments={setFilteredDocuments}
             />
             ))
           }
@@ -105,4 +106,4 @@ const AllDocumentsModal: React.FC<AllDocumentsModalProps> = ({
   )
 }
 
-export default AllDocumentsModal;
+export default AllDocumentsList;

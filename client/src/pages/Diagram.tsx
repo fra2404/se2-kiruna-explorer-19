@@ -72,6 +72,10 @@ const Diagram = () => {
     const headerRef = useRef<HTMLDivElement>(null);
     const [selectedDocument, setSelectedDocument] = useState<IDocument[]>([]);
     const [isModalOpen, setIsModalOpen] = useState(false);
+
+    //Manages the sidebar
+    const [sidebarVisible, setSidebarVisible] = useState(false);
+
     const {allDocuments, setAllDocuments, filteredDocuments, setFilteredDocuments} = useDocuments();
     const [coordinates, setCoordinates] = useState({});
     const [state, setState] = useState({
@@ -352,9 +356,16 @@ const Diagram = () => {
     return (
         <div style={{ height: "100vh", position: "relative" }} className="grid-background">
             <Header 
-              headerRef={headerRef}
-              page='graph'
-              setFilteredDocuments={setFilteredDocuments}
+                headerRef={headerRef}
+                page='graph'
+                sidebarVisible={sidebarVisible}
+                setSidebarVisible={setSidebarVisible}
+                coordinates={coordinates}
+                setCoordinates={setCoordinates}
+                allDocuments={allDocuments}
+                setAllDocuments={setAllDocuments}
+                filteredDocuments={filteredDocuments}
+                setFilteredDocuments={setFilteredDocuments}
             />
 
             <div style={{ position: "absolute", top: `${headerRef.current?.offsetHeight ? headerRef.current?.offsetHeight + 10 : 0}px`, left: "10px", zIndex: 10 }}>
@@ -407,7 +418,9 @@ const Diagram = () => {
                     coordinates={coordinates}
                     setCoordinates={setCoordinates}
                     allDocuments={allDocuments}
-                    setDocuments={setAllDocuments}
+                    setAllDocuments={setAllDocuments}
+                    filteredDocuments={filteredDocuments}
+                    setFilteredDocuments={setFilteredDocuments}
                 />
             </Modal>
         </div>

@@ -1,51 +1,36 @@
-import React, { useState } from "react";
+import React from "react";
 import ButtonRounded from "../atoms/button/ButtonRounded";
-import { FaBars } from "react-icons/fa";
-import Filters from "../molecules/filters/Filters";
-import Searchbar from "../molecules/Searchbar";
-import useToast from "../../utils/hooks/toast";
-import Toast from "./Toast";
+import { FaFolder } from "react-icons/fa";
 import { IDocument } from "../../utils/interfaces/document.interface";
 import { FaX } from "react-icons/fa6";
+import AllDocumentsList from "./AllDocumentsList";
 
 interface SidebarProps {
+  sidebarVisible: boolean;
+  setSidebarVisible: (sidebarVisible: boolean) => void;
+  coordinates: any;
+  setCoordinates: (coordinates: any) => void;
+  allDocuments: IDocument[];
+  setAllDocuments: (allDocuments: IDocument[]) => void;
+  filteredDocuments: IDocument[];
   setFilteredDocuments: (documents: IDocument[]) => void;
 }
 
 export const Sidebar: React.FC<SidebarProps> = ({
+  sidebarVisible,
+  setSidebarVisible,
+  coordinates,
+  setCoordinates,
+  allDocuments,
+  setAllDocuments,
+  filteredDocuments,
   setFilteredDocuments
 }) => {
-
-  const [filters, setFilters] = useState<{
-    type: string;
-    stakeholders: string[];
-    coordinates: string;
-    year: string;
-    month: string;
-    day: string;
-    language: string;
-    scale: string;
-    architecturalScale: string;
-  }>({
-    type: '',
-    stakeholders: [],
-    coordinates: '',
-    year: '',
-    month: '',
-    day: '',
-    language: '',
-    scale: '',
-    architecturalScale: '',
-  });
-  const [sidebarVisible, setSidebarVisible] = useState(false);
-
-  const [searchQuery, setSearchQuery] = useState('');
-  const {toast, showToast, hideToast} = useToast();
   
   return (
     <>
       <ButtonRounded 
-        text={<FaBars />}
+        text={<FaFolder />}
         variant="filled"
         className="bg-black px-3 text-base"
         onClick={() => setSidebarVisible(true)}
@@ -75,26 +60,16 @@ export const Sidebar: React.FC<SidebarProps> = ({
             className='self-end'
           />
 
-          <h2 className='text-xl pt-4'>Filters</h2>            
-          <Filters filters={filters} setFilters={setFilters} />
-
-          <Searchbar 
-            searchQuery={searchQuery} 
-            setSearchQuery={setSearchQuery}
-            filters={filters}
+          <AllDocumentsList
+            coordinates={coordinates}
+            setCoordinates={setCoordinates}
+            allDocuments={allDocuments}
+            setAllDocuments={setAllDocuments}
+            filteredDocuments={filteredDocuments}
             setFilteredDocuments={setFilteredDocuments}
-            showToast={showToast}
           />
         </div>
       </nav>
-
-      {
-        toast.isShown && (
-          <Toast isShown={toast.isShown} message={toast.message} 
-            type={toast.type} onClose={hideToast}
-          />
-        )
-      }
     </>
   )
 }
