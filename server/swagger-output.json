@@ -834,6 +834,50 @@
         }
       }
     },
+    "/api/stakeholders/create": {
+      "post": {
+        "summary": "Add a new stakeholder",
+        "tags": [
+          "Stakeholders"
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Stakeholder"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Stakeholder added successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string"
+                    },
+                    "stakeholder": {
+                      "$ref": "#/components/schemas/Stakeholder"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid input data"
+          },
+          "500": {
+            "description": "Internal server error"
+          }
+        }
+      }
+    },
     "/api/users": {
       "get": {
         "summary": "Get all users",
