@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import InputComponent from '../../atoms/input/input';
 import './Step1.css';
-import { stakeholderOptions } from '../../../shared/stakeholder.options.const';
+import { stakeholderOptions as initialStakeholderOptions } from '../../../shared/stakeholder.options.const';
 import { scaleOptions } from '../../../shared/scale.options.const';
 import { years, months, getDays } from '../../../utils/date';
 
@@ -18,6 +18,7 @@ interface Step1Props {
   setArchitecturalScale: (value: string) => void;
   errors: { [key: string]: string };
 }
+
 const Step1: React.FC<Step1Props> = ({
   title,
   setTitle,
@@ -40,8 +41,8 @@ const Step1: React.FC<Step1Props> = ({
   const [selectedDay, setSelectedDay] = useState<string>(
     issuanceDate ? issuanceDate.split('-')[2] : '',
   );
-
-  console.log('architecturalScale:', architecturalScale);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [stakeholderOptions, setStakeholderOptions] = useState(initialStakeholderOptions);
 
   useEffect(() => {
     if (issuanceDate) {
@@ -49,9 +50,6 @@ const Step1: React.FC<Step1Props> = ({
       setSelectedYear(year || '');
       setSelectedMonth(month || '');
       setSelectedDay(day || '');
-      console.log('useEffect - selectedYear:', year);
-      console.log('useEffect - selectedMonth:', month);
-      console.log('useEffect - selectedDay:', day);
     }
   }, [issuanceDate]);
 
@@ -72,6 +70,12 @@ const Step1: React.FC<Step1Props> = ({
       setSelectedDay('');
     }
   }, [selectedMonth]);
+
+  const handleSaveNewStakeholder = (newStakeholder: { value: string; label: string }) => {
+    setStakeholderOptions([...stakeholderOptions, newStakeholder]);
+    setStakeholders([...stakeholders, newStakeholder.value]);
+    setIsModalOpen(false);
+  };
 
   return (
     <>
@@ -118,6 +122,8 @@ const Step1: React.FC<Step1Props> = ({
           required={true}
           placeholder="Select stakeholder(s)"
           error={errors.stakeholders}
+          addNew={true}
+          onAddNew={() => setIsModalOpen(true)}
         />
       </div>
 
@@ -133,7 +139,6 @@ const Step1: React.FC<Step1Props> = ({
           onChange={(e) => {
             if ('target' in e) {
               const selectedOption = e.target.value;
-              console.log('onChange - selectedOption:', selectedOption);
               setScale(selectedOption);
             }
           }}
@@ -213,7 +218,46 @@ const Step1: React.FC<Step1Props> = ({
           />
         </div>
       </div>
+
+      {isModalOpen && (
+        <Modal onClose={() => setIsModalOpen(false)} onSave={handleSaveNewStakeholder} />
+      )}
     </>
+  );
+};
+
+const Modal: React.FC<{ onClose: () => void; onSave: (newStakeholder: { value: string; label: string }) => void }> = ({ onClose, onSave }) => {
+  const [newStakeholder, setNewStakeholder] = useState<{ value: string; label: string }>({ value: '', label: '' });
+
+  const handleSave = () => {
+    onSave(newStakeholder);
+    onClose();
+  };
+
+  return (
+    <div className="fixed inset-0 flex items-center justify-center bg-gray-800 bg-opacity-50 z-50">
+      <div className="bg-white p-4 rounded shadow-lg w-1/3">
+        <h2 className="text-lg font-bold mb-4">Add New Stakeholder</h2>
+        <input
+          type="text"
+          placeholder="Label"
+          value={newStakeholder.label}
+          onChange={(e) => setNewStakeholder({ ...newStakeholder, label: e.target.value })}
+          className="border p-2 mb-4 w-full"
+        />
+        <input
+          type="text"
+          placeholder="Value"
+          value={newStakeholder.value}
+          onChange={(e) => setNewStakeholder({ ...newStakeholder, value: e.target.value })}
+          className="border p-2 mb-4 w-full"
+        />
+        <div className="flex justify-end">
+          <button onClick={onClose} className="mr-2 px-4 py-2 bg-gray-300 rounded">Cancel</button>
+          <button onClick={handleSave} className="px-4 py-2 bg-blue-500 text-white rounded">Save</button>
+        </div>
+      </div>
+    </div>
   );
 };
 

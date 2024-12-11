@@ -42,6 +42,8 @@ interface InputComponentProps {
   returnObject?: boolean;
   onKeyDown?: (event: React.KeyboardEvent<HTMLInputElement>) => void;
   error?: string;
+  addNew?: boolean;
+  onAddNew?: () => void;
 }
 
 const mockFlags = {
@@ -87,6 +89,8 @@ const InputComponent: React.FC<InputComponentProps> = ({
   returnObject = false,
   onKeyDown,
   error,
+  addNew = false,
+  onAddNew,
 }) => {
   const [isEmailValid, setIsEmailValid] = useState<boolean>(true);
   const [isFieldEmpty, setIsFieldEmpty] = useState<boolean>(false);
@@ -183,15 +187,9 @@ const InputComponent: React.FC<InputComponentProps> = ({
   };
 
   const handleSelectChange = (selectedOption: Option | null) => {
-    if (selectedOption && selectedOption.value === '') {
-      setSelectedOption(null);
-      if (onChange) {
-        onChange({
-          target: {
-            value: '',
-            name,
-          } as any,
-        } as ChangeEvent<HTMLSelectElement>);
+    if (selectedOption && selectedOption.value === 'add-new') {
+      if (onAddNew) {
+        onAddNew();
       }
     } else {
       setSelectedOption(selectedOption);
@@ -213,14 +211,20 @@ const InputComponent: React.FC<InputComponentProps> = ({
   };
 
   const handleMultiSelectChange = (selectedOptions: Option[]) => {
-    setSelectedOptions(selectedOptions);
-    if (onChange) {
-      onChange(selectedOptions);
+    if (selectedOptions.some(option => option.value === 'add-new')) {
+      if (onAddNew) {
+        onAddNew();
+      }
+    } else {
+      setSelectedOptions(selectedOptions);
+      if (onChange) {
+        onChange(selectedOptions);
+      }
     }
   };
 
-  const selectOptions = selectedOption
-    ? [{ value: '', label: 'Cancel selection' }, ...options]
+  const selectOptions = addNew
+    ? [{ value: 'add-new', label: '+ Add New' }, ...options]
     : options;
 
   return (
@@ -316,7 +320,7 @@ const InputComponent: React.FC<InputComponentProps> = ({
         <Select
           isMulti
           className="shadow appearance-none rounded w-full text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-          options={options}
+          options={selectOptions}
           onChange={(selectedOptions) =>
             handleMultiSelectChange(selectedOptions as Option[])
           }
