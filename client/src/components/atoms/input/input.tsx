@@ -1,6 +1,6 @@
 import React, { ChangeEvent, useEffect, useState, useCallback } from 'react';
-import Select from 'react-select';
-import { FaEye, FaEyeSlash } from 'react-icons/fa';
+import Select, { components } from 'react-select';
+import { FaEye, FaEyeSlash, FaCheck } from 'react-icons/fa';
 
 interface Option {
   value: string;
@@ -43,7 +43,7 @@ interface InputComponentProps {
   onKeyDown?: (event: React.KeyboardEvent<HTMLInputElement>) => void;
   error?: string;
   addNew?: boolean;
-  onAddNew?: () => void;
+  onAddNew?: (newOption: Option) => void;
 }
 
 const mockFlags = {
@@ -102,6 +102,8 @@ const InputComponent: React.FC<InputComponentProps> = ({
   );
   const [isTouched, setIsTouched] = useState<boolean>(false);
   const [showPassword, setShowPassword] = useState(false);
+  const [isAddingNew, setIsAddingNew] = useState(false);
+  const [newOptionLabel, setNewOptionLabel] = useState('');
 
   const validateEmail = useCallback(
     (email: string) => {
@@ -188,9 +190,7 @@ const InputComponent: React.FC<InputComponentProps> = ({
 
   const handleSelectChange = (selectedOption: Option | null) => {
     if (selectedOption && selectedOption.value === 'add-new') {
-      if (onAddNew) {
-        onAddNew();
-      }
+      setIsAddingNew(true);
     } else {
       setSelectedOption(selectedOption);
       if (onChange) {
@@ -212,9 +212,7 @@ const InputComponent: React.FC<InputComponentProps> = ({
 
   const handleMultiSelectChange = (selectedOptions: Option[]) => {
     if (selectedOptions.some(option => option.value === 'add-new')) {
-      if (onAddNew) {
-        onAddNew();
-      }
+      setIsAddingNew(true);
     } else {
       setSelectedOptions(selectedOptions);
       if (onChange) {
@@ -223,9 +221,42 @@ const InputComponent: React.FC<InputComponentProps> = ({
     }
   };
 
+  const handleAddNewConfirm = () => {
+    const newOption = { value: newOptionLabel, label: newOptionLabel };
+    if (onAddNew) {
+      onAddNew(newOption);
+    }
+    setIsAddingNew(false);
+    setNewOptionLabel('');
+  };
+
   const selectOptions = addNew
     ? [{ value: 'add-new', label: '+ Add New' }, ...options]
     : options;
+
+    const CustomOption = (props: any) => {
+    if (props.data.value === 'add-new') {
+      return (
+        <div className="flex items-center p-2">
+          <input
+            className={inputClassName}
+            type="text"
+            placeholder="Enter new option"
+            value={newOptionLabel}
+            onChange={(e) => setNewOptionLabel(e.target.value)}
+          />
+          <button
+            type="button"
+            className="ml-2 p-2 bg-blue-500 text-white rounded"
+            onClick={handleAddNewConfirm}
+          >
+            <FaCheck />
+          </button>
+        </div>
+      );
+    }
+    return <components.Option {...props} />;
+  };
 
   return (
     <div className="mb-4">
@@ -281,7 +312,7 @@ const InputComponent: React.FC<InputComponentProps> = ({
           className="shadow appearance-none rounded w-full text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
           options={selectOptions}
           onChange={handleSelectChange}
-          components={{ SingleValue: CustomSingleValue, Option: customOption }}
+          components={{ SingleValue: CustomSingleValue, Option: CustomOption }}
           name={name}
           value={selectedOption}
           defaultValue={options.find((option) => option.value === defaultValue)}
@@ -332,6 +363,7 @@ const InputComponent: React.FC<InputComponentProps> = ({
           getOptionLabel={(option) => option.label}
           getOptionValue={(option) => option.value}
           menuPortalTarget={document.body}
+          components={{ Option: CustomOption }}
           styles={{
             control: (provided) => ({
               ...provided,
