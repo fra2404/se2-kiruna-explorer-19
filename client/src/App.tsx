@@ -6,6 +6,7 @@ import { MapStyleProvider } from './context/MapStyleContext.tsx';
 import KirunaMap from './pages/KirunaMap.tsx';
 import { MunicipalityCoordinatesProvider } from './context/MunicipalityCoordinatesContext.tsx';
 import Diagram from './pages/Diagram.tsx';
+import LandingPage from './pages/LandingPage.tsx';
 
 function App() {
   return (
@@ -14,7 +15,8 @@ function App() {
         <MapStyleProvider>
           <MunicipalityCoordinatesProvider>
             <Routes>
-              <Route path="/" element={<KirunaMap />} />
+              <Route path="/" element={<LandingPage />} />
+              <Route path="/map" element={<KirunaMap />} />
               <Route path="/diagram" element={<Diagram />} />
             </Routes>
           </MunicipalityCoordinatesProvider>

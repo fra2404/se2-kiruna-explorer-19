@@ -361,11 +361,15 @@ async function removeArea(areaId: any) {
 }
 
 async function getGraphInfo() {
-  return await fetch(`${SERVER_URL}/graph`, {
-    method: 'GET',
-  })
-    .then(handleInvalidResponse)
-    .then((response) => response.json());
+  try {
+    return await fetch(`${SERVER_URL}/graph`, {
+      method: 'GET',
+    })
+      .then(handleInvalidResponse)
+      .then((response) => response.json());
+  } catch (error) {
+    console.log(error);
+  }
 }
 
 const API = {
