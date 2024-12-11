@@ -1,0 +1,2690 @@
+{
+	"id": "ffe045c5-1f75-4924-9ff6-e8ec1747cfe7",
+	"name": "API Documentation - KIRUNA Explorer",
+	"timestamp": "2024-12-05T04:05:06.851Z",
+	"collection_id": "23447628-47d6cced-7270-453f-9cfa-1154529d8c5d",
+	"folder_id": 0,
+	"environment_id": "23447628-c07af9fa-7ec7-46ac-abd9-a0a0061e2d80",
+	"totalPass": 227,
+	"delay": 0,
+	"persist": true,
+	"status": "finished",
+	"startedAt": "2024-12-05T04:04:55.368Z",
+	"totalFail": 1,
+	"results": [
+		{
+			"id": "4a84b52f-96e0-4aeb-9e14-686b08cf107d",
+			"name": "Create a new user",
+			"url": "http://localhost:5001/api/users/signup",
+			"time": 314,
+			"responseCode": {
+				"code": 201,
+				"name": "Created"
+			},
+			"tests": {
+				"Response status code is 201": true,
+				"Response time is within an acceptable range": true,
+				"Response is not null": true,
+				"Response follows the expected schema for user data": true
+			},
+			"testPassFailCounts": {
+				"Response status code is 201": {
+					"pass": 1,
+					"fail": 0
+				},
+				"Response time is within an acceptable range": {
+					"pass": 1,
+					"fail": 0
+				},
+				"Response is not null": {
+					"pass": 1,
+					"fail": 0
+				},
+				"Response follows the expected schema for user data": {
+					"pass": 1,
+					"fail": 0
+				}
+			},
+			"times": [
+				314
+			],
+			"allTests": [
+				{
+					"Response status code is 201": true,
+					"Response time is within an acceptable range": true,
+					"Response is not null": true,
+					"Response follows the expected schema for user data": true
+				}
+			]
+		},
+		{
+			"id": "0ffecfd0-0e93-4d94-b82a-c6663b540fcd",
+			"name": "Wrong Email",
+			"url": "http://localhost:5001/api/users/login",
+			"time": 22,
+			"responseCode": {
+				"code": 403,
+				"name": "Forbidden"
+			},
+			"tests": {
+				"Unauthorized status code": true,
+				"Error message for incorrect email": true,
+				"The 'errors' array is empty": true
+			},
+			"testPassFailCounts": {
+				"Unauthorized status code": {
+					"pass": 1,
+					"fail": 0
+				},
+				"Error message for incorrect email": {
+					"pass": 1,
+					"fail": 0
+				},
+				"The 'errors' array is empty": {
+					"pass": 1,
+					"fail": 0
+				}
+			},
+			"times": [
+				22
+			],
+			"allTests": [
+				{
+					"Unauthorized status code": true,
+					"Error message for incorrect email": true,
+					"The 'errors' array is empty": true
+				}
+			]
+		},
+		{
+			"id": "8fa66681-575e-40a4-b302-71e6b7f510b5",
+			"name": "Wrong Password",
+			"url": "http://localhost:5001/api/users/login",
+			"time": 232,
+			"responseCode": {
+				"code": 403,
+				"name": "Forbidden"
+			},
+			"tests": {
+				"Unauthorized status code": true,
+				"Error message for incorrect email": true,
+				"The 'errors' array is empty": true
+			},
+			"testPassFailCounts": {
+				"Unauthorized status code": {
+					"pass": 1,
+					"fail": 0
+				},
+				"Error message for incorrect email": {
+					"pass": 1,
+					"fail": 0
+				},
+				"The 'errors' array is empty": {
+					"pass": 1,
+					"fail": 0
+				}
+			},
+			"times": [
+				232
+			],
+			"allTests": [
+				{
+					"Unauthorized status code": true,
+					"Error message for incorrect email": true,
+					"The 'errors' array is empty": true
+				}
+			]
+		},
+		{
+			"id": "c614b391-7200-4db2-aa74-38ebd8c0ce84",
+			"name": "Wrong Input",
+			"url": "http://localhost:5001/api/users/login",
+			"time": 299,
+			"responseCode": {
+				"code": 403,
+				"name": "Forbidden"
+			},
+			"tests": {
+				"Unauthorized status code": true,
+				"Error message for incorrect email": true,
+				"The 'errors' array is empty": true
+			},
+			"testPassFailCounts": {
+				"Unauthorized status code": {
+					"pass": 1,
+					"fail": 0
+				},
+				"Error message for incorrect email": {
+					"pass": 1,
+					"fail": 0
+				},
+				"The 'errors' array is empty": {
+					"pass": 1,
+					"fail": 0
+				}
+			},
+			"times": [
+				299
+			],
+			"allTests": [
+				{
+					"Unauthorized status code": true,
+					"Error message for incorrect email": true,
+					"The 'errors' array is empty": true
+				}
+			]
+		},
+		{
+			"id": "b5cb819f-001f-48c7-ab6b-81455cc02593",
+			"name": "Login a user",
+			"url": "http://localhost:5001/api/users/login",
+			"time": 302,
+			"responseCode": {
+				"code": 200,
+				"name": "OK"
+			},
+			"tests": {
+				"Response status code is 200": true,
+				"Response time is less than 200ms": false,
+				"Response has the required field 'token'": true,
+				"Token is a non-empty string": true,
+				"Content-Type is application/json": true,
+				"Token is a valid JWT token": true,
+				"JWT token is set as a cookie": true
+			},
+			"testPassFailCounts": {
+				"Response status code is 200": {
+					"pass": 1,
+					"fail": 0
+				},
+				"Response time is less than 200ms": {
+					"pass": 0,
+					"fail": 1
+				},
+				"Response has the required field 'token'": {
+					"pass": 1,
+					"fail": 0
+				},
+				"Token is a non-empty string": {
+					"pass": 1,
+					"fail": 0
+				},
+				"Content-Type is application/json": {
+					"pass": 1,
+					"fail": 0
+				},
+				"Token is a valid JWT token": {
+					"pass": 1,
+					"fail": 0
+				},
+				"JWT token is set as a cookie": {
+					"pass": 1,
+					"fail": 0
+				}
+			},
+			"times": [
+				302
+			],
+			"allTests": [
+				{
+					"Response status code is 200": true,
+					"Response time is less than 200ms": false,
+					"Response has the required field 'token'": true,
+					"Token is a non-empty string": true,
+					"Content-Type is application/json": true,
+					"Token is a valid JWT token": true,
+					"JWT token is set as a cookie": true
+				}
+			]
+		},
+		{
+			"id": "c0e621ef-148a-43a7-9945-b79aab157956",
+			"name": "Get current user",
+			"url": "http://localhost:5001/api/users/me",
+			"time": 18,
+			"responseCode": {
+				"code": 200,
+				"name": "OK"
+			},
+			"tests": {
+				"Response body structure is valid": true,
+				"Response status code is 200": true,
+				"Response time is less than 200ms": true,
+				"Content-Type header is application/json": true,
+				"All required properties are present in the response": true,
+				"Id, name, email, surname, phone, and role properties are non-empty strings": true,
+				"Returned name matches the specified value": true,
+				"Returned surname matches the specified value": true,
+				"Returned email matches the specified value": true,
+				"Returned phone matches the specified value": true,
+				"Returned role matches the specified value": true
+			},
+			"testPassFailCounts": {
+				"Response body structure is valid": {
+					"pass": 1,
+					"fail": 0
+				},
+				"Response status code is 200": {
+					"pass": 1,
+					"fail": 0
+				},
+				"Response time is less than 200ms": {
+					"pass": 1,
+					"fail": 0
+				},
+				"Content-Type header is application/json": {
+					"pass": 1,
+					"fail": 0
+				},
+				"All required properties are present in the response": {
+					"pass": 1,
+					"fail": 0
+				},
+				"Id, name, email, surname, phone, and role properties are non-empty strings": {
+					"pass": 1,
+					"fail": 0
+				},
+				"Returned name matches the specified value": {
+					"pass": 1,
+					"fail": 0
+				},
+				"Returned surname matches the specified value": {
+					"pass": 1,
+					"fail": 0
+				},
+				"Returned email matches the specified value": {
+					"pass": 1,
+					"fail": 0
+				},
+				"Returned phone matches the specified value": {
+					"pass": 1,
+					"fail": 0
+				},
+				"Returned role matches the specified value": {
+					"pass": 1,
+					"fail": 0
+				}
+			},
+			"times": [
+				18
+			],
+			"allTests": [
+				{
+					"Response body structure is valid": true,
+					"Response status code is 200": true,
+					"Response time is less than 200ms": true,
+					"Content-Type header is application/json": true,
+					"All required properties are present in the response": true,
+					"Id, name, email, surname, phone, and role properties are non-empty strings": true,
+					"Returned name matches the specified value": true,
+					"Returned surname matches the specified value": true,
+					"Returned email matches the specified value": true,
+					"Returned phone matches the specified value": true,
+					"Returned role matches the specified value": true
+				}
+			]
+		},
+		{
+			"id": "7809d074-cb57-4254-a40b-04a5c8097161",
+			"name": "Get all users",
+			"url": "http://localhost:5001/api/users",
+			"time": 30,
+			"responseCode": {
+				"code": 200,
+				"name": "OK"
+			},
+			"tests": {
+				"Response body is an array": true,
+				"Response body is an array and contains a specific object with the specified properties and values": true,
+				"At least one object in the response array has the name 'TestName' and surname 'TestSurname'": true,
+				"Response status code is 200": true,
+				"Response time is less than 200ms": true
+			},
+			"testPassFailCounts": {
+				"Response body is an array": {
+					"pass": 1,
+					"fail": 0
+				},
+				"Response body is an array and contains a specific object with the specified properties and values": {
+					"pass": 1,
+					"fail": 0
+				},
+				"At least one object in the response array has the name 'TestName' and surname 'TestSurname'": {
+					"pass": 1,
+					"fail": 0
+				},
+				"Response status code is 200": {
+					"pass": 1,
+					"fail": 0
+				},
+				"Response time is less than 200ms": {
+					"pass": 1,
+					"fail": 0
+				}
+			},
+			"times": [
+				30
+			],
+			"allTests": [
+				{
+					"Response body is an array": true,
+					"Response body is an array and contains a specific object with the specified properties and values": true,
+					"At least one object in the response array has the name 'TestName' and surname 'TestSurname'": true,
+					"Response status code is 200": true,
+					"Response time is less than 200ms": true
+				}
+			]
+		},
+		{
+			"id": "0fe74d37-bdb7-408c-a8be-9762b288580c",
+			"name": "Create Point",
+			"url": "http://localhost:5001/api/coordinates/create",
+			"time": 35,
+			"responseCode": {
+				"code": 201,
+				"name": "Created"
+			},
+			"tests": {
+				"Response status code is 201": true,
+				"Response has the required fields - message, coordinate": true,
+				"Coordinate type is a non-empty string": true,
+				"Coordinates is an array with at least one element": true,
+				"Name is a non-empty string": true,
+				"Specific values are present in the response": true,
+				"Response time is less than 200ms": true,
+				"Set id of point to call that": true
+			},
+			"testPassFailCounts": {
+				"Response status code is 201": {
+					"pass": 1,
+					"fail": 0
+				},
+				"Response has the required fields - message, coordinate": {
+					"pass": 1,
+					"fail": 0
+				},
+				"Coordinate type is a non-empty string": {
+					"pass": 1,
+					"fail": 0
+				},
+				"Coordinates is an array with at least one element": {
+					"pass": 1,
+					"fail": 0
+				},
+				"Name is a non-empty string": {
+					"pass": 1,
+					"fail": 0
+				},
+				"Specific values are present in the response": {
+					"pass": 1,
+					"fail": 0
+				},
+				"Response time is less than 200ms": {
+					"pass": 1,
+					"fail": 0
+				},
+				"Set id of point to call that": {
+					"pass": 1,
+					"fail": 0
+				}
+			},
+			"times": [
+				35
+			],
+			"allTests": [
+				{
+					"Response status code is 201": true,
+					"Response has the required fields - message, coordinate": true,
+					"Coordinate type is a non-empty string": true,
+					"Coordinates is an array with at least one element": true,
+					"Name is a non-empty string": true,
+					"Specific values are present in the response": true,
+					"Response time is less than 200ms": true,
+					"Set id of point to call that": true
+				}
+			]
+		},
+		{
+			"id": "20c08fa1-232b-4748-bcc2-704f4e42791c",
+			"name": "Create Polygon",
+			"url": "http://localhost:5001/api/coordinates/create",
+			"time": 30,
+			"responseCode": {
+				"code": 201,
+				"name": "Created"
+			},
+			"tests": {
+				"Response status code is 201": true,
+				"Response has the required fields - message, coordinate": true,
+				"Coordinate type is a non-empty string": true,
+				"Coordinates is an array with at least one element": true,
+				"Name is a non-empty string": true,
+				"Specific values are present in the response": true,
+				"Response time is less than 200ms": true,
+				"Response structure and content for type 'Polygon'": true
+			},
+			"testPassFailCounts": {
+				"Response status code is 201": {
+					"pass": 1,
+					"fail": 0
+				},
+				"Response has the required fields - message, coordinate": {
+					"pass": 1,
+					"fail": 0
+				},
+				"Coordinate type is a non-empty string": {
+					"pass": 1,
+					"fail": 0
+				},
+				"Coordinates is an array with at least one element": {
+					"pass": 1,
+					"fail": 0
+				},
+				"Name is a non-empty string": {
+					"pass": 1,
+					"fail": 0
+				},
+				"Specific values are present in the response": {
+					"pass": 1,
+					"fail": 0
+				},
+				"Response time is less than 200ms": {
+					"pass": 1,
+					"fail": 0
+				},
+				"Response structure and content for type 'Polygon'": {
+					"pass": 1,
+					"fail": 0
+				}
+			},
+			"times": [
+				30
+			],
+			"allTests": [
+				{
+					"Response status code is 201": true,
+					"Response has the required fields - message, coordinate": true,
+					"Coordinate type is a non-empty string": true,
+					"Coordinates is an array with at least one element": true,
+					"Name is a non-empty string": true,
+					"Specific values are present in the response": true,
+					"Response time is less than 200ms": true,
+					"Response structure and content for type 'Polygon'": true
+				}
+			]
+		},
+		{
+			"id": "a9ce1951-4f12-43f5-bb5e-7f79e459e269",
+			"name": "Get a coordinate by ID",
+			"url": "http://localhost:5001/api/coordinates/6751266b61ef84b8b58ea430",
+			"time": 16,
+			"responseCode": {
+				"code": 200,
+				"name": "OK"
+			},
+			"tests": {
+				"Response status code is 200": true,
+				"Response time is within acceptable range": true,
+				"Response has the required fields": true,
+				"Validate that the _id is a non-empty string": true,
+				"Type is a non-empty string": true,
+				"Specific values are present in the response": true
+			},
+			"testPassFailCounts": {
+				"Response status code is 200": {
+					"pass": 1,
+					"fail": 0
+				},
+				"Response time is within acceptable range": {
+					"pass": 1,
+					"fail": 0
+				},
+				"Response has the required fields": {
+					"pass": 1,
+					"fail": 0
+				},
+				"Validate that the _id is a non-empty string": {
+					"pass": 1,
+					"fail": 0
+				},
+				"Type is a non-empty string": {
+					"pass": 1,
+					"fail": 0
+				},
+				"Specific values are present in the response": {
+					"pass": 1,
+					"fail": 0
+				}
+			},
+			"times": [
+				16
+			],
+			"allTests": [
+				{
+					"Response status code is 200": true,
+					"Response time is within acceptable range": true,
+					"Response has the required fields": true,
+					"Validate that the _id is a non-empty string": true,
+					"Type is a non-empty string": true,
+					"Specific values are present in the response": true
+				}
+			]
+		},
+		{
+			"id": "89cf9aaf-157c-4d28-8b50-0b82897dd61b",
+			"name": "Get all coordinates",
+			"url": "http://localhost:5001/api/coordinates",
+			"time": 24,
+			"responseCode": {
+				"code": 200,
+				"name": "OK"
+			},
+			"tests": {
+				"Response status code is 200": true,
+				"Response time is less than 500ms": true,
+				"Validate the response schema for required fields - id, type, coordinates, and name": true,
+				"Coordinates is an array with at least one element": true
+			},
+			"testPassFailCounts": {
+				"Response status code is 200": {
+					"pass": 1,
+					"fail": 0
+				},
+				"Response time is less than 500ms": {
+					"pass": 1,
+					"fail": 0
+				},
+				"Validate the response schema for required fields - id, type, coordinates, and name": {
+					"pass": 1,
+					"fail": 0
+				},
+				"Coordinates is an array with at least one element": {
+					"pass": 1,
+					"fail": 0
+				}
+			},
+			"times": [
+				24
+			],
+			"allTests": [
+				{
+					"Response status code is 200": true,
+					"Response time is less than 500ms": true,
+					"Validate the response schema for required fields - id, type, coordinates, and name": true,
+					"Coordinates is an array with at least one element": true
+				}
+			]
+		},
+		{
+			"id": "241b6184-cda6-4627-84de-6e605cb6ee06",
+			"name": "Obtain PresignedUrl",
+			"url": "http://localhost:5001/api/media/upload",
+			"time": 68,
+			"responseCode": {
+				"code": 200,
+				"name": "OK"
+			},
+			"tests": {
+				"Response has a status code of 200": true,
+				"Response time is acceptable": true,
+				"Response structure and values are valid": true,
+				"Token URL matches expected pattern": true,
+				"Filename and content type are as expected": true,
+				"Set id of document to call that": true
+			},
+			"testPassFailCounts": {
+				"Response has a status code of 200": {
+					"pass": 1,
+					"fail": 0
+				},
+				"Response time is acceptable": {
+					"pass": 1,
+					"fail": 0
+				},
+				"Response structure and values are valid": {
+					"pass": 1,
+					"fail": 0
+				},
+				"Token URL matches expected pattern": {
+					"pass": 1,
+					"fail": 0
+				},
+				"Filename and content type are as expected": {
+					"pass": 1,
+					"fail": 0
+				},
+				"Set id of document to call that": {
+					"pass": 1,
+					"fail": 0
+				}
+			},
+			"times": [
+				68
+			],
+			"allTests": [
+				{
+					"Response has a status code of 200": true,
+					"Response time is acceptable": true,
+					"Response structure and values are valid": true,
+					"Token URL matches expected pattern": true,
+					"Filename and content type are as expected": true,
+					"Set id of document to call that": true
+				}
+			]
+		},
+		{
+			"id": "c633ffcb-1384-4f19-adc3-080da7ee4a74",
+			"name": "Save File",
+			"url": "http://localhost:3004/upload-file?token=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY3NTEyNjZiNjFlZjg0YjhiNThlYTQzOCIsImZpbGVuYW1lIjoiMS5wZGYiLCJjb250ZW50VHlwZSI6ImFwcGxpY2F0aW9uL3BkZiIsInVzZXJJZCI6IjY3NTEyNjY5NjFlZjg0YjhiNThlYTQyNiIsImZvbGRlciI6IiIsImV4cCI6MTczMzM3MTc5OSwiaWF0IjoxNzMzMzcxNDk5fQ.gP5iXHIk9ZH7Vn1ifvUmLdla7cO8PoenC17E2kg6Efc",
+			"time": 85,
+			"responseCode": {
+				"code": 200,
+				"name": "OK"
+			},
+			"tests": {
+				"Response has a status code of 200": true,
+				"Response time is acceptable": true,
+				"Response structure and values are valid": true,
+				"URL and ID are correctly formatted": true,
+				"Set id of document to call that": true
+			},
+			"testPassFailCounts": {
+				"Response has a status code of 200": {
+					"pass": 1,
+					"fail": 0
+				},
+				"Response time is acceptable": {
+					"pass": 1,
+					"fail": 0
+				},
+				"Response structure and values are valid": {
+					"pass": 1,
+					"fail": 0
+				},
+				"URL and ID are correctly formatted": {
+					"pass": 1,
+					"fail": 0
+				},
+				"Set id of document to call that": {
+					"pass": 1,
+					"fail": 0
+				}
+			},
+			"times": [
+				85
+			],
+			"allTests": [
+				{
+					"Response has a status code of 200": true,
+					"Response time is acceptable": true,
+					"Response structure and values are valid": true,
+					"URL and ID are correctly formatted": true,
+					"Set id of document to call that": true
+				}
+			]
+		},
+		{
+			"id": "3a6bbb4e-261f-4162-9b7e-778bba004e33",
+			"name": "New Request",
+			"url": "http://localhost:3004/cdn/6751266b61ef84b8b58ea438",
+			"time": 13,
+			"responseCode": {
+				"code": 200,
+				"name": "OK"
+			},
+			"tests": {
+				"Response has a status code of 200": true,
+				"Response content type is PDF": true
+			},
+			"testPassFailCounts": {
+				"Response has a status code of 200": {
+					"pass": 1,
+					"fail": 0
+				},
+				"Response content type is PDF": {
+					"pass": 1,
+					"fail": 0
+				}
+			},
+			"times": [
+				13
+			],
+			"allTests": [
+				{
+					"Response has a status code of 200": true,
+					"Response content type is PDF": true
+				}
+			]
+		},
+		{
+			"id": "77e3d1e8-f6d6-4c92-b8ac-1edc216b3eaf",
+			"name": "Wrong values",
+			"url": "http://localhost:5001/api/documents/create",
+			"time": 53,
+			"responseCode": {
+				"code": 400,
+				"name": "Bad Request"
+			},
+			"tests": {
+				"Response status code is 400": true,
+				"Response is in JSON format": true,
+				"Response structure matches expected format (partial validation)": true
+			},
+			"testPassFailCounts": {
+				"Response status code is 400": {
+					"pass": 1,
+					"fail": 0
+				},
+				"Response is in JSON format": {
+					"pass": 1,
+					"fail": 0
+				},
+				"Response structure matches expected format (partial validation)": {
+					"pass": 1,
+					"fail": 0
+				}
+			},
+			"times": [
+				53
+			],
+			"allTests": [
+				{
+					"Response status code is 400": true,
+					"Response is in JSON format": true,
+					"Response structure matches expected format (partial validation)": true
+				}
+			]
+		},
+		{
+			"id": "1a9f39e1-51f0-4874-b385-41ee11d5ae6d",
+			"name": "Wrong values 2",
+			"url": "http://localhost:5001/api/documents/create",
+			"time": 25,
+			"responseCode": {
+				"code": 400,
+				"name": "Bad Request"
+			},
+			"tests": {
+				"Response status code is 400": true,
+				"Response is in JSON format": true,
+				"Response structure matches expected format (partial validation)": true
+			},
+			"testPassFailCounts": {
+				"Response status code is 400": {
+					"pass": 1,
+					"fail": 0
+				},
+				"Response is in JSON format": {
+					"pass": 1,
+					"fail": 0
+				},
+				"Response structure matches expected format (partial validation)": {
+					"pass": 1,
+					"fail": 0
+				}
+			},
+			"times": [
+				25
+			],
+			"allTests": [
+				{
+					"Response status code is 400": true,
+					"Response is in JSON format": true,
+					"Response structure matches expected format (partial validation)": true
+				}
+			]
+		},
+		{
+			"id": "f474b2c5-7048-407e-8ad6-57ec95975fe8",
+			"name": "Wrong values 3",
+			"url": "http://localhost:5001/api/documents/create",
+			"time": 27,
+			"responseCode": {
+				"code": 400,
+				"name": "Bad Request"
+			},
+			"tests": {
+				"Response status code is 400": true,
+				"Response is in JSON format": true,
+				"Response structure matches expected format (partial validation)": true
+			},
+			"testPassFailCounts": {
+				"Response status code is 400": {
+					"pass": 1,
+					"fail": 0
+				},
+				"Response is in JSON format": {
+					"pass": 1,
+					"fail": 0
+				},
+				"Response structure matches expected format (partial validation)": {
+					"pass": 1,
+					"fail": 0
+				}
+			},
+			"times": [
+				27
+			],
+			"allTests": [
+				{
+					"Response status code is 400": true,
+					"Response is in JSON format": true,
+					"Response structure matches expected format (partial validation)": true
+				}
+			]
+		},
+		{
+			"id": "23980f92-32b8-43be-ab4e-41c442a38114",
+			"name": "without connection",
+			"url": "http://localhost:5001/api/documents/create",
+			"time": 50,
+			"responseCode": {
+				"code": 201,
+				"name": "Created"
+			},
+			"tests": {
+				"Status code is 201": true,
+				"Response is in JSON format": true,
+				"Response structure and values match expected data": true,
+				"Set id of document to call that": true
+			},
+			"testPassFailCounts": {
+				"Status code is 201": {
+					"pass": 1,
+					"fail": 0
+				},
+				"Response is in JSON format": {
+					"pass": 1,
+					"fail": 0
+				},
+				"Response structure and values match expected data": {
+					"pass": 1,
+					"fail": 0
+				},
+				"Set id of document to call that": {
+					"pass": 1,
+					"fail": 0
+				}
+			},
+			"times": [
+				50
+			],
+			"allTests": [
+				{
+					"Status code is 201": true,
+					"Response is in JSON format": true,
+					"Response structure and values match expected data": true,
+					"Set id of document to call that": true
+				}
+			]
+		},
+		{
+			"id": "b42d1226-06d9-4bfa-978d-be27157f4b2b",
+			"name": "with connection and media",
+			"url": "http://localhost:5001/api/documents/create",
+			"time": 102,
+			"responseCode": {
+				"code": 201,
+				"name": "Created"
+			},
+			"tests": {
+				"Status code is 201": true,
+				"Response is in JSON format": true,
+				"Response structure and values match expected data": true,
+				"Set id of document to call that": true
+			},
+			"testPassFailCounts": {
+				"Status code is 201": {
+					"pass": 1,
+					"fail": 0
+				},
+				"Response is in JSON format": {
+					"pass": 1,
+					"fail": 0
+				},
+				"Response structure and values match expected data": {
+					"pass": 1,
+					"fail": 0
+				},
+				"Set id of document to call that": {
+					"pass": 1,
+					"fail": 0
+				}
+			},
+			"times": [
+				102
+			],
+			"allTests": [
+				{
+					"Status code is 201": true,
+					"Response is in JSON format": true,
+					"Response structure and values match expected data": true,
+					"Set id of document to call that": true
+				}
+			]
+		},
+		{
+			"id": "b08a2daf-8c57-4268-9401-89c9e99be0ca",
+			"name": "only year",
+			"url": "http://localhost:5001/api/documents/create",
+			"time": 43,
+			"responseCode": {
+				"code": 201,
+				"name": "Created"
+			},
+			"tests": {
+				"Status code is 201": true,
+				"Response is in JSON format": true,
+				"Response contains expected properties": true
+			},
+			"testPassFailCounts": {
+				"Status code is 201": {
+					"pass": 1,
+					"fail": 0
+				},
+				"Response is in JSON format": {
+					"pass": 1,
+					"fail": 0
+				},
+				"Response contains expected properties": {
+					"pass": 1,
+					"fail": 0
+				}
+			},
+			"times": [
+				43
+			],
+			"allTests": [
+				{
+					"Status code is 201": true,
+					"Response is in JSON format": true,
+					"Response contains expected properties": true
+				}
+			]
+		},
+		{
+			"id": "55db3732-b44a-456e-b15b-9fa46f418d60",
+			"name": "year and month",
+			"url": "http://localhost:5001/api/documents/create",
+			"time": 48,
+			"responseCode": {
+				"code": 201,
+				"name": "Created"
+			},
+			"tests": {
+				"Status code is 201": true,
+				"Response is in JSON format": true,
+				"Response contains expected properties": true
+			},
+			"testPassFailCounts": {
+				"Status code is 201": {
+					"pass": 1,
+					"fail": 0
+				},
+				"Response is in JSON format": {
+					"pass": 1,
+					"fail": 0
+				},
+				"Response contains expected properties": {
+					"pass": 1,
+					"fail": 0
+				}
+			},
+			"times": [
+				48
+			],
+			"allTests": [
+				{
+					"Status code is 201": true,
+					"Response is in JSON format": true,
+					"Response contains expected properties": true
+				}
+			]
+		},
+		{
+			"id": "a5bb7e3b-1b3c-415a-a1c3-cf317e8abf30",
+			"name": "different scale",
+			"url": "http://localhost:5001/api/documents/create",
+			"time": 50,
+			"responseCode": {
+				"code": 201,
+				"name": "Created"
+			},
+			"tests": {
+				"Status code is 201": true,
+				"Response is in JSON format": true,
+				"Response contains expected properties": true
+			},
+			"testPassFailCounts": {
+				"Status code is 201": {
+					"pass": 1,
+					"fail": 0
+				},
+				"Response is in JSON format": {
+					"pass": 1,
+					"fail": 0
+				},
+				"Response contains expected properties": {
+					"pass": 1,
+					"fail": 0
+				}
+			},
+			"times": [
+				50
+			],
+			"allTests": [
+				{
+					"Status code is 201": true,
+					"Response is in JSON format": true,
+					"Response contains expected properties": true
+				}
+			]
+		},
+		{
+			"id": "95bd29bf-c656-48da-b5d7-b99fc64a90c3",
+			"name": "different stakeholder",
+			"url": "http://localhost:5001/api/documents/create",
+			"time": 50,
+			"responseCode": {
+				"code": 201,
+				"name": "Created"
+			},
+			"tests": {
+				"Status code is 201": true,
+				"Response is in JSON format": true,
+				"Response contains expected properties": true
+			},
+			"testPassFailCounts": {
+				"Status code is 201": {
+					"pass": 1,
+					"fail": 0
+				},
+				"Response is in JSON format": {
+					"pass": 1,
+					"fail": 0
+				},
+				"Response contains expected properties": {
+					"pass": 1,
+					"fail": 0
+				}
+			},
+			"times": [
+				50
+			],
+			"allTests": [
+				{
+					"Status code is 201": true,
+					"Response is in JSON format": true,
+					"Response contains expected properties": true
+				}
+			]
+		},
+		{
+			"id": "fb08d729-0d54-4067-9d5d-2806c20995c3",
+			"name": "multiple stakeholders",
+			"url": "http://localhost:5001/api/documents/create",
+			"time": 52,
+			"responseCode": {
+				"code": 201,
+				"name": "Created"
+			},
+			"tests": {
+				"Status code is 201": true,
+				"Response is in JSON format": true,
+				"Response contains expected properties": true
+			},
+			"testPassFailCounts": {
+				"Status code is 201": {
+					"pass": 1,
+					"fail": 0
+				},
+				"Response is in JSON format": {
+					"pass": 1,
+					"fail": 0
+				},
+				"Response contains expected properties": {
+					"pass": 1,
+					"fail": 0
+				}
+			},
+			"times": [
+				52
+			],
+			"allTests": [
+				{
+					"Status code is 201": true,
+					"Response is in JSON format": true,
+					"Response contains expected properties": true
+				}
+			]
+		},
+		{
+			"id": "97f05e21-cc15-4a6f-a70b-b662a18a6255",
+			"name": "Check Connection Created",
+			"url": "http://localhost:5001/api/documents/6751266d61ef84b8b58ea441",
+			"time": 24,
+			"responseCode": {
+				"code": 200,
+				"name": "OK"
+			},
+			"tests": {
+				"Status code is 200": true,
+				"Response is in JSON format": true,
+				"Connections array contains at least one document equal to idDoc2": true,
+				"All connections have type 'DIRECT'": true,
+				"Verify response structure and values": true
+			},
+			"testPassFailCounts": {
+				"Status code is 200": {
+					"pass": 1,
+					"fail": 0
+				},
+				"Response is in JSON format": {
+					"pass": 1,
+					"fail": 0
+				},
+				"Connections array contains at least one document equal to idDoc2": {
+					"pass": 1,
+					"fail": 0
+				},
+				"All connections have type 'DIRECT'": {
+					"pass": 1,
+					"fail": 0
+				},
+				"Verify response structure and values": {
+					"pass": 1,
+					"fail": 0
+				}
+			},
+			"times": [
+				24
+			],
+			"allTests": [
+				{
+					"Status code is 200": true,
+					"Response is in JSON format": true,
+					"Connections array contains at least one document equal to idDoc2": true,
+					"All connections have type 'DIRECT'": true,
+					"Verify response structure and values": true
+				}
+			]
+		},
+		{
+			"id": "0c63b34f-481f-4dee-9509-23b2e4a26c32",
+			"name": "Update a document by ID",
+			"url": "http://localhost:5001/api/documents/6751266d61ef84b8b58ea441",
+			"time": 39,
+			"responseCode": {
+				"code": 200,
+				"name": "OK"
+			},
+			"tests": {
+				"Status code is 200": true,
+				"Response is in JSON format": true,
+				"Connections array contains at least one document equal to idDoc2": true,
+				"All connections have type 'DIRECT'": true,
+				"Verify response structure and values": true
+			},
+			"testPassFailCounts": {
+				"Status code is 200": {
+					"pass": 1,
+					"fail": 0
+				},
+				"Response is in JSON format": {
+					"pass": 1,
+					"fail": 0
+				},
+				"Connections array contains at least one document equal to idDoc2": {
+					"pass": 1,
+					"fail": 0
+				},
+				"All connections have type 'DIRECT'": {
+					"pass": 1,
+					"fail": 0
+				},
+				"Verify response structure and values": {
+					"pass": 1,
+					"fail": 0
+				}
+			},
+			"times": [
+				39
+			],
+			"allTests": [
+				{
+					"Status code is 200": true,
+					"Response is in JSON format": true,
+					"Connections array contains at least one document equal to idDoc2": true,
+					"All connections have type 'DIRECT'": true,
+					"Verify response structure and values": true
+				}
+			]
+		},
+		{
+			"id": "0f5f7ac2-7cf5-4d26-a6df-430945c6d179",
+			"name": "Get All Types",
+			"url": "http://localhost:5001/api/documents/types/all",
+			"time": 6,
+			"responseCode": {
+				"code": 200,
+				"name": "OK"
+			},
+			"tests": {
+				"Status code is 200": true,
+				"Response contains the correct docTypes": true,
+				"Each docType has required properties": true,
+				"Array order matches expected order": true
+			},
+			"testPassFailCounts": {
+				"Status code is 200": {
+					"pass": 1,
+					"fail": 0
+				},
+				"Response contains the correct docTypes": {
+					"pass": 1,
+					"fail": 0
+				},
+				"Each docType has required properties": {
+					"pass": 1,
+					"fail": 0
+				},
+				"Array order matches expected order": {
+					"pass": 1,
+					"fail": 0
+				}
+			},
+			"times": [
+				6
+			],
+			"allTests": [
+				{
+					"Status code is 200": true,
+					"Response contains the correct docTypes": true,
+					"Each docType has required properties": true,
+					"Array order matches expected order": true
+				}
+			]
+		},
+		{
+			"id": "842e64a6-fc47-4080-9b6c-9bed1bca0d72",
+			"name": "Get Document By Type",
+			"url": "http://localhost:5001/api/documents/types/conflict",
+			"time": 51,
+			"responseCode": {
+				"code": 200,
+				"name": "OK"
+			},
+			"tests": {
+				"Status code is 200": true,
+				"Response is valid JSON": true,
+				"All documents have type 'CONFLICT'": true,
+				"Specific documents exists": true
+			},
+			"testPassFailCounts": {
+				"Status code is 200": {
+					"pass": 1,
+					"fail": 0
+				},
+				"Response is valid JSON": {
+					"pass": 1,
+					"fail": 0
+				},
+				"All documents have type 'CONFLICT'": {
+					"pass": 1,
+					"fail": 0
+				},
+				"Specific documents exists": {
+					"pass": 1,
+					"fail": 0
+				}
+			},
+			"times": [
+				51
+			],
+			"allTests": [
+				{
+					"Status code is 200": true,
+					"Response is valid JSON": true,
+					"All documents have type 'CONFLICT'": true,
+					"Specific documents exists": true
+				}
+			]
+		},
+		{
+			"id": "de75d872-0dbd-42c2-aa64-fa9dec783b56",
+			"name": "bad scale",
+			"url": "http://localhost:5001/api/documents/search?keywords=[\"TestDoc\"]",
+			"time": 10,
+			"responseCode": {
+				"code": 400,
+				"name": "Bad Request"
+			},
+			"tests": {
+				"Response status code is 400": true,
+				"Response is in JSON format": true,
+				"Response structure matches expected format (partial validation)": true
+			},
+			"testPassFailCounts": {
+				"Response status code is 400": {
+					"pass": 1,
+					"fail": 0
+				},
+				"Response is in JSON format": {
+					"pass": 1,
+					"fail": 0
+				},
+				"Response structure matches expected format (partial validation)": {
+					"pass": 1,
+					"fail": 0
+				}
+			},
+			"times": [
+				10
+			],
+			"allTests": [
+				{
+					"Response status code is 400": true,
+					"Response is in JSON format": true,
+					"Response structure matches expected format (partial validation)": true
+				}
+			]
+		},
+		{
+			"id": "d5bb04f1-1601-4f2e-8e6d-29b89fc74292",
+			"name": "bad body",
+			"url": "http://localhost:5001/api/documents/search?keywords=[\"TestDoc\"]",
+			"time": 10,
+			"responseCode": {
+				"code": 400,
+				"name": "Bad Request"
+			},
+			"tests": {
+				"Response status code is 400": true,
+				"Response is in JSON format": true,
+				"Response structure matches expected format (partial validation)": true
+			},
+			"testPassFailCounts": {
+				"Response status code is 400": {
+					"pass": 1,
+					"fail": 0
+				},
+				"Response is in JSON format": {
+					"pass": 1,
+					"fail": 0
+				},
+				"Response structure matches expected format (partial validation)": {
+					"pass": 1,
+					"fail": 0
+				}
+			},
+			"times": [
+				10
+			],
+			"allTests": [
+				{
+					"Response status code is 400": true,
+					"Response is in JSON format": true,
+					"Response structure matches expected format (partial validation)": true
+				}
+			]
+		},
+		{
+			"id": "b1bf5594-0f9d-4b59-9b60-7e53c3ea56f1",
+			"name": "bad stakeholder",
+			"url": "http://localhost:5001/api/documents/search?keywords=[\"TestDoc\"]",
+			"time": 10,
+			"responseCode": {
+				"code": 400,
+				"name": "Bad Request"
+			},
+			"tests": {
+				"Response status code is 400": true,
+				"Response is in JSON format": true,
+				"Response structure matches expected format (partial validation)": true
+			},
+			"testPassFailCounts": {
+				"Response status code is 400": {
+					"pass": 1,
+					"fail": 0
+				},
+				"Response is in JSON format": {
+					"pass": 1,
+					"fail": 0
+				},
+				"Response structure matches expected format (partial validation)": {
+					"pass": 1,
+					"fail": 0
+				}
+			},
+			"times": [
+				10
+			],
+			"allTests": [
+				{
+					"Response status code is 400": true,
+					"Response is in JSON format": true,
+					"Response structure matches expected format (partial validation)": true
+				}
+			]
+		},
+		{
+			"id": "50797280-e4f6-472b-aa2e-d4d2b54b7365",
+			"name": "bad stakeholder 2",
+			"url": "http://localhost:5001/api/documents/search?keywords=[\"TestDoc\"]",
+			"time": 10,
+			"responseCode": {
+				"code": 400,
+				"name": "Bad Request"
+			},
+			"tests": {
+				"Response status code is 400": true,
+				"Response is in JSON format": true,
+				"Response structure matches expected format (partial validation)": true
+			},
+			"testPassFailCounts": {
+				"Response status code is 400": {
+					"pass": 1,
+					"fail": 0
+				},
+				"Response is in JSON format": {
+					"pass": 1,
+					"fail": 0
+				},
+				"Response structure matches expected format (partial validation)": {
+					"pass": 1,
+					"fail": 0
+				}
+			},
+			"times": [
+				10
+			],
+			"allTests": [
+				{
+					"Response status code is 400": true,
+					"Response is in JSON format": true,
+					"Response structure matches expected format (partial validation)": true
+				}
+			]
+		},
+		{
+			"id": "a929210b-65ff-48a2-b74a-9b1773d3233f",
+			"name": "bad date",
+			"url": "http://localhost:5001/api/documents/search?keywords=[\"TestDoc\"]",
+			"time": 11,
+			"responseCode": {
+				"code": 400,
+				"name": "Bad Request"
+			},
+			"tests": {
+				"Response status code is 400": true,
+				"Response is in JSON format": true,
+				"Response structure matches expected format (partial validation)": true
+			},
+			"testPassFailCounts": {
+				"Response status code is 400": {
+					"pass": 1,
+					"fail": 0
+				},
+				"Response is in JSON format": {
+					"pass": 1,
+					"fail": 0
+				},
+				"Response structure matches expected format (partial validation)": {
+					"pass": 1,
+					"fail": 0
+				}
+			},
+			"times": [
+				11
+			],
+			"allTests": [
+				{
+					"Response status code is 400": true,
+					"Response is in JSON format": true,
+					"Response structure matches expected format (partial validation)": true
+				}
+			]
+		},
+		{
+			"id": "4cdbee62-12a8-412f-9790-d8f4cf3225d0",
+			"name": "base-title",
+			"url": "http://localhost:5001/api/documents/search?keywords=[\"TestDoc\"]",
+			"time": 70,
+			"responseCode": {
+				"code": 200,
+				"name": "OK"
+			},
+			"tests": {
+				"Status code is 200": true,
+				"Response is valid JSON": true,
+				"All documents contain 'TestDoc' in title": true,
+				"Specific documents exists": true
+			},
+			"testPassFailCounts": {
+				"Status code is 200": {
+					"pass": 1,
+					"fail": 0
+				},
+				"Response is valid JSON": {
+					"pass": 1,
+					"fail": 0
+				},
+				"All documents contain 'TestDoc' in title": {
+					"pass": 1,
+					"fail": 0
+				},
+				"Specific documents exists": {
+					"pass": 1,
+					"fail": 0
+				}
+			},
+			"times": [
+				70
+			],
+			"allTests": [
+				{
+					"Status code is 200": true,
+					"Response is valid JSON": true,
+					"All documents contain 'TestDoc' in title": true,
+					"Specific documents exists": true
+				}
+			]
+		},
+		{
+			"id": "8c1f444d-c9be-47ae-90d7-a7d1f7acc437",
+			"name": "base-summary",
+			"url": "http://localhost:5001/api/documents/search?keywords=[\"TestSummary2\"]",
+			"time": 37,
+			"responseCode": {
+				"code": 200,
+				"name": "OK"
+			},
+			"tests": {
+				"Status code is 200": true,
+				"Response is valid JSON": true,
+				"All documents contain 'TestSummary' in summary": true,
+				"Specific document exists": true
+			},
+			"testPassFailCounts": {
+				"Status code is 200": {
+					"pass": 1,
+					"fail": 0
+				},
+				"Response is valid JSON": {
+					"pass": 1,
+					"fail": 0
+				},
+				"All documents contain 'TestSummary' in summary": {
+					"pass": 1,
+					"fail": 0
+				},
+				"Specific document exists": {
+					"pass": 1,
+					"fail": 0
+				}
+			},
+			"times": [
+				37
+			],
+			"allTests": [
+				{
+					"Status code is 200": true,
+					"Response is valid JSON": true,
+					"All documents contain 'TestSummary' in summary": true,
+					"Specific document exists": true
+				}
+			]
+		},
+		{
+			"id": "3bb71678-eae0-40d8-87c7-2f59b69d39b5",
+			"name": "filter 1 - stakeholder",
+			"url": "http://localhost:5001/api/documents/search?keywords=[\"TestDoc\"]",
+			"time": 27,
+			"responseCode": {
+				"code": 200,
+				"name": "OK"
+			},
+			"tests": {
+				"Status code is 200": true,
+				"Response is valid JSON": true,
+				"All documents contain 'Municipality' in stakeholder": true,
+				"Specific documents exists": true
+			},
+			"testPassFailCounts": {
+				"Status code is 200": {
+					"pass": 1,
+					"fail": 0
+				},
+				"Response is valid JSON": {
+					"pass": 1,
+					"fail": 0
+				},
+				"All documents contain 'Municipality' in stakeholder": {
+					"pass": 1,
+					"fail": 0
+				},
+				"Specific documents exists": {
+					"pass": 1,
+					"fail": 0
+				}
+			},
+			"times": [
+				27
+			],
+			"allTests": [
+				{
+					"Status code is 200": true,
+					"Response is valid JSON": true,
+					"All documents contain 'Municipality' in stakeholder": true,
+					"Specific documents exists": true
+				}
+			]
+		},
+		{
+			"id": "5c5d0cfe-0693-486f-bff4-37d19dee55ce",
+			"name": "filter 2 - multiple stakeholders",
+			"url": "http://localhost:5001/api/documents/search?keywords=[\"TestDoc\"]",
+			"time": 27,
+			"responseCode": {
+				"code": 200,
+				"name": "OK"
+			},
+			"tests": {
+				"Status code is 200": true,
+				"Response is valid JSON": true,
+				"All documents contain 'Municipalty' in stakeholder": true,
+				"Specific documents exists": true
+			},
+			"testPassFailCounts": {
+				"Status code is 200": {
+					"pass": 1,
+					"fail": 0
+				},
+				"Response is valid JSON": {
+					"pass": 1,
+					"fail": 0
+				},
+				"All documents contain 'Municipalty' in stakeholder": {
+					"pass": 1,
+					"fail": 0
+				},
+				"Specific documents exists": {
+					"pass": 1,
+					"fail": 0
+				}
+			},
+			"times": [
+				27
+			],
+			"allTests": [
+				{
+					"Status code is 200": true,
+					"Response is valid JSON": true,
+					"All documents contain 'Municipalty' in stakeholder": true,
+					"Specific documents exists": true
+				}
+			]
+		},
+		{
+			"id": "1062dcf6-95b6-4582-af88-ca173e92cb72",
+			"name": "filter 3 - multiple stakeholders",
+			"url": "http://localhost:5001/api/documents/search?keywords=[\"TestDoc\"]",
+			"time": 15,
+			"responseCode": {
+				"code": 200,
+				"name": "OK"
+			},
+			"tests": {
+				"Status code is 200": true,
+				"Response is valid JSON": true,
+				"All documents contain 'Municipalty' in stakeholder": true,
+				"Specific documents exists": true
+			},
+			"testPassFailCounts": {
+				"Status code is 200": {
+					"pass": 1,
+					"fail": 0
+				},
+				"Response is valid JSON": {
+					"pass": 1,
+					"fail": 0
+				},
+				"All documents contain 'Municipalty' in stakeholder": {
+					"pass": 1,
+					"fail": 0
+				},
+				"Specific documents exists": {
+					"pass": 1,
+					"fail": 0
+				}
+			},
+			"times": [
+				15
+			],
+			"allTests": [
+				{
+					"Status code is 200": true,
+					"Response is valid JSON": true,
+					"All documents contain 'Municipalty' in stakeholder": true,
+					"Specific documents exists": true
+				}
+			]
+		},
+		{
+			"id": "7fbac602-a776-41b3-991d-badbf5488fed",
+			"name": "filter 4 - stakeholder",
+			"url": "http://localhost:5001/api/documents/search?keywords=[\"TestDoc\"]",
+			"time": 52,
+			"responseCode": {
+				"code": 200,
+				"name": "OK"
+			},
+			"tests": {
+				"Status code is 200": true,
+				"Response is valid JSON": true,
+				"All documents contain 'Municipalty' in stakeholder": true,
+				"Specific documents exists": true
+			},
+			"testPassFailCounts": {
+				"Status code is 200": {
+					"pass": 1,
+					"fail": 0
+				},
+				"Response is valid JSON": {
+					"pass": 1,
+					"fail": 0
+				},
+				"All documents contain 'Municipalty' in stakeholder": {
+					"pass": 1,
+					"fail": 0
+				},
+				"Specific documents exists": {
+					"pass": 1,
+					"fail": 0
+				}
+			},
+			"times": [
+				52
+			],
+			"allTests": [
+				{
+					"Status code is 200": true,
+					"Response is valid JSON": true,
+					"All documents contain 'Municipalty' in stakeholder": true,
+					"Specific documents exists": true
+				}
+			]
+		},
+		{
+			"id": "4e929af5-45cd-43b5-9aba-560697b29841",
+			"name": "filter 5 - scale",
+			"url": "http://localhost:5001/api/documents/search?keywords=[\"TestDoc\"]",
+			"time": 44,
+			"responseCode": {
+				"code": 200,
+				"name": "OK"
+			},
+			"tests": {
+				"Status code is 200": true,
+				"Response is valid JSON": true,
+				"All documents contain 'ARCHITECTURAL' in scale": true,
+				"All documents have architecturalScale in the correct format": true,
+				"All documents contain 'TestDoc' in title": true,
+				"Specific documents exists": true
+			},
+			"testPassFailCounts": {
+				"Status code is 200": {
+					"pass": 1,
+					"fail": 0
+				},
+				"Response is valid JSON": {
+					"pass": 1,
+					"fail": 0
+				},
+				"All documents contain 'ARCHITECTURAL' in scale": {
+					"pass": 1,
+					"fail": 0
+				},
+				"All documents have architecturalScale in the correct format": {
+					"pass": 1,
+					"fail": 0
+				},
+				"All documents contain 'TestDoc' in title": {
+					"pass": 1,
+					"fail": 0
+				},
+				"Specific documents exists": {
+					"pass": 1,
+					"fail": 0
+				}
+			},
+			"times": [
+				44
+			],
+			"allTests": [
+				{
+					"Status code is 200": true,
+					"Response is valid JSON": true,
+					"All documents contain 'ARCHITECTURAL' in scale": true,
+					"All documents have architecturalScale in the correct format": true,
+					"All documents contain 'TestDoc' in title": true,
+					"Specific documents exists": true
+				}
+			]
+		},
+		{
+			"id": "c56980e1-3d19-41ca-b549-d3e4478afda3",
+			"name": "filter 5.1 - scale",
+			"url": "http://localhost:5001/api/documents/search?keywords=[\"TestDoc\"]",
+			"time": 43,
+			"responseCode": {
+				"code": 200,
+				"name": "OK"
+			},
+			"tests": {
+				"Status code is 200": true,
+				"Response is valid JSON": true,
+				"All documents contain 'ARCHITECTURAL' in scale": true,
+				"All documents have architecturalScale in the correct format": true,
+				"All documents contain 'TestDoc' in title": true,
+				"Specific documents exists": true
+			},
+			"testPassFailCounts": {
+				"Status code is 200": {
+					"pass": 1,
+					"fail": 0
+				},
+				"Response is valid JSON": {
+					"pass": 1,
+					"fail": 0
+				},
+				"All documents contain 'ARCHITECTURAL' in scale": {
+					"pass": 1,
+					"fail": 0
+				},
+				"All documents have architecturalScale in the correct format": {
+					"pass": 1,
+					"fail": 0
+				},
+				"All documents contain 'TestDoc' in title": {
+					"pass": 1,
+					"fail": 0
+				},
+				"Specific documents exists": {
+					"pass": 1,
+					"fail": 0
+				}
+			},
+			"times": [
+				43
+			],
+			"allTests": [
+				{
+					"Status code is 200": true,
+					"Response is valid JSON": true,
+					"All documents contain 'ARCHITECTURAL' in scale": true,
+					"All documents have architecturalScale in the correct format": true,
+					"All documents contain 'TestDoc' in title": true,
+					"Specific documents exists": true
+				}
+			]
+		},
+		{
+			"id": "a68aeaad-7c6b-4687-bbfc-733cce757895",
+			"name": "filter 6 - date",
+			"url": "http://localhost:5001/api/documents/search?keywords=[\"TestDoc\"]",
+			"time": 60,
+			"responseCode": {
+				"code": 200,
+				"name": "OK"
+			},
+			"tests": {
+				"Status code is 200": true,
+				"Response is valid JSON": true,
+				"All documents contain 'date' in '2024'": true,
+				"All documents contain 'TestDoc' in title": true,
+				"Specific documents exists": true
+			},
+			"testPassFailCounts": {
+				"Status code is 200": {
+					"pass": 1,
+					"fail": 0
+				},
+				"Response is valid JSON": {
+					"pass": 1,
+					"fail": 0
+				},
+				"All documents contain 'date' in '2024'": {
+					"pass": 1,
+					"fail": 0
+				},
+				"All documents contain 'TestDoc' in title": {
+					"pass": 1,
+					"fail": 0
+				},
+				"Specific documents exists": {
+					"pass": 1,
+					"fail": 0
+				}
+			},
+			"times": [
+				60
+			],
+			"allTests": [
+				{
+					"Status code is 200": true,
+					"Response is valid JSON": true,
+					"All documents contain 'date' in '2024'": true,
+					"All documents contain 'TestDoc' in title": true,
+					"Specific documents exists": true
+				}
+			]
+		},
+		{
+			"id": "b5452f31-ae83-4717-8f9e-16c8438aa50b",
+			"name": "filter 7 - date",
+			"url": "http://localhost:5001/api/documents/search?keywords=[\"TestDoc\"]",
+			"time": 30,
+			"responseCode": {
+				"code": 200,
+				"name": "OK"
+			},
+			"tests": {
+				"Status code is 200": true,
+				"Response is valid JSON": true,
+				"All documents contain 'date' in '2024'": true,
+				"All documents contain 'TestDoc' in title": true,
+				"Specific documents exists": true
+			},
+			"testPassFailCounts": {
+				"Status code is 200": {
+					"pass": 1,
+					"fail": 0
+				},
+				"Response is valid JSON": {
+					"pass": 1,
+					"fail": 0
+				},
+				"All documents contain 'date' in '2024'": {
+					"pass": 1,
+					"fail": 0
+				},
+				"All documents contain 'TestDoc' in title": {
+					"pass": 1,
+					"fail": 0
+				},
+				"Specific documents exists": {
+					"pass": 1,
+					"fail": 0
+				}
+			},
+			"times": [
+				30
+			],
+			"allTests": [
+				{
+					"Status code is 200": true,
+					"Response is valid JSON": true,
+					"All documents contain 'date' in '2024'": true,
+					"All documents contain 'TestDoc' in title": true,
+					"Specific documents exists": true
+				}
+			]
+		},
+		{
+			"id": "17f414ed-2b16-45a3-86d2-a8ed1354d9b3",
+			"name": "filter 8 - date",
+			"url": "http://localhost:5001/api/documents/search?keywords=[\"TestDoc\"]",
+			"time": 127,
+			"responseCode": {
+				"code": 200,
+				"name": "OK"
+			},
+			"tests": {
+				"Status code is 200": true,
+				"Response is valid JSON": true,
+				"All documents contain 'date' in '2024'": true,
+				"All documents contain 'TestDoc' in title": true,
+				"Specific documents exists": true
+			},
+			"testPassFailCounts": {
+				"Status code is 200": {
+					"pass": 1,
+					"fail": 0
+				},
+				"Response is valid JSON": {
+					"pass": 1,
+					"fail": 0
+				},
+				"All documents contain 'date' in '2024'": {
+					"pass": 1,
+					"fail": 0
+				},
+				"All documents contain 'TestDoc' in title": {
+					"pass": 1,
+					"fail": 0
+				},
+				"Specific documents exists": {
+					"pass": 1,
+					"fail": 0
+				}
+			},
+			"times": [
+				127
+			],
+			"allTests": [
+				{
+					"Status code is 200": true,
+					"Response is valid JSON": true,
+					"All documents contain 'date' in '2024'": true,
+					"All documents contain 'TestDoc' in title": true,
+					"Specific documents exists": true
+				}
+			]
+		},
+		{
+			"id": "2aa77489-430b-46c4-a962-5f667d7cc446",
+			"name": "filter 8 - date",
+			"url": "http://localhost:5001/api/documents/search?keywords=[\"TestDoc\"]",
+			"time": 39,
+			"responseCode": {
+				"code": 200,
+				"name": "OK"
+			},
+			"tests": {
+				"Status code is 200": true,
+				"Response is valid JSON": true,
+				"All documents contain 'date' in '2024'": true,
+				"All documents contain 'TestDoc' in title": true,
+				"Specific documents exists": true
+			},
+			"testPassFailCounts": {
+				"Status code is 200": {
+					"pass": 1,
+					"fail": 0
+				},
+				"Response is valid JSON": {
+					"pass": 1,
+					"fail": 0
+				},
+				"All documents contain 'date' in '2024'": {
+					"pass": 1,
+					"fail": 0
+				},
+				"All documents contain 'TestDoc' in title": {
+					"pass": 1,
+					"fail": 0
+				},
+				"Specific documents exists": {
+					"pass": 1,
+					"fail": 0
+				}
+			},
+			"times": [
+				39
+			],
+			"allTests": [
+				{
+					"Status code is 200": true,
+					"Response is valid JSON": true,
+					"All documents contain 'date' in '2024'": true,
+					"All documents contain 'TestDoc' in title": true,
+					"Specific documents exists": true
+				}
+			]
+		},
+		{
+			"id": "fec1d6ef-4fc7-47d9-9361-05e86bb761dd",
+			"name": "filter 9 - date",
+			"url": "http://localhost:5001/api/documents/search?keywords=[\"TestDoc\"]",
+			"time": 207,
+			"responseCode": {
+				"code": 200,
+				"name": "OK"
+			},
+			"tests": {
+				"Status code is 200": true,
+				"Response is valid JSON": true,
+				"All documents contain 'date' in '2024'": true,
+				"All documents contain 'TestDoc' in title": true,
+				"Specific documents exists": true
+			},
+			"testPassFailCounts": {
+				"Status code is 200": {
+					"pass": 1,
+					"fail": 0
+				},
+				"Response is valid JSON": {
+					"pass": 1,
+					"fail": 0
+				},
+				"All documents contain 'date' in '2024'": {
+					"pass": 1,
+					"fail": 0
+				},
+				"All documents contain 'TestDoc' in title": {
+					"pass": 1,
+					"fail": 0
+				},
+				"Specific documents exists": {
+					"pass": 1,
+					"fail": 0
+				}
+			},
+			"times": [
+				207
+			],
+			"allTests": [
+				{
+					"Status code is 200": true,
+					"Response is valid JSON": true,
+					"All documents contain 'date' in '2024'": true,
+					"All documents contain 'TestDoc' in title": true,
+					"Specific documents exists": true
+				}
+			]
+		},
+		{
+			"id": "1576bd2e-cdae-4674-866a-175b7e6b3446",
+			"name": "filter 9 - coordinates",
+			"url": "http://localhost:5001/api/documents/search?keywords=[\"TestDoc\"]",
+			"time": 162,
+			"responseCode": {
+				"code": 200,
+				"name": "OK"
+			},
+			"tests": {
+				"Status code is 200": true,
+				"Response is valid JSON": true,
+				"All documents contain TestColosseo as name for coordinates": true,
+				"All documents contain 'TestDoc' in title": true,
+				"Specific documents exists": true
+			},
+			"testPassFailCounts": {
+				"Status code is 200": {
+					"pass": 1,
+					"fail": 0
+				},
+				"Response is valid JSON": {
+					"pass": 1,
+					"fail": 0
+				},
+				"All documents contain TestColosseo as name for coordinates": {
+					"pass": 1,
+					"fail": 0
+				},
+				"All documents contain 'TestDoc' in title": {
+					"pass": 1,
+					"fail": 0
+				},
+				"Specific documents exists": {
+					"pass": 1,
+					"fail": 0
+				}
+			},
+			"times": [
+				162
+			],
+			"allTests": [
+				{
+					"Status code is 200": true,
+					"Response is valid JSON": true,
+					"All documents contain TestColosseo as name for coordinates": true,
+					"All documents contain 'TestDoc' in title": true,
+					"Specific documents exists": true
+				}
+			]
+		},
+		{
+			"id": "93de896c-c994-4037-8b7c-0a0755f03271",
+			"name": "Get all documents",
+			"url": "http://localhost:5001/api/documents",
+			"time": 275,
+			"responseCode": {
+				"code": 200,
+				"name": "OK"
+			},
+			"tests": {
+				"Codice di stato è 200": true,
+				"Tempo di risposta inferiore a 500 ms": true,
+				"La risposta contiene almeno due documenti": true,
+				"L'array contiene i documenti con idDoc1 e idDoc2": true
+			},
+			"testPassFailCounts": {
+				"Codice di stato è 200": {
+					"pass": 1,
+					"fail": 0
+				},
+				"Tempo di risposta inferiore a 500 ms": {
+					"pass": 1,
+					"fail": 0
+				},
+				"La risposta contiene almeno due documenti": {
+					"pass": 1,
+					"fail": 0
+				},
+				"L'array contiene i documenti con idDoc1 e idDoc2": {
+					"pass": 1,
+					"fail": 0
+				}
+			},
+			"times": [
+				275
+			],
+			"allTests": [
+				{
+					"Codice di stato è 200": true,
+					"Tempo di risposta inferiore a 500 ms": true,
+					"La risposta contiene almeno due documenti": true,
+					"L'array contiene i documenti con idDoc1 e idDoc2": true
+				}
+			]
+		},
+		{
+			"id": "789ec559-ac33-4560-8d76-19fb0fde3471",
+			"name": "Logout a user",
+			"url": "http://localhost:5001/api/users/logout",
+			"time": 20,
+			"responseCode": {
+				"code": 200,
+				"name": "OK"
+			},
+			"tests": {
+				"Response status code is 200": true,
+				"Content-Type header is application/json": true,
+				"Response has a 'message' field": true,
+				"Message field is a non-empty string": true,
+				"Response time is less than 200ms": true
+			},
+			"testPassFailCounts": {
+				"Response status code is 200": {
+					"pass": 1,
+					"fail": 0
+				},
+				"Content-Type header is application/json": {
+					"pass": 1,
+					"fail": 0
+				},
+				"Response has a 'message' field": {
+					"pass": 1,
+					"fail": 0
+				},
+				"Message field is a non-empty string": {
+					"pass": 1,
+					"fail": 0
+				},
+				"Response time is less than 200ms": {
+					"pass": 1,
+					"fail": 0
+				}
+			},
+			"times": [
+				20
+			],
+			"allTests": [
+				{
+					"Response status code is 200": true,
+					"Content-Type header is application/json": true,
+					"Response has a 'message' field": true,
+					"Message field is a non-empty string": true,
+					"Response time is less than 200ms": true
+				}
+			]
+		},
+		{
+			"id": "c205a5eb-a16e-4315-9697-a352e473e4bb",
+			"name": "DeleteCoordinate",
+			"url": "http://localhost:5001/api/coordinates",
+			"time": 14,
+			"responseCode": {
+				"code": 200,
+				"name": "OK"
+			},
+			"tests": {
+				"Response status code is 200": true,
+				"Response has the required field 'message'": true,
+				"Response time is less than 200ms": true,
+				"Content-Type header is application/json": true,
+				"Response schema matches the expected schema": true
+			},
+			"testPassFailCounts": {
+				"Response status code is 200": {
+					"pass": 1,
+					"fail": 0
+				},
+				"Response has the required field 'message'": {
+					"pass": 1,
+					"fail": 0
+				},
+				"Response time is less than 200ms": {
+					"pass": 1,
+					"fail": 0
+				},
+				"Content-Type header is application/json": {
+					"pass": 1,
+					"fail": 0
+				},
+				"Response schema matches the expected schema": {
+					"pass": 1,
+					"fail": 0
+				}
+			},
+			"times": [
+				14
+			],
+			"allTests": [
+				{
+					"Response status code is 200": true,
+					"Response has the required field 'message'": true,
+					"Response time is less than 200ms": true,
+					"Content-Type header is application/json": true,
+					"Response schema matches the expected schema": true
+				}
+			]
+		},
+		{
+			"id": "8811d6f4-d7a5-425c-b171-3a3828d3a629",
+			"name": "Delete test user",
+			"url": "http://localhost:5001/api/users",
+			"time": 15,
+			"responseCode": {
+				"code": 200,
+				"name": "OK"
+			},
+			"tests": {
+				"Response status code is 200": true,
+				"Response time is within an acceptable range": true,
+				"Response is not null": true,
+				"Response follows the expected schema for user data": true
+			},
+			"testPassFailCounts": {
+				"Response status code is 200": {
+					"pass": 1,
+					"fail": 0
+				},
+				"Response time is within an acceptable range": {
+					"pass": 1,
+					"fail": 0
+				},
+				"Response is not null": {
+					"pass": 1,
+					"fail": 0
+				},
+				"Response follows the expected schema for user data": {
+					"pass": 1,
+					"fail": 0
+				}
+			},
+			"times": [
+				15
+			],
+			"allTests": [
+				{
+					"Response status code is 200": true,
+					"Response time is within an acceptable range": true,
+					"Response is not null": true,
+					"Response follows the expected schema for user data": true
+				}
+			]
+		},
+		{
+			"id": "7156c4c1-9e2b-479d-8089-7cd2f1aa2d93",
+			"name": "Delete Documents",
+			"url": "http://localhost:5001/api/documents",
+			"time": 12,
+			"responseCode": {
+				"code": 200,
+				"name": "OK"
+			},
+			"tests": {
+				"Response status code is 200": true,
+				"Response time is within an acceptable range": true,
+				"Response is not null": true,
+				"Response follows the expected schema for user data": true
+			},
+			"testPassFailCounts": {
+				"Response status code is 200": {
+					"pass": 1,
+					"fail": 0
+				},
+				"Response time is within an acceptable range": {
+					"pass": 1,
+					"fail": 0
+				},
+				"Response is not null": {
+					"pass": 1,
+					"fail": 0
+				},
+				"Response follows the expected schema for user data": {
+					"pass": 1,
+					"fail": 0
+				}
+			},
+			"times": [
+				12
+			],
+			"allTests": [
+				{
+					"Response status code is 200": true,
+					"Response time is within an acceptable range": true,
+					"Response is not null": true,
+					"Response follows the expected schema for user data": true
+				}
+			]
+		}
+	],
+	"count": 1,
+	"totalTime": 3435,
+	"collection": {
+		"requests": [
+			{
+				"id": "4a84b52f-96e0-4aeb-9e14-686b08cf107d",
+				"method": "POST"
+			},
+			{
+				"id": "0ffecfd0-0e93-4d94-b82a-c6663b540fcd",
+				"method": "POST"
+			},
+			{
+				"id": "8fa66681-575e-40a4-b302-71e6b7f510b5",
+				"method": "POST"
+			},
+			{
+				"id": "c614b391-7200-4db2-aa74-38ebd8c0ce84",
+				"method": "POST"
+			},
+			{
+				"id": "b5cb819f-001f-48c7-ab6b-81455cc02593",
+				"method": "POST"
+			},
+			{
+				"id": "c0e621ef-148a-43a7-9945-b79aab157956",
+				"method": "GET"
+			},
+			{
+				"id": "7809d074-cb57-4254-a40b-04a5c8097161",
+				"method": "GET"
+			},
+			{
+				"id": "0fe74d37-bdb7-408c-a8be-9762b288580c",
+				"method": "POST"
+			},
+			{
+				"id": "20c08fa1-232b-4748-bcc2-704f4e42791c",
+				"method": "POST"
+			},
+			{
+				"id": "a9ce1951-4f12-43f5-bb5e-7f79e459e269",
+				"method": "GET"
+			},
+			{
+				"id": "89cf9aaf-157c-4d28-8b50-0b82897dd61b",
+				"method": "GET"
+			},
+			{
+				"id": "241b6184-cda6-4627-84de-6e605cb6ee06",
+				"method": "POST"
+			},
+			{
+				"id": "c633ffcb-1384-4f19-adc3-080da7ee4a74",
+				"method": "POST"
+			},
+			{
+				"id": "3a6bbb4e-261f-4162-9b7e-778bba004e33",
+				"method": "GET"
+			},
+			{
+				"id": "77e3d1e8-f6d6-4c92-b8ac-1edc216b3eaf",
+				"method": "POST"
+			},
+			{
+				"id": "1a9f39e1-51f0-4874-b385-41ee11d5ae6d",
+				"method": "POST"
+			},
+			{
+				"id": "f474b2c5-7048-407e-8ad6-57ec95975fe8",
+				"method": "POST"
+			},
+			{
+				"id": "23980f92-32b8-43be-ab4e-41c442a38114",
+				"method": "POST"
+			},
+			{
+				"id": "b42d1226-06d9-4bfa-978d-be27157f4b2b",
+				"method": "POST"
+			},
+			{
+				"id": "b08a2daf-8c57-4268-9401-89c9e99be0ca",
+				"method": "POST"
+			},
+			{
+				"id": "55db3732-b44a-456e-b15b-9fa46f418d60",
+				"method": "POST"
+			},
+			{
+				"id": "a5bb7e3b-1b3c-415a-a1c3-cf317e8abf30",
+				"method": "POST"
+			},
+			{
+				"id": "95bd29bf-c656-48da-b5d7-b99fc64a90c3",
+				"method": "POST"
+			},
+			{
+				"id": "fb08d729-0d54-4067-9d5d-2806c20995c3",
+				"method": "POST"
+			},
+			{
+				"id": "97f05e21-cc15-4a6f-a70b-b662a18a6255",
+				"method": "GET"
+			},
+			{
+				"id": "0c63b34f-481f-4dee-9509-23b2e4a26c32",
+				"method": "PUT"
+			},
+			{
+				"id": "0f5f7ac2-7cf5-4d26-a6df-430945c6d179",
+				"method": "GET"
+			},
+			{
+				"id": "842e64a6-fc47-4080-9b6c-9bed1bca0d72",
+				"method": "GET"
+			},
+			{
+				"id": "de75d872-0dbd-42c2-aa64-fa9dec783b56",
+				"method": "POST"
+			},
+			{
+				"id": "d5bb04f1-1601-4f2e-8e6d-29b89fc74292",
+				"method": "POST"
+			},
+			{
+				"id": "b1bf5594-0f9d-4b59-9b60-7e53c3ea56f1",
+				"method": "POST"
+			},
+			{
+				"id": "50797280-e4f6-472b-aa2e-d4d2b54b7365",
+				"method": "POST"
+			},
+			{
+				"id": "a929210b-65ff-48a2-b74a-9b1773d3233f",
+				"method": "POST"
+			},
+			{
+				"id": "4cdbee62-12a8-412f-9790-d8f4cf3225d0",
+				"method": "POST"
+			},
+			{
+				"id": "8c1f444d-c9be-47ae-90d7-a7d1f7acc437",
+				"method": "POST"
+			},
+			{
+				"id": "3bb71678-eae0-40d8-87c7-2f59b69d39b5",
+				"method": "POST"
+			},
+			{
+				"id": "5c5d0cfe-0693-486f-bff4-37d19dee55ce",
+				"method": "POST"
+			},
+			{
+				"id": "1062dcf6-95b6-4582-af88-ca173e92cb72",
+				"method": "POST"
+			},
+			{
+				"id": "7fbac602-a776-41b3-991d-badbf5488fed",
+				"method": "POST"
+			},
+			{
+				"id": "4e929af5-45cd-43b5-9aba-560697b29841",
+				"method": "POST"
+			},
+			{
+				"id": "c56980e1-3d19-41ca-b549-d3e4478afda3",
+				"method": "POST"
+			},
+			{
+				"id": "a68aeaad-7c6b-4687-bbfc-733cce757895",
+				"method": "POST"
+			},
+			{
+				"id": "b5452f31-ae83-4717-8f9e-16c8438aa50b",
+				"method": "POST"
+			},
+			{
+				"id": "17f414ed-2b16-45a3-86d2-a8ed1354d9b3",
+				"method": "POST"
+			},
+			{
+				"id": "2aa77489-430b-46c4-a962-5f667d7cc446",
+				"method": "POST"
+			},
+			{
+				"id": "fec1d6ef-4fc7-47d9-9361-05e86bb761dd",
+				"method": "POST"
+			},
+			{
+				"id": "1576bd2e-cdae-4674-866a-175b7e6b3446",
+				"method": "POST"
+			},
+			{
+				"id": "93de896c-c994-4037-8b7c-0a0755f03271",
+				"method": "GET"
+			},
+			{
+				"id": "789ec559-ac33-4560-8d76-19fb0fde3471",
+				"method": "POST"
+			},
+			{
+				"id": "c205a5eb-a16e-4315-9697-a352e473e4bb",
+				"method": "DELETE"
+			},
+			{
+				"id": "8811d6f4-d7a5-425c-b171-3a3828d3a629",
+				"method": "DELETE"
+			},
+			{
+				"id": "7156c4c1-9e2b-479d-8089-7cd2f1aa2d93",
+				"method": "DELETE"
+			}
+		]
+	}
+}
