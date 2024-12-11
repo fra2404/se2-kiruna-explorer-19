@@ -96,9 +96,9 @@ export const Header: React.FC<HeaderProps> = ({
           {/* Button to switch the map/diagram view */}
           <ButtonRounded
             variant="filled"
-            text={page == 'map' ? "Go to graph" : 'Go to homepage'}
+            text={page == 'map' ? "Go to Diagram" : 'Go to Map'}
             className="bg-black pr-4 pl-4 d-flex align-items-center"
-            onClick={() => navigate(page == 'map' ? '/diagram' : '/')}
+            onClick={() => navigate(page == 'map' ? '/diagram' : '/map')}
             style={{ pointerEvents: "auto" }}
           />
 
