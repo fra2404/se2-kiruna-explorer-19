@@ -2,6 +2,7 @@ import React from 'react';
 import { ConnectionItem } from '../../molecules/documentConnections/ConnectionItem';
 import { Connection } from '../DocumentForm';
 import { IDocument } from '../../../utils/interfaces/document.interface';
+import { nanoid } from 'nanoid';
 
 interface ConnectionListProps {
   connections: Connection[];
@@ -27,7 +28,7 @@ const ConnectionList: React.FC<ConnectionListProps> = ({
       <dl className="bg-white rounded-lg p-4 divide-y divide-gray-200">
         {connections.map((connection: Connection, index: number) => (
           <ConnectionItem
-            key={index}
+            key={nanoid()}
             connection={connection}
             index={index}
             handleDelete={handleDelete}

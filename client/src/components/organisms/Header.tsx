@@ -7,7 +7,6 @@ import DropdownModal from '../molecules/DropdownModal';
 import ButtonRounded from '../atoms/button/ButtonRounded';
 import MapStyleContext from '../../context/MapStyleContext';
 
-
 interface HeaderProps {
   page: string;
   headerRef?: any;

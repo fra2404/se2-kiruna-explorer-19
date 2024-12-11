@@ -6,7 +6,7 @@ import { CustomError } from '@utils/customError';
 import { IUserResponse } from '@interfaces/user.return.interface';
 import { UserNotAuthorizedError } from '@utils/errors';
 
-const secretKey = process.env.JWT_SECRET || 'your-secret-key';
+const secretKey = process.env.JWT_SECRET ?? 'your-secret-key';
 
 export const getAllUsers = async (): Promise<IUserResponse[]> => {
   const users = await User.find();

@@ -2,10 +2,9 @@ import { Response, NextFunction } from 'express';
 import jwt, { JwtPayload } from 'jsonwebtoken';
 import { CustomRequest } from '@interfaces/customRequest.interface';
 import { getUserById } from '@services/user.service';
-import { CustomError } from '@utils/customError';
 import { IUserResponse } from '@interfaces/user.return.interface';
 
-const secretKey = process.env.JWT_SECRET || 'your-secret-key';
+const secretKey = process.env.JWT_SECRET ?? 'your-secret-key';
 if (!secretKey) {
   throw new Error('JWT_SECRET is not defined');
 }
@@ -31,7 +30,7 @@ export const authenticateUser = async (
       return;
     }
 
-    req.user = user as IUserResponse;
+    req.user = user;
 
     next();
   } catch (error) {
