@@ -76,10 +76,20 @@ export const Header: React.FC<HeaderProps> = ({
     >
 
       <div className="flex items-center justify-between" style={{ background: "transparent" }}>
-        <div className='flex items-center'>
-          <img src='./src/assets/logo.png' alt='Logo' className='h-12 border border-black rounded-full '/>
-          <h1 className={mapType == "osm" || page != 'map' ? 'font-bold text-black ml-2 text-3xl' : "font-bold text-white ml-2 text-3xl"}>Kiruna eXplorer</h1>
-        </div>
+        <ButtonRounded
+          text={
+            <>
+              <img src='./src/assets/logo.png' alt='Logo' className='h-12 border border-black rounded-full '/>
+              <h1 className={mapType == "osm" || page != 'map' ? 'font-bold text-black ml-2 text-3xl' : "font-bold text-white ml-2 text-3xl"}>Kiruna eXplorer</h1>
+            </>
+          }
+          variant='text'
+          style={{
+            pointerEvents: 'auto'
+          }}
+          className='flex items-center border-none'
+          onClick={() => navigate('/')}
+        />
 
         <div className='flex items-center gap-4'>
           {/* Date and time */}
