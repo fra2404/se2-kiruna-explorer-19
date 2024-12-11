@@ -2,7 +2,8 @@ import { body, param } from 'express-validator';
 import { IConnection } from '@interfaces/document.interface';
 import mongoose from 'mongoose';
 import { ScaleTypeEnum } from '@utils/enums/scale-type-enum';
-import { StakeholderEnum } from '@utils/enums/stakeholder.enum';
+import Stakeholder from '@schemas/stakeholder.schema';
+
 
 
 export const validateAddDocument = [
@@ -20,8 +21,9 @@ export const validateAddDocument = [
       return validateStakeholderEmptiness(value);
     }
     )
-    .custom((value) => {
-      return validateStakeholderContent(value);
+    .custom(async (value) => {
+      await validateStakeholderContent(value);
+      return true;
     }),
   body('scale')
     .notEmpty()
@@ -31,8 +33,6 @@ export const validateAddDocument = [
     .isIn(Object.values(ScaleTypeEnum))
     .withMessage('Scale is invalid')
     .custom((value, { req }) => validateScale(value, req.body.architecturalScale)),
-  //**********************************/
-
   body('type')
     .notEmpty()
     .withMessage('Type is required')
@@ -125,7 +125,7 @@ export const validateUpdateDocument = [
   body('stakeholders')
     .optional()
     .isArray()
-    .withMessage('Stakeholders must be an array')
+    .withMessage('Stakeholders must be an array of ObjectID')
     .custom((value) => {
       return validateStakeholderEmptiness(value);
     }
@@ -268,9 +268,6 @@ const validateScale = (scale: ScaleTypeEnum, architecturalScale?: string) => {
         throw new Error('Architectural Scale must be empty when scale is a string');
       }
     }
-    //else if (![ScaleTypeEnum.BlueprintMaterialEffects, ScaleTypeEnum.Text, ScaleTypeEnum.Concept].includes(scale)) {
-    //   throw new Error(`Invalid scale: ${scale}`);
-    // }
   }
   return true;
 };
@@ -307,19 +304,24 @@ const validateDate = (value: string) => {
 };
 
 
-const validateStakeholderContent = (stakeholders: string[]) => {
-  const validStakeholders: string[] = Object.values(StakeholderEnum)
-  stakeholders.forEach((stakeholder) => {
-    if (!validStakeholders.includes(stakeholder)) {
-      throw new Error(`Invalid stakeholder: ${stakeholder}`);
+const validateStakeholderContent = async (stakeholders: mongoose.Types.ObjectId[]) => {
+  for (const stakeholderId of stakeholders) {
+    // Check if the ObjectId is valid
+    if (!mongoose.Types.ObjectId.isValid(stakeholderId)) {
+      throw new Error('Stakeholder(s) must be valid MongoDB ObjectId');
     }
-  });
+    // Check if the stakeholder exists in DB
+    const stakeholder = await Stakeholder.findById(stakeholderId);
+    if (!stakeholder) {
+      throw new Error(`Stakeholder with ID ${stakeholderId} not found`);
+    }
+  }
   return true;
-}
+};
 
-const validateStakeholderEmptiness = (stakeholders: string[]) => {
+const validateStakeholderEmptiness = (stakeholders: mongoose.Types.ObjectId[]) => {
   if (Array.isArray(stakeholders) && stakeholders.length === 0) {
     throw new Error('Stakeholders cannot be an empty array');
   }
   return true;
-}
+};

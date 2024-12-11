@@ -581,6 +581,24 @@ paths:
           description: Invalid input data
         '500':
           description: Internal server error
+  /api/stakeholders:
+    get:
+      summary: Get all stakeholders
+      tags:
+        - Stakeholders
+      responses:
+        '200':
+          description: List of all stakeholders
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Stakeholder'
+        '404':
+          description: No stakeholders found
+        '500':
+          description: Internal server error
   /api/users:
     get:
       summary: Get all users

@@ -11,7 +11,7 @@ export const addingStakeholder = async (
     try {  
       // Step 5: Save metadata along with the CDN output in DB
       const stakeholder = new Stakeholder({
-        type: stakeholderData.type ,
+        type: stakeholderData.newStakeholderType ,
       });
   
       const NewStakeholder =  await stakeholder.save();
@@ -34,4 +34,20 @@ export const addingStakeholder = async (
 
        return Allstakeholders;
   };
-  
+
+
+// Get stakeholders by ID
+export const getStakeholdersById = async (
+  stakeholderId: string,
+): Promise<IStakeholder | null> => {
+  try {
+    const stakeholder = await Stakeholder.findById(stakeholderId); 
+    if (!stakeholder) {
+      throw new Error('Stakeholder not found'); 
+    }
+    return stakeholder.toObject();
+  } catch (error) {
+    // Handle error here if needed
+    throw new CustomError('Internal Server Error', 500);
+  }
+};

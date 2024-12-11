@@ -1,4 +1,5 @@
 import Document from '../schemas/document.schema';
+import Stakeholder from '../schemas/stakeholder.schema';
 import MediaDocument from '../schemas/media.schema';
 import { Coordinate } from '../schemas/coordinate.schema';
 import { IDocument, IDocumentFilters } from '@interfaces/document.interface';
@@ -7,6 +8,7 @@ import {
   DocNotFoundError,
   MediaNotFoundError,
   PositionError,
+  StakeholderNotFoundError,
 } from '../utils/errors';
 import { ICoordinate } from '@interfaces/coordinate.interface';
 import { getCoordinateById } from './coordinate.service';
@@ -16,6 +18,8 @@ import { getMediaMetadataById } from './media.service';
 import { ObjectId } from 'mongoose';
 import { ObjectId as MongoObjectId } from 'mongodb';
 import { IReturnMedia } from '@interfaces/media.return.interface';
+import { IStakeholder } from '@interfaces/stakeholder.interface';
+import { getStakeholdersById } from './stakeholder.service';
 
 
 //addDocument(Story 1)
@@ -52,6 +56,16 @@ export const addingDocument = async (
     }
   }
 
+    //Check existence of stakeholder in DB
+    if (documentData.stakeholders && documentData.stakeholders.length > 0) {
+      for (const stakeholderId of documentData.stakeholders) {
+        const existingStakeholder = await Stakeholder.findById(stakeholderId);
+        if (!existingStakeholder) {
+          throw new StakeholderNotFoundError();
+        }
+      }
+    }
+
   // Add new document
   const newDocument = new Document(documentData);
   await newDocument.save();
@@ -85,6 +99,12 @@ export const addingDocument = async (
     media = await fetchMedia(newDocument.media);
   }
 
+  //call method to fetch stakeholders
+  let stakeholders: IStakeholder[] = [];
+  if(newDocument.stakeholders && newDocument.stakeholders.length > 0){
+      stakeholders = await fetchStakeholders(newDocument.stakeholders);
+  }
+  
   const documentObject = newDocument.toObject();
   delete documentObject._id;
   delete documentObject.createdAt;
@@ -96,6 +116,7 @@ export const addingDocument = async (
     ...documentObject,
     coordinates,
     media,
+    stakeholders,
   };
 
   return document;
@@ -122,6 +143,12 @@ export const getAllDocuments = async (): Promise<IDocumentResponse[]> => {
         media = await fetchMedia(document.media);
       }
 
+      //call method to fetch stakeholders
+      let stakeholder: IStakeholder[] = [];
+      if(document.stakeholders && document.stakeholders.length > 0){
+        stakeholder = await fetchStakeholders(document.stakeholders);
+      }
+
       const documentObject = document.toObject();
       delete documentObject._id;
       delete documentObject.createdAt;
@@ -134,6 +161,7 @@ export const getAllDocuments = async (): Promise<IDocumentResponse[]> => {
         ...documentObject,
         coordinates: coordinate || null,
         media: media || null,
+        stakeholders: stakeholder,
       };
     }),
   );
@@ -166,6 +194,14 @@ export const getDocumentById = async (
     media = await fetchMedia(document.media);
   }
 
+
+   //call method to fetch stakeholders
+   let stakeholder: IStakeholder[] = [];
+   if(document.stakeholders && document.stakeholders.length > 0){
+     stakeholder = await fetchStakeholders(document.stakeholders);
+   }
+
+
   const documentObject = document.toObject();
   delete documentObject._id;
   delete documentObject.createdAt;
@@ -178,6 +214,7 @@ export const getDocumentById = async (
     ...documentObject,
     coordinates: coordinate || null,
     media: media || null,
+    stakeholders: stakeholder,
   };
 };
 
@@ -201,7 +238,7 @@ export const searchDocuments = async (
     const filterConditions = []; // Array to store filter conditions, initially empty
     if (filters.stakeholders && 
         Array.isArray(filters.stakeholders) && 
-        filters.stakeholders.length > 0) {  
+        filters.stakeholders.length > 0) { 
           if (filters.stakeholders.length === 1) {
             // Single item-look for any array containing this item
             filterConditions.push({
@@ -276,11 +313,21 @@ export const searchDocuments = async (
         media = await fetchMedia(document.media);
       }
 
+       
+     //call method to fetch stakeholders
+     let stakeholder: IStakeholder[] = [];
+     if(document.stakeholders && document.stakeholders.length > 0){
+      stakeholder = await fetchStakeholders(document.stakeholders);
+     }
+
+
+      
       return {
         id: document.id,
         ...documentObject,
         coordinates: coordinate || null,
         media: media || null,
+        stakeholders: stakeholder,
       } as IDocumentResponse;
     }),
   );
@@ -337,6 +384,18 @@ if (updateData.scale && updateData.scale !== 'ARCHITECTURAL' && updatedDocument.
   }
   //******************
 
+    //Check existence of stakeholder in DB
+    if (updatedDocument.stakeholders && updatedDocument.stakeholders.length > 0) {
+      for (const stakeholderId of updatedDocument.stakeholders) {
+        const existingStakeholder = await Stakeholder.findById(stakeholderId);
+        if (!existingStakeholder) {
+          throw new StakeholderNotFoundError();
+        }
+      }
+    }
+
+
+
   // Update connections
   if (updateData.connections && updateData.connections.length > 0) {
     // Clear existing connections
@@ -392,6 +451,14 @@ if (updateData.scale && updateData.scale !== 'ARCHITECTURAL' && updatedDocument.
     media = await fetchMedia(updatedDocument.media);
   }
 
+
+  //call method to fetch stakeholders
+  let stakeholder: IStakeholder[] = [];
+  if(updatedDocument.stakeholders && updatedDocument.stakeholders.length > 0){
+   stakeholder = await fetchStakeholders(updatedDocument.stakeholders);
+  }
+
+
   const documentObject = updatedDocument.toObject();
   delete documentObject._id;
   delete documentObject.createdAt;
@@ -403,6 +470,7 @@ if (updateData.scale && updateData.scale !== 'ARCHITECTURAL' && updatedDocument.
     ...documentObject,
     coordinates,
     media: media || null, 
+    stakeholders: stakeholder,
   };
 
   return document;
@@ -470,16 +538,25 @@ export const getDocumentByType = async (
         );
       }
 
+     //call method to fetch stakeholders
+     let stakeholder: IStakeholder[] = [];
+     if(document.stakeholders && document.stakeholders.length > 0){
+        stakeholder = await fetchStakeholders(document.stakeholders);
+     }
+
+
       //*****************
       return {
         id: document.id,
         ...documentObject,
         coordinates: coordinate || null,
         media: media || null,
+        stakeholders: stakeholder,
       } as IDocumentResponse;
     }),
   );
 };
+
 
 export const fetchMedia = async (
   mediaIds: ObjectId[],
@@ -494,3 +571,19 @@ export const fetchMedia = async (
   }
   return null;
 };
+
+
+export const fetchStakeholders = async (
+  stakeholderIds: ObjectId[], 
+): Promise<IStakeholder[]> => {
+  if (stakeholderIds.length > 0) {
+    const stakeholdersResults = await Promise.all(
+      stakeholderIds.map((stakeholderId) => getStakeholdersById(stakeholderId.toString())),
+    );
+    return stakeholdersResults.filter(
+      (stakeholder): stakeholder is IStakeholder => stakeholder !== null,
+    );
+  }
+  return [];
+};
+
