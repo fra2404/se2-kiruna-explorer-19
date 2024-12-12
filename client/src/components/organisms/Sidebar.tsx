@@ -49,15 +49,10 @@ export const Sidebar: React.FC<SidebarProps> = ({
         className='xl:w-2/5 lg:w-4/6 md:w-5/6 w-full'
       >
         <div className='flex flex-col w-full p-2'>
-          <FaX 
-            style={{
-              right: '0px',
-              fontSize: '40px',
-              fontWeight: 'bold',
-              cursor: 'pointer'
-            }}
+        <FaX 
+            style={{ fontSize: '30px' }} 
             onClick={() => setSidebarVisible(false)}
-            className='self-end'
+            className='absolute top-2 right-2 cursor-pointer'
           />
 
           <AllDocumentsList
