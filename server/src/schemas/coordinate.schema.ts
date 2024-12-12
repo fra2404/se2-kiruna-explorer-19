@@ -1,5 +1,5 @@
 import { ICoordinate } from '@interfaces/coordinate.interface';
-import mongoose, { Schema, Document } from 'mongoose';
+import mongoose, { Schema } from 'mongoose';
 
 const baseOptions = {
   discriminatorKey: 'type',

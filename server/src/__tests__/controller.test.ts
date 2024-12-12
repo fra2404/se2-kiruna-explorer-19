@@ -45,7 +45,7 @@ import {
   updateDocumentController,
   getDocumentsByTypeController,
   getDocumentTypesController,
-  searchDocumentsController,
+  searchDocumentsController
 } from '../controllers/document.controllers';
 import {
   addCoordinate,
@@ -594,7 +594,6 @@ describe('Tests for document controllers', () => {
     });
 
     //test 2
-    //This test mocks the throw of a DocNotFoundError, but doesn't enter the conditional block were it is thronw
     test('Should return an error if the document is not found', async () => {
       //Data mock
       const err = new DocNotFoundError();
@@ -603,10 +602,10 @@ describe('Tests for document controllers', () => {
         params: { id: 'wrongId' },
       };
 
-      //Support functions mocking
-      (getDocumentById as jest.Mock).mockImplementation(async () => {
-        throw err;
-      });
+      //Support functions mocking 
+
+      //getDocumentById returns null if no document is found (DocNotFoundError is thrown controller side)
+      (getDocumentById as jest.Mock).mockImplementation(async () => null);
 
       //Call of getDocumentByIdController
       await getDocumentByIdController(req as Request, res as Response, next);
