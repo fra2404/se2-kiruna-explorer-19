@@ -1,4 +1,4 @@
-import React, { useState, useRef, useContext } from 'react';
+import React, { useState, useRef } from 'react';
 import { useMapEvents, Popup } from 'react-leaflet';
 import { LatLng } from 'leaflet';
 import Modal from 'react-modal';
@@ -6,20 +6,24 @@ import ButtonRounded from '../../atoms/button/ButtonRounded';
 import { IDocument } from '../../../utils/interfaces/document.interface';
 import DocumentForm from '../DocumentForm';
 import { modalStyles } from '../../../pages/KirunaMap';
-import MunicipalityCoordinatesContext from '../../../context/MunicipalityCoordinatesContext';
+import { isMarkerInsideKiruna } from '../../../utils/isMarkerInsideKiruna';
 
 interface ClickMarkerProps {
   coordinates: any;
   setCoordinates: (coordinates: any) => void;
   documents: IDocument[];
   setDocuments: (documents: IDocument[]) => void;
+  filteredDocuments: IDocument[];
+  setFilteredDocuments: (documents: IDocument[]) => void;
 }
 
 const ClickMarker: React.FC<ClickMarkerProps> = ({ 
   coordinates,
   setCoordinates,
   documents,
-  setDocuments
+  setDocuments,
+  filteredDocuments,
+  setFilteredDocuments
 }) => {
   const [position, setPosition] = useState<LatLng | null>(null);
   useMapEvents({
@@ -30,8 +34,6 @@ const ClickMarker: React.FC<ClickMarkerProps> = ({
   const popupRef = useRef<L.Popup>(null);
 
   const [modalOpen, setModalOpen] = useState(false);
-
-  const {isMarkerInsideKiruna} = useContext(MunicipalityCoordinatesContext);
 
   return position === null ? null : (
     <>
@@ -95,7 +97,9 @@ const ClickMarker: React.FC<ClickMarkerProps> = ({
           coordinates={coordinates}
           setCoordinates={setCoordinates}
           documents={documents}
-          setDocuments={setDocuments} 
+          setDocuments={setDocuments}
+          filteredDocuments={filteredDocuments}
+          setFilteredDocuments={setFilteredDocuments}
           positionProp={position}
           showCoordNamePopup={true}
           setModalOpen={setModalOpen}

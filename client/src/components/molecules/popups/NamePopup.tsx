@@ -1,10 +1,10 @@
-import React, { useContext, useRef } from 'react';
+import React, { useRef } from 'react';
 import { Popup } from 'react-leaflet';
 import { LatLng } from 'leaflet';
 
 import ButtonRounded from '../../atoms/button/ButtonRounded';
 import InputComponent from '../../atoms/input/input';
-import MunicipalityCoordinatesContext from '../../../context/MunicipalityCoordinatesContext';
+import { isMarkerInsideKiruna } from '../../../utils/isMarkerInsideKiruna';
 
 interface NamePopupProps {
   position: LatLng;
@@ -25,8 +25,6 @@ const NamePopup: React.FC<NamePopupProps> = ({
   errors,
   handleAddCoordinate
 }) => {
-  const {isMarkerInsideKiruna} = useContext(MunicipalityCoordinatesContext);
-  
   const popupRef = useRef<L.Popup>(null);
 
   return (

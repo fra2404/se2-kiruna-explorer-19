@@ -1,4 +1,4 @@
-import { useState, useRef, useEffect, useContext } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import { useMapEvents } from 'react-leaflet';
 import { LatLng } from 'leaflet';
 import Modal from 'react-modal';
@@ -27,7 +27,7 @@ import ModalHeader from '../molecules/ModalHeader';
 import ToggleButton from '../atoms/ToggleButton';
 import { DocumentIcon } from '../molecules/documentsItems/DocumentIcon';
 import useToast from '../../utils/hooks/toast';
-import MunicipalityCoordinatesContext from '../../context/MunicipalityCoordinatesContext';
+import { isMarkerInsideKiruna } from '../../utils/isMarkerInsideKiruna';
 
 Modal.setAppElement('#root');
 
@@ -201,8 +201,6 @@ const DocumentForm = ({
 
   // Toast
   const { toast, showToast, hideToast } = useToast();
-
-  const {isMarkerInsideKiruna} = useContext(MunicipalityCoordinatesContext);
 
   const validateStep = () => {
     const newErrors: { [key: string]: string } = {};

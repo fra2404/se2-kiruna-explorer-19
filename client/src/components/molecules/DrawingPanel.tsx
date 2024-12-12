@@ -15,7 +15,7 @@ import 'leaflet/dist/leaflet.css';
 import 'leaflet-draw/dist/leaflet.draw.css';
 import 'leaflet-draw';
 import FloatingButton from "./FloatingButton";
-import MunicipalityCoordinatesContext from "../../context/MunicipalityCoordinatesContext";
+import { isMarkerInsideKiruna } from "../../utils/isMarkerInsideKiruna";
 
 interface DrawingPanelProps {
 	coordinates: any;
@@ -41,7 +41,6 @@ const DrawingPanel: React.FC<DrawingPanelProps> = ({
 	const [newAreaCoordinates, setNewAreaCoordinates] = useState([]);
 	const [popupPosition, setPopupPosition] = useState(null);
 	const { swedishFlagBlue, satMapMainColor, mapType } = useContext(MapStyleContext);
-	const {isMarkerInsideKiruna} = useContext(MunicipalityCoordinatesContext);
 
 	const [isHoveredAddArea, setIsHoveredAddArea] = useState(false);
 	const { toast, showToast, hideToast } = useToast();
@@ -156,7 +155,7 @@ const DrawingPanel: React.FC<DrawingPanelProps> = ({
 					}}
 				>
 					{
-						validateArea(newAreaCoordinates, isMarkerInsideKiruna) ?
+						validateArea(newAreaCoordinates) ?
 						<>
 							<InputComponent label="Enter the name of the new area"
 								type="text" value={areaName} onChange={(v) => {
@@ -221,7 +220,7 @@ const DrawingPanel: React.FC<DrawingPanelProps> = ({
 
 export default DrawingPanel;
 
-function validateArea(areaCoordinates: number[][], isMarkerInsideKiruna: (position: LatLng) => boolean) {
+function validateArea(areaCoordinates: number[][]) {
 	let valid = false;
 	
 	for (let p of areaCoordinates) {
