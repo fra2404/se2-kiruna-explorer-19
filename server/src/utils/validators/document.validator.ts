@@ -24,6 +24,10 @@ export const validateAddDocument = [
     .custom(async (value) => {
       await validateStakeholderContent(value);
       return true;
+    })
+    .custom(async (value) => {
+      await validateStakeholderRepetition(value);
+      return true;
     }),
   body('scale')
     .notEmpty()
@@ -132,6 +136,9 @@ export const validateUpdateDocument = [
     )
     .custom((value) => {
       return validateStakeholderContent(value);
+    })
+    .custom((value) => {
+      return validateStakeholderRepetition(value);
     }),
   body('scale')
     .optional()
@@ -325,3 +332,13 @@ const validateStakeholderEmptiness = (stakeholders: mongoose.Types.ObjectId[]) =
   }
   return true;
 };
+
+
+  const validateStakeholderRepetition = async (stakeholders: mongoose.Types.ObjectId[]) => {
+    for (let i = 0; i < stakeholders.length; i++) {
+      if (stakeholders.indexOf(stakeholders[i]) !== i) {
+        throw new Error('Stakeholders cannot be duplicate.');
+      }
+    }
+    return true;
+  }; 

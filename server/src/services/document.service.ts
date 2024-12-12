@@ -66,6 +66,16 @@ export const addingDocument = async (
       }
     }
 
+   // Check for duplicate stakeholder IDs in the array
+    if (documentData.stakeholders && documentData.stakeholders.length > 0) {
+      for (let i = 0; i < documentData.stakeholders.length; i++) {
+        const stakeholderId = documentData.stakeholders[i];
+        if (documentData.stakeholders.indexOf(stakeholderId) !== i) {
+          throw new Error("Duplicate stakeholderID found");
+        }
+      }
+    }
+
   // Add new document
   const newDocument = new Document(documentData);
   await newDocument.save();
@@ -395,6 +405,15 @@ if (updateData.scale && updateData.scale !== 'ARCHITECTURAL' && updatedDocument.
     }
 
 
+       // Check for duplicate stakeholder IDs in the array
+       if (updatedDocument.stakeholders && updatedDocument.stakeholders.length > 0) {
+        for (let i = 0; i < updatedDocument.stakeholders.length; i++) {
+          const stakeholderId = updatedDocument.stakeholders[i];
+          if (updatedDocument.stakeholders.indexOf(stakeholderId) !== i) {
+            throw new Error("Duplicate stakeholderID found");
+          }
+        }
+      }
 
   // Update connections
   if (updateData.connections && updateData.connections.length > 0) {
