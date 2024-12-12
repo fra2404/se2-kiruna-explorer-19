@@ -300,12 +300,11 @@ export const updatingDocument = async (
     throw new DocNotFoundError();
   }
 
-
-// If the new scale is not 'Architectural' and architecturalScale has a value, delete architecturalScale
-if (updateData.scale && updateData.scale !== 'ARCHITECTURAL' && updatedDocument.architecturalScale) {
-  updatedDocument.architecturalScale = "";
-  await updatedDocument.save(); 
-}
+  // If the new scale is not 'Architectural' and architecturalScale has a value, delete architecturalScale
+  if (updateData.scale && updateData.scale !== 'ARCHITECTURAL' && updatedDocument.architecturalScale) {
+    updatedDocument.architecturalScale = "";
+    await updatedDocument.save(); 
+  }
 
 
   if (updateData.coordinates) {
@@ -460,8 +459,8 @@ export const getDocumentByType = async (
       if (document.media && document.media.length > 0) {
         const mediaResults = await Promise.all(
           document.media.map((mediaId) =>
-            getMediaMetadataById(mediaId.toString()),
-          ),
+            getMediaMetadataById(mediaId.toString())
+          )
         );
 
         // Filter out null values
