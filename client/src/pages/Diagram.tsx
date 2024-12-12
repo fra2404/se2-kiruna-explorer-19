@@ -30,6 +30,7 @@ import { useParams } from "react-router-dom";
 
 
 const LABEL_FONT = { size: 35, color: "#000000" };
+const OFFSET_VIEW = { x: 200, y: 500 };
 const YEAR_SPACING = 500;
 const options = {
     autoResize: true,
@@ -99,6 +100,60 @@ const Diagram = () => {
     const handleNodeClick = (document: IDocument) => {
         openModal(document);
     }
+
+    // State to store the min and max values from all the nodes 
+    const [graphBounds, setGraphBounds] = useState({ minY: 0, maxY: 1440, minX: 0, maxX: 12000 });
+
+    const checkGraphConstraints = (event) => {
+        if (event.deltaY !== 0 || event.deltaX !== 0) {
+            const network = networkRef.current;
+            const currentPosition = network.getViewPosition();
+            console.log(`Values min Y are ${graphBounds.minY}`)
+            console.log(`Values max Y are ${graphBounds.maxY}`)
+            console.log(`Values min X are ${graphBounds.minX}`)
+            console.log(`Values max X are ${graphBounds.maxX}`)
+            if (currentPosition.y < graphBounds.minY - OFFSET_VIEW.y) {
+                if (currentPosition.x < graphBounds.minX - OFFSET_VIEW.x) {
+                    network.moveTo({ position: { x: graphBounds.minX + OFFSET_VIEW.x, y: graphBounds.minY - OFFSET_VIEW.y } });
+                }
+                else if (currentPosition.x > graphBounds.maxX + OFFSET_VIEW.x) {
+                    network.moveTo({ position: { x: graphBounds.maxX - OFFSET_VIEW.x, y: graphBounds.minY - OFFSET_VIEW.y } });
+                }
+                else {
+                    network.moveTo({ position: { x: currentPosition.x, y: graphBounds.minY - OFFSET_VIEW.y } });
+                }
+            } else if (currentPosition.y > graphBounds.maxY + OFFSET_VIEW.y) {
+                if (currentPosition.x < graphBounds.minX - OFFSET_VIEW.x) {
+                    network.moveTo({ position: { x: graphBounds.minX + OFFSET_VIEW.x, y: graphBounds.maxY + OFFSET_VIEW.y } });
+                }
+                else if (currentPosition.x > graphBounds.maxX + OFFSET_VIEW.x) {
+                    network.moveTo({ position: { x: graphBounds.maxX - OFFSET_VIEW.x, y: graphBounds.maxY + OFFSET_VIEW.y } });
+                }
+                else {
+                    network.moveTo({ position: { x: currentPosition.x, y: graphBounds.maxY + OFFSET_VIEW.y } });
+                }
+            }
+            else {
+                if (currentPosition.x < graphBounds.minX - OFFSET_VIEW.x) {
+                    console.log(`x position is lower than min x`);
+                    network.moveTo({ position: { x: graphBounds.minX + OFFSET_VIEW.x, y: currentPosition.y } });
+                }
+                else if (currentPosition.x > graphBounds.maxX + OFFSET_VIEW.x) {
+                    console.log(`x position is higher than max x`);
+                    network.moveTo({ position: { x: graphBounds.maxX - OFFSET_VIEW.x, y: currentPosition.y } });
+                }
+            }
+
+        }
+    };
+
+    const savePosition = () => {
+        const position = networkRef.current.getViewPosition();
+        console.log(`Starting position is ${position.y}`);
+        lastPosition = position;
+    }
+
+
 
 
     useEffect(() => {
@@ -300,6 +355,15 @@ const Diagram = () => {
             occupiedPositions.push({ x: node.x, y: node.y });
         });
 
+        const yValues = allNodes.map(node => node.y);
+        const xValues = allNodes.map(node => node.x);
+        // Store the min and max values of the nodes
+        const minY = Math.min(...yValues);
+        const maxY = Math.max(...yValues);
+        const minX = Math.min(...xValues);
+        const maxX = Math.max(...xValues);
+
+        setGraphBounds({ minY, maxY, minX, maxX });
 
         setState({
             graph: {
@@ -366,8 +430,34 @@ const Diagram = () => {
             }
 
             network.moveTo({ scale: 0.5 })  // Set the initial zoom level
+            network.on("zoom", function (params) {
+                if (params.scale < min_zoom || params.scale > max_zoom) {
+                    network.moveTo({
+                        position: lastPosition, // use the last position before zoom limit
+                        scale: params.scale > max_zoom ? max_zoom : min_zoom // this scale prevents zooming out beyond the desired limit
+                    });
+                } else {
+                    // store the current position as the last position before zoom limit
+                    lastPosition = network.getViewPosition();
+                }
+            });
+
+            // on pan, store the current position
+            network.on("dragEnd", function () {
+                lastPosition = network.getViewPosition();
+            });
+
         }
     }, [id, state.graph.nodes]);
+
+
+    useEffect(() => {
+        console.log("Adding event listeners");
+        const network = networkRef.current;
+
+        network.on("dragStart", savePosition);
+        network.on("dragEnd", checkGraphConstraints);
+    }, [state.graph.nodes, graphBounds]);
 
 
 
@@ -399,23 +489,6 @@ const Diagram = () => {
                     style={{ height: "100%" }}
                     getNetwork={network => {    // Call the methods inside the Graph component
                         networkRef.current = network;
-
-                        network.on("zoom", function (params) {
-                            if (params.scale < min_zoom || params.scale > max_zoom) {
-                                network.moveTo({
-                                    position: lastPosition, // use the last position before zoom limit
-                                    scale: params.scale > max_zoom ? max_zoom : min_zoom // this scale prevents zooming out beyond the desired limit
-                                });
-                            } else {
-                                // store the current position as the last position before zoom limit
-                                lastPosition = network.getViewPosition();
-                            }
-                        });
-                        // on pan, store the current position
-                        network.on("dragEnd", function () {
-                            lastPosition = network.getViewPosition();
-                        });
-
                     }}
                 />
             )}
