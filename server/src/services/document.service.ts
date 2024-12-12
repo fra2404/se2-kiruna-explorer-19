@@ -199,22 +199,22 @@ export const searchDocuments = async (
 
   if (filters) {
     const filterConditions = []; // Array to store filter conditions, initially empty
-    if (filters.stakeholders && 
-        Array.isArray(filters.stakeholders) && 
-        filters.stakeholders.length > 0) {  
-          if (filters.stakeholders.length === 1) {
-            // Single item-look for any array containing this item
-            filterConditions.push({
-              stakeholders: { $in: filters.stakeholders },
-            });
-          } else {
-            // Multiple items- look for exact combination in any order
-            filterConditions.push({
-              stakeholders: { $all: filters.stakeholders }, // Contains all items
-              $expr: { $eq: [{ $size: "$stakeholders" }, filters.stakeholders.length] }, // Exact size match
-            });
-          }
-        }
+    
+    if (filters.stakeholders && Array.isArray(filters.stakeholders) && filters.stakeholders.length > 0) {  
+      if (filters.stakeholders.length === 1) {
+        // Single item-look for any array containing this item
+        filterConditions.push({
+          stakeholders: { $in: filters.stakeholders },
+        });
+      } else {
+        // Multiple items- look for exact combination in any order
+        filterConditions.push({
+          stakeholders: { $all: filters.stakeholders }, // Contains all items
+          $expr: { $eq: [{ $size: "$stakeholders" }, filters.stakeholders.length] }, // Exact size match
+        });
+      }
+    }
+
     if (filters.scale) {
       filterConditions.push({
         scale: { $regex: filters.scale, $options: 'i' },
@@ -300,12 +300,11 @@ export const updatingDocument = async (
     throw new DocNotFoundError();
   }
 
-
-// If the new scale is not 'Architectural' and architecturalScale has a value, delete architecturalScale
-if (updateData.scale && updateData.scale !== 'ARCHITECTURAL' && updatedDocument.architecturalScale) {
-  updatedDocument.architecturalScale = "";
-  await updatedDocument.save(); 
-}
+  // If the new scale is not 'Architectural' and architecturalScale has a value, delete architecturalScale
+  if (updateData.scale && updateData.scale !== 'ARCHITECTURAL' && updatedDocument.architecturalScale) {
+    updatedDocument.architecturalScale = "";
+    await updatedDocument.save(); 
+  }
 
 
   if (updateData.coordinates) {
@@ -460,8 +459,8 @@ export const getDocumentByType = async (
       if (document.media && document.media.length > 0) {
         const mediaResults = await Promise.all(
           document.media.map((mediaId) =>
-            getMediaMetadataById(mediaId.toString()),
-          ),
+            getMediaMetadataById(mediaId.toString())
+          )
         );
 
         // Filter out null values
