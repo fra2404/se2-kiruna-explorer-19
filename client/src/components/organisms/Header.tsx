@@ -13,8 +13,6 @@ import { IDocument } from '../../utils/interfaces/document.interface';
 interface HeaderProps {
   page: string;
   headerRef?: any;
-  sidebarVisible: boolean;
-  setSidebarVisible: (sidebarVisible: boolean) => void;
   setManageCoordsModalOpen?: (manageCoordsModalOpen: boolean) => void;
   coordinates: any;
   setCoordinates: (coordinates: any) => void;
@@ -27,8 +25,6 @@ interface HeaderProps {
 export const Header: React.FC<HeaderProps> = ({
   page,
   headerRef,
-  sidebarVisible,
-  setSidebarVisible,
   setManageCoordsModalOpen,
   coordinates,
   setCoordinates,
@@ -135,8 +131,6 @@ export const Header: React.FC<HeaderProps> = ({
           {/* Sidebar */}
           <div className='ml-auto' style={{ pointerEvents: "auto" }}>
             <Sidebar
-              sidebarVisible={sidebarVisible}
-              setSidebarVisible={setSidebarVisible}
               coordinates={coordinates}
               setCoordinates={setCoordinates}
               allDocuments={allDocuments}

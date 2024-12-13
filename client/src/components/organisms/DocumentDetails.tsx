@@ -1,17 +1,17 @@
-import { useAuth } from '../../../context/AuthContext';
-import { modalStyles } from '../../../pages/KirunaMap';
-import { UserRoleEnum } from '../../../utils/interfaces/user.interface';
-import ButtonRounded from '../../atoms/button/ButtonRounded';
-import { DocumentIcon } from '../../molecules/documentsItems/DocumentIcon';
+import { useAuth } from '../../context/AuthContext';
+import { modalStyles } from '../../pages/KirunaMap';
+import { UserRoleEnum } from '../../utils/interfaces/user.interface';
+import ButtonRounded from '../atoms/button/ButtonRounded';
+import { DocumentIcon } from '../molecules/documentsItems/DocumentIcon';
 import Modal from 'react-modal';
-import DocumentForm from '../DocumentForm';
-import { IDocument } from '../../../utils/interfaces/document.interface';
+import DocumentForm from './DocumentForm';
+import { IDocument } from '../../utils/interfaces/document.interface';
 import { useState } from 'react';
-import { CDN_URL } from '../../../utils/constants';
+import { CDN_URL } from '../../utils/constants';
 import { nanoid } from 'nanoid';
-import { scaleOptions } from '../../../shared/scale.options.const';
+import { scaleOptions } from '../../shared/scale.options.const';
 
-interface DocumentDetailsModalProps {
+interface DocumentDetailsProps {
   document: IDocument;
   coordinates: any;
   setCoordinates: (coordinates: any) => void;
@@ -21,7 +21,7 @@ interface DocumentDetailsModalProps {
   setFilteredDocuments: (documents: IDocument[]) => void;
 }
 
-const DocumentDetailsModal: React.FC<DocumentDetailsModalProps> = ({
+const DocumentDetails: React.FC<DocumentDetailsProps> = ({
   document,
   coordinates,
   setCoordinates,
@@ -30,7 +30,6 @@ const DocumentDetailsModal: React.FC<DocumentDetailsModalProps> = ({
   filteredDocuments,
   setFilteredDocuments
 }) => {
-  console.log('DocumentDetailsModal - document:', document);
   const { isLoggedIn, user } = useAuth();
   const [modalOpen, setModalOpen] = useState(false);
 
@@ -102,7 +101,7 @@ const DocumentDetailsModal: React.FC<DocumentDetailsModalProps> = ({
 
   return (
     <>
-      <div className="w-full p-8 grid grid-cols-12 text-sm">
+      <div className="w-full p-8 grid grid-cols-12 text-sm mt-14 text-left">
         {/* Icon container */}
         <div className="col-span-2 px-2">
           <DocumentIcon
@@ -114,19 +113,19 @@ const DocumentDetailsModal: React.FC<DocumentDetailsModalProps> = ({
         </div>
 
         {/* Middle section */}
-        <div className="col-start-3 col-span-5 border-r border-l px-2 overflow-x-hidden">
+        <div className="col-start-3 col-span-10 px-2 overflow-x-hidden text-base">
           {list.map((item) => (
             <div key={nanoid()}>
-              {item.label}: <span className="font-bold">{item.content}</span>
+              {item.label}: <span className="font-bold text-xl">{item.content}</span>
             </div>
           ))}
         </div>
+      </div>
 
-        {/* Description / Summary container */}
-        <div className="col-start-8 col-span-5 px-2">
-          <h1>Description:</h1>
-          <p>{document.summary}</p>
-        </div>
+      {/* Description / Summary container */}
+      <div className="col-start-8 col-span-5 px-2 border-t-2 text-left">
+        <h3>Description:</h3>
+        <p className='text-base'>{document.summary}</p>
       </div>
 
       {
@@ -164,4 +163,4 @@ const DocumentDetailsModal: React.FC<DocumentDetailsModalProps> = ({
   );
 };
 
-export default DocumentDetailsModal;
+export default DocumentDetails;

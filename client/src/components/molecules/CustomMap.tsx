@@ -1,9 +1,11 @@
 import { LatLng, LatLngExpression } from 'leaflet';
 import { MapContainer, TileLayer } from 'react-leaflet';
 import CustomZoomControl from './ZoomControl';
-import { useContext } from 'react';
+import { useContext, useRef } from 'react';
 import MapStyleContext from '../../context/MapStyleContext';
 import { MunicipalityAreaOutline } from './MunicipalityArea';
+import SidebarContext from '../../context/SidebarContext';
+import { calculateCentroid } from '../organisms/coordsOverlay/Point';
 
 export const kirunaLatLngCoords: LatLngExpression = [67.85572, 20.22513];
 
@@ -21,11 +23,29 @@ const CustomMap: React.FC<CustomMapProps> = ({
   children 
 }) => {
   const {mapType} = useContext(MapStyleContext);
+  const {selectedDocument} = useContext(SidebarContext);
+
+  const mapRef = useRef<L.Map>(null);
+
+  if(selectedDocument?.coordinates) {
+    let mapCenter;
+
+    if(selectedDocument.coordinates.type=='Point') {
+      mapCenter = {lat: selectedDocument.coordinates.coordinates[0], lng: selectedDocument.coordinates.coordinates[1]} as LatLng;
+    }
+    else {
+      mapCenter = calculateCentroid(selectedDocument.coordinates.coordinates as unknown as LatLng[]);
+    }
+
+    mapRef.current?.flyTo(mapCenter)
+  }
+
   
   return (
     <MapContainer
+      ref={mapRef}
       style={{ width: '100%', height: '100%', zIndex: zIndex }}
-      center={center || kirunaLatLngCoords}
+      center={center ?? kirunaLatLngCoords}
       zoom={!allMunicipality ? 13 : 8}
       doubleClickZoom={false}
       scrollWheelZoom={true}

@@ -1,13 +1,13 @@
-import React from "react";
+import React, { useContext } from "react";
 import ButtonRounded from "../atoms/button/ButtonRounded";
-import { FaFolder } from "react-icons/fa";
+import { FaArrowLeft, FaFolder } from "react-icons/fa";
 import { IDocument } from "../../utils/interfaces/document.interface";
 import { FaX } from "react-icons/fa6";
 import AllDocumentsList from "./AllDocumentsList";
+import SidebarContext from "../../context/SidebarContext";
+import DocumentDetails from "./DocumentDetails";
 
 interface SidebarProps {
-  sidebarVisible: boolean;
-  setSidebarVisible: (sidebarVisible: boolean) => void;
   coordinates: any;
   setCoordinates: (coordinates: any) => void;
   allDocuments: IDocument[];
@@ -17,8 +17,6 @@ interface SidebarProps {
 }
 
 export const Sidebar: React.FC<SidebarProps> = ({
-  sidebarVisible,
-  setSidebarVisible,
   coordinates,
   setCoordinates,
   allDocuments,
@@ -26,6 +24,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
   filteredDocuments,
   setFilteredDocuments
 }) => {
+  const {selectedDocument, setSelectedDocument, sidebarVisible, setSidebarVisible} = useContext(SidebarContext);
   
   return (
     <>
@@ -40,7 +39,6 @@ export const Sidebar: React.FC<SidebarProps> = ({
           background: '#ffffff',
           height: '100vh',
           display: 'flex',
-          justifyContent: 'center',
           position: 'fixed',
           top: 0,
           right: sidebarVisible ? "0" : "-100%",
@@ -48,26 +46,52 @@ export const Sidebar: React.FC<SidebarProps> = ({
           maxHeight: '100vh',
           overflow: 'auto'
         }}
-        className='xl:w-2/5 lg:w-4/6 md:w-5/6 w-full'
+        className='border-l xl:w-2/5 lg:w-4/6 md:w-5/6 w-full'
       >
         <div className='flex flex-col w-full'>
-          <div className='flex justify-between fixed w-full bg-white p-2 z-10'>
-            <h1 className='text-2xl font-bold'>All Documents</h1>
+          <div className='flex fixed xl:w-2/5 lg:w-4/6 md:w-5/6 w-full bg-white p-2 z-10'>
+            {selectedDocument &&
+              <FaArrowLeft 
+                className='top-2 cursor-pointer text-3xl mr-2'
+                onClick={() => setSelectedDocument(undefined)}
+              />
+            }
+            <h1 
+              className='text-2xl font-bold text-left'
+              style={{
+                maxWidth: '90%'
+              }}
+            >
+              {!selectedDocument ? 'All Documents' : selectedDocument.title}
+            </h1>
+
             <FaX 
               style={{ right: sidebarVisible ? '0.5rem' : '-100%', transition: '350ms'}}  //The best way I had to still have the transition. Not so beautiful but I don't know another method to have it working
-              onClick={() => setSidebarVisible(false)}
-              className='flex fixed top-2 cursor-pointer text-3xl'
+              onClick={() => {
+                setSidebarVisible(false);
+                setSelectedDocument(undefined);
+              }}
+              className='fixed top-2 cursor-pointer text-3xl'
             />
           </div>
 
-          <AllDocumentsList
-            coordinates={coordinates}
-            setCoordinates={setCoordinates}
-            allDocuments={allDocuments}
-            setAllDocuments={setAllDocuments}
-            filteredDocuments={filteredDocuments}
-            setFilteredDocuments={setFilteredDocuments}
-          />
+          {
+            !selectedDocument ?
+            <AllDocumentsList
+              filteredDocuments={filteredDocuments}
+              setFilteredDocuments={setFilteredDocuments}
+            />
+            :
+            <DocumentDetails 
+              document={selectedDocument}
+              coordinates={coordinates}
+              setCoordinates={setCoordinates}
+              allDocuments={allDocuments}
+              setAllDocuments={setAllDocuments}
+              filteredDocuments={filteredDocuments}
+              setFilteredDocuments={setFilteredDocuments}
+            />
+          }
         </div>
       </nav>
     </>

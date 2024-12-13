@@ -14,7 +14,7 @@ const ConnectionList: React.FC<ConnectionListProps> = ({
   handleDelete,
   allDocuments
 }) => {
-  console.log('connections:', connections);
+  
   return (
     <div className="max-w-[500px] mx-auto p-4">
       {/* Headers */}

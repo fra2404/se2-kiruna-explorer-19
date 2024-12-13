@@ -147,12 +147,6 @@ export const Point: React.FC<PointProps> = ({
           onCancelClick={() => {
             markerRef.current?.closePopup();
           }}
-          coordinates={coordinates}
-          setCoordinates={setCoordinates}
-          allDocuments={allDocuments}
-          setDocuments={setAllDocuments}
-          filteredDocuments={filteredDocuments}
-          setFilteredDocuments={setFilteredDocuments}
         />
 
         {(type=='Polygon') &&
@@ -185,7 +179,7 @@ export const Point: React.FC<PointProps> = ({
 };
 
 
-function calculateCentroid(coords: LatLng[]): LatLng {
+export function calculateCentroid(coords: LatLng[]): LatLng {
   let latSum = 0, lngSum = 0;
   const n = coords.length;
 

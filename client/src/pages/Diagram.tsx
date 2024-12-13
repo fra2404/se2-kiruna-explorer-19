@@ -19,14 +19,13 @@ import {
     swedishFlagYellow,
 } from '../utils/colors';
 import { IDocument } from "../utils/interfaces/document.interface.js";
-import DocumentDetailsModal from '../components/organisms/modals/DocumentDetailsModal';
-import Modal from 'react-modal';
 import Legend from './Legend';
 import { LatLng } from "leaflet";
 import FeedbackContext from "../context/FeedbackContext.js";
 import { Header } from "../components/organisms/Header.js";
 import useDocuments from "../utils/hooks/documents.js";
 import { DocumentConnectionsList } from "../components/molecules/documentsItems/DocumentConnectionsList.js";
+import SidebarContext from "../context/SidebarContext.js";
 
 const LABEL_FONT = { size: 35, color: "#000000" };
 const YEAR_SPACING = 500;
@@ -47,19 +46,6 @@ const options = {
     },
 };
 
-const modalStyles = {
-    content: {
-        top: '50%',
-        left: '50%',
-        right: 'auto',
-        bottom: 'auto',
-        margin: '0 auto',
-        transform: 'translate(-50%, -50%)',
-        width: '90%',
-    },
-    overlay: { zIndex: 1000 },
-};
-
 const graphBEInfo = await API.getGraphInfo();
 
 const randomColor = () => {
@@ -72,11 +58,7 @@ const randomColor = () => {
 const Diagram = () => {
     const { setFeedbackFromError } = useContext(FeedbackContext);
     const headerRef = useRef<HTMLDivElement>(null);
-    const [selectedDocument, setSelectedDocument] = useState<IDocument[]>([]);
-    const [isModalOpen, setIsModalOpen] = useState(false);
-
-    //Manages the sidebar
-    const [sidebarVisible, setSidebarVisible] = useState(false);
+    const {setSelectedDocument, setSidebarVisible} = useContext(SidebarContext);
 
     //Needed to show a document's information when hovering on it
     const [documentInfoPopup, setDocumentInfoPopup] = useState<{visible: boolean, x: number, y: number, content: any}>({ visible: false, x: 0, y: 0, content: '' });
@@ -94,17 +76,17 @@ const Diagram = () => {
     const minYear = graphBEInfo.minYear;
     const maxYear = graphBEInfo.maxYear;
 
-    const openModal = (document: IDocument) => {
+    const openSidebar = (document: IDocument) => {
         // Search in the original documents and show the document in the modal 
         const sdocument = allDocuments.find((doc) => doc.id === document.id);
         if (sdocument) {
-            setSelectedDocument([sdocument]);
-            setIsModalOpen(true);
+          setSelectedDocument(sdocument);
+          setSidebarVisible(true);
         }
     };
 
     const handleNodeClick = (document: IDocument) => {
-        openModal(document);
+      openSidebar(document);
     }
 
     useEffect(() => {
@@ -361,8 +343,6 @@ const Diagram = () => {
             <Header 
                 headerRef={headerRef}
                 page='graph'
-                sidebarVisible={sidebarVisible}
-                setSidebarVisible={setSidebarVisible}
                 coordinates={coordinates}
                 setCoordinates={setCoordinates}
                 allDocuments={allDocuments}
@@ -391,15 +371,15 @@ const Diagram = () => {
                             const {node, pointer} = event;
                             const selectedNode = state.graph.nodes.find(n =>  n.id == node);
                             if(selectedNode) {
-                                const selectedDocument = allDocuments.find((doc) => doc.id === selectedNode.id);
-                                if(selectedDocument) {
+                                const sDocument = allDocuments.find((doc) => doc.id === selectedNode.id);
+                                if(sDocument) {
                                     setDocumentInfoPopup({
                                         visible: true,
                                         x: pointer.DOM.x,
                                         y: pointer.DOM.y,
                                         content: (
                                             <DocumentConnectionsList 
-                                                document={selectedDocument}
+                                                document={sDocument}
                                                 allDocuments={allDocuments}
                                             />
                                         )
@@ -452,21 +432,6 @@ const Diagram = () => {
                     {documentInfoPopup.content}
                 </div>
             )}
-            <Modal
-                style={modalStyles}
-                isOpen={isModalOpen}
-                onRequestClose={() => setIsModalOpen(false)}
-            >
-                <DocumentDetailsModal
-                    document={selectedDocument[0]}
-                    coordinates={coordinates}
-                    setCoordinates={setCoordinates}
-                    allDocuments={allDocuments}
-                    setAllDocuments={setAllDocuments}
-                    filteredDocuments={filteredDocuments}
-                    setFilteredDocuments={setFilteredDocuments}
-                />
-            </Modal>
         </div>
     );
 };
