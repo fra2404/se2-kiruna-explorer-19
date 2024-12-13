@@ -5,6 +5,7 @@ import './Diagram.css';
 import { useState, useEffect, useRef, useContext } from "react";
 import API from "../API";
 import ErrorImage from '../assets/icons/error.png';
+import DefaultIcon from '../assets/icons/default-icon.svg';
 import AgreementIcon from "../assets/icons/agreement-icon.svg";
 import ConflictIcon from '../assets/icons/conflict-icon.svg';
 import ConsultationIcon from '../assets/icons/consultation-icon.svg';
@@ -69,6 +70,7 @@ const Diagram = () => {
     const [selectedDocument, setSelectedDocument] = useState<IDocument[]>([]);
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [documents, setDocuments] = useState<any[]>([]);
+    const [types, setTypes] = useState<any[]>([]);
     const [coordinates, setCoordinates] = useState({});
     const [originalDocuments, setOriginalDocuments] = useState<any[]>([]);
     const [state, setState] = useState({
@@ -170,6 +172,20 @@ const Diagram = () => {
     }, []);
 
     useEffect(() => {
+        // Fetch the document types from the backend
+        const fetchDocumentTypes = async () => {
+            try {
+                const documentTypes = await API.getTypes();
+                setTypes(documentTypes);
+
+            } catch (error) {
+                console.error(`Error fetching types`, error);
+            }
+        };
+        fetchDocumentTypes();
+    }, []);
+
+    useEffect(() => {
         API.getCoordinates()
             .then((coords) => {
                 const result: {
@@ -256,7 +272,9 @@ const Diagram = () => {
             }
 
             // Check the type of the document
-            switch (doc.type.toUpperCase()) {
+            const docType = Array.isArray(types.docTypes) ? types.docTypes.find((docTypes: any) => docTypes.value === doc.type.toUpperCase()) : null;
+            console.log(`Document type is ${docType.value}`);
+            switch (docType.value) {
                 case "AGREEMENT":
                     doc.image = AgreementIcon;
                     break;
@@ -282,8 +300,8 @@ const Diagram = () => {
                     doc.image = MaterialEffectsIcon;
                     break;
                 default:
-                    // Here I will add a default image for the documents that do not have an image (new types)
-                    doc.image = ErrorImage;
+                    // Default icon for the documents that do not have an image (new types)
+                    doc.image = DefaultIcon;
                     break;
             }
 
@@ -370,7 +388,7 @@ const Diagram = () => {
                 edges: connections
             },
         })
-    }, [documents]);
+    }, [documents, types]);
 
     const occupiedPositions = [] as any;
     const computeYearX = (year: number) => {
@@ -515,7 +533,6 @@ const Diagram = () => {
                     // If the node is too far to the left
                     newposition.x = center_x - MAX_NODE_OFFSET;
                 }
-
                 if (nodeCurrentPosition.y - center_y > MAX_NODE_OFFSET) {
                     // If the node is too far to the top
                     newposition.y = center_y + MAX_NODE_OFFSET;
@@ -528,36 +545,6 @@ const Diagram = () => {
 
 
 
-
-
-
-
-
-            // if (nodeCurrentPosition.y - center_y > MAX_NODE_OFFSET) {
-            //     console.log("Node is too far from the center");
-            //     // Troppo in basso:
-            //     network.moveNode(event.nodes[0], nodeCurrentPosition.x, center_y + MAX_NODE_OFFSET);
-            // }
-            // else if (nodeCurrentPosition.y - center_y < -MAX_NODE_OFFSET) {
-            //     console.log("Node is too far from the center");
-            //     // Troppo in alto:
-            //     network.moveNode(event.nodes[0], nodeCurrentPosition.x, center_y - MAX_NODE_OFFSET);
-            // }
-
-
-            //     if (nodePosition.x < graphBounds.minX) {
-            //         nodePosition.x = graphBounds.minX;
-            //     } else if (nodePosition.x > graphBounds.maxX) {
-            //         nodePosition.x = graphBounds.maxX;
-            //     }
-
-            // if (nodePosition.y < graphBounds.minY) {
-            //     nodePosition.y = graphBounds.minY;
-            // } else if (nodePosition.y > graphBounds.maxY) {
-            //     nodePosition.y = graphBounds.maxY;
-            // }
-
-            // network.moveNode(event.nodes[0], nodeLastPosition.x, nodePosition.y);
         }
 
         const network = networkRef.current;
