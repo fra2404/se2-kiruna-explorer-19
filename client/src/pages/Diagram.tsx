@@ -26,6 +26,7 @@ import { LatLng } from "leaflet";
 import FeedbackContext from "../context/FeedbackContext.js";
 import { Header } from "../components/organisms/Header.js";
 import useDocuments from "../utils/hooks/documents.js";
+import { DocumentConnectionsList } from "../components/molecules/documentsItems/DocumentConnectionsList.js";
 
 const LABEL_FONT = { size: 35, color: "#000000" };
 const YEAR_SPACING = 500;
@@ -42,6 +43,7 @@ const options = {
         dragView: true, // Enable dragging of the view
         zoomView: true, // Enable zooming of the view
         navigationButtons: true, // Enable navigation buttons
+        hover: true
     },
 };
 
@@ -75,6 +77,9 @@ const Diagram = () => {
 
     //Manages the sidebar
     const [sidebarVisible, setSidebarVisible] = useState(false);
+
+    //Needed to show a document's information when hovering on it
+    const [documentInfoPopup, setDocumentInfoPopup] = useState<{visible: boolean, x: number, y: number, content: any}>({ visible: false, x: 0, y: 0, content: '' });
 
     const {allDocuments, setAllDocuments, filteredDocuments, setFilteredDocuments} = useDocuments();
     const [coordinates, setCoordinates] = useState({});
@@ -229,7 +234,6 @@ const Diagram = () => {
             if (doc.connections && doc.connections.length > 0) {
                 doc.connections.forEach((connection: any) => {
                     // Modify the style of the connections according to their type
-                    console.log(`Connection type: ${connection.type}`);
                     if (connection.type.toUpperCase() === "DIRECT") {
                         console.log("Direct connection");
                     } else if (connection.type.toUpperCase() === "COLLATERAL") {
@@ -328,7 +332,6 @@ const Diagram = () => {
             shape: "box",
             font: LABEL_FONT
         });
-        console.log(`Year ${year} has x = ${label_year.find(node => node.year === year)?.x}`);
     }
 
     const networkRef = useRef<any>(null);
@@ -383,6 +386,29 @@ const Diagram = () => {
                             if (selectedNode) {
                                 handleNodeClick(selectedNode);
                             }
+                        },
+                        hoverNode: function (event: {node: any, pointer: any}) {
+                            const {node, pointer} = event;
+                            const selectedNode = state.graph.nodes.find(n =>  n.id == node);
+                            if(selectedNode) {
+                                const selectedDocument = allDocuments.find((doc) => doc.id === selectedNode.id);
+                                if(selectedDocument) {
+                                    setDocumentInfoPopup({
+                                        visible: true,
+                                        x: pointer.DOM.x,
+                                        y: pointer.DOM.y,
+                                        content: (
+                                            <DocumentConnectionsList 
+                                                document={selectedDocument}
+                                                allDocuments={allDocuments}
+                                            />
+                                        )
+                                    });
+                                }
+                            }
+                        },
+                        blurNode: function () {
+                            setDocumentInfoPopup({visible: false, x: 0, y: 0, content: ''})
                         }
                     }}
                     style={{ height: "100%" }}
@@ -407,6 +433,24 @@ const Diagram = () => {
 
                     }}
                 />
+            )}
+
+            {documentInfoPopup.visible && (
+                <div
+                    style={{
+                    position: "absolute",
+                    top: documentInfoPopup.y,
+                    left: documentInfoPopup.x + 10,
+                    backgroundColor: "white",
+                    border: "1px solid #ccc",
+                    borderRadius: "4px",
+                    padding: "5px",
+                    zIndex: 1000,
+                    boxShadow: "0px 4px 6px rgba(0, 0, 0, 0.1)",
+                    }}
+                >
+                    {documentInfoPopup.content}
+                </div>
             )}
             <Modal
                 style={modalStyles}
