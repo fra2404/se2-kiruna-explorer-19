@@ -2,9 +2,9 @@ import GradientSVG from '../../components/atoms/GradientSVG';
 
 export default function TechnicalDocIcon({
   fillColor,
-}: {
+}: Readonly<{
   fillColor: string[] | string;
-}) {
+}>) {
   return (
     <GradientSVG fillColor={fillColor}>
       <path

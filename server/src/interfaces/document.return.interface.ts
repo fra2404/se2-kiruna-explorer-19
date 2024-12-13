@@ -2,7 +2,6 @@ import { ICoordinate } from '@interfaces/coordinate.interface';
 import { DocTypeEnum } from '@utils/enums/doc-type.enum';
 import { ScaleTypeEnum } from '@utils/enums/scale-type-enum';
 import { IConnection } from './document.interface';
-import { ObjectId } from 'mongoose';
 import { IReturnMedia } from './media.return.interface';
 import { IStakeholder } from './stakeholder.interface';
 

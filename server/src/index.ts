@@ -13,7 +13,7 @@ dotenv.config({ path: envFile });
 // Log per verificare il caricamento delle variabili d'ambiente
 // console.log('MONGO_URI:', process.env.MONGO_URI);
 
-const PORT = process.env.PORT || 5000;
+const PORT = process.env.PORT ?? 5000;
 
 // Connetti al database
 connectDB();

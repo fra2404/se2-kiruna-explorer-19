@@ -56,25 +56,25 @@ export const addingDocument = async (
     }
   }
 
-    //Check existence of stakeholder in DB
-    if (documentData.stakeholders && documentData.stakeholders.length > 0) {
-      for (const stakeholderId of documentData.stakeholders) {
-        const existingStakeholder = await Stakeholder.findById(stakeholderId);
-        if (!existingStakeholder) {
-          throw new StakeholderNotFoundError();
-        }
+  //Check existence of stakeholder in DB
+  if (documentData.stakeholders && documentData.stakeholders.length > 0) {
+    for (const stakeholderId of documentData.stakeholders) {
+      const existingStakeholder = await Stakeholder.findById(stakeholderId);
+      if (!existingStakeholder) {
+        throw new StakeholderNotFoundError();
       }
     }
+  }
 
-   // Check for duplicate stakeholder IDs in the array
-    if (documentData.stakeholders && documentData.stakeholders.length > 0) {
-      for (let i = 0; i < documentData.stakeholders.length; i++) {
-        const stakeholderId = documentData.stakeholders[i];
-        if (documentData.stakeholders.indexOf(stakeholderId) !== i) {
-          throw new Error("Duplicate stakeholderID found");
-        }
+  // Check for duplicate stakeholder IDs in the array
+  if (documentData.stakeholders && documentData.stakeholders.length > 0) {
+    for (let i = 0; i < documentData.stakeholders.length; i++) {
+      const stakeholderId = documentData.stakeholders[i];
+      if (documentData.stakeholders.indexOf(stakeholderId) !== i) {
+        throw new Error("Duplicate stakeholderID found");
       }
     }
+  }
 
   // Add new document
   const newDocument = new Document(documentData);
@@ -111,10 +111,10 @@ export const addingDocument = async (
 
   //call method to fetch stakeholders
   let stakeholders: IStakeholder[] = [];
-  if(newDocument.stakeholders && newDocument.stakeholders.length > 0){
-      stakeholders = await fetchStakeholders(newDocument.stakeholders);
+  if (newDocument.stakeholders && newDocument.stakeholders.length > 0) {
+    stakeholders = await fetchStakeholders(newDocument.stakeholders);
   }
-  
+
   const documentObject = newDocument.toObject();
   delete documentObject._id;
   delete documentObject.createdAt;
@@ -155,7 +155,7 @@ export const getAllDocuments = async (): Promise<IDocumentResponse[]> => {
 
       //call method to fetch stakeholders
       let stakeholder: IStakeholder[] = [];
-      if(document.stakeholders && document.stakeholders.length > 0){
+      if (document.stakeholders && document.stakeholders.length > 0) {
         stakeholder = await fetchStakeholders(document.stakeholders);
       }
 
@@ -205,11 +205,11 @@ export const getDocumentById = async (
   }
 
 
-   //call method to fetch stakeholders
-   let stakeholder: IStakeholder[] = [];
-   if(document.stakeholders && document.stakeholders.length > 0){
-     stakeholder = await fetchStakeholders(document.stakeholders);
-   }
+  //call method to fetch stakeholders
+  let stakeholder: IStakeholder[] = [];
+  if (document.stakeholders && document.stakeholders.length > 0) {
+    stakeholder = await fetchStakeholders(document.stakeholders);
+  }
 
 
   const documentObject = document.toObject();
@@ -246,30 +246,31 @@ export const searchDocuments = async (
 
   if (filters) {
     const filterConditions = []; // Array to store filter conditions, initially empty
-    if (filters.stakeholders && 
-        Array.isArray(filters.stakeholders) && 
-        filters.stakeholders.length > 0) { 
-          if (filters.stakeholders.length === 1) {
-            // Single item-look for any array containing this item
-            filterConditions.push({
-              stakeholders: { $in: filters.stakeholders },
-            });
-          } else {
-            // Multiple items- look for exact combination in any order
-            filterConditions.push({
-              stakeholders: { $all: filters.stakeholders }, // Contains all items
-              $expr: { $eq: [{ $size: "$stakeholders" }, filters.stakeholders.length] }, // Exact size match
-            });
-          }
-        }
+    if (filters.stakeholders &&
+      Array.isArray(filters.stakeholders) &&
+      filters.stakeholders.length > 0) {
+      if (filters.stakeholders.length === 1) {
+        // Single item-look for any array containing this item
+        filterConditions.push({
+          stakeholders: { $in: filters.stakeholders },
+        });
+      } else {
+        // Multiple items- look for exact combination in any order
+        filterConditions.push({
+          stakeholders: { $all: filters.stakeholders }, // Contains all items
+          $expr: { $eq: [{ $size: "$stakeholders" }, filters.stakeholders.length] }, // Exact size match
+        });
+      }
+    }
     if (filters.scale) {
       filterConditions.push({
         scale: { $regex: filters.scale, $options: 'i' },
       });
     }
-    if (filters.architecturalScale){
-      filterConditions.push({ 
-        architecturalScale: filters.architecturalScale });
+    if (filters.architecturalScale) {
+      filterConditions.push({
+        architecturalScale: filters.architecturalScale
+      });
     }
     if (filters.type) {
       filterConditions.push({ type: filters.type });
@@ -323,15 +324,15 @@ export const searchDocuments = async (
         media = await fetchMedia(document.media);
       }
 
-       
-     //call method to fetch stakeholders
-     let stakeholder: IStakeholder[] = [];
-     if(document.stakeholders && document.stakeholders.length > 0){
-      stakeholder = await fetchStakeholders(document.stakeholders);
-     }
+
+      //call method to fetch stakeholders
+      let stakeholder: IStakeholder[] = [];
+      if (document.stakeholders && document.stakeholders.length > 0) {
+        stakeholder = await fetchStakeholders(document.stakeholders);
+      }
 
 
-      
+
       return {
         id: document.id,
         ...documentObject,
@@ -357,12 +358,11 @@ export const updatingDocument = async (
     throw new DocNotFoundError();
   }
 
-
-// If the new scale is not 'Architectural' and architecturalScale has a value, delete architecturalScale
-if (updateData.scale && updateData.scale !== 'ARCHITECTURAL' && updatedDocument.architecturalScale) {
-  updatedDocument.architecturalScale = "";
-  await updatedDocument.save(); 
-}
+  // If the new scale is not 'Architectural' and architecturalScale has a value, delete architecturalScale
+  if (updateData.scale && updateData.scale !== 'ARCHITECTURAL' && updatedDocument.architecturalScale) {
+    updatedDocument.architecturalScale = "";
+    await updatedDocument.save();
+  }
 
 
   if (updateData.coordinates) {
@@ -394,26 +394,26 @@ if (updateData.scale && updateData.scale !== 'ARCHITECTURAL' && updatedDocument.
   }
   //******************
 
-    //Check existence of stakeholder in DB
-    if (updatedDocument.stakeholders && updatedDocument.stakeholders.length > 0) {
-      for (const stakeholderId of updatedDocument.stakeholders) {
-        const existingStakeholder = await Stakeholder.findById(stakeholderId);
-        if (!existingStakeholder) {
-          throw new StakeholderNotFoundError();
-        }
+  //Check existence of stakeholder in DB
+  if (updatedDocument.stakeholders && updatedDocument.stakeholders.length > 0) {
+    for (const stakeholderId of updatedDocument.stakeholders) {
+      const existingStakeholder = await Stakeholder.findById(stakeholderId);
+      if (!existingStakeholder) {
+        throw new StakeholderNotFoundError();
       }
     }
+  }
 
 
-       // Check for duplicate stakeholder IDs in the array
-       if (updatedDocument.stakeholders && updatedDocument.stakeholders.length > 0) {
-        for (let i = 0; i < updatedDocument.stakeholders.length; i++) {
-          const stakeholderId = updatedDocument.stakeholders[i];
-          if (updatedDocument.stakeholders.indexOf(stakeholderId) !== i) {
-            throw new Error("Duplicate stakeholderID found");
-          }
-        }
+  // Check for duplicate stakeholder IDs in the array
+  if (updatedDocument.stakeholders && updatedDocument.stakeholders.length > 0) {
+    for (let i = 0; i < updatedDocument.stakeholders.length; i++) {
+      const stakeholderId = updatedDocument.stakeholders[i];
+      if (updatedDocument.stakeholders.indexOf(stakeholderId) !== i) {
+        throw new Error("Duplicate stakeholderID found");
       }
+    }
+  }
 
   // Update connections
   if (updateData.connections && updateData.connections.length > 0) {
@@ -473,8 +473,8 @@ if (updateData.scale && updateData.scale !== 'ARCHITECTURAL' && updatedDocument.
 
   //call method to fetch stakeholders
   let stakeholder: IStakeholder[] = [];
-  if(updatedDocument.stakeholders && updatedDocument.stakeholders.length > 0){
-   stakeholder = await fetchStakeholders(updatedDocument.stakeholders);
+  if (updatedDocument.stakeholders && updatedDocument.stakeholders.length > 0) {
+    stakeholder = await fetchStakeholders(updatedDocument.stakeholders);
   }
 
 
@@ -488,7 +488,7 @@ if (updateData.scale && updateData.scale !== 'ARCHITECTURAL' && updatedDocument.
     id: updatedDocument.id,
     ...documentObject,
     coordinates,
-    media: media || null, 
+    media: media || null,
     stakeholders: stakeholder,
   };
 
@@ -547,8 +547,8 @@ export const getDocumentByType = async (
       if (document.media && document.media.length > 0) {
         const mediaResults = await Promise.all(
           document.media.map((mediaId) =>
-            getMediaMetadataById(mediaId.toString()),
-          ),
+            getMediaMetadataById(mediaId.toString())
+          )
         );
 
         // Filter out null values
@@ -557,11 +557,11 @@ export const getDocumentByType = async (
         );
       }
 
-     //call method to fetch stakeholders
-     let stakeholder: IStakeholder[] = [];
-     if(document.stakeholders && document.stakeholders.length > 0){
+      //call method to fetch stakeholders
+      let stakeholder: IStakeholder[] = [];
+      if (document.stakeholders && document.stakeholders.length > 0) {
         stakeholder = await fetchStakeholders(document.stakeholders);
-     }
+      }
 
 
       //*****************
@@ -593,7 +593,7 @@ export const fetchMedia = async (
 
 
 export const fetchStakeholders = async (
-  stakeholderIds: ObjectId[], 
+  stakeholderIds: ObjectId[],
 ): Promise<IStakeholder[]> => {
   if (stakeholderIds.length > 0) {
     const stakeholdersResults = await Promise.all(
