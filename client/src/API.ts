@@ -372,6 +372,14 @@ async function getGraphInfo() {
   }
 }
 
+async function getDocumentById(documentId : string) {
+  return await fetch(`${SERVER_URL}/documents/${documentId}`, {
+    method: 'GET',
+  })
+  .then(handleInvalidResponse)
+  .then((response) => response.json());
+}
+
 const API = {
   getDocuments,
   getCoordinates,
@@ -382,6 +390,7 @@ const API = {
   addArea,
   removeArea,
   getAreas,
+  getDocumentById
 };
 
 export {

@@ -6,10 +6,11 @@ import { DocumentIcon } from '../../molecules/documentsItems/DocumentIcon';
 import Modal from 'react-modal';
 import DocumentForm from '../DocumentForm';
 import { IDocument } from '../../../utils/interfaces/document.interface';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { CDN_URL } from '../../../utils/constants';
 import { nanoid } from 'nanoid';
 import { scaleOptions } from '../../../shared/scale.options.const';
+import API from '../../../API';
 
 interface DocumentDetailsModalProps {
   document: IDocument;
@@ -29,6 +30,9 @@ const DocumentDetailsModal: React.FC<DocumentDetailsModalProps> = ({
   console.log('DocumentDetailsModal - document:', document);
   const { isLoggedIn, user } = useAuth();
   const [modalOpen, setModalOpen] = useState(false);
+  const [connectedDocuments, setConnectedDocuments] = useState<IDocument[]>([]);
+  const [currentDocument, setCurrentDocument] = useState<IDocument>(document);
+  const [documentLabel, setDocumentLabel] = useState<string>('');
 
   const matchType = (type: string) => {
     switch (type) {
@@ -58,32 +62,71 @@ const DocumentDetailsModal: React.FC<DocumentDetailsModalProps> = ({
     return option ? option.label : value;
   };
 
-  const documentLabel = document.scale === 'ARCHITECTURAL' && document.architecturalScale ? ` - ${document.architecturalScale}` : '';
+  useEffect(() => {
+    if (!currentDocument || !currentDocument.connections) {
+      setConnectedDocuments([]); // Réinitialiser si le document change
+      return;
+    }
+
+    const fetchConnectedDocuments = async () => {
+      try {
+        // Récupérer tous les documents liés via leurs IDs
+        const documentFetchPromises = currentDocument.connections?.map((connection) =>
+          API.getDocumentById(connection.document.toString())
+        );
+
+        // Attendre les résultats
+        const documents = await Promise.all(documentFetchPromises as Promise<IDocument>[]);
+
+        // Mettre à jour l'état
+        setConnectedDocuments(documents);
+      } catch (error) {
+        console.error("Erreur lors de la récupération des documents connectés :", error);
+        setConnectedDocuments([]);
+      }
+    };
+
+    fetchConnectedDocuments();
+    setDocumentLabel(currentDocument.scale === 'ARCHITECTURAL' && currentDocument.architecturalScale ? ` - ${currentDocument.architecturalScale}` : '');
+  }, [currentDocument]);
+
+//  const documentLabel = currentDocument.scale === 'ARCHITECTURAL' && currentDocument.architecturalScale ? ` - ${currentDocument.architecturalScale}` : '';
 
   const list = [
-    { label: 'Title', content: document.title },
+    { label: 'Title', content: currentDocument.title },
     {
       label: 'Stakeholders',
-      content: Array.isArray(document.stakeholders)
-        ? document.stakeholders.join(' - ')
-        : document.stakeholders,
+      content: Array.isArray(currentDocument.stakeholders)
+        ? currentDocument.stakeholders.join(' - ')
+        : currentDocument.stakeholders,
     },
     {
       label: 'Scale',
-      content: document.scale
-        ? `${getScaleLabel(document.scale)}${documentLabel}`
+      content: currentDocument.scale
+        ? `${getScaleLabel(currentDocument.scale)}${documentLabel}`
         : 'Unknown',
     },
-    { label: 'Issuance Date', content: document.date },
-    { label: 'Type', content: matchType(document.type) },
-    { label: 'Connections', content: document.connections?.length.toString() },
-    { label: 'Language', content: document.language },
-    { label: 'Coordinates', content: document.coordinates?.name },
+    { label: 'Issuance Date', content: currentDocument.date },
+    { label: 'Type', content: matchType(currentDocument.type) },
+    { 
+      label: 'Connections', 
+      content: connectedDocuments.map((cd, index) => {
+        return (
+          <>
+            <span key={cd.id} onClick={()=>{setCurrentDocument(cd)}}
+            className='text-blue-600 hover:underline cursor-pointer'>{cd.title}</span>
+            <span>{index !== currentDocument.connections.length - 1 && " , "}</span>
+          </>
+        )
+      }) 
+    },
+    { label: 'Language', content: currentDocument.language },
+    { label: 'Coordinates', content: currentDocument.coordinates?.name },
     {
       label: 'Original Resources',
-      content: document.media?.map((m, i) => {
+      content: currentDocument.media?.map((m, i) => {
         const separator =
-          document.media && i !== document.media.length - 1 ? ' - ' : '';
+        currentDocument.media && i !== currentDocument.media.length - 1 ? ' - ' : '';
         return (
           <span key={m.id}>
             <a href={CDN_URL + m.url} target="blank">
@@ -102,9 +145,9 @@ const DocumentDetailsModal: React.FC<DocumentDetailsModalProps> = ({
         {/* Icon container */}
         <div className="col-span-2 px-2">
           <DocumentIcon
-            type={document.type}
+            type={currentDocument.type}
             stakeholders={
-              Array.isArray(document.stakeholders) ? document.stakeholders : []
+              Array.isArray(currentDocument.stakeholders) ? currentDocument.stakeholders : []
             }
           />
         </div>
@@ -121,7 +164,7 @@ const DocumentDetailsModal: React.FC<DocumentDetailsModalProps> = ({
         {/* Description / Summary container */}
         <div className="col-start-8 col-span-5 px-2">
           <h1>Description:</h1>
-          <p>{document.summary}</p>
+          <p>{currentDocument.summary}</p>
         </div>
       </div>
 
@@ -145,13 +188,13 @@ const DocumentDetailsModal: React.FC<DocumentDetailsModalProps> = ({
         onRequestClose={() => setModalOpen(false)}
       >
         <DocumentForm
-          selectedCoordIdProp={document.coordinates?._id}
+          selectedCoordIdProp={currentDocument.coordinates?._id}
           coordinates={coordinates}
           setCoordinates={setCoordinates}
           documents={allDocuments}
           setDocuments={setDocuments}
           setModalOpen={setModalOpen}
-          selectedDocument={document}
+          selectedDocument={currentDocument}
         />
       </Modal>
     </>
