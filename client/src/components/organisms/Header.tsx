@@ -68,7 +68,9 @@ export const Header: React.FC<HeaderProps> = ({
               justifyContent: 'center',
               alignItems: 'center',
               pointerEvents: "auto"
-            }} />
+            }}
+            onClick={() => navigate('/')}
+          />
           <h1 className={mapType == "osm" || page != 'map' ? 'font-bold text-black ml-2 text-2xl' : "font-bold text-white ml-2 text-2xl"}>Kiruna eXplorer</h1>
         </div>
 
@@ -76,9 +78,9 @@ export const Header: React.FC<HeaderProps> = ({
           {/* Button to switch to the diagram view */}
           <ButtonRounded
             variant="filled"
-            text={page == 'map' ? "Go to graph" : 'Go to homepage'}
+            text={page == 'map' ? "Go to Diagram" : 'Go to Map'}
             className="bg-black pr-4 pl-4 d-flex align-items-center"
-            onClick={() => navigate(page == 'map' ? '/diagram' : '/')}
+            onClick={() => navigate(page == 'map' ? '/diagram' : '/map')}
             style={{ pointerEvents: "auto" }}
           />
 

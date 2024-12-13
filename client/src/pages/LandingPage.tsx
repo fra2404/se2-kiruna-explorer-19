@@ -51,7 +51,7 @@ const LandingPage = () => {
                         moving an entire city to prevent it from collapsing due to mining activities. 
                         This colossal project reflects a vision for sustainability and heritage. 
                         Discover how Kiruna is reinventing itself while preserving its cultural identity.
-                        Learn more <a href="https://fr.wikipedia.org/wiki/Kiruna" className="text-white cursor-pointer">here</a>
+                        Learn more <a href="https://en.wikipedia.org/wiki/Kiruna" target='blank' className="text-white cursor-pointer">here</a>
                     </p>
                 </div>
                 <div className="mx-auto mt-10 max-w-2xl lg:mx-0 lg:max-w-none">
@@ -67,8 +67,8 @@ const LandingPage = () => {
             </div>
 
             <div className="absolute bottom-0 left-0 right-0 flex justify-center pb-8">
-                <ButtonRounded className="mr-5" text="See The Map" onClick={() => navigate('/map')} />
-                <ButtonRounded text="See The Diagram" onClick={() => navigate('/diagram')} />
+                <ButtonRounded className="mr-16 text-lg bg-black" text="See The Map" onClick={() => navigate('/map')} />
+                <ButtonRounded className="text-lg bg-black" text="See The Diagram" onClick={() => navigate('/diagram')} />
             </div>
         </div>
       )
