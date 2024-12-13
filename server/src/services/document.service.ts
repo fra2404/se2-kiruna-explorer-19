@@ -1,5 +1,6 @@
 import Document from '../schemas/document.schema';
 import Stakeholder from '../schemas/stakeholder.schema';
+import DocumentType from '@schemas/documentType.schema';
 import MediaDocument from '../schemas/media.schema';
 import { Coordinate } from '../schemas/coordinate.schema';
 import { IDocument, IDocumentFilters } from '@interfaces/document.interface';
@@ -9,17 +10,18 @@ import {
   MediaNotFoundError,
   PositionError,
   StakeholderNotFoundError,
+  DocumentTypeNotFoundError,
 } from '../utils/errors';
 import { ICoordinate } from '@interfaces/coordinate.interface';
 import { getCoordinateById } from './coordinate.service';
-import { DocTypeEnum } from '@utils/enums/doc-type.enum';
-import { CustomError } from '@utils/customError';
 import { getMediaMetadataById } from './media.service';
 import { ObjectId } from 'mongoose';
 import { ObjectId as MongoObjectId } from 'mongodb';
 import { IReturnMedia } from '@interfaces/media.return.interface';
 import { IStakeholder } from '@interfaces/stakeholder.interface';
 import { getStakeholdersById } from './stakeholder.service';
+import { IDocumentType } from '@interfaces/documentType.interface';
+import { getDocumentTypeById } from './documentType.service';
 
 
 //addDocument(Story 1)
@@ -76,6 +78,15 @@ export const addingDocument = async (
     }
   }
 
+
+  //Check existence of documentType in DB
+  if (documentData.type) {
+    const existingDocumentType = await DocumentType.findById(documentData.type);
+    if (!existingDocumentType) {
+      throw new DocumentTypeNotFoundError();
+    }
+  }
+
   // Add new document
   const newDocument = new Document(documentData);
   await newDocument.save();
@@ -115,6 +126,14 @@ export const addingDocument = async (
     stakeholders = await fetchStakeholders(newDocument.stakeholders);
   }
 
+  //call method to fetch documentTypes
+  let type: IDocumentType | null = null;
+  if (newDocument.type) {
+    type = await fetchDocumentTypes(newDocument.type);
+  }
+
+
+
   const documentObject = newDocument.toObject();
   delete documentObject._id;
   delete documentObject.createdAt;
@@ -127,6 +146,7 @@ export const addingDocument = async (
     coordinates,
     media,
     stakeholders,
+    type,
   };
 
   return document;
@@ -159,6 +179,12 @@ export const getAllDocuments = async (): Promise<IDocumentResponse[]> => {
         stakeholder = await fetchStakeholders(document.stakeholders);
       }
 
+      //call method to fetch documentTypes
+      let type: IDocumentType | null = null;
+      if (document.type) {
+        type = await fetchDocumentTypes(document.type);
+      }
+
       const documentObject = document.toObject();
       delete documentObject._id;
       delete documentObject.createdAt;
@@ -172,6 +198,7 @@ export const getAllDocuments = async (): Promise<IDocumentResponse[]> => {
         coordinates: coordinate || null,
         media: media || null,
         stakeholders: stakeholder,
+        type: type,
       };
     }),
   );
@@ -211,6 +238,14 @@ export const getDocumentById = async (
     stakeholder = await fetchStakeholders(document.stakeholders);
   }
 
+  
+  //call method to fetch documentTypes
+  let type: IDocumentType | null = null;
+  if (document.type) {
+    type = await fetchDocumentTypes(document.type);
+  }
+
+
 
   const documentObject = document.toObject();
   delete documentObject._id;
@@ -225,6 +260,7 @@ export const getDocumentById = async (
     coordinates: coordinate || null,
     media: media || null,
     stakeholders: stakeholder,
+    type: type,
   };
 };
 
@@ -232,6 +268,7 @@ export const searchDocuments = async (
   keywords: string[],
   filters?: IDocumentFilters,
 ): Promise<IDocumentResponse[] | null> => {
+  console.log("filter is " , filters);
   // With the operator $and we combine the keywords to search for in the title and summary
   const keywordQuery = {
     $and: keywords.map((keyword) => ({
@@ -249,16 +286,18 @@ export const searchDocuments = async (
     if (filters.stakeholders &&
       Array.isArray(filters.stakeholders) &&
       filters.stakeholders.length > 0) {
-      if (filters.stakeholders.length === 1) {
+
+      const stakeholderIds = await fetchStakeholdersForSearch(filters.stakeholders); // Convert the type name to ObjectId   
+      if (stakeholderIds.length === 1) {
         // Single item-look for any array containing this item
         filterConditions.push({
-          stakeholders: { $in: filters.stakeholders },
+          stakeholders: { $in: stakeholderIds },
         });
       } else {
         // Multiple items- look for exact combination in any order
         filterConditions.push({
-          stakeholders: { $all: filters.stakeholders }, // Contains all items
-          $expr: { $eq: [{ $size: "$stakeholders" }, filters.stakeholders.length] }, // Exact size match
+          stakeholders: { $all: stakeholderIds }, // Contains all items
+          $expr: { $eq: [{ $size: "$stakeholders" }, stakeholderIds.length] }, // Exact size match
         });
       }
     }
@@ -272,9 +311,17 @@ export const searchDocuments = async (
         architecturalScale: filters.architecturalScale
       });
     }
+    // if (filters.type) {
+    //   filterConditions.push({ type: filters.type });
+    // }
     if (filters.type) {
-      filterConditions.push({ type: filters.type });
+      const documentTypeId = await fetchDocumentTypesForSearch(filters.type); // Convert the type name to ObjectId    
+      if (documentTypeId) {
+        filterConditions.push({ type: documentTypeId });
+      }
     }
+
+
     if (filters.date) {
       filterConditions.push({ date: { $regex: filters.date, $options: 'i' } });
     }
@@ -332,6 +379,12 @@ export const searchDocuments = async (
       }
 
 
+         
+     //call method to fetch documentTypes
+     let type: IDocumentType | null = null;
+     if (document.type) {
+        type = await fetchDocumentTypes(document.type);
+     }
 
       return {
         id: document.id,
@@ -339,6 +392,7 @@ export const searchDocuments = async (
         coordinates: coordinate || null,
         media: media || null,
         stakeholders: stakeholder,
+        type: type,
       } as IDocumentResponse;
     }),
   );
@@ -415,6 +469,16 @@ export const updatingDocument = async (
     }
   }
 
+
+   //Check existence of documentType in DB
+    if (updatedDocument.type) {
+      const existingDocumentType = await DocumentType.findById(updatedDocument.type);
+      if (!existingDocumentType) {
+        throw new DocumentTypeNotFoundError();
+      }
+    }
+   
+
   // Update connections
   if (updateData.connections && updateData.connections.length > 0) {
     // Clear existing connections
@@ -478,6 +542,13 @@ export const updatingDocument = async (
   }
 
 
+  //call method to fetch documentTypes
+  let type: IDocumentType | null = null;
+  if (updatedDocument.type) {
+      type = await fetchDocumentTypes(updatedDocument.type);
+  }
+   
+
   const documentObject = updatedDocument.toObject();
   delete documentObject._id;
   delete documentObject.createdAt;
@@ -490,6 +561,7 @@ export const updatingDocument = async (
     coordinates,
     media: media || null,
     stakeholders: stakeholder,
+    type: type,
   };
 
   return document;
@@ -501,23 +573,37 @@ export const deleteDocumentByName = async (name: string): Promise<string> => {
   return 'Documents deleted successfully';
 };
 
-export const getDocumentTypes = () => {
-  const docTypes = Object.entries(DocTypeEnum).map(([key, value]) => ({
-    label: key,
-    value: value,
-  }));
-
+export const getDocumentTypes = async () => {
+  const docTypes = await DocumentType.find(); // Fetch document types from the DB
   if (docTypes.length === 0) {
-    throw new CustomError('No document types available', 404);
+    throw new DocumentTypeNotFoundError;
   }
 
-  return docTypes;
+
+  const result = docTypes.map(docType => ({
+    label: docType.type,  
+    value: docType._id.toString(), 
+  }));
+  return result;
 };
+
+
+
 
 export const getDocumentByType = async (
   type: string,
 ): Promise<IDocumentResponse[]> => {
-  const documents = await Document.find({ type });
+
+ //First check existence of type in documentType collection and return corresponding objectId
+ const documentType = await DocumentType.findOne({ type: { $regex: new RegExp('^' + type + '$', 'i') },});
+
+ // Not Found DocumentType
+ if (!documentType) {
+   throw new DocumentTypeNotFoundError;
+ }
+
+ // Then find documents of that type based on documentTypeId
+ const documents = await Document.find({ type: documentType._id });
 
   // Not Found Document
   if (documents.length === 0) {
@@ -563,6 +649,13 @@ export const getDocumentByType = async (
         stakeholder = await fetchStakeholders(document.stakeholders);
       }
 
+     
+      //call method to fetch documentTypes
+      let type: IDocumentType | null = null;
+      if (document.type) {
+      type = await fetchDocumentTypes(document.type);
+     }
+   
 
       //*****************
       return {
@@ -571,6 +664,7 @@ export const getDocumentByType = async (
         coordinates: coordinate || null,
         media: media || null,
         stakeholders: stakeholder,
+        type: type,
       } as IDocumentResponse;
     }),
   );
@@ -606,3 +700,53 @@ export const fetchStakeholders = async (
   return [];
 };
 
+
+export const fetchStakeholdersForSearch = async (
+  stakeholderNames: string[],  
+): Promise<ObjectId[]> => {
+  console.log("Searching for stakeholder names: ", stakeholderNames);
+  
+  if (stakeholderNames && stakeholderNames.length > 0) {
+    // Find stakeholders by names
+    const stakeholders = await Stakeholder.find({
+      type: { $in: stakeholderNames.map(type => new RegExp('^' + type + '$', 'i')) } 
+    });
+
+    console.log("Found stakeholders: ", stakeholders);
+    if (stakeholders.length > 0) {
+      
+      return stakeholders.map(stakeholder => (stakeholder._id as unknown) as ObjectId); // Return the stakeholder IDs
+    }
+  }
+  
+  return []; // no stakeholders found
+};
+
+
+
+export const fetchDocumentTypes = async (
+  documentTypeId: ObjectId,
+): Promise<IDocumentType | null> => {
+  if (documentTypeId) {
+    const documentType = await getDocumentTypeById(documentTypeId.toString());
+    if (documentType) 
+       return documentType;
+}
+  return null;
+};
+
+
+export const fetchDocumentTypesForSearch = async (
+  documentTypeName: string,
+): Promise<ObjectId | null> => {
+  if (documentTypeName) {
+    // First find the document type by name
+    const documentType = await DocumentType.findOne({
+      type: { $regex: new RegExp('^' + documentTypeName + '$', 'i') },
+    });
+    if (documentType) {
+      return (documentType._id as unknown) as ObjectId;
+    }
+  }
+  return null;
+};

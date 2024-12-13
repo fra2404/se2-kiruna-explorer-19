@@ -3,6 +3,7 @@ import { IConnection } from '@interfaces/document.interface';
 import mongoose from 'mongoose';
 import { ScaleTypeEnum } from '@utils/enums/scale-type-enum';
 import Stakeholder from '@schemas/stakeholder.schema';
+import DocumentType from '@schemas/documentType.schema';
 
 
 
@@ -40,17 +41,12 @@ export const validateAddDocument = [
   body('type')
     .notEmpty()
     .withMessage('Type is required')
-    .isIn([
-      'AGREEMENT',
-      'CONFLICT',
-      'CONSULTATION',
-      'DESIGN_DOC',
-      'INFORMATIVE_DOC',
-      'MATERIAL_EFFECTS',
-      'PRESCRIPTIVE_DOC',
-      'TECHNICAL_DOC',
-    ])
-    .withMessage('Type is invalid'),
+    .isString()
+    .withMessage('Type must be a string')
+    .custom(async (value) => {
+      await validateDocumentTypeContent(value);
+      return true;
+    }),
   body('connections')
     .optional()
     .isArray()
@@ -111,17 +107,10 @@ export const validateDocumentType = [
   param('type')
     .trim()
     .toUpperCase()
-    .isIn([
-      'AGREEMENT',
-      'CONFLICT',
-      'CONSULTATION',
-      'DESIGN_DOC',
-      'INFORMATIVE_DOC',
-      'MATERIAL_EFFECTS',
-      'PRESCRIPTIVE_DOC',
-      'TECHNICAL_DOC',
-    ])
-    .withMessage('Type is invalid'),
+    .custom(async (value) => {
+      await validateDocumentTypeContentForSearch(value);
+      return true;
+    }),
 ];
 
 export const validateUpdateDocument = [
@@ -149,17 +138,12 @@ export const validateUpdateDocument = [
     .custom((value, { req }) => validateScale(value, req.body.architecturalScale)),
   body('type')
     .optional()
-    .isIn([
-      'AGREEMENT',
-      'CONFLICT',
-      'CONSULTATION',
-      'DESIGN_DOC',
-      'INFORMATIVE_DOC',
-      'MATERIAL_EFFECTS',
-      'PRESCRIPTIVE_DOC',
-      'TECHNICAL_DOC',
-    ])
-    .withMessage('Type is invalid'),
+    .isString()
+    .withMessage('Type must be a string')
+    .custom(async (value) => {
+      await validateDocumentTypeContent(value);
+      return true;
+    }),
   body('connections')
     .optional()
     .isArray()
@@ -225,16 +209,21 @@ export const validateSearchDocument = [
       return true;
     }),
 
+  body('type')
+    .optional()
+    .isString()
+    .withMessage('Type must be a string')
+    .custom(async (value) => {
+      await validateDocumentTypeContentForSearch(value);
+      return true;
+    }),
 
   body('stakeholders')
     .optional()
     .isArray()
     .withMessage('Stakeholders must be an array')
-    //   .custom((value) => {
-    //     return validateStakeholderEmptiness(value);
-    //  })  //I do not know if needed or I should consider empty array like not filtering by stakeholder?!
     .custom((value) => {
-      return validateStakeholderContent(value);
+      return validateStakeholderContentForSearch(value);
     }),
   body('date')
     .optional()
@@ -311,6 +300,8 @@ const validateDate = (value: string) => {
 };
 
 
+
+//--------------------------Stakeholder------------------------------
 const validateStakeholderContent = async (stakeholders: mongoose.Types.ObjectId[]) => {
   for (const stakeholderId of stakeholders) {
     // Check if the ObjectId is valid
@@ -325,6 +316,19 @@ const validateStakeholderContent = async (stakeholders: mongoose.Types.ObjectId[
   }
   return true;
 };
+
+
+const validateStakeholderContentForSearch = async (stakeholders: string[]) => {
+  for (const stakeholderType of stakeholders) {
+    // Check if the stakeholder exists
+    const stakeholder = await Stakeholder.findOne({ type: stakeholderType });
+    if (!stakeholder) {
+      throw new Error(`Stakeholder ${stakeholderType} not found`);
+    }
+  }
+  return true;
+};
+
 
 const validateStakeholderEmptiness = (stakeholders: mongoose.Types.ObjectId[]) => {
   if (Array.isArray(stakeholders) && stakeholders.length === 0) {
@@ -342,3 +346,28 @@ const validateStakeholderEmptiness = (stakeholders: mongoose.Types.ObjectId[]) =
     }
     return true;
   }; 
+
+
+//--------------------------Document Type------------------------------
+  const validateDocumentTypeContent = async (documentTypes: mongoose.Types.ObjectId) => {
+        // Check if the ObjectId is valid
+      if (!mongoose.Types.ObjectId.isValid(documentTypes)) {
+        throw new Error('DocumentType must be valid MongoDB ObjectId');
+      }
+      // Check if the documentType exists in DB
+      const type = await DocumentType.findById(documentTypes);
+      if (!type) {
+        throw new Error(`Document Type with ID ${documentTypes} not found`);
+      }
+    return true;
+  };
+  
+
+  const validateDocumentTypeContentForSearch = async (documentType: string) => {
+    // Check if the type exists in DB
+  const type = await DocumentType.findOne({ type: { $regex: new RegExp('^' + documentType + '$', 'i') } });
+  if (!type) {
+    throw new Error(`Document Type with name ${documentType} not found`);
+  }
+  return true;
+};
