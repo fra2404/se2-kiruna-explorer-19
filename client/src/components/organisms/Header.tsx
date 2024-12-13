@@ -7,7 +7,6 @@ import DropdownModal from '../molecules/DropdownModal';
 import ButtonRounded from '../atoms/button/ButtonRounded';
 import MapStyleContext from '../../context/MapStyleContext';
 
-
 interface HeaderProps {
   page: string;
   headerRef?: any;
@@ -82,8 +81,8 @@ export const Header: React.FC<HeaderProps> = ({
             onClick={() => navigate(page == 'map' ? '/diagram' : '/')}
             style={{ pointerEvents: "auto" }}
           />
-          {/* Login/logout button */}
 
+          {/* Login/logout button */}
           <div className='ml-auto' style={{ pointerEvents: "auto" }}>
             {!isLoggedIn && !user ? (
               <ButtonRounded variant="filled" text="Login"
