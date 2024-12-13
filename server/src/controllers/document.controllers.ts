@@ -9,7 +9,6 @@ import {
   getDocumentByType,
   searchDocuments,
 } from '../services/document.service';
-// import { addingDocument, deleteDocumentByName, getAllDocuments, getDocumentById, updatingDocument } from '../services/document.service';
 import { IDocument } from '@interfaces/document.interface';
 import { IDocumentResponse } from '@interfaces/document.return.interface';
 import { DocNotFoundError } from '@utils/errors';

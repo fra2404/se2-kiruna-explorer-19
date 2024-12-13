@@ -60,11 +60,7 @@ const AllDocumentsList: React.FC<AllDocumentsListProps> = ({
 
   return (
     <>
-      <div className='flex flex-col'>
-        <div className='flex justify-between'>
-          <h1 className='text-2xl font-bold'>All Documents</h1>
-        </div>
-
+      <div className='flex flex-col mt-14'>
         <h2 className='text-xl'>Filters</h2>            
         <Filters filters={filters} setFilters={setFilters} />
         

@@ -182,33 +182,41 @@ const InputComponent: React.FC<InputComponentProps> = ({
     setShowPassword(!showPassword);
   };
 
-  const handleSelectChange = (selectedOption: Option | null) => {
-    if (selectedOption && selectedOption.value === '') {
-      setSelectedOption(null);
-      if (onChange) {
+  const deselectOptions = () => {
+    setSelectedOption(null);
+    if (onChange) {
+      onChange({
+        target: {
+          value: '',
+          name,
+        } as any,
+      } as ChangeEvent<HTMLSelectElement>);
+    }
+  }
+
+  const changingSelectedOption = (selectedOption: Option | null) => {
+    setSelectedOption(selectedOption);
+    if (onChange) {
+      if (returnObject) {
+        if (selectedOption) {
+          onChange(selectedOption); // Passa l'intero oggetto selezionato
+        }
+      } else {
         onChange({
           target: {
-            value: '',
+            value: selectedOption ? selectedOption.value : '',
             name,
           } as any,
         } as ChangeEvent<HTMLSelectElement>);
       }
+    }
+  }
+
+  const handleSelectChange = (selectedOption: Option | null) => {
+    if (selectedOption && selectedOption.value === '') {
+      deselectOptions();
     } else {
-      setSelectedOption(selectedOption);
-      if (onChange) {
-        if (returnObject) {
-          if (selectedOption) {
-            onChange(selectedOption); // Passa l'intero oggetto selezionato
-          }
-        } else {
-          onChange({
-            target: {
-              value: selectedOption ? selectedOption.value : '',
-              name,
-            } as any,
-          } as ChangeEvent<HTMLSelectElement>);
-        }
-      }
+      changingSelectedOption(selectedOption);
     }
   };
 

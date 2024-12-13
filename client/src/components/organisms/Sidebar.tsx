@@ -44,21 +44,21 @@ export const Sidebar: React.FC<SidebarProps> = ({
           position: 'fixed',
           top: 0,
           right: sidebarVisible ? "0" : "-100%",
-          transition: '350ms'
+          transition: '350ms',
+          maxHeight: '100vh',
+          overflow: 'auto'
         }}
         className='xl:w-2/5 lg:w-4/6 md:w-5/6 w-full'
       >
-        <div className='flex flex-col w-full p-2'>
-          <FaX 
-            style={{
-              right: '0px',
-              fontSize: '40px',
-              fontWeight: 'bold',
-              cursor: 'pointer'
-            }}
-            onClick={() => setSidebarVisible(false)}
-            className='self-end'
-          />
+        <div className='flex flex-col w-full'>
+          <div className='flex justify-between fixed w-full bg-white p-2 z-10'>
+            <h1 className='text-2xl font-bold'>All Documents</h1>
+            <FaX 
+              style={{ right: sidebarVisible ? '0.5rem' : '-100%', transition: '350ms'}}  //The best way I had to still have the transition. Not so beautiful but I don't know another method to have it working
+              onClick={() => setSidebarVisible(false)}
+              className='flex fixed top-2 cursor-pointer text-3xl'
+            />
+          </div>
 
           <AllDocumentsList
             coordinates={coordinates}

@@ -1,11 +1,9 @@
 import { Response, NextFunction } from 'express';
 import { CustomRequest } from '@interfaces/customRequest.interface';
-import { IUser } from '../interfaces/user.interface';
 import {
   createNewUser,
   deleteUserByEmail,
   getAllUsers,
-  getUserById,
   loginUser,
 } from '@services/user.service';
 import { CustomError } from '@utils/customError';
