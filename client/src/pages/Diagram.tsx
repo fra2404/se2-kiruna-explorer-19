@@ -331,7 +331,6 @@ const Diagram = () => {
                 ...node,
                 x: (node.year - 2000) * YEAR_SPACING, // Mapping the year
                 y: scaleMapping[node.scale == 'ARCHITECTURAL' ? node.architecturalScale : node.scale as keyof typeof scaleMapping], // Mapping the scale
-
             }));
 
 
@@ -374,6 +373,15 @@ const Diagram = () => {
     }, [documents]);
 
     const occupiedPositions = [] as any;
+    const computeYearX = (year: number) => {
+        return (year - 2000) * YEAR_SPACING;
+    };
+
+    const computeStyleY = (node: any) => {
+        console.log(`Computing style for scale ${node.scale}`);
+        return scaleMapping[node.scale == 'ARCHITECTURAL' ? node.architecturalScale : node.scale as keyof typeof scaleMapping];
+        // return scaleMapping[scale as keyof typeof scaleMapping];
+    }
 
     const label_style = [
         { id: "label_text", label: "Text", scale: "TEXT" },
@@ -384,7 +392,7 @@ const Diagram = () => {
         ...node,
         color: swedishFlagBlue,
         x: (minYear - 2000 - 1) * YEAR_SPACING, // Place the label on the left side of the graph, it depends on the minYear
-        y: scaleMapping[node.scale as keyof typeof scaleMapping], // Mapping the scale
+        y: computeStyleY(node),
         shape: "box",
         font: { ...LABEL_FONT, color: "#FFFFFF" },
 
@@ -396,7 +404,7 @@ const Diagram = () => {
             label: `${year}`,
             color: swedishFlagYellow,
             year: year,
-            x: (year - 2000) * YEAR_SPACING, // Mapping the year
+            x: computeYearX(year), // Mapping the year
             y: 50, // Place the label on the top side of the graph
             shape: "box",
             font: LABEL_FONT
@@ -449,6 +457,117 @@ const Diagram = () => {
 
         }
     }, [id, state.graph.nodes]);
+
+
+
+
+    useEffect(() => {
+        // Check the boundaries of the selected node
+
+        const nodeLastPosition = { x: 0, y: 0 };
+        const MAX_NODE_OFFSET = 80;
+
+        // Allow the user to move the node inside some boundaries
+        const saveNodePosition = (event) => {
+            const network = networkRef.current;
+            const node = network.getPositions([event.nodes[0]])[event.nodes[0]];
+            if (!node) {
+                return;
+            }
+            nodeLastPosition.x = node.x;
+            nodeLastPosition.y = node.y;
+        }
+
+        const checkNodeConstraints = (event) => {
+            const network = networkRef.current;
+            const node = network.getPositions([event.nodes[0]])[event.nodes[0]];
+            if (!node) {
+                return;
+            }
+
+            const nodeCurrentPosition = { x: node.x, y: node.y };
+
+            console.log("Selected node", event.nodes[0]);
+            console.log("Node IDs:", state.graph.nodes.map(node => node.id));
+
+            const draggedNode = state.graph.nodes.find(n => n.id === event.nodes[0]);
+
+            if (!draggedNode) {
+                return;
+            }
+
+            const newposition = { x: nodeCurrentPosition.x, y: nodeCurrentPosition.y };
+            // console.log(`Dragged node year: ${draggedNode.year}, scale: ${draggedNode.scale}`);
+            const center_x = computeYearX(draggedNode.year);
+            const center_y = computeStyleY(draggedNode);
+            // console.log(`Center x is ${center_x}, center y is ${center_y}`);
+
+            if (/^label_/.test(draggedNode.id) || /^1:/.test(draggedNode.id)) {
+                // Regex to filter the labels to avoid moving them
+                newposition.x = nodeLastPosition.x;
+                newposition.y = nodeLastPosition.y;
+            }
+            else {
+                if (nodeCurrentPosition.x - center_x > MAX_NODE_OFFSET) {
+                    // If the node is too far to the right
+                    newposition.x = center_x + MAX_NODE_OFFSET;
+                } else if (nodeCurrentPosition.x - center_x < -MAX_NODE_OFFSET) {
+                    // If the node is too far to the left
+                    newposition.x = center_x - MAX_NODE_OFFSET;
+                }
+
+                if (nodeCurrentPosition.y - center_y > MAX_NODE_OFFSET) {
+                    // If the node is too far to the top
+                    newposition.y = center_y + MAX_NODE_OFFSET;
+                } else if (nodeCurrentPosition.y - center_y < -MAX_NODE_OFFSET) {
+                    // If the node is too far to the bottom
+                    newposition.y = center_y - MAX_NODE_OFFSET;
+                }
+            }
+            network.moveNode(event.nodes[0], newposition.x, newposition.y);
+
+
+
+
+
+
+
+
+            // if (nodeCurrentPosition.y - center_y > MAX_NODE_OFFSET) {
+            //     console.log("Node is too far from the center");
+            //     // Troppo in basso:
+            //     network.moveNode(event.nodes[0], nodeCurrentPosition.x, center_y + MAX_NODE_OFFSET);
+            // }
+            // else if (nodeCurrentPosition.y - center_y < -MAX_NODE_OFFSET) {
+            //     console.log("Node is too far from the center");
+            //     // Troppo in alto:
+            //     network.moveNode(event.nodes[0], nodeCurrentPosition.x, center_y - MAX_NODE_OFFSET);
+            // }
+
+
+            //     if (nodePosition.x < graphBounds.minX) {
+            //         nodePosition.x = graphBounds.minX;
+            //     } else if (nodePosition.x > graphBounds.maxX) {
+            //         nodePosition.x = graphBounds.maxX;
+            //     }
+
+            // if (nodePosition.y < graphBounds.minY) {
+            //     nodePosition.y = graphBounds.minY;
+            // } else if (nodePosition.y > graphBounds.maxY) {
+            //     nodePosition.y = graphBounds.maxY;
+            // }
+
+            // network.moveNode(event.nodes[0], nodeLastPosition.x, nodePosition.y);
+        }
+
+        const network = networkRef.current;
+        if (network) {
+            network.on("dragStart", saveNodePosition);
+            console.log("Old position is", nodeLastPosition);
+            network.on("dragEnd", checkNodeConstraints);
+        }
+
+    }, [computeStyleY, state.graph.nodes]);
 
 
     useEffect(() => {
