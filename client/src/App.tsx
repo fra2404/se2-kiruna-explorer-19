@@ -7,6 +7,7 @@ import KirunaMap from './pages/KirunaMap.tsx';
 import { MunicipalityCoordinatesProvider } from './context/MunicipalityCoordinatesContext.tsx';
 import Diagram from './pages/Diagram.tsx';
 import LandingPage from './pages/LandingPage.tsx';
+import { SelectedDocumentProvider } from './context/SelectedDocumentContext.tsx';
 
 function App() {
   return (
@@ -14,11 +15,13 @@ function App() {
       <ModalProvider>
         <MapStyleProvider>
           <MunicipalityCoordinatesProvider>
-            <Routes>
-              <Route path="/" element={<LandingPage />} />
-              <Route path="/map" element={<KirunaMap />} />
-              <Route path="/diagram" element={<Diagram />} />
-            </Routes>
+            <SelectedDocumentProvider>
+              <Routes>
+                <Route path="/" element={<LandingPage />} />
+                <Route path="/map" element={<KirunaMap />} />
+                <Route path="/diagram" element={<Diagram />} />
+              </Routes>
+            </SelectedDocumentProvider>
           </MunicipalityCoordinatesProvider>
         </MapStyleProvider>
       </ModalProvider>
