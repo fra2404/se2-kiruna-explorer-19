@@ -2,7 +2,8 @@ import DocumentType from '../schemas/documentType.schema';
 import { CustomError } from '@utils/customError';
 import { IDocumentType } from '@interfaces/documentType.interface';
 import { DocumentTypeNotFoundError } from '@utils/errors';
-
+import { ObjectId } from 'mongoose';
+import { ObjectId as MongoObjectId } from 'mongodb';
 
 //Add new documentType
 export const addingDocumentType = async (
@@ -48,4 +49,32 @@ export const getDocumentTypeById = async (
     // Handle error here if needed
     throw new CustomError('Internal Server Error', 500);
   }
+};
+
+
+export const fetchDocumentTypes = async (
+  documentTypeId: ObjectId,
+): Promise<IDocumentType | null> => {
+  if (documentTypeId) {
+    const documentType = await getDocumentTypeById(documentTypeId.toString());
+    if (documentType) 
+       return documentType;
+}
+  return null;
+};
+
+
+export const fetchDocumentTypesForSearch = async (
+  documentTypeName: string,
+): Promise<ObjectId | null> => {
+  if (documentTypeName) {
+    // First find the document type by name
+    const documentType = await DocumentType.findOne({
+      type: { $regex: new RegExp('^' + documentTypeName + '$', 'i') },
+    }).select('-createdAt -updatedAt -__v');
+    if (documentType) {
+      return (documentType._id as unknown) as ObjectId;
+    }
+  }
+  return null;
 };

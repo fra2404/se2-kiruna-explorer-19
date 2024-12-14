@@ -15,6 +15,6 @@ router.use('/coordinates', coordinateRoutes);
 router.use('/media', mediaRoutes);
 router.use('/graph', graphRoutes);
 router.use('/stakeholders', stakeholderRoutes)
-router.use('/documentTypes', documentTypesRoutes);
+router.use('/document-types', documentTypesRoutes);
 
 export default router;

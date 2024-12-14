@@ -14,14 +14,13 @@ import {
 } from '../utils/errors';
 import { ICoordinate } from '@interfaces/coordinate.interface';
 import { getCoordinateById } from './coordinate.service';
-import { getMediaMetadataById } from './media.service';
-import { ObjectId } from 'mongoose';
+import { fetchMedia, getMediaMetadataById } from './media.service';
 import { ObjectId as MongoObjectId } from 'mongodb';
 import { IReturnMedia } from '@interfaces/media.return.interface';
 import { IStakeholder } from '@interfaces/stakeholder.interface';
-import { getStakeholdersById } from './stakeholder.service';
+import { fetchStakeholders, fetchStakeholdersForSearch, getStakeholdersById } from './stakeholder.service';
 import { IDocumentType } from '@interfaces/documentType.interface';
-import { getDocumentTypeById } from './documentType.service';
+import { fetchDocumentTypes, fetchDocumentTypesForSearch, getDocumentTypeById } from './documentType.service';
 
 
 //addDocument(Story 1)
@@ -671,82 +670,8 @@ export const getDocumentByType = async (
 };
 
 
-export const fetchMedia = async (
-  mediaIds: ObjectId[],
-): Promise<IReturnMedia[] | null> => {
-  if (mediaIds.length > 0) {
-    const mediaResults = await Promise.all(
-      mediaIds.map((mediaId) => getMediaMetadataById(mediaId.toString())),
-    );
-    return mediaResults.filter(
-      (metadata): metadata is IReturnMedia => metadata !== null,
-    );
-  }
-  return null;
-};
-
-
-export const fetchStakeholders = async (
-  stakeholderIds: ObjectId[],
-): Promise<IStakeholder[]> => {
-  if (stakeholderIds.length > 0) {
-    const stakeholdersResults = await Promise.all(
-      stakeholderIds.map((stakeholderId) => getStakeholdersById(stakeholderId.toString())),
-    );
-    return stakeholdersResults.filter(
-      (stakeholder): stakeholder is IStakeholder => stakeholder !== null,
-    );
-  }
-  return [];
-};
-
-
-export const fetchStakeholdersForSearch = async (
-  stakeholderNames: string[],  
-): Promise<ObjectId[]> => {
-  console.log("Searching for stakeholder names: ", stakeholderNames);
-  
-  if (stakeholderNames && stakeholderNames.length > 0) {
-    // Find stakeholders by names
-    const stakeholders = await Stakeholder.find({
-      type: { $in: stakeholderNames.map(type => new RegExp('^' + type + '$', 'i')) } 
-    });
-
-    console.log("Found stakeholders: ", stakeholders);
-    if (stakeholders.length > 0) {
-      
-      return stakeholders.map(stakeholder => (stakeholder._id as unknown) as ObjectId); // Return the stakeholder IDs
-    }
-  }
-  
-  return []; // no stakeholders found
-};
 
 
 
-export const fetchDocumentTypes = async (
-  documentTypeId: ObjectId,
-): Promise<IDocumentType | null> => {
-  if (documentTypeId) {
-    const documentType = await getDocumentTypeById(documentTypeId.toString());
-    if (documentType) 
-       return documentType;
-}
-  return null;
-};
 
 
-export const fetchDocumentTypesForSearch = async (
-  documentTypeName: string,
-): Promise<ObjectId | null> => {
-  if (documentTypeName) {
-    // First find the document type by name
-    const documentType = await DocumentType.findOne({
-      type: { $regex: new RegExp('^' + documentTypeName + '$', 'i') },
-    });
-    if (documentType) {
-      return (documentType._id as unknown) as ObjectId;
-    }
-  }
-  return null;
-};
