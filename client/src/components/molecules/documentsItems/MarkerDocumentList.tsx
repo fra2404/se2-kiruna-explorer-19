@@ -8,6 +8,8 @@ interface DocumentProps {
   setCoordinates: (coordinates: any) => void;
   allDocuments: IDocument[];
   setDocuments: (documents: IDocument[]) => void;
+  filteredDocuments: IDocument[];
+  setFilteredDocuments: (filteredDocuments: IDocument[]) => void;
 }
 
 export const MarkerDocumentList: React.FC<DocumentProps> = ({
@@ -15,7 +17,9 @@ export const MarkerDocumentList: React.FC<DocumentProps> = ({
   coordinates,
   setCoordinates,
   allDocuments,
-  setDocuments
+  setDocuments,
+  filteredDocuments,
+  setFilteredDocuments
 }) => {
   let documentList;
   documentList = Object.entries(markerDocuments).map(([id, d]) => {
@@ -26,7 +30,9 @@ export const MarkerDocumentList: React.FC<DocumentProps> = ({
         coordinates={coordinates}
         setCoordinates={setCoordinates}
         allDocuments={allDocuments}
-        setDocuments={setDocuments}
+        setAllDocuments={setDocuments}
+        filteredDocuments={filteredDocuments}
+        setFilteredDocuments={setFilteredDocuments}
       />
     )
   })

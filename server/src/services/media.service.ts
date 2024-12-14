@@ -80,7 +80,6 @@ export const uploadMediaService = async (
     // Step 6: Return presigned URL
     return presignedUrl;
   } catch (error) {
-    //console.error('Error in uploadMediaService:', error);
     throw new CustomError('Internal Server Error', 500);
   }
 };
@@ -96,8 +95,8 @@ export const updateMediaMetadata = async (
     updateFields.pages = metadata.pages;
   }
   updateFields.size = metadata.size;
-
-  if (Object.keys(updateFields).length === 0) {
+  
+  if (updateFields.length === 0 || updateFields.size === undefined || updateFields.size === null) {
     throw new CustomError('No fields to update', 400); // Custom error for no updates
   }
 

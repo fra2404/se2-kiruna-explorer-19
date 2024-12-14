@@ -59,7 +59,7 @@ export const getTypeIcon = (type: string, fillColor: string) => {
       html: renderToString(<TechnicalDocIcon fillColor={fillColor} />),
     });
   } else {
-    new Icon({
+    return new Icon({
       iconUrl: 'path/to/icon.png',
       iconSize: [38, 45],
     });

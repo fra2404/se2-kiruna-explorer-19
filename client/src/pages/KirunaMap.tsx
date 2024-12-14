@@ -43,41 +43,44 @@ export default function KirunaMap() {
 
   const [coordinates, setCoordinates] = useState({});
 
-  const { documents, setDocuments, refreshDocuments, isLoading, error } = useDocuments();
+  const { allDocuments, setAllDocuments, filteredDocuments, setFilteredDocuments } = useDocuments();
 
   //Manages the coords modal
   const [manageCoordsModalOpen, setManageCoordsModalOpen] = useState(false);
 
+  //Manages the sidebar
+  const [sidebarVisible, setSidebarVisible] = useState(false);
+
   useEffect(() => {
-    API.getCoordinates()
-      .then((coords) => {
-        const result: {
-          [id: string]: {
-            type: string;
-            coordinates: LatLng | LatLng[] | LatLng[][];
-            name: string;
+  API.getCoordinates()
+    .then((coords) => {
+      const result: {
+        [id: string]: {
+          type: string;
+          coordinates: LatLng | LatLng[] | LatLng[][];
+          name: string;
+        };
+      } = {};
+      coords.forEach(
+        (c: {
+          _id: string;
+          type: string;
+          coordinates: LatLng | LatLng[] | LatLng[][];
+          name: string;
+        }) => {
+          result[c._id] = {
+            type: c.type,
+            coordinates: c.coordinates,
+            name: c.name,
           };
-        } = {};
-        coords.forEach(
-          (c: {
-            _id: string;
-            type: string;
-            coordinates: LatLng | LatLng[] | LatLng[][];
-            name: string;
-          }) => {
-            result[c._id] = {
-              type: c.type,
-              coordinates: c.coordinates,
-              name: c.name,
-            };
-          },
-        );
-        setCoordinates(result);
-      })
-      .catch((e) => {
-        console.log(e);
-        setFeedbackFromError(e);
-      });
+        },
+      );
+      setCoordinates(result);
+    })
+    .catch((e) => {
+      console.log(e);
+      setFeedbackFromError(e);
+    });
   }, []);
 
   const [width, setWidth] = useState(window.innerWidth);
@@ -93,17 +96,32 @@ export default function KirunaMap() {
   }, []);
 
   return (
-    <div style={{ width: width, height: height }}>
+    <div style={{ 
+        width: width,
+        height: height
+      }}
+    >
       <Header 
         page='map'
-        setManageCoordsModalOpen={setManageCoordsModalOpen} 
+        sidebarVisible={sidebarVisible}
+        setSidebarVisible={setSidebarVisible}
+        setManageCoordsModalOpen={setManageCoordsModalOpen}
+        coordinates={coordinates}
+        setCoordinates={setCoordinates}
+        allDocuments={allDocuments}
+        setAllDocuments={setAllDocuments}
+        filteredDocuments={filteredDocuments}
+        setFilteredDocuments={setFilteredDocuments}
       />
 
         <Overlay 
           coordinates={coordinates}
           setCoordinates={setCoordinates}
-          documents={documents}
-          setDocuments={setDocuments}
+          documents={allDocuments}
+          setDocuments={setAllDocuments}
+          sidebarVisible={sidebarVisible}
+          filteredDocuments={filteredDocuments}
+          setFilteredDocuments={setFilteredDocuments}
         />
 
       <CustomMap>
@@ -138,10 +156,10 @@ export default function KirunaMap() {
           }}
         >
           {Object.entries(coordinates).map(([coordId, coordInfo]: any) => {
-            const filteredDocuments = documents.filter(
+            const coordDocuments = filteredDocuments.filter(
               (d) => d.coordinates?._id == coordId,
             );
-            if (filteredDocuments.length > 0) {
+            if (coordDocuments.length > 0) {
               return (
                 <Point
                   key={coordId}
@@ -151,9 +169,11 @@ export default function KirunaMap() {
                   type={coordInfo.type}
                   coordinates={coordinates}
                   setCoordinates={setCoordinates}
-                  pointDocuments={filteredDocuments}
-                  allDocuments={documents}
-                  setDocuments={setDocuments} 
+                  pointDocuments={coordDocuments}
+                  allDocuments={allDocuments}
+                  setAllDocuments={setAllDocuments}
+                  filteredDocuments={filteredDocuments}
+                  setFilteredDocuments={setFilteredDocuments}
                 />
               );
             }
@@ -164,8 +184,10 @@ export default function KirunaMap() {
           <ClickMarker
             coordinates={coordinates}
             setCoordinates={setCoordinates}
-            documents={documents}
-            setDocuments={setDocuments}
+            documents={allDocuments}
+            setDocuments={setAllDocuments}
+            filteredDocuments={filteredDocuments}
+            setFilteredDocuments={setFilteredDocuments}
           />
         )}
 
@@ -174,7 +196,7 @@ export default function KirunaMap() {
           setManageCoordsModalOpen={setManageCoordsModalOpen}
           coordinates={coordinates}
           setCoordinates={setCoordinates}
-          documents={documents}
+          documents={allDocuments}
         />
       </CustomMap>
     </div>

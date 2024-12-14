@@ -7,7 +7,6 @@ import MapStyleContext from '../../context/MapStyleContext';
 import CustomMap from '../molecules/CustomMap';
 import { ICoordinate } from '../../utils/interfaces/document.interface';
 import { createCoordinate } from '../../API';
-import DrawingPanel from '../molecules/DrawingPanel';
 
 interface MapSectionProps {
   coordinates: any;
@@ -88,7 +87,7 @@ const MapSection: React.FC<MapSectionProps> = ({
       <h4>Document position:</h4>
       <div
         className="w-full grid grid-rows-[auto_1fr] md:text-center"
-        style={{ height: '50vh' }}
+        style={{ height: '70vh' }}
       >
         <div className="w-80 justify-self-end" style={{ zIndex: 1000 }}>
           <InputComponent
@@ -158,16 +157,6 @@ const MapSection: React.FC<MapSectionProps> = ({
               handleAddCoordinate={handleAddPoint}
             />
           )}
-
-          <DrawingPanel 
-            coordinates={coordinates}
-            setCoordinates={setCoordinates}
-            setSelectedCoordId={setSelectedCoordId}
-            setPosition={setPosition}
-            setCoordName={setCoordName}
-            featureGroupRef={featureGroupRef}
-            popupRef={popupRef}
-          />
 
           {selectedCoordId &&
             coordinates[selectedCoordId]['type'] == 'Polygon' && (

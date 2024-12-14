@@ -6,18 +6,35 @@ import { LoginModal } from './modals/LoginModal';
 import DropdownModal from '../molecules/DropdownModal';
 import ButtonRounded from '../atoms/button/ButtonRounded';
 import MapStyleContext from '../../context/MapStyleContext';
-
+import { Sidebar } from './Sidebar';
+import { IDocument } from '../../utils/interfaces/document.interface';
 
 interface HeaderProps {
   page: string;
   headerRef?: any;
-  setManageCoordsModalOpen?: (manageCoordsModalOpen: boolean) => void
+  sidebarVisible: boolean;
+  setSidebarVisible: (sidebarVisible: boolean) => void;
+  setManageCoordsModalOpen?: (manageCoordsModalOpen: boolean) => void;
+  coordinates: any;
+  setCoordinates: (coordinates: any) => void;
+  allDocuments: IDocument[];
+  setAllDocuments: (allDocuments: IDocument[]) => void;
+  filteredDocuments: IDocument[];
+  setFilteredDocuments: (documents: IDocument[]) => void;
 }
 
 export const Header: React.FC<HeaderProps> = ({
   page,
   headerRef,
-  setManageCoordsModalOpen
+  sidebarVisible,
+  setSidebarVisible,
+  setManageCoordsModalOpen,
+  coordinates,
+  setCoordinates,
+  allDocuments,
+  setAllDocuments,
+  filteredDocuments,
+  setFilteredDocuments,
 }) => {
   const [dateTime, setDateTime] = useState(new Date().toLocaleString());
   const navigate = useNavigate();
@@ -58,25 +75,34 @@ export const Header: React.FC<HeaderProps> = ({
     >
 
       <div className="flex items-center justify-between" style={{ background: "transparent" }}>
-        <div className='flex items-center'>
-          <ButtonRounded variant="filled" className="bg-black p-2"
-            img="./src/assets/logo.png" text={dateTime}
+        <ButtonRounded
+          text={
+            <>
+              <img src='./src/assets/logo.png' alt='Logo' className='h-12 border border-black rounded-full '/>
+              <h1 className={mapType == "osm" || page != 'map' ? 'font-bold text-black ml-2 text-3xl' : "font-bold text-white ml-2 text-3xl"}>Kiruna eXplorer</h1>
+            </>
+          }
+          variant='text'
+          style={{
+            pointerEvents: 'auto'
+          }}
+          className='flex items-center border-none'
+          onClick={() => navigate('/')}
+        />
+
+        <div className='flex items-center gap-4'>
+          {/* Date and time */}
+          <ButtonRounded variant="filled" className="bg-black p-3"
+            text={dateTime}
             style={{
-              width: '220px',
-              minWidth: '220px',
-              maxWidth: '220px',
               display: 'flex',
               justifyContent: 'center',
               alignItems: 'center',
               pointerEvents: "auto"
-            }}
-            onClick={() => navigate('/')}
+            }} 
           />
-          <h1 className={mapType == "osm" || page != 'map' ? 'font-bold text-black ml-2 text-2xl' : "font-bold text-white ml-2 text-2xl"}>Kiruna eXplorer</h1>
-        </div>
 
-        <div className='flex items-center gap-4'>
-          {/* Button to switch to the diagram view */}
+          {/* Button to switch the map/diagram view */}
           <ButtonRounded
             variant="filled"
             text={page == 'map' ? "Go to Diagram" : 'Go to Map'}
@@ -84,8 +110,8 @@ export const Header: React.FC<HeaderProps> = ({
             onClick={() => navigate(page == 'map' ? '/diagram' : '/map')}
             style={{ pointerEvents: "auto" }}
           />
-          {/* Login/logout button */}
 
+          {/* Login/logout button */}
           <div className='ml-auto' style={{ pointerEvents: "auto" }}>
             {!isLoggedIn && !user ? (
               <ButtonRounded variant="filled" text="Login"
@@ -103,6 +129,20 @@ export const Header: React.FC<HeaderProps> = ({
                 />
               </div>
             )}
+          </div>
+
+          {/* Sidebar */}
+          <div className='ml-auto' style={{ pointerEvents: "auto" }}>
+            <Sidebar
+              sidebarVisible={sidebarVisible}
+              setSidebarVisible={setSidebarVisible}
+              coordinates={coordinates}
+              setCoordinates={setCoordinates}
+              allDocuments={allDocuments}
+              setAllDocuments={setAllDocuments}
+              filteredDocuments={filteredDocuments}
+              setFilteredDocuments={setFilteredDocuments}
+            />
           </div>
         </div>
       </div>
