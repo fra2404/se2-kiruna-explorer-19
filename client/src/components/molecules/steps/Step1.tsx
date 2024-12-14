@@ -4,7 +4,8 @@ import './Step1.css';
 import { stakeholderOptions as initialStakeholderOptions } from '../../../shared/stakeholder.options.const';
 import { scaleOptions } from '../../../shared/scale.options.const';
 import { years, months, getDays } from '../../../utils/date';
-import SelectWithInlineInput from '../../atoms/input/custom-input';
+import { FaCheck } from 'react-icons/fa';
+import ButtonRounded from '../../atoms/button/ButtonRounded';
 
 interface Step1Props {
   title: string;
@@ -43,6 +44,9 @@ const Step1: React.FC<Step1Props> = ({
     issuanceDate ? issuanceDate.split('-')[2] : '',
   );
   const [stakeholderOptions, setStakeholderOptions] = useState(initialStakeholderOptions);
+  const [isAddingNewStakeholder, setIsAddingNewStakeholder] = useState(false);
+  const [newOptionLabel, setNewOptionLabel] = useState('');
+  const [inputKey, setInputKey] = useState(0); // Aggiungi uno stato per la chiave dinamica
 
   useEffect(() => {
     if (issuanceDate) {
@@ -72,8 +76,14 @@ const Step1: React.FC<Step1Props> = ({
   }, [selectedMonth]);
 
   const handleSaveNewStakeholder = (newStakeholder: { value: string; label: string }) => {
-    setStakeholderOptions([...stakeholderOptions, newStakeholder]);
-    setStakeholders([...stakeholders, newStakeholder.value]);
+    const newOption = { value: newOptionLabel, label: newOptionLabel };
+    setStakeholderOptions([...stakeholderOptions, newOption]);
+    const updatedStakeholders = [...stakeholders, newOption.value];
+    console.log('Stakeholders selezionati:', updatedStakeholders);
+    setStakeholders(updatedStakeholders);
+    setIsAddingNewStakeholder(false);
+    setNewOptionLabel('');
+    setInputKey((prevKey) => prevKey + 1); // Aggiorna la chiave dinamica per forzare il rerender
   };
 
   return (
@@ -95,13 +105,10 @@ const Step1: React.FC<Step1Props> = ({
         />
       </div>
 
-      {/* <div className='my-2'>
-        <SelectWithInlineInput />
-        </div>
- */}
       {/* Stakeholders */}
       <div className="my-2">
         <InputComponent
+          key={inputKey} // Aggiungi la chiave dinamica qui
           label="Stakeholder(s)"
           type="multi-select"
           options={stakeholderOptions}
@@ -112,13 +119,7 @@ const Step1: React.FC<Step1Props> = ({
           onChange={(selectedOptions) => {
             setStakeholders(
               selectedOptions
-                ? (() => {
-                    if (Array.isArray(selectedOptions)) {
-                      return selectedOptions.map((option) => option.value);
-                    } else {
-                      return [];
-                    }
-                  })()
+                ? Array.isArray(selectedOptions) ? selectedOptions.map((option) => option.value) : []
                 : [],
             );
           }}
@@ -126,8 +127,34 @@ const Step1: React.FC<Step1Props> = ({
           placeholder="Select stakeholder(s)"
           error={errors.stakeholders}
           addNew={true}
-          onAddNew={handleSaveNewStakeholder}
+          onAddNewSelect={() => setIsAddingNewStakeholder(true)}
         />
+        {isAddingNewStakeholder && (
+                    <div className="flex items-center p-2 mt-2">
+            <InputComponent
+              label="New Stakeholder"
+              type="text"
+              value={newOptionLabel}
+              onChange={(v) => {
+                if ('target' in v) {
+                  setNewOptionLabel(v.target.value);
+                }
+              }}
+              placeholder="Enter new stakeholder"
+              onKeyDown={(e) => {
+                if (e.key === 'Enter') {
+                  handleSaveNewStakeholder({ value: newOptionLabel, label: newOptionLabel });
+                }
+              }}
+            />
+            <ButtonRounded
+              variant="filled"
+              text="Confirm"
+              className="ml-4 bg-black text-white text-xs pt-2 pb-2 pl-3 pr-3" // Aggiungi margine sinistro
+              onClick={() => handleSaveNewStakeholder({ value: newOptionLabel, label: newOptionLabel })}
+            />
+          </div>
+        )}
       </div>
 
       {/* Scale of document */}
