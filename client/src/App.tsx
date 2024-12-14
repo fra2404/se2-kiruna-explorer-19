@@ -17,7 +17,7 @@ function App() {
             <Routes>
               <Route path="/" element={<LandingPage />} />
               <Route path="/map" element={<KirunaMap />} />
-              <Route path="/diagram" element={<Diagram />} />
+              <Route path="/diagram/:id?" element={<Diagram />} />  {/* The id of the document is flagged as optional because we want to access the diagram even without a document selected */}
             </Routes>
           </MunicipalityCoordinatesProvider>
         </MapStyleProvider>
