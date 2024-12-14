@@ -4,6 +4,7 @@ import './Step1.css';
 import { stakeholderOptions as initialStakeholderOptions } from '../../../shared/stakeholder.options.const';
 import { scaleOptions } from '../../../shared/scale.options.const';
 import { years, months, getDays } from '../../../utils/date';
+import SelectWithInlineInput from '../../atoms/input/custom-input';
 
 interface Step1Props {
   title: string;
@@ -94,6 +95,10 @@ const Step1: React.FC<Step1Props> = ({
         />
       </div>
 
+      {/* <div className='my-2'>
+        <SelectWithInlineInput />
+        </div>
+ */}
       {/* Stakeholders */}
       <div className="my-2">
         <InputComponent

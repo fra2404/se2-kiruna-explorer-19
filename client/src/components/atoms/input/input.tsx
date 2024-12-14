@@ -1,4 +1,4 @@
-import React, { ChangeEvent, useEffect, useState, useCallback } from 'react';
+import React, { ChangeEvent, useEffect, useState, useCallback, useRef } from 'react';
 import Select, { components } from 'react-select';
 import { FaEye, FaEyeSlash, FaCheck } from 'react-icons/fa';
 
@@ -104,6 +104,7 @@ const InputComponent: React.FC<InputComponentProps> = ({
   const [showPassword, setShowPassword] = useState(false);
   const [isAddingNew, setIsAddingNew] = useState(false);
   const [newOptionLabel, setNewOptionLabel] = useState('');
+  const newOptionInputRef = useRef<HTMLInputElement>(null);
 
   const validateEmail = useCallback(
     (email: string) => {
@@ -142,6 +143,12 @@ const InputComponent: React.FC<InputComponentProps> = ({
       validateField((value as string) || '');
     }
   }, [value, type, validateEmail, validateField]);
+
+  useEffect(() => {
+    if (isAddingNew && newOptionInputRef.current) {
+      newOptionInputRef.current.focus();
+    }
+  }, [isAddingNew]);
 
   const customOption = useCallback(
     (props: { data: Option; innerRef: any; innerProps: any }) => {
@@ -250,7 +257,7 @@ const InputComponent: React.FC<InputComponentProps> = ({
     ? [{ value: 'add-new', label: '+ Add New' }, ...options]
     : options;
 
-    const CustomOption = (props: any) => {
+  const CustomOption = (props: any) => {
     if (props.data.value === 'add-new') {
       return (
         <div className="flex items-center p-2">
@@ -260,6 +267,7 @@ const InputComponent: React.FC<InputComponentProps> = ({
             placeholder="Enter new option"
             value={newOptionLabel}
             onChange={(e) => setNewOptionLabel(e.target.value)}
+            ref={newOptionInputRef}
           />
           <button
             type="button"
