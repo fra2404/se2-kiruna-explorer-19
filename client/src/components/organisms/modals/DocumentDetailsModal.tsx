@@ -31,12 +31,15 @@ const DocumentDetailsModal: React.FC<DocumentDetailsModalProps> = ({
   filteredDocuments,
   setFilteredDocuments
 }) => {
-  console.log('DocumentDetailsModal - document:', document);
   const { isLoggedIn, user } = useAuth();
   const [modalOpen, setModalOpen] = useState(false);
-  const [connectedDocuments, setConnectedDocuments] = useState<IDocument[]>([]);
+  const [connectedDocuments, setConnectedDocuments] = useState<any>([]);
   const [currentDocument, setCurrentDocument] = useState<IDocument>(document);
-  const [documentLabel, setDocumentLabel] = useState<string>('');
+  const [documentLabel, setDocumentLabel] = useState<string>(
+    document.scale === 'ARCHITECTURAL' 
+    && document.architecturalScale 
+    ? ` - ${document.architecturalScale}` 
+    : '');
 
   const matchType = (type: string) => {
     switch (type) {
@@ -68,33 +71,20 @@ const DocumentDetailsModal: React.FC<DocumentDetailsModalProps> = ({
 
   useEffect(() => {
     if (!currentDocument || !currentDocument.connections) {
-      setConnectedDocuments([]); // Réinitialiser si le document change
+      setConnectedDocuments([]); 
       return;
     }
 
-    const fetchConnectedDocuments = async () => {
-      try {
-        // Récupérer tous les documents liés via leurs IDs
-        const documentFetchPromises = currentDocument.connections?.map((connection) =>
-          API.getDocumentById(connection.document.toString())
-        );
-
-        // Attendre les résultats
-        const documents = await Promise.all(documentFetchPromises as Promise<IDocument>[]);
-
-        // Mettre à jour l'état
-        setConnectedDocuments(documents);
-      } catch (error) {
-        console.error("Erreur lors de la récupération des documents connectés :", error);
-        setConnectedDocuments([]);
+    const docs = currentDocument.connections?.map((conn) => {
+      return {
+        doc : allDocuments.find((doc) => doc.id === conn.document.toString()),
+        type: conn.type
       }
-    };
+    });
 
-    fetchConnectedDocuments();
+    setConnectedDocuments(docs);
     setDocumentLabel(currentDocument.scale === 'ARCHITECTURAL' && currentDocument.architecturalScale ? ` - ${currentDocument.architecturalScale}` : '');
   }, [currentDocument]);
-
-//  const documentLabel = currentDocument.scale === 'ARCHITECTURAL' && currentDocument.architecturalScale ? ` - ${currentDocument.architecturalScale}` : '';
 
   const list = [
     { label: 'Title', content: currentDocument.title },
@@ -117,9 +107,10 @@ const DocumentDetailsModal: React.FC<DocumentDetailsModalProps> = ({
       content: connectedDocuments.map((cd, index) => {
         return (
           <>
-            <span key={cd.id} onClick={()=>{setCurrentDocument(cd)}}
-            className='text-blue-600 hover:underline cursor-pointer'>{cd.title}</span>
-            <span>{index !== currentDocument.connections.length - 1 && " , "}</span>
+            <div key={index} onClick={()=>{setCurrentDocument(cd.doc)}}>
+              <span className='text-blue-600 hover:underline cursor-pointer'>{cd.doc?.title}</span>
+              <span> - {cd.type} </span>
+            </div>
           </>
         )
       }) 
