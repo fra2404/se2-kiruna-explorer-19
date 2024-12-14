@@ -8,18 +8,16 @@ import { validateNewDocumentType } from '@utils/validators/documentTypes.validat
 const router = express.Router();
 
 router.post(
-    '/add',
-    authenticateUser,
-    authorizeRoles('PLANNER', 'DEVELOPER'),
-    validateNewDocumentType,
-    handleValidationErrors,
-    addDocumentTypeController,
-  );
+  '/add',
+  authenticateUser,
+  authorizeRoles('PLANNER', 'DEVELOPER'),
+  validateNewDocumentType,
+  handleValidationErrors,
+  addDocumentTypeController,
+);
 
-  router.get('/', 
-              authenticateUser,
-              authorizeRoles('PLANNER', 'DEVELOPER'), 
-              handleValidationErrors,
-              getAllDocumentTypesController); //Get All DocumentTypes
+router.get('/',
+  handleValidationErrors,
+  getAllDocumentTypesController); //Get All DocumentTypes
 
-  export const documentTypesRoutes = router;
+export const documentTypesRoutes = router;

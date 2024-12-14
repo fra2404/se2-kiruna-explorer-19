@@ -8,18 +8,16 @@ import { validateNewStakeholderType } from '@utils/validators/stakeholder.valida
 const router = express.Router();
 
 router.post(
-    '/add',
-    authenticateUser,
-    authorizeRoles('PLANNER', 'DEVELOPER'),
-    validateNewStakeholderType,
-    handleValidationErrors,
-    addStakeholderController,
-  );
+  '/add',
+  authenticateUser,
+  authorizeRoles('PLANNER', 'DEVELOPER'),
+  validateNewStakeholderType,
+  handleValidationErrors,
+  addStakeholderController,
+);
 
-  router.get('/', 
-              authenticateUser,
-              authorizeRoles('PLANNER', 'DEVELOPER'), 
-              handleValidationErrors,
-              getAllStakeholdersController); //Get All Stakeholders
+router.get('/',
+  handleValidationErrors,
+  getAllStakeholdersController); //Get All Stakeholders
 
-  export const stakeholderRoutes = router;
+export const stakeholderRoutes = router;
