@@ -1,5 +1,6 @@
-import React from 'react';
+import React, { useState } from 'react';
 import InputComponent from '../../atoms/input/input';
+import ButtonRounded from '../../atoms/button/ButtonRounded';
 
 interface Step2Props {
   description: string;
@@ -22,6 +23,18 @@ const Step2: React.FC<Step2Props> = ({
   documentTypeOptions,
   errors,
 }) => {
+  const [isAddingNewDocType, setIsAddingNewDocType] = useState(false);
+  const [newDocTypeLabel, setNewDocTypeLabel] = useState('');
+  const [docTypeOptions, setDocTypeOptions] = useState(documentTypeOptions);
+
+  const handleSaveNewDocType = (newDocType: { value: string; label: string }) => {
+    const newOption = { value: newDocTypeLabel, label: newDocTypeLabel };
+    setDocTypeOptions([...docTypeOptions, newOption]);
+    setDocType(newOption.value);
+    setIsAddingNewDocType(false);
+    setNewDocTypeLabel('');
+  };
+
   return (
     <>
       {/* Description */}
@@ -63,9 +76,8 @@ const Step2: React.FC<Step2Props> = ({
         <InputComponent
           label="Type"
           type="select"
-          options={documentTypeOptions}
-          defaultValue={docType}
-          value={docType}
+          options={docTypeOptions}
+          value={{ value: docType, label: docType }}
           onChange={(e) => {
             if ('target' in e) {
               setDocType(e.target.value);
@@ -74,7 +86,36 @@ const Step2: React.FC<Step2Props> = ({
           required={true}
           placeholder="Select document type..."
           error={errors.docType}
+          addNew={true}
+          onAddNewSelect={() => setIsAddingNewDocType(true)}
         />
+        {isAddingNewDocType && (
+          <div className="flex items-center p-2 mt-2">
+            <InputComponent
+              label="New Document Type"
+              type="text"
+              value={newDocTypeLabel}
+              onChange={(v) => {
+                if ('target' in v) {
+                  setNewDocTypeLabel(v.target.value);
+                }
+              }}
+              placeholder="Enter new document type"
+              required={true}
+              onKeyDown={(e) => {
+                if (e.key === 'Enter') {
+                  handleSaveNewDocType({ value: newDocTypeLabel, label: newDocTypeLabel });
+                }
+              }}
+            />
+            <ButtonRounded
+              variant="filled"
+              text="Confirm"
+              className="ml-4 bg-black text-white text-xs pt-2 pb-2 pl-3 pr-3"
+              onClick={() => handleSaveNewDocType({ value: newDocTypeLabel, label: newDocTypeLabel })}
+            />
+          </div>
+        )}
       </div>
     </>
   );
