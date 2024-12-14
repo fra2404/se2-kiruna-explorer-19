@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import InputComponent from '../../atoms/input/input';
 import ButtonRounded from '../../atoms/button/ButtonRounded';
 
@@ -26,11 +26,24 @@ const Step2: React.FC<Step2Props> = ({
   const [isAddingNewDocType, setIsAddingNewDocType] = useState(false);
   const [newDocTypeLabel, setNewDocTypeLabel] = useState('');
   const [docTypeOptions, setDocTypeOptions] = useState(documentTypeOptions);
+  const [inputKey, setInputKey] = useState(0); // Aggiungi uno stato per la chiave dinamica
+  const newDocTypeInputRef = useRef<HTMLInputElement>(null); // Crea un riferimento per il campo di input
 
-  const handleSaveNewDocType = (newDocType: { value: string; label: string }) => {
+  useEffect(() => {
+    setInputKey((prevKey) => prevKey + 1); // Forza il rerender quando docType cambia
+  }, [docType]);
+
+  useEffect(() => {
+    if (isAddingNewDocType && newDocTypeInputRef.current) {
+      newDocTypeInputRef.current.focus(); // Imposta il focus sul campo di input
+    }
+  }, [isAddingNewDocType]);
+
+  const handleSaveNewDocType = () => {
     const newOption = { value: newDocTypeLabel, label: newDocTypeLabel };
     setDocTypeOptions([...docTypeOptions, newOption]);
     setDocType(newOption.value);
+    console.log('Tipo di documento selezionato:', newOption.value);
     setIsAddingNewDocType(false);
     setNewDocTypeLabel('');
   };
@@ -74,6 +87,7 @@ const Step2: React.FC<Step2Props> = ({
       {/* Type of document */}
       <div className="my-2 col-span-2">
         <InputComponent
+          key={inputKey} // Aggiungi la chiave dinamica qui
           label="Type"
           type="select"
           options={docTypeOptions}
@@ -81,6 +95,7 @@ const Step2: React.FC<Step2Props> = ({
           onChange={(e) => {
             if ('target' in e) {
               setDocType(e.target.value);
+              console.log('Tipo di documento selezionato:', e.target.value);
             }
           }}
           required={true}
@@ -101,18 +116,18 @@ const Step2: React.FC<Step2Props> = ({
                 }
               }}
               placeholder="Enter new document type"
-              required={true}
               onKeyDown={(e) => {
                 if (e.key === 'Enter') {
-                  handleSaveNewDocType({ value: newDocTypeLabel, label: newDocTypeLabel });
+                  handleSaveNewDocType();
                 }
               }}
+              inputRef={newDocTypeInputRef} // Imposta il riferimento al campo di input
             />
             <ButtonRounded
               variant="filled"
               text="Confirm"
               className="ml-4 bg-black text-white text-xs pt-2 pb-2 pl-3 pr-3"
-              onClick={() => handleSaveNewDocType({ value: newDocTypeLabel, label: newDocTypeLabel })}
+              onClick={handleSaveNewDocType}
             />
           </div>
         )}

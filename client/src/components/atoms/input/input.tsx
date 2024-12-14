@@ -45,6 +45,7 @@ interface InputComponentProps {
   addNew?: boolean;
   onAddNew?: (newOption: Option) => void;
   onAddNewSelect?: () => void; // Aggiungi questa proprietà
+  inputRef?: React.RefObject<HTMLInputElement | HTMLTextAreaElement>; // Aggiungi inputRef
 }
 
 const mockFlags = {
@@ -93,6 +94,7 @@ const InputComponent: React.FC<InputComponentProps> = ({
   addNew = false,
   onAddNew,
   onAddNewSelect, // Aggiungi questa proprietà
+  inputRef, // Aggiungi inputRef
 }) => {
   const [isEmailValid, setIsEmailValid] = useState<boolean>(true);
   const [isFieldEmpty, setIsFieldEmpty] = useState<boolean>(false);
@@ -244,6 +246,7 @@ const InputComponent: React.FC<InputComponentProps> = ({
             disabled={disabled}
             max={type === 'date' ? max : undefined}
             onKeyDown={onKeyDown}
+            ref={inputRef as React.RefObject<HTMLInputElement>} // Aggiungi inputRef
           />
           {type === 'password' && (
             <button
@@ -267,6 +270,7 @@ const InputComponent: React.FC<InputComponentProps> = ({
           onBlur={handleBlur}
           disabled={disabled}
           maxLength={maxLength}
+          ref={inputRef as React.RefObject<HTMLTextAreaElement>} // Aggiungi inputRef
         />
       )}
       {type === 'select' && (

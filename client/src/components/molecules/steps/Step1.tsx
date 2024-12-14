@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import InputComponent from '../../atoms/input/input';
 import './Step1.css';
 import { stakeholderOptions as initialStakeholderOptions } from '../../../shared/stakeholder.options.const';
@@ -47,6 +47,7 @@ const Step1: React.FC<Step1Props> = ({
   const [isAddingNewStakeholder, setIsAddingNewStakeholder] = useState(false);
   const [newOptionLabel, setNewOptionLabel] = useState('');
   const [inputKey, setInputKey] = useState(0); // Aggiungi uno stato per la chiave dinamica
+  const newStakeholderInputRef = useRef<HTMLInputElement>(null); // Crea un riferimento per il campo di input
 
   useEffect(() => {
     if (issuanceDate) {
@@ -74,6 +75,12 @@ const Step1: React.FC<Step1Props> = ({
       setSelectedDay('');
     }
   }, [selectedMonth]);
+
+  useEffect(() => {
+    if (isAddingNewStakeholder && newStakeholderInputRef.current) {
+      newStakeholderInputRef.current.focus(); // Imposta il focus sul campo di input
+    }
+  }, [isAddingNewStakeholder]);
 
   const handleSaveNewStakeholder = (newStakeholder: { value: string; label: string }) => {
     const newOption = { value: newOptionLabel, label: newOptionLabel };
@@ -130,7 +137,7 @@ const Step1: React.FC<Step1Props> = ({
           onAddNewSelect={() => setIsAddingNewStakeholder(true)}
         />
         {isAddingNewStakeholder && (
-                    <div className="flex items-center p-2 mt-2">
+          <div className="flex items-center p-2 mt-2">
             <InputComponent
               label="New Stakeholder"
               type="text"
@@ -146,6 +153,7 @@ const Step1: React.FC<Step1Props> = ({
                   handleSaveNewStakeholder({ value: newOptionLabel, label: newOptionLabel });
                 }
               }}
+              inputRef={newStakeholderInputRef} // Imposta il riferimento al campo di input
             />
             <ButtonRounded
               variant="filled"
