@@ -7,6 +7,7 @@ import Modal from 'react-modal';
 import DocumentForm from '../DocumentForm';
 import { IDocument } from '../../../utils/interfaces/document.interface';
 import { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { CDN_URL } from '../../../utils/constants';
 import { nanoid } from 'nanoid';
 import { scaleOptions } from '../../../shared/scale.options.const';
@@ -33,6 +34,8 @@ const DocumentDetailsModal: React.FC<DocumentDetailsModalProps> = ({
 }) => {
   const { isLoggedIn, user } = useAuth();
   const [modalOpen, setModalOpen] = useState(false);
+  const navigate = useNavigate();
+
   const [connectedDocuments, setConnectedDocuments] = useState<any>([]);
   const [currentDocument, setCurrentDocument] = useState<IDocument>(document);
   const [documentLabel, setDocumentLabel] = useState<string>(
@@ -163,20 +166,33 @@ const DocumentDetailsModal: React.FC<DocumentDetailsModalProps> = ({
         </div>
       </div>
 
-      {
-        /* Button to edit the document */
-        isLoggedIn && user && user.role === UserRoleEnum.Uplanner && (
-          <ButtonRounded
-            text="Edit"
-            variant="filled"
-            className="bg-black text-white text-base px-4 py-2"
-            onClick={() => {
-              setModalOpen(true);
-            }}
-          />
-        )
-      }
+      <div className="flex justify-end space-x-4">
+        {
+          /* Button to edit the document */
+          isLoggedIn && user && user.role === UserRoleEnum.Uplanner && (
+            <ButtonRounded
+              text="Edit"
+              variant="filled"
+              className="bg-black text-white text-base px-4 py-2"
+              onClick={() => {
+                setModalOpen(true);
+              }}
+            />
+          )
+        }
 
+        <ButtonRounded
+          text="See on the diagram"
+          variant="outlined"
+          className="border-black text-black text-base px-4 py-2"
+          onClick={() => {
+            console.log('Navigate to node:', document.id);
+            // Call the navigate function with the node id
+            navigate('/diagram/' + document.id);
+
+          }}
+        />
+      </div>
       <Modal
         style={modalStyles}
         isOpen={modalOpen}
