@@ -5,6 +5,7 @@ import './Diagram.css';
 import { useState, useEffect, useRef, useContext } from "react";
 import API from "../API";
 import ErrorImage from '../assets/icons/error.png';
+import DefaultIcon from '../assets/icons/default-icon.svg';
 import AgreementIcon from "../assets/icons/agreement-icon.svg";
 import ConflictIcon from '../assets/icons/conflict-icon.svg';
 import ConsultationIcon from '../assets/icons/consultation-icon.svg';
@@ -23,11 +24,13 @@ import Legend from './Legend';
 import { LatLng } from "leaflet";
 import FeedbackContext from "../context/FeedbackContext.js";
 import { Header } from "../components/organisms/Header.js";
+import { useParams } from "react-router-dom";
 import useDocuments from "../utils/hooks/documents.js";
 import { DocumentConnectionsList } from "../components/molecules/documentsItems/DocumentConnectionsList.js";
 import SidebarContext from "../context/SidebarContext.js";
 
-const LABEL_FONT = { size: 35, color: "#000000" };
+const LABEL_FONT = { size: 50, color: "#000000" };
+const OFFSET_VIEW = { x: 200, y: 500 };
 const YEAR_SPACING = 500;
 const options = {
     autoResize: true,
@@ -48,17 +51,11 @@ const options = {
 
 const graphBEInfo = await API.getGraphInfo();
 
-const randomColor = () => {
-    const red = Math.floor(Math.random() * 256).toString(16).padStart(2, '0');
-    const green = Math.floor(Math.random() * 256).toString(16).padStart(2, '0');
-    const blue = Math.floor(Math.random() * 256).toString(16).padStart(2, '0');
-    return `#${red}${green}${blue}`;
-}
-
 const Diagram = () => {
     const { setFeedbackFromError } = useContext(FeedbackContext);
     const headerRef = useRef<HTMLDivElement>(null);
     const {setSelectedDocument, setSidebarVisible} = useContext(SidebarContext);
+    const [types, setTypes] = useState<any[]>([]);
 
     //Needed to show a document's information when hovering on it
     const [documentInfoPopup, setDocumentInfoPopup] = useState<{visible: boolean, x: number, y: number, content: any}>({ visible: false, x: 0, y: 0, content: '' });
@@ -75,6 +72,12 @@ const Diagram = () => {
     const label_year = [] as any[];
     const minYear = graphBEInfo.minYear;
     const maxYear = graphBEInfo.maxYear;
+    const networkRef = useRef<any>(null);
+    const { id } = useParams();
+
+    let lastPosition: any = null;
+    const max_zoom = 2;
+    const min_zoom = 0.1;
 
     const openSidebar = (document: IDocument) => {
         // Search in the original documents and show the document in the modal 
@@ -89,41 +92,107 @@ const Diagram = () => {
       openSidebar(document);
     }
 
+    // State to store the min and max values from all the nodes 
+    const [graphBounds, setGraphBounds] = useState({ minY: 0, maxY: 1440, minX: 0, maxX: 12000 });
+
+    const checkGraphConstraints = (event: any) => {
+        if (event.deltaY !== 0 || event.deltaX !== 0) {
+            const network = networkRef.current;
+            const currentPosition = network.getViewPosition();
+            console.log(`Values min Y are ${graphBounds.minY}`)
+            console.log(`Values max Y are ${graphBounds.maxY}`)
+            console.log(`Values min X are ${graphBounds.minX}`)
+            console.log(`Values max X are ${graphBounds.maxX}`)
+            if (currentPosition.y < graphBounds.minY - OFFSET_VIEW.y) {
+                if (currentPosition.x < graphBounds.minX - OFFSET_VIEW.x) {
+                    network.moveTo({ position: { x: graphBounds.minX + OFFSET_VIEW.x, y: graphBounds.minY - OFFSET_VIEW.y } });
+                }
+                else if (currentPosition.x > graphBounds.maxX + OFFSET_VIEW.x) {
+                    network.moveTo({ position: { x: graphBounds.maxX - OFFSET_VIEW.x, y: graphBounds.minY - OFFSET_VIEW.y } });
+                }
+                else {
+                    network.moveTo({ position: { x: currentPosition.x, y: graphBounds.minY - OFFSET_VIEW.y } });
+                }
+            } else if (currentPosition.y > graphBounds.maxY + OFFSET_VIEW.y) {
+                if (currentPosition.x < graphBounds.minX - OFFSET_VIEW.x) {
+                    network.moveTo({ position: { x: graphBounds.minX + OFFSET_VIEW.x, y: graphBounds.maxY + OFFSET_VIEW.y } });
+                }
+                else if (currentPosition.x > graphBounds.maxX + OFFSET_VIEW.x) {
+                    network.moveTo({ position: { x: graphBounds.maxX - OFFSET_VIEW.x, y: graphBounds.maxY + OFFSET_VIEW.y } });
+                }
+                else {
+                    network.moveTo({ position: { x: currentPosition.x, y: graphBounds.maxY + OFFSET_VIEW.y } });
+                }
+            }
+            else {
+                if (currentPosition.x < graphBounds.minX - OFFSET_VIEW.x) {
+                    console.log(`x position is lower than min x`);
+                    network.moveTo({ position: { x: graphBounds.minX + OFFSET_VIEW.x, y: currentPosition.y } });
+                }
+                else if (currentPosition.x > graphBounds.maxX + OFFSET_VIEW.x) {
+                    console.log(`x position is higher than max x`);
+                    network.moveTo({ position: { x: graphBounds.maxX - OFFSET_VIEW.x, y: currentPosition.y } });
+                }
+            }
+
+        }
+    };
+
+    const savePosition = () => {
+        const position = networkRef.current.getViewPosition();
+        console.log(`Starting position is ${position.y}`);
+        lastPosition = position;
+    }
+
+    useEffect(() => {
+        // Fetch the document types from the backend
+        const fetchDocumentTypes = async () => {
+            try {
+                const documentTypes = await API.getTypes();
+                setTypes(documentTypes);
+
+            } catch (error) {
+                console.error(`Error fetching types`, error);
+            }
+        };
+        fetchDocumentTypes();
+    }, []);
+
     useEffect(() => {
         API.getCoordinates()
-          .then((coords) => {
-            const result: {
-              [id: string]: {
-                type: string;
-                coordinates: LatLng | LatLng[] | LatLng[][];
-                name: string;
-              };
-            } = {};
-            coords.forEach(
-              (c: {
-                _id: string;
-                type: string;
-                coordinates: LatLng | LatLng[] | LatLng[][];
-                name: string;
-              }) => {
-                result[c._id] = {
-                  type: c.type,
-                  coordinates: c.coordinates,
-                  name: c.name,
-                };
-              },
-            );
-            setCoordinates(result);
-          })
-          .catch((e) => {
-            console.log(e);
-            setFeedbackFromError(e);
-          });
-      }, []);
+            .then((coords) => {
+                const result: {
+                    [id: string]: {
+                        type: string;
+                        coordinates: LatLng | LatLng[] | LatLng[][];
+                        name: string;
+                    };
+                } = {};
+                coords.forEach(
+                    (c: {
+                        _id: string;
+                        type: string;
+                        coordinates: LatLng | LatLng[] | LatLng[][];
+                        name: string;
+                    }) => {
+                        result[c._id] = {
+                            type: c.type,
+                            coordinates: c.coordinates,
+                            name: c.name,
+                        };
+                    },
+                );
+                setCoordinates(result);
+            })
+            .catch((e) => {
+                console.log(e);
+                setFeedbackFromError(e);
+            });
+    }, []);
 
-    let architecturalScales: [{id:string, label: string, scale: string}] = [];
-    let lastMap = 600;
-    let architecturalScalesMapping: any = {};
+    const architecturalScales: [{ id: string, label: string, scale: string }] = [];
+    let lastMap = 600;  // Starting Y position for the architectural scales
+    const architecturalScalesMapping: any = {};
 
     filteredDocuments.filter((d) => d.scale == 'ARCHITECTURAL' && d.architecturalScale).sort((a, b) => {
         if(a.architecturalScale && b.architecturalScale) {
@@ -131,19 +200,19 @@ const Diagram = () => {
         }
         return 0;
     }).forEach((d) => {
-      if(d.architecturalScale && !(architecturalScales.map((s) => s.id).includes(d.architecturalScale))) {
-        architecturalScales.push({ id: d.architecturalScale, label: d.architecturalScale, scale: d.architecturalScale})
-        architecturalScalesMapping[d.architecturalScale] = lastMap;
-        lastMap += 200;
-      }
+        if (d.architecturalScale && !(architecturalScales.map((s) => s.id).includes(d.architecturalScale))) {
+            architecturalScales.push({ id: d.architecturalScale, label: d.architecturalScale, scale: d.architecturalScale })
+            architecturalScalesMapping[d.architecturalScale] = lastMap;
+            lastMap += 200;
+        }
     });
 
     const scaleMapping = {
-      "TEXT": 200,
-      "CONCEPT": 400,
-      ...architecturalScalesMapping,
-      "BLUEPRINT/MATERIAL EFFECTS": lastMap,
-      "default": 50,
+        "TEXT": 200,
+        "CONCEPT": 400,
+        ...architecturalScalesMapping,
+        "BLUEPRINT/MATERIAL EFFECTS": lastMap,
+        "default": 50,
     };
 
     useEffect(() => {
@@ -179,7 +248,9 @@ const Diagram = () => {
             }
 
             // Check the type of the document
-            switch (doc.type.toUpperCase()) {
+            const docType = Array.isArray(types.docTypes) ? types.docTypes.find((docTypes: any) => docTypes.value === doc.type.toUpperCase()) : null;
+            console.log(`Document type is ${docType.value}`);
+            switch (docType.value) {
                 case "AGREEMENT":
                     doc.image = AgreementIcon;
                     break;
@@ -205,7 +276,8 @@ const Diagram = () => {
                     doc.image = MaterialEffectsIcon;
                     break;
                 default:
-                    doc.image = ErrorImage;
+                    // Default icon for the documents that do not have an image (new types)
+                    doc.image = DefaultIcon;
                     break;
             }
 
@@ -243,8 +315,18 @@ const Diagram = () => {
                 id: doc.id,
                 shape: "image",
                 image: doc.image,
+                size: 50,
+                borderWidth: 4,
+                borderWidthSelected: 4,
+                shapeProperties: {
+                  useBorderWithImage: doc.id == id,
+                  useImageSize: false
+                },
+                color: {
+                  background: 'transparent',
+                  border: swedishFlagBlue,
+                },
                 brokenImage: ErrorImage,
-                color: randomColor(),
                 year: doc.year,
                 scale: doc.scale,
                 architecturalScale: doc.architecturalScale
@@ -253,7 +335,6 @@ const Diagram = () => {
                 ...node,
                 x: (node.year - 2000) * YEAR_SPACING, // Mapping the year
                 y: scaleMapping[node.scale == 'ARCHITECTURAL' ? node.architecturalScale : node.scale as keyof typeof scaleMapping], // Mapping the scale
-
             }));
 
 
@@ -277,6 +358,15 @@ const Diagram = () => {
             occupiedPositions.push({ x: node.x, y: node.y });
         });
 
+        const yValues = allNodes.map(node => node.y);
+        const xValues = allNodes.map(node => node.x);
+        // Store the min and max values of the nodes
+        const minY = Math.min(...yValues);
+        const maxY = Math.max(...yValues);
+        const minX = Math.min(...xValues);
+        const maxX = Math.max(...xValues);
+
+        setGraphBounds({ minY, maxY, minX, maxX });
 
         setState({
             graph: {
@@ -284,9 +374,17 @@ const Diagram = () => {
                 edges: connections
             },
         })
-    }, [filteredDocuments]);
+    }, [filteredDocuments, types]);
 
     const occupiedPositions = [] as any;
+    const computeYearX = (year: number) => {
+        return (year - 2000) * YEAR_SPACING;
+    };
+
+    const computeStyleY = (node: any) => {
+        console.log(`Computing style for scale ${node.scale}`);
+        return scaleMapping[node.scale == 'ARCHITECTURAL' ? node.architecturalScale : node.scale as keyof typeof scaleMapping];
+    }
 
     const label_style = [
         { id: "label_text", label: "Text", scale: "TEXT" },
@@ -297,7 +395,7 @@ const Diagram = () => {
         ...node,
         color: swedishFlagBlue,
         x: (minYear - 2000 - 1) * YEAR_SPACING, // Place the label on the left side of the graph, it depends on the minYear
-        y: scaleMapping[node.scale as keyof typeof scaleMapping], // Mapping the scale
+        y: computeStyleY(node),
         shape: "box",
         font: { ...LABEL_FONT, color: "#FFFFFF" },
 
@@ -309,33 +407,148 @@ const Diagram = () => {
             label: `${year}`,
             color: swedishFlagYellow,
             year: year,
-            x: (year - 2000) * YEAR_SPACING, // Mapping the year
+            x: computeYearX(year), // Mapping the year
             y: 50, // Place the label on the top side of the graph
             shape: "box",
             font: LABEL_FONT
         });
     }
 
-    const networkRef = useRef<any>(null);
-
     useEffect(() => {
         const network = networkRef.current; // Get the network object from the ref
-        if (network) {  // if the network is available then...
-            network.fit({
-                // Filter only the node that are in the current year. In this way the graph will be centered on the current year at launch.
-                nodes: state.graph.nodes.filter((node: any) => {
-                    const currentYear = new Date().getFullYear();
-                    return node.year === currentYear;
-                }).map((node: any) => node.id),
-                animation: false
-            });
-            network.moveTo({ scale: 0.5 })  // Set the initial zoom level
-        }
-    }, [state.graph.nodes]);
 
-    let lastPosition: any = null;
-    const max_zoom = 2;
-    const min_zoom = 0.1;
+        if (network) {  // if the network is available then...
+            // If a params is defined in the URL, then the graph will be centered on that node
+            if (id) {
+                network.fit({
+                    nodes: state.graph.nodes.filter((node: any) => {
+                        return node.id === id;
+                    }).map((node: any) => node.id),
+                    animation: false
+                });
+            }
+            // Else center based on the current year
+            else {
+                network.fit({
+                    // Filter only the node that are in the current year. In this way the graph will be centered on the current year at launch.
+                    nodes: state.graph.nodes.filter((node: any) => {
+                        const currentYear = new Date().getFullYear();
+                        return node.year === currentYear;
+                    }).map((node: any) => node.id),
+                    animation: false
+                });
+
+            }
+
+            network.moveTo({ scale: 0.4 })  // Set the initial zoom level
+            network.on("zoom", function (params: any) {
+                if (params.scale < min_zoom || params.scale > max_zoom) {
+                    network.moveTo({
+                        position: lastPosition, // use the last position before zoom limit
+                        scale: params.scale > max_zoom ? max_zoom : min_zoom // this scale prevents zooming out beyond the desired limit
+                    });
+                } else {
+                    // store the current position as the last position before zoom limit
+                    lastPosition = network.getViewPosition();
+                }
+            });
+
+            // on pan, store the current position
+            network.on("dragEnd", function () {
+                lastPosition = network.getViewPosition();
+            });
+
+        }
+    }, [id, state.graph.nodes]);
+
+
+
+
+    useEffect(() => {
+        // Check the boundaries of the selected node
+
+        const nodeLastPosition = { x: 0, y: 0 };
+        const MAX_NODE_OFFSET = 80;
+
+        // Allow the user to move the node inside some boundaries
+        const saveNodePosition = (event: any) => {
+            const network = networkRef.current;
+            const node = network.getPositions([event.nodes[0]])[event.nodes[0]];
+            if (!node) {
+                return;
+            }
+            nodeLastPosition.x = node.x;
+            nodeLastPosition.y = node.y;
+        }
+
+        const checkNodeConstraints = (event: any) => {
+            const network = networkRef.current;
+            const node = network.getPositions([event.nodes[0]])[event.nodes[0]];
+            if (!node) {
+                return;
+            }
+
+            const nodeCurrentPosition = { x: node.x, y: node.y };
+
+            console.log("Selected node", event.nodes[0]);
+            console.log("Node IDs:", state.graph.nodes.map(node => node.id));
+
+            const draggedNode = state.graph.nodes.find(n => n.id === event.nodes[0]);
+
+            if (!draggedNode) {
+                return;
+            }
+
+            const newposition = { x: nodeCurrentPosition.x, y: nodeCurrentPosition.y };
+            const center_x = computeYearX(draggedNode.year);
+            const center_y = computeStyleY(draggedNode);
+
+            if (/^label_/.test(draggedNode.id) || /^1:/.test(draggedNode.id)) {
+                // Regex to filter the labels to avoid moving them
+                newposition.x = nodeLastPosition.x;
+                newposition.y = nodeLastPosition.y;
+            }
+            else {
+                if (nodeCurrentPosition.x - center_x > MAX_NODE_OFFSET) {
+                    // If the node is too far to the right
+                    newposition.x = center_x + MAX_NODE_OFFSET;
+                } else if (nodeCurrentPosition.x - center_x < -MAX_NODE_OFFSET) {
+                    // If the node is too far to the left
+                    newposition.x = center_x - MAX_NODE_OFFSET;
+                }
+                if (nodeCurrentPosition.y - center_y > MAX_NODE_OFFSET) {
+                    // If the node is too far to the top
+                    newposition.y = center_y + MAX_NODE_OFFSET;
+                } else if (nodeCurrentPosition.y - center_y < -MAX_NODE_OFFSET) {
+                    // If the node is too far to the bottom
+                    newposition.y = center_y - MAX_NODE_OFFSET;
+                }
+            }
+            network.moveNode(event.nodes[0], newposition.x, newposition.y);
+
+
+
+        }
+
+        const network = networkRef.current;
+        if (network) {
+            network.on("dragStart", saveNodePosition);
+            console.log("Old position is", nodeLastPosition);
+            network.on("dragEnd", checkNodeConstraints);
+        }
+
+    }, [computeStyleY, state.graph.nodes]);
+
+
+    useEffect(() => {
+        console.log("Adding event listeners");
+        const network = networkRef.current;
+
+        network.on("dragStart", savePosition);
+        network.on("dragEnd", checkGraphConstraints);
+    }, [state.graph.nodes, graphBounds]);
+
+
 
 
     return (
@@ -394,23 +607,6 @@ const Diagram = () => {
                     style={{ height: "100%" }}
                     getNetwork={network => {    // Call the methods inside the Graph component
                         networkRef.current = network;
-
-                        network.on("zoom", function (params) {
-                            if (params.scale < min_zoom || params.scale > max_zoom) {
-                                network.moveTo({
-                                    position: lastPosition, // use the last position before zoom limit
-                                    scale: params.scale > max_zoom ? max_zoom : min_zoom // this scale prevents zooming out beyond the desired limit
-                                });
-                            } else {
-                                // store the current position as the last position before zoom limit
-                                lastPosition = network.getViewPosition();
-                            }
-                        });
-                        // on pan, store the current position
-                        network.on("dragEnd", function () {
-                            lastPosition = network.getViewPosition();
-                        });
-
                     }}
                 />
             )}

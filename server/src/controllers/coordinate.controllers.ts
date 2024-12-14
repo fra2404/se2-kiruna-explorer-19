@@ -152,7 +152,7 @@ export const getCoordinateByIdController = async (
     const { id } = req.params;
     const coordinate = await getCoordinateById(id);
     if (!coordinate) {
-      console.log('Coordinate not found');
+      // console.log('Coordinate not found');
       return next(new PositionError());
     }
     res.status(200).json(coordinate);

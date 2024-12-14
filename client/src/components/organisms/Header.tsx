@@ -9,7 +9,6 @@ import MapStyleContext from '../../context/MapStyleContext';
 import { Sidebar } from './Sidebar';
 import { IDocument } from '../../utils/interfaces/document.interface';
 
-
 interface HeaderProps {
   page: string;
   headerRef?: any;

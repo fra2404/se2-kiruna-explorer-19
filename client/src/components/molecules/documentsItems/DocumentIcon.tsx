@@ -20,7 +20,7 @@ export const stakeholdersColors = (
   }
 
   const colors = stakeholders.map((stakeholder) => {
-    switch (stakeholder ? stakeholder.toLowerCase() : undefined) {
+    switch (typeof stakeholder === 'string' ? stakeholder.toLowerCase() : undefined) {      
       case 'lkab':
         return '#1b1c1f';
       case 'municipality':

@@ -5,11 +5,11 @@ interface DisplayType {
     content: string;
 }
 
-const DocumentDetailsMiddle = ({ list } : DisplayType[]) => {
+const DocumentDetailsMiddle = (list : DisplayType[]) => {
     return (
         <>
-            {list.map((item, index) => (
-                <BoldTextDisplay key={index} label={item.label} content={item.content} />
+            {list.map((item: DisplayType) => (
+                <BoldTextDisplay key={item.label} label={item.label} content={item.content} />
             ))}
         </>
     );

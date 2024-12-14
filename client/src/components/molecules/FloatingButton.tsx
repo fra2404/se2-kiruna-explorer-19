@@ -14,7 +14,7 @@ export default function FloatingButton({
   text,
   onMouseEnter,
   onMouseLeave,
-}: FloatingButtonProps) {
+}: Readonly<FloatingButtonProps>) {
   return (
     <div
       className={`floating-button ${className}`}

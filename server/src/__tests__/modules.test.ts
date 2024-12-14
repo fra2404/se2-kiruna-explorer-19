@@ -5,6 +5,7 @@ import { IDocument } from '@interfaces/document.interface';
 import checkHeader from '../middlewares/checkHeader.middleware';
 import { errorHandler } from '../middlewares/errorHandler.middleware';
 import documentSchema from '@schemas/document.schema';
+import { DocTypeEnum } from '@utils/enums/doc-type.enum';
 
 import { CustomError } from '@utils/customError';
 
