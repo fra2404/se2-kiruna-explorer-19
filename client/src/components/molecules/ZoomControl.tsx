@@ -1,20 +1,16 @@
 import { useMap } from 'react-leaflet';
-import { useState } from 'react';
 import ButtonRounded from '../atoms/button/ButtonRounded';
 import MapSwitch from '../atoms/map-switch/MapSwitch';
 
 function CustomZoomControl() {
   const map = useMap();
-  const [_zoom, setZoom] = useState(map.getZoom());
 
   const handleZoomIn = () => {
     map.zoomIn();
-    setZoom(map.getZoom());
   };
 
   const handleZoomOut = () => {
     map.zoomOut();
-    setZoom(map.getZoom());
   };
 
   return (

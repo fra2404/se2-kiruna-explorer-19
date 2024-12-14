@@ -20,6 +20,7 @@ interface DocumentDetailsProps {
   setAllDocuments: (documents: IDocument[]) => void;
   filteredDocuments: IDocument[];
   setFilteredDocuments: (documents: IDocument[]) => void;
+  page: string;
 }
 
 const DocumentDetails: React.FC<DocumentDetailsProps> = ({
@@ -29,7 +30,8 @@ const DocumentDetails: React.FC<DocumentDetailsProps> = ({
   allDocuments,
   setAllDocuments,
   filteredDocuments,
-  setFilteredDocuments
+  setFilteredDocuments,
+  page
 }) => {
   const { isLoggedIn, user } = useAuth();
   const [modalOpen, setModalOpen] = useState(false);
@@ -131,7 +133,20 @@ const DocumentDetails: React.FC<DocumentDetailsProps> = ({
         <p className='text-base'>{document.summary}</p>
       </div>
 
-      <div className="flex justify-end space-x-4">
+      <div className="flex justify-end space-x-4 mr-2">
+        { page == 'map' && 
+          <ButtonRounded
+            text="See on the diagram"
+            variant="outlined"
+            className="border-black text-black text-base px-4 py-2"
+            onClick={() => {
+              console.log('Navigate to node:', document.id);
+              // Call the navigate function with the node id
+              navigate('/diagram');
+
+            }}
+          />
+        }
         {
           /* Button to edit the document */
           isLoggedIn && user && user.role === UserRoleEnum.Uplanner && (
@@ -145,18 +160,6 @@ const DocumentDetails: React.FC<DocumentDetailsProps> = ({
             />
           )
         }
-
-        <ButtonRounded
-          text="See on the diagram"
-          variant="outlined"
-          className="border-black text-black text-base px-4 py-2"
-          onClick={() => {
-            console.log('Navigate to node:', document.id);
-            // Call the navigate function with the node id
-            navigate('/diagram/' + document.id);
-
-          }}
-        />
       </div>
       <Modal
         style={modalStyles}

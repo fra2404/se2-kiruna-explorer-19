@@ -91,7 +91,7 @@ async function getDocuments(): Promise<IDocument[]> {
   }
 
   const documents = await response.json();
-  return documents; // Restituisci i documenti direttamente
+  return documents;
 }
 
 async function createDocument(documentData: {

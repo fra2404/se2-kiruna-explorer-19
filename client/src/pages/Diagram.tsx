@@ -24,7 +24,6 @@ import Legend from './Legend';
 import { LatLng } from "leaflet";
 import FeedbackContext from "../context/FeedbackContext.js";
 import { Header } from "../components/organisms/Header.js";
-import { useParams } from "react-router-dom";
 import useDocuments from "../utils/hooks/documents.js";
 import { DocumentConnectionsList } from "../components/molecules/documentsItems/DocumentConnectionsList.js";
 import SidebarContext from "../context/SidebarContext.js";
@@ -54,7 +53,7 @@ const graphBEInfo = await API.getGraphInfo();
 const Diagram = () => {
     const { setFeedbackFromError } = useContext(FeedbackContext);
     const headerRef = useRef<HTMLDivElement>(null);
-    const {setSelectedDocument, setSidebarVisible} = useContext(SidebarContext);
+    const {selectedDocument, setSelectedDocument, setSidebarVisible} = useContext(SidebarContext);
     const [types, setTypes] = useState<any[]>([]);
 
     //Needed to show a document's information when hovering on it
@@ -73,11 +72,12 @@ const Diagram = () => {
     const minYear = graphBEInfo.minYear;
     const maxYear = graphBEInfo.maxYear;
     const networkRef = useRef<any>(null);
-    const { id } = useParams();
 
     let lastPosition: any = null;
     const max_zoom = 2;
     const min_zoom = 0.1;
+
+    const [firstLoad, setFirstLoad]=useState(true);
 
     const openSidebar = (document: IDocument) => {
         // Search in the original documents and show the document in the modal 
@@ -99,10 +99,7 @@ const Diagram = () => {
         if (event.deltaY !== 0 || event.deltaX !== 0) {
             const network = networkRef.current;
             const currentPosition = network.getViewPosition();
-            console.log(`Values min Y are ${graphBounds.minY}`)
-            console.log(`Values max Y are ${graphBounds.maxY}`)
-            console.log(`Values min X are ${graphBounds.minX}`)
-            console.log(`Values max X are ${graphBounds.maxX}`)
+            
             if (currentPosition.y < graphBounds.minY - OFFSET_VIEW.y) {
                 if (currentPosition.x < graphBounds.minX - OFFSET_VIEW.x) {
                     network.moveTo({ position: { x: graphBounds.minX + OFFSET_VIEW.x, y: graphBounds.minY - OFFSET_VIEW.y } });
@@ -126,11 +123,9 @@ const Diagram = () => {
             }
             else {
                 if (currentPosition.x < graphBounds.minX - OFFSET_VIEW.x) {
-                    console.log(`x position is lower than min x`);
                     network.moveTo({ position: { x: graphBounds.minX + OFFSET_VIEW.x, y: currentPosition.y } });
                 }
                 else if (currentPosition.x > graphBounds.maxX + OFFSET_VIEW.x) {
-                    console.log(`x position is higher than max x`);
                     network.moveTo({ position: { x: graphBounds.maxX - OFFSET_VIEW.x, y: currentPosition.y } });
                 }
             }
@@ -140,7 +135,6 @@ const Diagram = () => {
 
     const savePosition = () => {
         const position = networkRef.current.getViewPosition();
-        console.log(`Starting position is ${position.y}`);
         lastPosition = position;
     }
 
@@ -249,7 +243,6 @@ const Diagram = () => {
 
             // Check the type of the document
             const docType = Array.isArray(types.docTypes) ? types.docTypes.find((docTypes: any) => docTypes.value === doc.type.toUpperCase()) : null;
-            console.log(`Document type is ${docType.value}`);
             switch (docType.value) {
                 case "AGREEMENT":
                     doc.image = AgreementIcon;
@@ -316,16 +309,6 @@ const Diagram = () => {
                 shape: "image",
                 image: doc.image,
                 size: 50,
-                borderWidth: 4,
-                borderWidthSelected: 4,
-                shapeProperties: {
-                  useBorderWithImage: doc.id == id,
-                  useImageSize: false
-                },
-                color: {
-                  background: 'transparent',
-                  border: swedishFlagBlue,
-                },
                 brokenImage: ErrorImage,
                 year: doc.year,
                 scale: doc.scale,
@@ -382,7 +365,6 @@ const Diagram = () => {
     };
 
     const computeStyleY = (node: any) => {
-        console.log(`Computing style for scale ${node.scale}`);
         return scaleMapping[node.scale == 'ARCHITECTURAL' ? node.architecturalScale : node.scale as keyof typeof scaleMapping];
     }
 
@@ -418,17 +400,19 @@ const Diagram = () => {
         const network = networkRef.current; // Get the network object from the ref
 
         if (network) {  // if the network is available then...
-            // If a params is defined in the URL, then the graph will be centered on that node
-            if (id) {
+            // If a node is selected, then the graph will be centered on that node
+            if (selectedDocument) {
                 network.fit({
                     nodes: state.graph.nodes.filter((node: any) => {
-                        return node.id === id;
+                        return node.id === selectedDocument.id;
                     }).map((node: any) => node.id),
                     animation: false
                 });
+                setFirstLoad(false)
             }
-            // Else center based on the current year
-            else {
+            // Else center based on the current year (only at launch)
+            else if(firstLoad) {
+                console.log('Ciao');
                 network.fit({
                     // Filter only the node that are in the current year. In this way the graph will be centered on the current year at launch.
                     nodes: state.graph.nodes.filter((node: any) => {
@@ -437,7 +421,6 @@ const Diagram = () => {
                     }).map((node: any) => node.id),
                     animation: false
                 });
-
             }
 
             network.moveTo({ scale: 0.4 })  // Set the initial zoom level
@@ -459,7 +442,7 @@ const Diagram = () => {
             });
 
         }
-    }, [id, state.graph.nodes]);
+    }, [selectedDocument, state.graph.nodes]);
 
 
 
@@ -489,9 +472,6 @@ const Diagram = () => {
             }
 
             const nodeCurrentPosition = { x: node.x, y: node.y };
-
-            console.log("Selected node", event.nodes[0]);
-            console.log("Node IDs:", state.graph.nodes.map(node => node.id));
 
             const draggedNode = state.graph.nodes.find(n => n.id === event.nodes[0]);
 
@@ -533,7 +513,6 @@ const Diagram = () => {
         const network = networkRef.current;
         if (network) {
             network.on("dragStart", saveNodePosition);
-            console.log("Old position is", nodeLastPosition);
             network.on("dragEnd", checkNodeConstraints);
         }
 
@@ -541,7 +520,6 @@ const Diagram = () => {
 
 
     useEffect(() => {
-        console.log("Adding event listeners");
         const network = networkRef.current;
 
         network.on("dragStart", savePosition);

@@ -19,7 +19,7 @@ function App() {
               <Routes>
                 <Route path="/" element={<LandingPage />} />
                 <Route path="/map" element={<KirunaMap />} />
-                <Route path="/diagram/:id?" element={<Diagram />} />
+                <Route path="/diagram" element={<Diagram />} />
               </Routes>
             </MunicipalityCoordinatesProvider>
           </SidebarProvider>

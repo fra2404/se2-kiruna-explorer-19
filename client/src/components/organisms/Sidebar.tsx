@@ -14,6 +14,7 @@ interface SidebarProps {
   setAllDocuments: (allDocuments: IDocument[]) => void;
   filteredDocuments: IDocument[];
   setFilteredDocuments: (documents: IDocument[]) => void;
+  page: string
 }
 
 export const Sidebar: React.FC<SidebarProps> = ({
@@ -22,7 +23,8 @@ export const Sidebar: React.FC<SidebarProps> = ({
   allDocuments,
   setAllDocuments,
   filteredDocuments,
-  setFilteredDocuments
+  setFilteredDocuments,
+  page
 }) => {
   const {selectedDocument, setSelectedDocument, sidebarVisible, setSidebarVisible} = useContext(SidebarContext);
   
@@ -90,6 +92,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
               setAllDocuments={setAllDocuments}
               filteredDocuments={filteredDocuments}
               setFilteredDocuments={setFilteredDocuments}
+              page={page}
             />
           }
         </div>
