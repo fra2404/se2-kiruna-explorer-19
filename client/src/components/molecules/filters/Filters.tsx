@@ -1,10 +1,10 @@
 import React, { useState, useEffect } from 'react';
-import InputComponent from '../atoms/input/input';
-import { stakeholderOptions } from '../../shared/stakeholder.options.const';
-import { documentTypeOptions } from '../../shared/type.options.const';
-import { scaleOptions } from '../../shared/scale.options.const';
-import { years, months, getDays } from '../../utils/date';
-import API from '../../API';
+import InputComponent from '../../atoms/input/input';
+import { stakeholderOptions } from '../../../shared/stakeholder.options.const';
+import { documentTypeOptions } from '../../../shared/type.options.const';
+import { scaleOptions } from '../../../shared/scale.options.const';
+import { years, months, getDays } from '../../../utils/date';
+import API from '../../../API';
 import { Tabs, Tab, Box } from '@mui/material';
 
 interface FiltersProps {
@@ -60,7 +60,7 @@ const Filters: React.FC<FiltersProps> = ({ filters, setFilters }) => {
                     value={filters.type}
                     onChange={(e) => {
                         if ('target' in e) {
-                            handleFilterChange('type', e.target.value);
+                          handleFilterChange('type', e.target.value);
                         }
                     }}
                     required={false}
