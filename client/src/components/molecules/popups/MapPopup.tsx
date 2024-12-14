@@ -17,6 +17,8 @@ interface MapPopupProps {
   setCoordinates: (coordinates: any) => void;
   allDocuments: IDocument[];
   setDocuments: (documents: IDocument[]) => void;
+  filteredDocuments: IDocument[];
+  setFilteredDocuments: (filteredDocuments: IDocument[]) => void;
 }
 
 export const MapPopup: React.FC<MapPopupProps> = ({
@@ -28,7 +30,9 @@ export const MapPopup: React.FC<MapPopupProps> = ({
   coordinates,
   setCoordinates,
   allDocuments,
-  setDocuments
+  setDocuments,
+  filteredDocuments,
+  setFilteredDocuments
 }) => {
   const popupRef = useRef<L.Popup>(null);
   const { isLoggedIn, user } = useAuth();
@@ -45,6 +49,8 @@ export const MapPopup: React.FC<MapPopupProps> = ({
         setCoordinates={setCoordinates}
         allDocuments={allDocuments}
         setDocuments={setDocuments}
+        filteredDocuments={filteredDocuments}
+        setFilteredDocuments={setFilteredDocuments}
       />
 
       <hr />

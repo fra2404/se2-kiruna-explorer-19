@@ -25,6 +25,8 @@ import Legend from './Legend';
 import { LatLng } from "leaflet";
 import FeedbackContext from "../context/FeedbackContext.js";
 import { Header } from "../components/organisms/Header.js";
+import useDocuments from "../utils/hooks/documents.js";
+import { DocumentConnectionsList } from "../components/molecules/documentsItems/DocumentConnectionsList.js";
 
 const LABEL_FONT = { size: 35, color: "#000000" };
 const YEAR_SPACING = 500;
@@ -41,6 +43,7 @@ const options = {
         dragView: true, // Enable dragging of the view
         zoomView: true, // Enable zooming of the view
         navigationButtons: true, // Enable navigation buttons
+        hover: true
     },
 };
 
@@ -71,9 +74,15 @@ const Diagram = () => {
     const headerRef = useRef<HTMLDivElement>(null);
     const [selectedDocument, setSelectedDocument] = useState<IDocument[]>([]);
     const [isModalOpen, setIsModalOpen] = useState(false);
-    const [documents, setDocuments] = useState<any[]>([]);
+
+    //Manages the sidebar
+    const [sidebarVisible, setSidebarVisible] = useState(false);
+
+    //Needed to show a document's information when hovering on it
+    const [documentInfoPopup, setDocumentInfoPopup] = useState<{visible: boolean, x: number, y: number, content: any}>({ visible: false, x: 0, y: 0, content: '' });
+
+    const {allDocuments, setAllDocuments, filteredDocuments, setFilteredDocuments} = useDocuments();
     const [coordinates, setCoordinates] = useState({});
-    const [originalDocuments, setOriginalDocuments] = useState<any[]>([]);
     const [state, setState] = useState({
         graph: {
             nodes: [] as any[],
@@ -87,7 +96,7 @@ const Diagram = () => {
 
     const openModal = (document: IDocument) => {
         // Search in the original documents and show the document in the modal 
-        const sdocument = originalDocuments.find((doc) => doc.id === document.id);
+        const sdocument = allDocuments.find((doc) => doc.id === document.id);
         if (sdocument) {
             setSelectedDocument([sdocument]);
             setIsModalOpen(true);
@@ -97,20 +106,6 @@ const Diagram = () => {
     const handleNodeClick = (document: IDocument) => {
         openModal(document);
     }
-
-
-    useEffect(() => {
-        const fetchDocuments = async () => {
-            try {
-                const documents = await API.getDocuments();
-                setDocuments(documents);
-                setOriginalDocuments(documents)
-            } catch (error) {
-                console.error('Error fetching documents:', error);
-            }
-        };
-        fetchDocuments();
-    }, []);
 
     useEffect(() => {
         API.getCoordinates()
@@ -148,10 +143,13 @@ const Diagram = () => {
     let lastMap = 600;
     let architecturalScalesMapping: any = {};
 
-    documents.filter((d) => d.scale == 'ARCHITECTURAL' && d.architecturalScale).sort((a, b) => {
-        return b.architecturalScale.split(':')[1] - a.architecturalScale.split(':')[1];
+    filteredDocuments.filter((d) => d.scale == 'ARCHITECTURAL' && d.architecturalScale).sort((a, b) => {
+        if(a.architecturalScale && b.architecturalScale) {
+          return +b.architecturalScale.split(':')[1] - (+a.architecturalScale.split(':')[1]);       //The '+' is used to convert from string to number
+        }
+        return 0;
     }).forEach((d) => {
-      if(!(architecturalScales.map((s) => s.id).includes(d.architecturalScale))) {
+      if(d.architecturalScale && !(architecturalScales.map((s) => s.id).includes(d.architecturalScale))) {
         architecturalScales.push({ id: d.architecturalScale, label: d.architecturalScale, scale: d.architecturalScale})
         architecturalScalesMapping[d.architecturalScale] = lastMap;
         lastMap += 200;
@@ -169,7 +167,7 @@ const Diagram = () => {
     useEffect(() => {
         const connections = [] as any[];
         // Map the data from the BE to the format that the graph component expects.
-        documents.forEach((doc: any) => {
+        filteredDocuments.forEach((doc: any) => {
             // Check the scale
             if (doc.scale.toUpperCase() === "TEXT") {
                 doc.scale = "TEXT";
@@ -236,7 +234,6 @@ const Diagram = () => {
             if (doc.connections && doc.connections.length > 0) {
                 doc.connections.forEach((connection: any) => {
                     // Modify the style of the connections according to their type
-                    console.log(`Connection type: ${connection.type}`);
                     if (connection.type.toUpperCase() === "DIRECT") {
                         console.log("Direct connection");
                     } else if (connection.type.toUpperCase() === "COLLATERAL") {
@@ -258,7 +255,7 @@ const Diagram = () => {
             }
         });
 
-        const nodes_documents = documents
+        const nodes_documents = filteredDocuments
             .filter((doc: any) => doc.year !== null) // Filter documents with defined year
             .map((doc: any) => ({
                 id: doc.id,
@@ -305,7 +302,7 @@ const Diagram = () => {
                 edges: connections
             },
         })
-    }, [documents]);
+    }, [filteredDocuments]);
 
     const occupiedPositions = [] as any;
 
@@ -335,7 +332,6 @@ const Diagram = () => {
             shape: "box",
             font: LABEL_FONT
         });
-        console.log(`Year ${year} has x = ${label_year.find(node => node.year === year)?.x}`);
     }
 
     const networkRef = useRef<any>(null);
@@ -363,8 +359,16 @@ const Diagram = () => {
     return (
         <div style={{ height: "100vh", position: "relative" }} className="grid-background">
             <Header 
-              headerRef={headerRef}
-              page='graph'
+                headerRef={headerRef}
+                page='graph'
+                sidebarVisible={sidebarVisible}
+                setSidebarVisible={setSidebarVisible}
+                coordinates={coordinates}
+                setCoordinates={setCoordinates}
+                allDocuments={allDocuments}
+                setAllDocuments={setAllDocuments}
+                filteredDocuments={filteredDocuments}
+                setFilteredDocuments={setFilteredDocuments}
             />
 
             <div style={{ position: "absolute", top: `${headerRef.current?.offsetHeight ? headerRef.current?.offsetHeight + 10 : 0}px`, left: "10px", zIndex: 10 }}>
@@ -382,6 +386,29 @@ const Diagram = () => {
                             if (selectedNode) {
                                 handleNodeClick(selectedNode);
                             }
+                        },
+                        hoverNode: function (event: {node: any, pointer: any}) {
+                            const {node, pointer} = event;
+                            const selectedNode = state.graph.nodes.find(n =>  n.id == node);
+                            if(selectedNode) {
+                                const selectedDocument = allDocuments.find((doc) => doc.id === selectedNode.id);
+                                if(selectedDocument) {
+                                    setDocumentInfoPopup({
+                                        visible: true,
+                                        x: pointer.DOM.x,
+                                        y: pointer.DOM.y,
+                                        content: (
+                                            <DocumentConnectionsList 
+                                                document={selectedDocument}
+                                                allDocuments={allDocuments}
+                                            />
+                                        )
+                                    });
+                                }
+                            }
+                        },
+                        blurNode: function () {
+                            setDocumentInfoPopup({visible: false, x: 0, y: 0, content: ''})
                         }
                     }}
                     style={{ height: "100%" }}
@@ -407,6 +434,24 @@ const Diagram = () => {
                     }}
                 />
             )}
+
+            {documentInfoPopup.visible && (
+                <div
+                    style={{
+                    position: "absolute",
+                    top: documentInfoPopup.y,
+                    left: documentInfoPopup.x + 10,
+                    backgroundColor: "white",
+                    border: "1px solid #ccc",
+                    borderRadius: "4px",
+                    padding: "5px",
+                    zIndex: 1000,
+                    boxShadow: "0px 4px 6px rgba(0, 0, 0, 0.1)",
+                    }}
+                >
+                    {documentInfoPopup.content}
+                </div>
+            )}
             <Modal
                 style={modalStyles}
                 isOpen={isModalOpen}
@@ -416,8 +461,10 @@ const Diagram = () => {
                     document={selectedDocument[0]}
                     coordinates={coordinates}
                     setCoordinates={setCoordinates}
-                    allDocuments={documents}
-                    setDocuments={setDocuments}
+                    allDocuments={allDocuments}
+                    setAllDocuments={setAllDocuments}
+                    filteredDocuments={filteredDocuments}
+                    setFilteredDocuments={setFilteredDocuments}
                 />
             </Modal>
         </div>

@@ -5,8 +5,7 @@ import { modalStyles } from '../../../pages/KirunaMap';
 import FloatingButton from '../../molecules/FloatingButton';
 import DocumentForm from '../DocumentForm';
 import { IDocument } from '../../../utils/interfaces/document.interface';
-import AllDocumentsModal from '../modals/AllDocumentsModal';
-import { FaFolder, FaGlobe, FaPlus } from 'react-icons/fa';
+import { FaGlobe, FaPlus } from 'react-icons/fa';
 import { AllMunicipalityDocuments } from '../coordsOverlay/AllMunicipalityDocuments';
 import { useAuth } from '../../../context/AuthContext';
 import { UserRoleEnum } from '../../../utils/interfaces/user.interface';
@@ -17,6 +16,9 @@ interface OverlayProps {
   setCoordinates: (coordinates: any) => void;
   documents: IDocument[];
   setDocuments: (documents: IDocument[]) => void;
+  filteredDocuments: IDocument[];
+  setFilteredDocuments: (filteredDocuments: IDocument[]) => void;
+  sidebarVisible: boolean
 }
 
 const Overlay: React.FC<OverlayProps> = ({
@@ -24,6 +26,9 @@ const Overlay: React.FC<OverlayProps> = ({
   setCoordinates,
   documents,
   setDocuments,
+  filteredDocuments,
+  setFilteredDocuments,
+  sidebarVisible
 }) => {
   const [isHoveredMunicipality, setIsHoveredMunicipality] = useState(false);
   const [showMunicipalityDocuments, setShowMunicipalityDocuments] =
@@ -32,8 +37,6 @@ const Overlay: React.FC<OverlayProps> = ({
   const [modalOpen, setModalOpen] = useState(false);
   const [isHoveredNewDocument, setIsHoveredNewDocument] = useState(false);
 
-  const [isHoveredSearch, setIsHoveredSearch] = useState(false);
-  const [showAllDocumentsModal, setShowAllDocumentsModal] = useState(false);
   const { isLoggedIn, user } = useAuth();
 
   const municipalityDocumentsModalStyles = {
@@ -56,6 +59,7 @@ const Overlay: React.FC<OverlayProps> = ({
         top: '50vh',
         left: 0,
         width: '100%',
+        transform: '350ms',
         zIndex: 1000,
       }}
     >
@@ -74,25 +78,7 @@ const Overlay: React.FC<OverlayProps> = ({
             setShowMunicipalityDocuments(true);
           }
         }}
-        className='floating-button-right'
-      />
-
-      <FloatingButton
-        onMouseEnter={() => setIsHoveredSearch(true)}
-        onMouseLeave={() => setIsHoveredSearch(false)}
-        onClick={() => {
-          if (!showAllDocumentsModal) {
-            setShowAllDocumentsModal(true);
-          }
-        }}
-        text={
-          isHoveredSearch ? (
-            'See All Documents'
-          ) : (
-            <FaFolder style={{ display: 'inline' }} />
-          )
-        }
-        className="floating-button-right mt-20"
+        className={sidebarVisible ? 'floating-button-right mr-button' : 'floating-button-right'}
       />
 
       {isLoggedIn && user && user.role === UserRoleEnum.Uplanner && (
@@ -111,7 +97,7 @@ const Overlay: React.FC<OverlayProps> = ({
               setModalOpen(true);
             }
           }}
-          className='floating-button-right mt-40'
+          className={sidebarVisible ? 'floating-button-right mt-20 mr-button' : 'floating-button-right mt-20'}
         />
       )}
 
@@ -123,24 +109,12 @@ const Overlay: React.FC<OverlayProps> = ({
         <DocumentForm
           coordinates={coordinates}
           setCoordinates={setCoordinates}
-          documents={documents}
           positionProp={undefined}
           setModalOpen={setModalOpen}
-          setDocuments={setDocuments} 
-        />
-      </Modal>
-
-      <Modal
-        style={modalStyles}
-        isOpen={showAllDocumentsModal}
-        onRequestClose={() => setShowAllDocumentsModal(false)}
-      >
-        <AllDocumentsModal 
-          setShowAllDocumentsModal={setShowAllDocumentsModal} 
-          coordinates={coordinates}
-          setCoordinates={setCoordinates}
-          allDocuments={documents}
-          setAllDocuments={setDocuments} 
+          documents={documents}
+          setDocuments={setDocuments}
+          filteredDocuments={filteredDocuments}
+          setFilteredDocuments={setFilteredDocuments}
         />
       </Modal>
 
@@ -154,6 +128,8 @@ const Overlay: React.FC<OverlayProps> = ({
           setCoordinates={setCoordinates}
           documents={documents}
           setDocuments={setDocuments} 
+          filteredDocuments={filteredDocuments}
+          setFilteredDocuments={setFilteredDocuments}
         />
       </Modal>
     </div>

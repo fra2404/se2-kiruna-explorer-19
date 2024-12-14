@@ -12,7 +12,9 @@ interface DocumentItemProps {
   coordinates: any;
   setCoordinates: (coordinates: any) => void;
   allDocuments: IDocument[];
-  setDocuments: (documents: IDocument[]) => void;
+  setAllDocuments: (documents: IDocument[]) => void;
+  filteredDocuments: IDocument[];
+  setFilteredDocuments: (documents: IDocument[]) => void;
 }
 
 export const DocumentItem: React.FC<DocumentItemProps> = ({
@@ -20,7 +22,9 @@ export const DocumentItem: React.FC<DocumentItemProps> = ({
   coordinates,
   setCoordinates,
   allDocuments,
-  setDocuments,
+  setAllDocuments,
+  filteredDocuments,
+  setFilteredDocuments
 }) => {
   const modalStyles = {
     content: {
@@ -67,7 +71,9 @@ export const DocumentItem: React.FC<DocumentItemProps> = ({
           coordinates={coordinates}
           setCoordinates={setCoordinates}
           allDocuments={allDocuments}
-          setDocuments={setDocuments}
+          setAllDocuments={setAllDocuments}
+          filteredDocuments={filteredDocuments}
+          setFilteredDocuments={setFilteredDocuments}
         />
       </Modal>
     </>
