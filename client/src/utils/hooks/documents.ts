@@ -3,44 +3,48 @@ import API from '../../API';
 import { IDocument } from '../interfaces/document.interface';
 
 interface UseDocumentsReturn {
-    documents: IDocument[];
-    setDocuments: (documents: IDocument[]) => void;
+    allDocuments: IDocument[];
+    setAllDocuments: (documents: IDocument[]) => void;
+    filteredDocuments: IDocument[];
+    setFilteredDocuments: (documents: IDocument[]) => void;
     refreshDocuments: () => void;
     isLoading: boolean;
     error: string | null;
 }
 
 const useDocuments = (): UseDocumentsReturn => {
-    const [documents, setDocuments] = useState<IDocument[]>([]);
+    const [allDocuments, setAllDocuments] = useState<IDocument[]>([]);
+    const [filteredDocuments, setFilteredDocuments] = useState<IDocument[]>([]);
     const [isLoading, setIsLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
     const [shouldRefresh, setShouldRefresh] = useState(true);
 
     const fetchDocuments = useCallback(async () => {
-        setIsLoading(true);
-        setError(null);
-        try {
-            const fetchedDocuments = await API.getDocuments();
-            setDocuments(fetchedDocuments);
-        } catch (e: any) {
-            setError(e.message || 'An error occurred while fetching documents.');
-        } finally {
-            setIsLoading(false);
-            setShouldRefresh(false);
-        }
+      setIsLoading(true);
+      setError(null);
+      try {
+        const fetchedDocuments = await API.getDocuments();
+        setAllDocuments(fetchedDocuments);
+        setFilteredDocuments(fetchedDocuments);
+      } catch (e: any) {
+        setError(e.message || 'An error occurred while fetching documents.');
+      } finally {
+        setIsLoading(false);
+        setShouldRefresh(false);
+      }
     }, []);
 
     useEffect(() => {
-        if (shouldRefresh) {
-            fetchDocuments();
-        }
+      if (shouldRefresh) {
+        fetchDocuments();
+      }
     }, [shouldRefresh, fetchDocuments]);
 
     const refreshDocuments = useCallback(() => {
-        setShouldRefresh(true);
+      setShouldRefresh(true);
     }, []);
 
-    return { documents, setDocuments, refreshDocuments, isLoading, error };
+    return { allDocuments, setAllDocuments, filteredDocuments, setFilteredDocuments, refreshDocuments, isLoading, error };
 };
 
 export default useDocuments;

@@ -3,6 +3,7 @@ import { MapContainer, TileLayer } from 'react-leaflet';
 import CustomZoomControl from './ZoomControl';
 import { useContext } from 'react';
 import MapStyleContext from '../../context/MapStyleContext';
+import { MunicipalityAreaOutline } from './MunicipalityArea';
 
 export const kirunaLatLngCoords: LatLngExpression = [67.85572, 20.22513];
 
@@ -49,6 +50,7 @@ const CustomMap: React.FC<CustomMapProps> = ({
       />
     )}
     <CustomZoomControl />
+    <MunicipalityAreaOutline />
 
       {children}
     </MapContainer>
