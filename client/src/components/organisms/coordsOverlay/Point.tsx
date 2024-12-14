@@ -57,29 +57,36 @@ export const Point: React.FC<PointProps> = ({
   const polygonRef = useRef<L.Polygon>(null);
   const map = useMap();
 
-  const handlePopupOpen = () => {
-    if(type == 'Polygon') {
+  const handleClick = () => {
+    if(!popupOpen) {
       popupOpen = true;
-      polygonRef.current?.addTo(map);
+      markerRef.current?.openPopup();
+      if(type == 'Polygon') {
+        polygonRef.current?.addTo(map);
+      }
     }
   }
 
   const handlePopupClose = () => {
+    popupOpen = false;
     if(type == 'Polygon') {
-      popupOpen = false;
       polygonRef.current?.remove();
     }
   }
 
   const handleMouseOver = () => {
+    markerRef.current?.openPopup();
     if(type == 'Polygon') {
       polygonRef.current?.addTo(map);
     }
   }
 
   const handleMouseOut = () => {
-    if((type == 'Polygon') && !popupOpen) {
-      polygonRef.current?.remove();
+    if(!popupOpen) {
+      markerRef.current?.closePopup();
+      if((type == 'Polygon')) {
+        polygonRef.current?.remove();
+      }
     }
   }
 
@@ -124,7 +131,7 @@ export const Point: React.FC<PointProps> = ({
         eventHandlers={{
           mouseover: handleMouseOver,
           mouseout: handleMouseOut,
-          popupopen: handlePopupOpen,
+          click: handleClick,
           popupclose: handlePopupClose
         }}
       >
