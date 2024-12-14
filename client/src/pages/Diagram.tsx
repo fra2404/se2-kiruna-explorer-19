@@ -106,7 +106,7 @@ const Diagram = () => {
     // State to store the min and max values from all the nodes 
     const [graphBounds, setGraphBounds] = useState({ minY: 0, maxY: 1440, minX: 0, maxX: 12000 });
 
-    const checkGraphConstraints = (event) => {
+    const checkGraphConstraints = (event: any) => {
         if (event.deltaY !== 0 || event.deltaX !== 0) {
             const network = networkRef.current;
             const currentPosition = network.getViewPosition();
@@ -398,7 +398,6 @@ const Diagram = () => {
     const computeStyleY = (node: any) => {
         console.log(`Computing style for scale ${node.scale}`);
         return scaleMapping[node.scale == 'ARCHITECTURAL' ? node.architecturalScale : node.scale as keyof typeof scaleMapping];
-        // return scaleMapping[scale as keyof typeof scaleMapping];
     }
 
     const label_style = [
@@ -456,7 +455,7 @@ const Diagram = () => {
             }
 
             network.moveTo({ scale: 0.5 })  // Set the initial zoom level
-            network.on("zoom", function (params) {
+            network.on("zoom", function (params: any) {
                 if (params.scale < min_zoom || params.scale > max_zoom) {
                     network.moveTo({
                         position: lastPosition, // use the last position before zoom limit
@@ -486,7 +485,7 @@ const Diagram = () => {
         const MAX_NODE_OFFSET = 80;
 
         // Allow the user to move the node inside some boundaries
-        const saveNodePosition = (event) => {
+        const saveNodePosition = (event: any) => {
             const network = networkRef.current;
             const node = network.getPositions([event.nodes[0]])[event.nodes[0]];
             if (!node) {
@@ -496,7 +495,7 @@ const Diagram = () => {
             nodeLastPosition.y = node.y;
         }
 
-        const checkNodeConstraints = (event) => {
+        const checkNodeConstraints = (event: any) => {
             const network = networkRef.current;
             const node = network.getPositions([event.nodes[0]])[event.nodes[0]];
             if (!node) {
@@ -515,10 +514,8 @@ const Diagram = () => {
             }
 
             const newposition = { x: nodeCurrentPosition.x, y: nodeCurrentPosition.y };
-            // console.log(`Dragged node year: ${draggedNode.year}, scale: ${draggedNode.scale}`);
             const center_x = computeYearX(draggedNode.year);
             const center_y = computeStyleY(draggedNode);
-            // console.log(`Center x is ${center_x}, center y is ${center_y}`);
 
             if (/^label_/.test(draggedNode.id) || /^1:/.test(draggedNode.id)) {
                 // Regex to filter the labels to avoid moving them
