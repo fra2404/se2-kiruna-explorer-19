@@ -30,7 +30,7 @@ import { useParams } from "react-router-dom";
 import useDocuments from "../utils/hooks/documents.js";
 import { DocumentConnectionsList } from "../components/molecules/documentsItems/DocumentConnectionsList.js";
 
-const LABEL_FONT = { size: 35, color: "#000000" };
+const LABEL_FONT = { size: 50, color: "#000000" };
 const OFFSET_VIEW = { x: 200, y: 500 };
 const YEAR_SPACING = 500;
 const options = {
@@ -333,6 +333,17 @@ const Diagram = () => {
                 id: doc.id,
                 shape: "image",
                 image: doc.image,
+                size: 50,
+                borderWidth: 4,
+                borderWidthSelected: 4,
+                shapeProperties: {
+                  useBorderWithImage: doc.id == id,
+                  useImageSize: false
+                },
+                color: {
+                  background: 'transparent',
+                  border: swedishFlagBlue,
+                },
                 brokenImage: ErrorImage,
                 year: doc.year,
                 scale: doc.scale,
@@ -447,7 +458,7 @@ const Diagram = () => {
 
             }
 
-            network.moveTo({ scale: 0.5 })  // Set the initial zoom level
+            network.moveTo({ scale: 0.3 })  // Set the initial zoom level
             network.on("zoom", function (params: any) {
                 if (params.scale < min_zoom || params.scale > max_zoom) {
                     network.moveTo({
