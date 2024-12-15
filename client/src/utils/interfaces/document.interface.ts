@@ -1,12 +1,14 @@
 import { ObjectId } from 'mongoose';
+import { IStakeholder } from './stakeholders.interface';
+import { IDocumentType } from './documentTypes.interface';
 
 export interface IDocument {
   id: string;
   title: string;
-  stakeholders?: string;
+  stakeholders?: IStakeholder[];
   scale?: string;
   architecturalScale?: string;
-  type: DocTypeEnum;
+  type: IDocumentType;
   date: string;
   summary: string;
   connections?: IConnection[];

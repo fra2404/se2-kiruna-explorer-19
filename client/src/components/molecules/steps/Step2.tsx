@@ -1,14 +1,16 @@
 import React, { useState, useEffect, useRef } from 'react';
 import InputComponent from '../../atoms/input/input';
 import ButtonRounded from '../../atoms/button/ButtonRounded';
+import { getDocumentTypes, createDocumentType } from '../../../API'; // Importa le funzioni getDocumentTypes e createDocumentType
+import { IDocumentType } from '../../../utils/interfaces/documentTypes.interface';
 
 interface Step2Props {
   description: string;
   setDescription: (value: string) => void;
   language: string;
   setLanguage: (value: string) => void;
-  docType: string;
-  setDocType: (value: string) => void;
+  docType: IDocumentType;
+  setDocType: (value: IDocumentType) => void;
   documentTypeOptions: { value: string; label: string }[];
   errors: { [key: string]: string };
 }
@@ -25,7 +27,7 @@ const Step2: React.FC<Step2Props> = ({
 }) => {
   const [isAddingNewDocType, setIsAddingNewDocType] = useState(false);
   const [newDocTypeLabel, setNewDocTypeLabel] = useState('');
-  const [docTypeOptions, setDocTypeOptions] = useState(documentTypeOptions);
+  const [docTypeOptions, setDocTypeOptions] = useState<{ value: string; label: string }[]>([]);
   const [inputKey, setInputKey] = useState(0); // Aggiungi uno stato per la chiave dinamica
   const newDocTypeInputRef = useRef<HTMLInputElement>(null); // Crea un riferimento per il campo di input
 
@@ -39,13 +41,32 @@ const Step2: React.FC<Step2Props> = ({
     }
   }, [isAddingNewDocType]);
 
-  const handleSaveNewDocType = () => {
-    const newOption = { value: newDocTypeLabel, label: newDocTypeLabel };
-    setDocTypeOptions([...docTypeOptions, newOption]);
-    setDocType(newOption.value);
-    console.log('Tipo di documento selezionato:', newOption.value);
-    setIsAddingNewDocType(false);
-    setNewDocTypeLabel('');
+  useEffect(() => {
+    // Funzione per recuperare i tipi di documento dal backend
+    const fetchDocumentTypes = async () => {
+      try {
+        const options = await getDocumentTypes();
+        setDocTypeOptions(options);
+      } catch (error) {
+        console.error('Errore nel recupero dei tipi di documento:', error);
+      }
+    };
+
+    fetchDocumentTypes();
+  }, []);
+
+  const handleSaveNewDocType = async () => {
+    try {
+      const newDocType = await createDocumentType(newDocTypeLabel);
+      const formattedDocType = { value: newDocType.value, label: newDocType.label };
+      setDocTypeOptions([...docTypeOptions, formattedDocType]);
+      setDocType({ _id: newDocType.value, type: newDocType.label });
+      console.log('Tipo di documento selezionato:', newDocType.value);
+      setIsAddingNewDocType(false);
+      setNewDocTypeLabel('');
+    } catch (error) {
+      console.error('Errore nella creazione del nuovo tipo di documento:', error);
+    }
   };
 
   return (
@@ -91,11 +112,14 @@ const Step2: React.FC<Step2Props> = ({
           label="Type"
           type="select"
           options={docTypeOptions}
-          value={{ value: docType, label: docType }}
+          value={docType._id} // Passa l'_id del docType come valore
           onChange={(e) => {
             if ('target' in e) {
-              setDocType(e.target.value);
-              console.log('Tipo di documento selezionato:', e.target.value);
+              const selectedOption = docTypeOptions.find(option => option.value === e.target.value);
+              if (selectedOption) {
+                setDocType({ _id: selectedOption.value, type: selectedOption.label });
+                console.log('Tipo di documento selezionato:', selectedOption.value);
+              }
             }
           }}
           required={true}

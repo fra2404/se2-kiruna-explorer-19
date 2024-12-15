@@ -9,6 +9,7 @@ import {
   createDocument,
   editDocument,
   addResource,
+  getDocumentTypes,
 } from '../../API';
 import Toast from './Toast';
 import Step1 from '../molecules/steps/Step1';
@@ -28,6 +29,7 @@ import ToggleButton from '../atoms/ToggleButton';
 import { DocumentIcon } from '../molecules/documentsItems/DocumentIcon';
 import useToast from '../../utils/hooks/toast';
 import { isMarkerInsideKiruna } from '../../utils/isMarkerInsideKiruna';
+import { IStakeholder } from '../../utils/interfaces/stakeholders.interface';
 
 Modal.setAppElement('#root');
 
@@ -92,9 +94,9 @@ const DocumentForm = ({
 
   // Document information
   const [title, setTitle] = useState(selectedDocument?.title ?? '');
-  const [stakeholders, setStakeholders] = useState<string[]>(
+  const [stakeholders, setStakeholders] = useState<IStakeholder[]>(
     Array.isArray(selectedDocument?.stakeholders)
-      ? selectedDocument.stakeholders
+      ? selectedDocument.stakeholders.map((s) => ({ _id: s._id, id: s._id, type: s.type }))
       : [],
   );
   const [scale, setScale] = useState<string | undefined>(
@@ -108,8 +110,8 @@ const DocumentForm = ({
       ? new Date(selectedDocument.date).toISOString().split('T')[0]
       : new Date().toISOString().split('T')[0],
   );
-  const [docType, setDocType] = useState<string | undefined>(
-    selectedDocument?.type ?? undefined,
+  const [docType, setDocType] = useState<{ _id: string; type: string } | undefined>(
+    selectedDocument?.type ? { _id: selectedDocument.type._id, type: selectedDocument.type.type } : undefined,
   );
   const [connections, setConnections] = useState<Connection[]>(
     selectedDocument?.connections?.map((c) => {
@@ -133,19 +135,19 @@ const DocumentForm = ({
   const createDocumentOption = (
     value: string,
     label: string,
-    stakeholders: string[] | undefined,
+    stakeholders: IStakeholder[] | undefined,
   ) => ({
     value,
     label,
     icon: (
       <DocumentIcon
         type={value}
-        stakeholders={Array.isArray(stakeholders) ? stakeholders : []}
+        stakeholders={Array.isArray(stakeholders) ? stakeholders.map(s => s.type) : []}
       />
     ),
   });
 
-  const documentTypeOptions = [
+  const fixedDocumentTypeOptions = [
     createDocumentOption('AGREEMENT', 'Agreement', stakeholders),
     createDocumentOption('CONFLICT', 'Conflict', stakeholders),
     createDocumentOption('CONSULTATION', 'Consultation', stakeholders),
@@ -163,6 +165,25 @@ const DocumentForm = ({
     ),
     createDocumentOption('TECHNICAL_DOC', 'Technical document', stakeholders),
   ];
+
+  const [dynamicDocumentTypeOptions, setDynamicDocumentTypeOptions] = useState<{ value: string; label: string }[]>([]);
+
+  useEffect(() => {
+    // Funzione per recuperare i tipi di documento dal backend
+    const fetchDocumentTypes = async () => {
+      try {
+        const options = await getDocumentTypes();
+        setDynamicDocumentTypeOptions(options);
+      } catch (error) {
+        console.error('Errore nel recupero dei tipi di documento:', error);
+      }
+    };
+
+    fetchDocumentTypes();
+  }, []);
+
+  const documentTypeOptions = [...fixedDocumentTypeOptions, ...dynamicDocumentTypeOptions];
+  console.log("docTypeOptions", documentTypeOptions)
 
   // Connection modal : To enter a new connection
   const [connectionModalOpen, setConnectionModalOpen] = useState(false);
@@ -216,8 +237,9 @@ const DocumentForm = ({
       newErrors.architecturalScale = 'Custom Scale must be in 1:number format';
     if (issuanceDate.trim() === '')
       newErrors.issuanceDate = 'Issuance date is required';
-    if ((docType ?? '').trim() === '')
+    if (!docType || (docType._id ?? '').trim() === '')
       newErrors.docType = 'Document type is required';
+    console.log("doc", docType)
     if (position && !selectedCoordId && !coordName)
       newErrors.newPoint = 'A new point must have a valid name';
     if(position && !selectedCoordId && !isMarkerInsideKiruna(position))
@@ -267,10 +289,10 @@ const DocumentForm = ({
     return {
       id: selectedDocument?.id ?? '',
       title,
-      stakeholders: stakeholders ?? '',
+      stakeholders: stakeholders.map(s => s._id),
       scale: scale ?? '',
       architecturalScale: scale === 'ARCHITECTURAL' ? architecturalScale : '',
-      type: docType ?? '',
+      type: docType?._id ?? '',
       language,
       summary: description,
       date: issuanceDate,
@@ -420,8 +442,15 @@ const DocumentForm = ({
                 setDescription={setDescription}
                 language={language}
                 setLanguage={setLanguage}
-                docType={docType ?? ''}
-                setDocType={setDocType}
+                docType={docType ?? { _id: '', type: '' }}
+                                setDocType={(value) => {
+                  const selectedOption = documentTypeOptions.find(option => option.value === value.type);
+                  if (selectedOption) {
+                    setDocType({ _id: selectedOption.value, type: selectedOption.label });
+                  } else {
+                    setDocType({ _id: '', type: '' });
+                  }
+                }}
                 documentTypeOptions={documentTypeOptions}
                 errors={errors}
               />
@@ -475,6 +504,7 @@ const DocumentForm = ({
                 </span>
               </h3>
               {showConnections && (
+                
                 <Step4
                   connections={connections}
                   handleDeleteConnection={handleDeleteConnection}
@@ -511,6 +541,7 @@ const DocumentForm = ({
                 </span>
               </h3>
               {showGeoreferencing && (
+                
                 <Step5
                   coordinates={coordinates}
                   setCoordinates={setCoordinates}

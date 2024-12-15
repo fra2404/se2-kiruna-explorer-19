@@ -54,7 +54,7 @@ export const DocumentIcon: React.FC<DocumentIconProps> = ({
   const colors = stakeholdersColors(stakeholdersArray);
 
   // Define custom icons for different categories
-  if (!type) return <FaQuestion size={20} />;
+  if (!type || typeof type !== 'string') return <FaQuestion size={20} />;
   switch (type.toUpperCase()) {
     case 'AGREEMENT':
       return <AgreementIcon fillColor={colors} />;

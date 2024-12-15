@@ -11,6 +11,7 @@ import { useNavigate } from 'react-router-dom';
 import { CDN_URL } from '../../../utils/constants';
 import { nanoid } from 'nanoid';
 import { scaleOptions } from '../../../shared/scale.options.const';
+import { IStakeholder } from '../../../utils/interfaces/stakeholders.interface';
 
 interface DocumentDetailsModalProps {
   document: IDocument;
@@ -62,7 +63,7 @@ const DocumentDetailsModal: React.FC<DocumentDetailsModalProps> = ({
       case 'TECHNICAL_DOC':
         return 'Technical Document';
       default:
-        return 'Unknown';
+        return type; // Return the type as is if it doesn't match predefined types
     }
   };
 
@@ -93,7 +94,7 @@ const DocumentDetailsModal: React.FC<DocumentDetailsModalProps> = ({
     {
       label: 'Stakeholders',
       content: Array.isArray(currentDocument.stakeholders)
-        ? currentDocument.stakeholders.join(' - ')
+        ? currentDocument.stakeholders.map(stakeholder => stakeholder.type).join(' - ')
         : currentDocument.stakeholders,
     },
     {
@@ -103,7 +104,7 @@ const DocumentDetailsModal: React.FC<DocumentDetailsModalProps> = ({
         : 'Unknown',
     },
     { label: 'Issuance Date', content: currentDocument.date },
-    { label: 'Type', content: matchType(currentDocument.type) },
+    { label: 'Type', content: matchType(currentDocument.type.type) },
     { 
       label: 'Connections', 
       content: connectedDocuments.map((cd: any) => {
@@ -140,9 +141,11 @@ const DocumentDetailsModal: React.FC<DocumentDetailsModalProps> = ({
         {/* Icon container */}
         <div className="col-span-2 px-2">
           <DocumentIcon
-            type={currentDocument.type}
+            type={currentDocument.type.type}
             stakeholders={
-              Array.isArray(currentDocument.stakeholders) ? currentDocument.stakeholders : []
+              Array.isArray(currentDocument.stakeholders) 
+                ? currentDocument.stakeholders.map((stakeholder: IStakeholder) => stakeholder.type) 
+                : []
             }
           />
         </div>

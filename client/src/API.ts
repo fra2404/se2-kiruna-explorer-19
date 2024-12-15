@@ -1,4 +1,6 @@
 import { ICoordinate, IDocument } from './utils/interfaces/document.interface';
+import { IDocumentType } from './utils/interfaces/documentTypes.interface';
+import { IStakeholder } from './utils/interfaces/stakeholders.interface';
 import { IUser } from './utils/interfaces/user.interface';
 
 const SERVER_URL = 'http://localhost:5001/api'; // endpoint of the server
@@ -301,9 +303,9 @@ async function searchDocuments(
     searchQuery.trim() === ''
       ? `${SERVER_URL}/documents/search`
       : `${SERVER_URL}/documents/search?keywords=[${searchQuery
-          .split(' ')
-          .map((word) => `"${encodeURIComponent(word)}"`)
-          .join(',')}]`;
+        .split(' ')
+        .map((word) => `"${encodeURIComponent(word)}"`)
+        .join(',')}]`;
 
   let formattedFilters;
   if (filters.scale === '') {
@@ -381,12 +383,12 @@ async function getGraphInfo() {
   }
 }
 
-async function getDocumentById(documentId : string) {
+async function getDocumentById(documentId: string) {
   return await fetch(`${SERVER_URL}/documents/${documentId}`, {
     method: 'GET',
   })
-  .then(handleInvalidResponse)
-  .then((response) => response.json());
+    .then(handleInvalidResponse)
+    .then((response) => response.json());
 }
 
 async function getTypes() {
@@ -401,6 +403,104 @@ async function getTypes() {
   }
 }
 
+async function getStakeholders(): Promise<{ value: string; label: string }[]> {
+  try {
+    const response = await fetch(`${SERVER_URL}/stakeholders`, {
+      method: 'GET',
+      credentials: 'include',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    });
+
+    if (!response.ok) {
+      throw new Error('Failed to fetch stakeholders');
+    }
+
+    const data: IStakeholder[] = await response.json();
+    const stakeholders = data.map((stakeholder) => ({
+      value: stakeholder._id,
+      label: stakeholder.type,
+    }));
+    return stakeholders;
+  } catch (error) {
+    console.log(error);
+    return [];
+  }
+}
+
+async function createStakeholder(newStakeholderType: string): Promise<{ value: string; label: string }> {
+  try {
+    const response = await fetch(`${SERVER_URL}/stakeholders/add`, {
+      method: 'POST',
+      credentials: 'include',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ newStakeholderType }),
+    });
+
+    if (!response.ok) {
+      throw new Error('Failed to create stakeholder');
+    }
+
+    const stakeholder: IStakeholder = await response.json();
+    return { value: stakeholder._id, label: stakeholder.type };
+  } catch (error) {
+    console.log(error);
+    throw error;
+  }
+}
+
+async function getDocumentTypes(): Promise<{ value: string; label: string }[]> {
+  try {
+    const response = await fetch(`${SERVER_URL}/document-types`, {
+      method: 'GET',
+      credentials: 'include',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    });
+
+    if (!response.ok) {
+      throw new Error('Failed to fetch document types');
+    }
+
+    const data: IDocumentType[] = await response.json();
+    const documentTypes = data.map((docType) => ({
+      value: docType._id,
+      label: docType.type,
+    }));
+    return documentTypes;
+  } catch (error) {
+    console.log(error);
+    return [];
+  }
+}
+
+async function createDocumentType(newDocumentType: string): Promise<{ value: string; label: string }> {
+  try {
+    const response = await fetch(`${SERVER_URL}/document-types/add`, {
+      method: 'POST',
+      credentials: 'include',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ newDocumentType }),
+    });
+
+    if (!response.ok) {
+      throw new Error('Failed to create document type');
+    }
+
+    const docType: IDocumentType = await response.json();
+    return { value: docType._id, label: docType.type };
+  } catch (error) {
+    console.log(error);
+    throw error;
+  }
+}
+
 const API = {
   getDocuments,
   getCoordinates,
@@ -411,7 +511,11 @@ const API = {
   addArea,
   removeArea,
   getAreas,
-  getDocumentById
+  getDocumentById,
+  getStakeholders,
+  createStakeholder,
+  getDocumentTypes,
+  createDocumentType,
 };
 
 export {
@@ -427,5 +531,9 @@ export {
   addResource,
   getGraphInfo,
   getTypes,
+  getStakeholders,
+  createStakeholder,
+  getDocumentTypes,
+  createDocumentType,
 };
 export default API;

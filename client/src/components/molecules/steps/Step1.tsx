@@ -1,17 +1,18 @@
 import React, { useState, useEffect, useRef } from 'react';
 import InputComponent from '../../atoms/input/input';
 import './Step1.css';
-import { stakeholderOptions as initialStakeholderOptions } from '../../../shared/stakeholder.options.const';
 import { scaleOptions } from '../../../shared/scale.options.const';
 import { years, months, getDays } from '../../../utils/date';
 import { FaCheck } from 'react-icons/fa';
 import ButtonRounded from '../../atoms/button/ButtonRounded';
+import { getStakeholders, createStakeholder } from '../../../API'; // Importa le funzioni getStakeholders e createStakeholder
+import { IStakeholder } from '../../../utils/interfaces/stakeholders.interface';
 
 interface Step1Props {
   title: string;
   setTitle: (value: string) => void;
-  stakeholders: string[];
-  setStakeholders: (value: string[]) => void;
+  stakeholders: IStakeholder[];
+  setStakeholders: (value: IStakeholder[]) => void;
   scale: string;
   setScale: (value: string) => void;
   issuanceDate: string;
@@ -43,7 +44,7 @@ const Step1: React.FC<Step1Props> = ({
   const [selectedDay, setSelectedDay] = useState<string>(
     issuanceDate ? issuanceDate.split('-')[2] : '',
   );
-  const [stakeholderOptions, setStakeholderOptions] = useState(initialStakeholderOptions);
+  const [stakeholderOptions, setStakeholderOptions] = useState<{ value: string; label: string }[]>([]);
   const [isAddingNewStakeholder, setIsAddingNewStakeholder] = useState(false);
   const [newOptionLabel, setNewOptionLabel] = useState('');
   const [inputKey, setInputKey] = useState(0); // Aggiungi uno stato per la chiave dinamica
@@ -82,15 +83,34 @@ const Step1: React.FC<Step1Props> = ({
     }
   }, [isAddingNewStakeholder]);
 
-  const handleSaveNewStakeholder = (newStakeholder: { value: string; label: string }) => {
-    const newOption = { value: newOptionLabel, label: newOptionLabel };
-    setStakeholderOptions([...stakeholderOptions, newOption]);
-    const updatedStakeholders = [...stakeholders, newOption.value];
-    console.log('Stakeholders selezionati:', updatedStakeholders);
-    setStakeholders(updatedStakeholders);
-    setIsAddingNewStakeholder(false);
-    setNewOptionLabel('');
-    setInputKey((prevKey) => prevKey + 1); // Aggiorna la chiave dinamica per forzare il rerender
+  useEffect(() => {
+    // Funzione per recuperare gli stakeholder dal backend
+    const fetchStakeholders = async () => {
+      try {
+        const options = await getStakeholders();
+        setStakeholderOptions(options);
+      } catch (error) {
+        console.error('Errore nel recupero degli stakeholder:', error);
+      }
+    };
+
+    fetchStakeholders();
+  }, []);
+
+  const handleSaveNewStakeholder = async (newStakeholderType: string) => {
+    try {
+      const newStakeholder = await createStakeholder(newStakeholderType);
+      const formattedStakeholder = { _id: newStakeholder.value, type: newStakeholder.label };
+      setStakeholderOptions([...stakeholderOptions, { value: newStakeholder.value, label: newStakeholder.label }]);
+      const updatedStakeholders: IStakeholder[] = [...stakeholders, formattedStakeholder];
+      console.log('Stakeholders selezionati:', updatedStakeholders);
+      setStakeholders(updatedStakeholders);
+      setIsAddingNewStakeholder(false);
+      setNewOptionLabel('');
+      setInputKey((prevKey) => prevKey + 1); // Aggiorna la chiave dinamica per forzare il rerender
+    } catch (error) {
+      console.error('Errore nella creazione del nuovo stakeholder:', error);
+    }
   };
 
   return (
@@ -119,16 +139,18 @@ const Step1: React.FC<Step1Props> = ({
           label="Stakeholder(s)"
           type="multi-select"
           options={stakeholderOptions}
-          value={stakeholders.map((stakeholder) => ({
-            value: stakeholder,
-            label: stakeholder,
-          }))}
+          value={stakeholders.map((stakeholder) => {
+            const stakeholderOption = stakeholderOptions.find(option => option.value === stakeholder._id);
+            return stakeholderOption ? { value: stakeholderOption.value, label: stakeholderOption.label } : { value: stakeholder._id, label: stakeholder.type };
+          })}
           onChange={(selectedOptions) => {
-            setStakeholders(
-              selectedOptions
-                ? Array.isArray(selectedOptions) ? selectedOptions.map((option) => option.value) : []
-                : [],
-            );
+            let newStakeholders: IStakeholder[] = [];
+            if (selectedOptions) {
+              if (Array.isArray(selectedOptions)) {
+                newStakeholders = selectedOptions.map((option) => ({ _id: option.value, type: option.label }));
+              }
+            }
+            setStakeholders(newStakeholders);
           }}
           required={true}
           placeholder="Select stakeholder(s)"
@@ -150,7 +172,7 @@ const Step1: React.FC<Step1Props> = ({
               placeholder="Enter new stakeholder"
               onKeyDown={(e) => {
                 if (e.key === 'Enter') {
-                  handleSaveNewStakeholder({ value: newOptionLabel, label: newOptionLabel });
+                  handleSaveNewStakeholder(newOptionLabel);
                 }
               }}
               inputRef={newStakeholderInputRef} // Imposta il riferimento al campo di input
@@ -159,7 +181,7 @@ const Step1: React.FC<Step1Props> = ({
               variant="filled"
               text="Confirm"
               className="ml-4 bg-black text-white text-xs pt-2 pb-2 pl-3 pr-3" // Aggiungi margine sinistro
-              onClick={() => handleSaveNewStakeholder({ value: newOptionLabel, label: newOptionLabel })}
+              onClick={() => handleSaveNewStakeholder(newOptionLabel)}
             />
           </div>
         )}
