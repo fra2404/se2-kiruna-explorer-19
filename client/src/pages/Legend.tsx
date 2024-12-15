@@ -14,20 +14,20 @@ const Legend = () => {
     };
     const legend = {
         nodes: [
-            { id: 1, color: COLOR, font: LABEL_FONT, x: -100, y: -50 },
+            { id: 1, color: COLOR, font: { LABEL_FONT }, x: -100, y: -50 },
             { id: 2, color: COLOR, x: 100, y: -50 },
-            { id: 3, color: COLOR, font: LABEL_FONT, x: -100, y: 0 },
+            { id: 3, color: COLOR, font: { LABEL_FONT }, x: -100, y: 0 },
             { id: 4, color: COLOR, x: 100, y: 0 },
-            { id: 5, color: COLOR, font: LABEL_FONT, x: -100, y: 50 },
+            { id: 5, color: COLOR, font: { LABEL_FONT }, x: -100, y: 50 },
             { id: 6, color: COLOR, x: 100, y: 50 },
-            { id: 7, color: COLOR, font: LABEL_FONT, x: -100, y: 100 },
+            { id: 7, color: COLOR, font: { LABEL_FONT }, x: -100, y: 100 },
             { id: 8, color: COLOR, x: 100, y: 100 },
         ] as any[],
         edges: [
-            { from: 1, to: 2, dashes: false, color: { color: EDGE_COLORS.direct }, label: "Direct consequence", width: 2 },
-            { from: 3, to: 4, dashes: [2, 2], color: { color: EDGE_COLORS.collateral }, label: "Collateral consequence", width: 2 },
-            { from: 5, to: 6, dashes: [1, 3], color: { color: EDGE_COLORS.projection }, label: "Projection", width: 2 },
-            { from: 7, to: 8, dashes: [2, 1, 1], color: { color: EDGE_COLORS.update }, label: "Update", width: 2 },
+            { from: 1, to: 2, dashes: false, color: { color: EDGE_COLORS.direct }, font: { size: 20, color: EDGE_COLORS.direct, background: 'white' }, label: "Direct consequence", width: 2 },
+            { from: 3, to: 4, dashes: false, color: { color: EDGE_COLORS.collateral }, font: { size: 20, color: EDGE_COLORS.collateral, background: 'white' }, label: "Collateral consequence", width: 2 },
+            { from: 5, to: 6, dashes: false, color: { color: EDGE_COLORS.projection }, font: { size: 20, color: EDGE_COLORS.projection, background: 'white' }, label: "Projection", width: 2 },
+            { from: 7, to: 8, dashes: false, color: { color: EDGE_COLORS.update }, font: { size: 20, color: EDGE_COLORS.update, background: 'white' }, label: "Update", width: 2 },
         ] as { from: any; to: any; dashes: any, color: any, arrows: any, label: string, width: number }[]
     }
 
@@ -59,7 +59,6 @@ const Legend = () => {
                 to: { enabled: false, type: 'arrow' }
             },
             width: 1,
-            font: LABEL_FONT,
             chosen: false, // Disable click on edges
         },
     };
