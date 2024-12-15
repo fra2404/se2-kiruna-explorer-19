@@ -6,11 +6,12 @@ import { DocumentIcon } from '../molecules/documentsItems/DocumentIcon';
 import Modal from 'react-modal';
 import DocumentForm from './DocumentForm';
 import { IDocument } from '../../utils/interfaces/document.interface';
-import { useState } from 'react';
+import { useState, useEffect, useContext } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { CDN_URL } from '../../utils/constants';
 import { nanoid } from 'nanoid';
 import { scaleOptions } from '../../shared/scale.options.const';
+import SidebarContext from '../../context/SidebarContext';
 
 interface DocumentDetailsProps {
   document: IDocument;
@@ -37,6 +38,13 @@ const DocumentDetails: React.FC<DocumentDetailsProps> = ({
   const [modalOpen, setModalOpen] = useState(false);
   const navigate = useNavigate();
 
+  const [connectedDocuments, setConnectedDocuments] = useState<any>([]);
+  const { setSelectedDocument } = useContext(SidebarContext);
+  const [documentLabel, setDocumentLabel] = useState<string>(
+    document.scale === 'ARCHITECTURAL' 
+    && document.architecturalScale 
+    ? ` - ${document.architecturalScale}` 
+    : '');
 
   const matchType = (type: string) => {
     switch (type) {
@@ -66,7 +74,22 @@ const DocumentDetails: React.FC<DocumentDetailsProps> = ({
     return option ? option.label : value;
   };
 
-  const documentLabel = document.scale === 'ARCHITECTURAL' && document.architecturalScale ? ` - ${document.architecturalScale}` : '';
+  useEffect(() => {
+    if (!document.connections) {
+      setConnectedDocuments([]); 
+      return;
+    }
+
+    const docs = document.connections?.map((conn) => {
+      return {
+        doc : allDocuments.find((doc) => doc.id === conn.document.toString()),
+        type: conn.type
+      }
+    });
+
+    setConnectedDocuments(docs);
+    setDocumentLabel(document.scale === 'ARCHITECTURAL' && document.architecturalScale ? ` - ${document.architecturalScale}` : '');
+  }, [document]);
 
   const list = [
     { label: 'Title', content: document.title },
@@ -84,14 +107,24 @@ const DocumentDetails: React.FC<DocumentDetailsProps> = ({
     },
     { label: 'Issuance Date', content: document.date },
     { label: 'Type', content: matchType(document.type) },
-    { label: 'Connections', content: document.connections?.length.toString() },
+    { 
+      label: 'Connections', 
+      content: connectedDocuments.map((cd: any) => {
+        return (
+          <div key={cd.id} onClick={()=>{setSelectedDocument(cd.doc)}}>
+            <span className='text-blue-600 hover:underline cursor-pointer'>{cd.doc?.title}</span>
+            <span className='font-normal text-base'> - {cd.type} </span>
+          </div>
+        )
+      }) 
+    },
     { label: 'Language', content: document.language },
     { label: 'Coordinates', content: document.coordinates?.name },
     {
       label: 'Original Resources',
       content: document.media?.map((m, i) => {
         const separator =
-          document.media && i !== document.media.length - 1 ? ' - ' : '';
+        document.media && i !== document.media.length - 1 ? ' - ' : '';
         return (
           <span key={m.id}>
             <a href={CDN_URL + m.url} target="blank">

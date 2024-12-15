@@ -81,17 +81,22 @@ async function checkAuth(): Promise<{
  * This function is used to retrieve all the documents from the backend.
  */
 async function getDocuments(): Promise<IDocument[]> {
-  const response = await fetch(`${SERVER_URL}/documents`, {
-    method: 'GET',
-    credentials: 'include',
-  });
+  try {
+    const response = await fetch(`${SERVER_URL}/documents`, {
+      method: 'GET',
+      credentials: 'include',
+    });
 
-  if (!response.ok) {
-    throw new Error('Failed to fetch documents');
+    if (!response.ok) {
+      throw new Error('Failed to fetch documents');
+    }
+
+    const documents = await response.json();
+    return documents; // Return documents directly
+  } catch (error) {
+    console.log(error);
+    return [];
   }
-
-  const documents = await response.json();
-  return documents;
 }
 
 async function createDocument(documentData: {
@@ -376,6 +381,14 @@ async function getGraphInfo() {
   }
 }
 
+async function getDocumentById(documentId : string) {
+  return await fetch(`${SERVER_URL}/documents/${documentId}`, {
+    method: 'GET',
+  })
+  .then(handleInvalidResponse)
+  .then((response) => response.json());
+}
+
 async function getTypes() {
   try {
     return await fetch(`${SERVER_URL}/documents/types/all`, {
@@ -398,7 +411,7 @@ const API = {
   addArea,
   removeArea,
   getAreas,
-  getTypes,
+  getDocumentById
 };
 
 export {
