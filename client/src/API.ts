@@ -81,17 +81,22 @@ async function checkAuth(): Promise<{
  * This function is used to retrieve all the documents from the backend.
  */
 async function getDocuments(): Promise<IDocument[]> {
-  const response = await fetch(`${SERVER_URL}/documents`, {
-    method: 'GET',
-    credentials: 'include',
-  });
+  try {
+    const response = await fetch(`${SERVER_URL}/documents`, {
+      method: 'GET',
+      credentials: 'include',
+    });
 
-  if (!response.ok) {
-    throw new Error('Failed to fetch documents');
+    if (!response.ok) {
+      throw new Error('Failed to fetch documents');
+    }
+
+    const documents = await response.json();
+    return documents; // Return documents directly
+  } catch (error) {
+    console.log(error);
+    return [];
   }
-
-  const documents = await response.json();
-  return documents; // Restituisci i documenti direttamente
 }
 
 async function createDocument(documentData: {
@@ -186,7 +191,9 @@ async function getCoordinates() {
 
 async function getAreas() {
   const coordinates = await getCoordinates();
-  const areas = coordinates.filter((coord: ICoordinate) => coord.type === 'Polygon');
+  const areas = coordinates.filter(
+    (coord: ICoordinate) => coord.type === 'Polygon',
+  );
   return areas;
 }
 
@@ -290,7 +297,7 @@ async function searchDocuments(
     architecturalScale: string | undefined;
   },
 ): Promise<IDocument[]> {
-    const searchURL =
+  const searchURL =
     searchQuery.trim() === ''
       ? `${SERVER_URL}/documents/search`
       : `${SERVER_URL}/documents/search?keywords=[${searchQuery
@@ -298,41 +305,40 @@ async function searchDocuments(
           .map((word) => `"${encodeURIComponent(word)}"`)
           .join(',')}]`;
 
-    let formattedFilters;
-    if (filters.scale === '') {
-      formattedFilters = {
-        type: filters.type,
-        stakeholders: filters.stakeholders,
-        coordinates: filters.coordinates,
-        date: filters.date,
-        language: filters.language,
-      };
-    }
-    else if (filters.architecturalScale === '') {
-      formattedFilters = {
-        type: filters.type,
-        stakeholders: filters.stakeholders,
-        coordinates: filters.coordinates,
-        date: filters.date,
-        language: filters.language,
-        scale: filters.scale,
-      };
-    } else {
-      formattedFilters = filters;
-    }
+  let formattedFilters;
+  if (filters.scale === '') {
+    formattedFilters = {
+      type: filters.type,
+      stakeholders: filters.stakeholders,
+      coordinates: filters.coordinates,
+      date: filters.date,
+      language: filters.language,
+    };
+  } else if (filters.architecturalScale === '') {
+    formattedFilters = {
+      type: filters.type,
+      stakeholders: filters.stakeholders,
+      coordinates: filters.coordinates,
+      date: filters.date,
+      language: filters.language,
+      scale: filters.scale,
+    };
+  } else {
+    formattedFilters = filters;
+  }
 
-    const response = await fetch(searchURL, {
-      method: 'POST',
-      credentials: 'include',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify(formattedFilters),
-    });
-    if (!response.ok) throw new Error('Failed to fetch documents');
+  const response = await fetch(searchURL, {
+    method: 'POST',
+    credentials: 'include',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify(formattedFilters),
+  });
+  if (!response.ok) throw new Error('Failed to fetch documents');
 
-    const documents = await response.json();
-    return documents;
+  const documents = await response.json();
+  return documents;
 }
 
 async function addArea(coordinateData: ICoordinate) {
@@ -345,24 +351,47 @@ async function addArea(coordinateData: ICoordinate) {
     body: JSON.stringify(coordinateData),
   });
 
-  if (response.status === 201) return { message: "Area successfully added", error: false }
-  else if (response.status === 400) return { message: "Validation errors", error: true }
-  return { message: "Internal Server Error", error: true }
+  if (response.status === 201)
+    return { message: 'Area successfully added', error: false };
+  else if (response.status === 400)
+    return { message: 'Validation errors', error: true };
+  return { message: 'Internal Server Error', error: true };
 }
 
 async function removeArea(areaId: any) {
   const response = await fetch(`${SERVER_URL}/coordinates/delete/${areaId}`, {
     method: 'DELETE',
-    credentials: 'include'
+    credentials: 'include',
   });
 
-  if (response.status === 200) return { message: "Area successfully", error: false }
-  return { message: "Error while deleting", error: true }
+  if (response.status === 200)
+    return { message: 'Area successfully', error: false };
+  return { message: 'Error while deleting', error: true };
 }
 
 async function getGraphInfo() {
   try {
     return await fetch(`${SERVER_URL}/graph`, {
+      method: 'GET',
+    })
+      .then(handleInvalidResponse)
+      .then((response) => response.json());
+  } catch (error) {
+    console.log(error);
+  }
+}
+
+async function getDocumentById(documentId : string) {
+  return await fetch(`${SERVER_URL}/documents/${documentId}`, {
+    method: 'GET',
+  })
+  .then(handleInvalidResponse)
+  .then((response) => response.json());
+}
+
+async function getTypes() {
+  try {
+    return await fetch(`${SERVER_URL}/documents/types/all`, {
       method: 'GET',
     })
       .then(handleInvalidResponse)
@@ -382,6 +411,7 @@ const API = {
   addArea,
   removeArea,
   getAreas,
+  getDocumentById
 };
 
 export {
@@ -396,5 +426,6 @@ export {
   searchDocuments,
   addResource,
   getGraphInfo,
+  getTypes,
 };
 export default API;
