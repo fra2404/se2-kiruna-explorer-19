@@ -11,7 +11,6 @@ import { useNavigate } from 'react-router-dom';
 import { CDN_URL } from '../../../utils/constants';
 import { nanoid } from 'nanoid';
 import { scaleOptions } from '../../../shared/scale.options.const';
-import API from '../../../API';
 
 interface DocumentDetailsModalProps {
   document: IDocument;
@@ -73,7 +72,7 @@ const DocumentDetailsModal: React.FC<DocumentDetailsModalProps> = ({
   };
 
   useEffect(() => {
-    if (!currentDocument || !currentDocument.connections) {
+    if (!currentDocument.connections) {
       setConnectedDocuments([]); 
       return;
     }
@@ -107,14 +106,12 @@ const DocumentDetailsModal: React.FC<DocumentDetailsModalProps> = ({
     { label: 'Type', content: matchType(currentDocument.type) },
     { 
       label: 'Connections', 
-      content: connectedDocuments.map((cd, index) => {
+      content: connectedDocuments.map((cd: any) => {
         return (
-          <>
-            <div key={index} onClick={()=>{setCurrentDocument(cd.doc)}}>
-              <span className='text-blue-600 hover:underline cursor-pointer'>{cd.doc?.title}</span>
-              <span> - {cd.type} </span>
-            </div>
-          </>
+          <div key={cd.id} onClick={()=>{setCurrentDocument(cd.doc)}}>
+            <span className='text-blue-600 hover:underline cursor-pointer'>{cd.doc?.title}</span>
+            <span> - {cd.type} </span>
+          </div>
         )
       }) 
     },
