@@ -6,6 +6,7 @@ const NOT_AUTH = 'The user is not authorized';
 const NO_POSITION = "The given position doesn't exist";
 const MEDIA_NOT_FOUND = 'Media not found';
 const STAKEHOLDER_NOT_FOUND = 'Stakeholder not found';
+const DOCUMENTTYPE_NOT_FOUND = 'Document Type not found';
 
 class BadConnectionError extends CustomError {
   constructor(errors?: any[]) {
@@ -43,11 +44,19 @@ class StakeholderNotFoundError extends CustomError {
   }
 }
 
+
+class DocumentTypeNotFoundError extends CustomError {
+  constructor(errors?: any[]) {
+    super(DOCUMENTTYPE_NOT_FOUND, 404, errors);
+  }
+}
+
 export {
   BadConnectionError,
   DocNotFoundError,
   UserNotAuthorizedError,
   PositionError,
   MediaNotFoundError,
-  StakeholderNotFoundError
+  StakeholderNotFoundError,
+  DocumentTypeNotFoundError
 };

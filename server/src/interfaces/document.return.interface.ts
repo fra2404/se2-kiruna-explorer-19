@@ -4,6 +4,7 @@ import { ScaleTypeEnum } from '@utils/enums/scale-type-enum';
 import { IConnection } from './document.interface';
 import { IReturnMedia } from './media.return.interface';
 import { IStakeholder } from './stakeholder.interface';
+import { IDocumentType } from './documentType.interface';
 
 export interface IDocumentResponse {
   id: string;
@@ -11,7 +12,7 @@ export interface IDocumentResponse {
   stakeholders?: IStakeholder[] | null;
   scale?: ScaleTypeEnum;
   architecturalScale?: string;  //Added due to changing in scale
-  type: DocTypeEnum;
+  type?: IDocumentType | null;
   date: string;
   summary: string;
   connections?: IConnection[];
