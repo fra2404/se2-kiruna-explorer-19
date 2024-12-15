@@ -121,13 +121,11 @@ const Diagram = () => {
                     network.moveTo({ position: { x: currentPosition.x, y: graphBounds.maxY + OFFSET_VIEW.y } });
                 }
             }
-            else {
-                if (currentPosition.x < graphBounds.minX - OFFSET_VIEW.x) {
-                    network.moveTo({ position: { x: graphBounds.minX + OFFSET_VIEW.x, y: currentPosition.y } });
-                }
-                else if (currentPosition.x > graphBounds.maxX + OFFSET_VIEW.x) {
-                    network.moveTo({ position: { x: graphBounds.maxX - OFFSET_VIEW.x, y: currentPosition.y } });
-                }
+            else if (currentPosition.x < graphBounds.minX - OFFSET_VIEW.x) {
+              network.moveTo({ position: { x: graphBounds.minX + OFFSET_VIEW.x, y: currentPosition.y } });
+            }
+            else if (currentPosition.x > graphBounds.maxX + OFFSET_VIEW.x) {
+              network.moveTo({ position: { x: graphBounds.maxX - OFFSET_VIEW.x, y: currentPosition.y } });
             }
 
         }
@@ -242,8 +240,8 @@ const Diagram = () => {
             }
 
             // Check the type of the document
-            const docType = Array.isArray(types.docTypes) ? types.docTypes.find((docTypes: any) => docTypes.value === doc.type.toUpperCase()) : null;
-            switch (docType.value) {
+            const docType = Array.isArray(types) ? types.find((docTypes: any) => docTypes.label === doc.type.type.toUpperCase()) : null;
+            switch (docType?.label) {
                 case "AGREEMENT":
                     doc.image = AgreementIcon;
                     break;
@@ -418,7 +416,6 @@ const Diagram = () => {
             }
             // Else center based on the current year (only at launch)
             else if(firstLoad) {
-                console.log('Ciao');
                 network.fit({
                     // Filter only the node that are in the current year. In this way the graph will be centered on the current year at launch.
                     nodes: state.graph.nodes.filter((node: any) => {
