@@ -81,17 +81,22 @@ async function checkAuth(): Promise<{
  * This function is used to retrieve all the documents from the backend.
  */
 async function getDocuments(): Promise<IDocument[]> {
-  const response = await fetch(`${SERVER_URL}/documents`, {
-    method: 'GET',
-    credentials: 'include',
-  });
+  try {
+    const response = await fetch(`${SERVER_URL}/documents`, {
+      method: 'GET',
+      credentials: 'include',
+    });
 
-  if (!response.ok) {
-    throw new Error('Failed to fetch documents');
+    if (!response.ok) {
+      throw new Error('Failed to fetch documents');
+    }
+
+    const documents = await response.json();
+    return documents; // Return documents directly
+  } catch (error) {
+    console.log(error);
+    return [];
   }
-
-  const documents = await response.json();
-  return documents; // Restituisci i documenti direttamente
 }
 
 async function createDocument(documentData: {

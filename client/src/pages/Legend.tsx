@@ -6,6 +6,12 @@ import "vis-network/styles/vis-network.css";
 const Legend = () => {
     const COLOR = "rgba(224, 65, 65, 0.0)";
     const LABEL_FONT = { size: 20, color: "#000000" };
+    const EDGE_COLORS = {
+        direct: "#007BFF",
+        collateral: "#FFA500",
+        projection: "#28A745",
+        update: "#6F42C1",
+    };
     const legend = {
         nodes: [
             { id: 1, color: COLOR, font: LABEL_FONT, x: -100, y: -50 },
@@ -18,11 +24,11 @@ const Legend = () => {
             { id: 8, color: COLOR, x: 100, y: 100 },
         ] as any[],
         edges: [
-            { from: 1, to: 2, dashes: false, label: "Direct consequence" },
-            { from: 3, to: 4, dashes: [2, 2], label: "Collateral consequence" },
-            { from: 5, to: 6, dashes: [1, 3], label: "Projection" },
-            { from: 7, to: 8, dashes: [2, 1, 1], label: "Update", },
-        ] as { from: any; to: any; dashes: any, arrows: any, label: string }[]
+            { from: 1, to: 2, dashes: false, color: { color: EDGE_COLORS.direct }, label: "Direct consequence", width: 2 },
+            { from: 3, to: 4, dashes: [2, 2], color: { color: EDGE_COLORS.collateral }, label: "Collateral consequence", width: 2 },
+            { from: 5, to: 6, dashes: [1, 3], color: { color: EDGE_COLORS.projection }, label: "Projection", width: 2 },
+            { from: 7, to: 8, dashes: [2, 1, 1], color: { color: EDGE_COLORS.update }, label: "Update", width: 2 },
+        ] as { from: any; to: any; dashes: any, color: any, arrows: any, label: string, width: number }[]
     }
 
     const options = {
@@ -66,7 +72,6 @@ const Legend = () => {
                 getNetwork={network => {
                     network.moveTo({ scale: 0.8 }); // Set the initial zoom level
                 }}
-
             />
         </div>
     );
