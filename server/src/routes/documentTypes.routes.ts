@@ -2,8 +2,8 @@ import { handleValidationErrors } from '@middlewares/validation.middleware';
 import express from 'express';
 import { authenticateUser } from '@middlewares/auth.middleware';
 import { authorizeRoles } from '@middlewares/role.middleware';
-import { addStakeholderController, getAllStakeholdersController } from '@controllers/stakeholder.controllers';
-import { validateNewStakeholderType } from '@utils/validators/stakeholder.validator';
+import { addDocumentTypeController, getAllDocumentTypesController } from '@controllers/documentType.controllers';
+import { validateNewDocumentType } from '@utils/validators/documentTypes.validator';
 
 const router = express.Router();
 
@@ -11,13 +11,13 @@ router.post(
   '/add',
   authenticateUser,
   authorizeRoles('PLANNER', 'DEVELOPER'),
-  validateNewStakeholderType,
+  validateNewDocumentType,
   handleValidationErrors,
-  addStakeholderController,
+  addDocumentTypeController,
 );
 
 router.get('/',
   handleValidationErrors,
-  getAllStakeholdersController); //Get All Stakeholders
+  getAllDocumentTypesController); //Get All DocumentTypes
 
-export const stakeholderRoutes = router;
+export const documentTypesRoutes = router;

@@ -7,6 +7,7 @@ import { Types } from 'mongoose';
 import { IMedia } from '@interfaces/media.interface';
 import { CustomError } from '@utils/customError';
 import { MediaNotFoundError } from '@utils/errors';
+import { ObjectId } from 'mongoose';
 
 //get type from mimtype
 export const getTypeFromMimeType = (mimetype: string): string => {
@@ -130,4 +131,19 @@ export const getMediaMetadataById = async (
   };
 
   return mediaMetadata;
+};
+
+
+export const fetchMedia = async (
+  mediaIds: ObjectId[],
+): Promise<IReturnMedia[] | null> => {
+  if (mediaIds.length > 0) {
+    const mediaResults = await Promise.all(
+      mediaIds.map((mediaId) => getMediaMetadataById(mediaId.toString())),
+    );
+    return mediaResults.filter(
+      (metadata): metadata is IReturnMedia => metadata !== null,
+    );
+  }
+  return null;
 };
