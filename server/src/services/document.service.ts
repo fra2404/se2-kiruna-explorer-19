@@ -1,6 +1,6 @@
 import Document from '../schemas/document.schema';
 import Stakeholder from '../schemas/stakeholder.schema';
-import DocumentType from '@schemas/documentType.schema';
+import DocumentType from '../schemas/documentType.schema';
 import MediaDocument from '../schemas/media.schema';
 import { Coordinate } from '../schemas/coordinate.schema';
 import { IDocument, IDocumentFilters } from '@interfaces/document.interface';
@@ -77,7 +77,6 @@ export const addingDocument = async (
     }
   }
 
-
   //Check existence of documentType in DB
   if (documentData.type) {
     const existingDocumentType = await DocumentType.findById(documentData.type);
@@ -130,8 +129,6 @@ export const addingDocument = async (
   if (newDocument.type) {
     type = await fetchDocumentTypes(newDocument.type);
   }
-
-
 
   const documentObject = newDocument.toObject();
   delete documentObject._id;
