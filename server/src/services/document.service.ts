@@ -175,7 +175,7 @@ export const getAllDocuments = async (): Promise<IDocumentResponse[]> => {
       };
     }),
   );
-
+  // console.log('Documents', DocumentsResponse);
   return DocumentsResponse;
 };
 
