@@ -108,7 +108,7 @@ export const validateDocumentType = [
     .trim()
     .toUpperCase()
     .custom(async (value) => {
-      await validateDocumentTypeContentForSearch(value);
+      await validateDocumentTypeContent(value);
       return true;
     }),
 ];
@@ -214,7 +214,7 @@ export const validateSearchDocument = [
     .isString()
     .withMessage('Type must be a string')
     .custom(async (value) => {
-      await validateDocumentTypeContentForSearch(value);
+      await validateDocumentTypeContent(value);
       return true;
     }),
 
@@ -223,7 +223,7 @@ export const validateSearchDocument = [
     .isArray()
     .withMessage('Stakeholders must be an array')
     .custom((value) => {
-      return validateStakeholderContentForSearch(value);
+      return validateStakeholderContent(value);
     }),
   body('date')
     .optional()
@@ -318,16 +318,16 @@ const validateStakeholderContent = async (stakeholders: mongoose.Types.ObjectId[
 };
 
 
-const validateStakeholderContentForSearch = async (stakeholders: string[]) => {
-  for (const stakeholderType of stakeholders) {
-    // Check if the stakeholder exists
-    const stakeholder = await Stakeholder.findOne({ type: stakeholderType });
-    if (!stakeholder) {
-      throw new Error(`Stakeholder ${stakeholderType} not found`);
-    }
-  }
-  return true;
-};
+// const validateStakeholderContentForSearch = async (stakeholders: string[]) => {
+//   for (const stakeholderType of stakeholders) {
+//     // Check if the stakeholder exists
+//     const stakeholder = await Stakeholder.findOne({ type: stakeholderType });
+//     if (!stakeholder) {
+//       throw new Error(`Stakeholder ${stakeholderType} not found`);
+//     }
+//   }
+//   return true;
+// };
 
 
 const validateStakeholderEmptiness = (stakeholders: mongoose.Types.ObjectId[]) => {
@@ -363,11 +363,11 @@ const validateStakeholderEmptiness = (stakeholders: mongoose.Types.ObjectId[]) =
   };
   
 
-  const validateDocumentTypeContentForSearch = async (documentType: string) => {
-    // Check if the type exists in DB
-  const type = await DocumentType.findOne({ type: { $regex: new RegExp('^' + documentType + '$', 'i') } });
-  if (!type) {
-    throw new Error(`Document Type with name ${documentType} not found`);
-  }
-  return true;
-};
+//  const validateDocumentTypeContentForSearch = async (documentType: string) => {
+//     // Check if the type exists in DB
+//   const type = await DocumentType.findOne({ type: { $regex: new RegExp('^' + documentType + '$', 'i') } });
+//   if (!type) {
+//     throw new Error(`Document Type with name ${documentType} not found`);
+//   }
+//   return true;
+// }; 

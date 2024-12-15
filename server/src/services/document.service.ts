@@ -267,7 +267,6 @@ export const searchDocuments = async (
   keywords: string[],
   filters?: IDocumentFilters,
 ): Promise<IDocumentResponse[] | null> => {
-  console.log("filter is " , filters);
   // With the operator $and we combine the keywords to search for in the title and summary
   const keywordQuery = {
     $and: keywords.map((keyword) => ({
@@ -286,17 +285,17 @@ export const searchDocuments = async (
       Array.isArray(filters.stakeholders) &&
       filters.stakeholders.length > 0) {
 
-      const stakeholderIds = await fetchStakeholdersForSearch(filters.stakeholders); // Convert the type name to ObjectId   
-      if (stakeholderIds.length === 1) {
+     // const stakeholderIds = await fetchStakeholdersForSearch(filters.stakeholders); // Convert the type name to ObjectId   
+      if (filters.stakeholders.length === 1) {
         // Single item-look for any array containing this item
         filterConditions.push({
-          stakeholders: { $in: stakeholderIds },
+          stakeholders: { $in: filters.stakeholders },
         });
       } else {
         // Multiple items- look for exact combination in any order
         filterConditions.push({
-          stakeholders: { $all: stakeholderIds }, // Contains all items
-          $expr: { $eq: [{ $size: "$stakeholders" }, stakeholderIds.length] }, // Exact size match
+          stakeholders: { $all: filters.stakeholders }, // Contains all items
+          $expr: { $eq: [{ $size: "$stakeholders" }, filters.stakeholders.length] }, // Exact size match
         });
       }
     }
@@ -314,9 +313,9 @@ export const searchDocuments = async (
     //   filterConditions.push({ type: filters.type });
     // }
     if (filters.type) {
-      const documentTypeId = await fetchDocumentTypesForSearch(filters.type); // Convert the type name to ObjectId    
-      if (documentTypeId) {
-        filterConditions.push({ type: documentTypeId });
+    //  const documentTypeId = await fetchDocumentTypesForSearch(filters.type); // Convert the type name to ObjectId    
+      if (filters.type) {
+        filterConditions.push({ type: filters.type });
       }
     }
 
@@ -594,16 +593,16 @@ export const getDocumentByType = async (
 ): Promise<IDocumentResponse[]> => {
 
  //First check existence of type in documentType collection and return corresponding objectId
- const documentType = await DocumentType.findOne({ type: { $regex: new RegExp('^' + type + '$', 'i') },});
+ //const documentType = await DocumentType.findOne({ type: { $regex: new RegExp('^' + type + '$', 'i') },});
 
+ const documentType = await DocumentType.findById(type);
  // Not Found DocumentType
  if (!documentType) {
    throw new DocumentTypeNotFoundError;
  }
 
  // Then find documents of that type based on documentTypeId
- const documents = await Document.find({ type: documentType._id });
-
+ const documents = await Document.find({ type: documentType}).select('-createdAt -updatedAt -__v');;
   // Not Found Document
   if (documents.length === 0) {
     throw new DocNotFoundError();

@@ -10,10 +10,10 @@ export interface IConnection {
 }
 
 export interface IDocumentFilters {
-  stakeholders?: string[];
+  stakeholders?: ObjectId[];
   scale?: ScaleTypeEnum;
   architecturalScale?: string; //Added due to changing in scale
-  type?: string;
+  type?: ObjectId;
   date?: string;
   language?: string;
   coordinates?: string; 
