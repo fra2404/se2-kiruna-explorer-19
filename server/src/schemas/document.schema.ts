@@ -1,5 +1,4 @@
 import { IDocument, IConnection } from '@interfaces/document.interface';
-import { DocTypeEnum } from '@utils/enums/doc-type.enum';
 import { LinkTypeEnum } from '@utils/enums/link-type.enum';
 import { ScaleTypeEnum } from '@utils/enums/scale-type-enum';
 import mongoose, { Document, Schema } from 'mongoose';
@@ -45,9 +44,9 @@ const documentSchema = new Schema<DocumentDocument>(
       required: function () { return this.scale === 'ARCHITECTURAL'; }, // Only if scale is 'Architectural'
     },
     type: {
-      type: String,
+      type: Schema.Types.ObjectId,
+      ref: 'Documenttype',
       required: true,
-      enum: DocTypeEnum,
     },
     date: {
       type: String,

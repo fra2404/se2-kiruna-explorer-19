@@ -3,7 +3,7 @@ import "../../src/global.js";
 import Graph from "react-graph-vis";
 import './Diagram.css';
 import { useState, useEffect, useRef, useContext } from "react";
-import API from "../API";
+import API, { getTypes } from "../API";
 import ErrorImage from '../assets/icons/error.png';
 import DefaultIcon from '../assets/icons/default-icon.svg';
 import AgreementIcon from "../assets/icons/agreement-icon.svg";
@@ -166,7 +166,7 @@ const Diagram = () => {
         // Fetch the document types from the backend
         const fetchDocumentTypes = async () => {
             try {
-                const documentTypes = await API.getTypes();
+                const documentTypes = await getTypes();
                 setTypes(documentTypes);
 
             } catch (error) {
@@ -300,7 +300,8 @@ const Diagram = () => {
             }
 
             // Check the connections
-            const connectionColor = "#000000";
+            let connectionColor : string;
+            const connectionWidth : number = 5;
             let dashesType = false as boolean | number[] | undefined;   // In case of an array the first element is the lenght of the dash, the second is the space between the dashes
 
             if (doc.connections && doc.connections.length > 0) {
@@ -308,12 +309,16 @@ const Diagram = () => {
                     // Modify the style of the connections according to their type
                     if (connection.type.toUpperCase() === "DIRECT") {
                         console.log("Direct connection");
+                        connectionColor = "#007BFF";
                     } else if (connection.type.toUpperCase() === "COLLATERAL") {
                         dashesType = [2, 2]; // This is good for collateral connections
+                        connectionColor = "#FFA500";
                     } else if (connection.type.toUpperCase() === "PROJECTION") {
                         dashesType = [1, 3];
+                        connectionColor = "#28A745";
                     } else if (connection.type.toUpperCase() === "UPDATE") {
                         dashesType = [2, 1, 1];
+                        connectionColor = "#6F42C1";
                     }
 
                     connections.push({
@@ -322,6 +327,7 @@ const Diagram = () => {
                         to: connection.document,
                         color: connectionColor,
                         dashes: dashesType,
+                        width: connectionWidth
                     });
                 });
             }
@@ -480,8 +486,6 @@ const Diagram = () => {
     }, [id, state.graph.nodes]);
 
 
-
-
     useEffect(() => {
         // Check the boundaries of the selected node
 
@@ -565,8 +569,6 @@ const Diagram = () => {
         network.on("dragStart", savePosition);
         network.on("dragEnd", checkGraphConstraints);
     }, [state.graph.nodes, graphBounds]);
-
-
 
 
     return (

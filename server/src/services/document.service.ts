@@ -1,5 +1,6 @@
 import Document from '../schemas/document.schema';
 import Stakeholder from '../schemas/stakeholder.schema';
+import DocumentType from '@schemas/documentType.schema';
 import MediaDocument from '../schemas/media.schema';
 import { Coordinate } from '../schemas/coordinate.schema';
 import { IDocument, IDocumentFilters } from '@interfaces/document.interface';
@@ -9,17 +10,17 @@ import {
   MediaNotFoundError,
   PositionError,
   StakeholderNotFoundError,
+  DocumentTypeNotFoundError,
 } from '../utils/errors';
 import { ICoordinate } from '@interfaces/coordinate.interface';
 import { getCoordinateById } from './coordinate.service';
-import { DocTypeEnum } from '@utils/enums/doc-type.enum';
-import { CustomError } from '@utils/customError';
-import { getMediaMetadataById } from './media.service';
-import { ObjectId } from 'mongoose';
+import { fetchMedia, getMediaMetadataById } from './media.service';
 import { ObjectId as MongoObjectId } from 'mongodb';
 import { IReturnMedia } from '@interfaces/media.return.interface';
 import { IStakeholder } from '@interfaces/stakeholder.interface';
-import { getStakeholdersById } from './stakeholder.service';
+import { fetchStakeholders, fetchStakeholdersForSearch, getStakeholdersById } from './stakeholder.service';
+import { IDocumentType } from '@interfaces/documentType.interface';
+import { fetchDocumentTypes, fetchDocumentTypesForSearch, getDocumentTypeById } from './documentType.service';
 
 
 //addDocument(Story 1)
@@ -76,6 +77,15 @@ export const addingDocument = async (
     }
   }
 
+
+  //Check existence of documentType in DB
+  if (documentData.type) {
+    const existingDocumentType = await DocumentType.findById(documentData.type);
+    if (!existingDocumentType) {
+      throw new DocumentTypeNotFoundError();
+    }
+  }
+
   // Add new document
   const newDocument = new Document(documentData);
   await newDocument.save();
@@ -115,6 +125,14 @@ export const addingDocument = async (
     stakeholders = await fetchStakeholders(newDocument.stakeholders);
   }
 
+  //call method to fetch documentTypes
+  let type: IDocumentType | null = null;
+  if (newDocument.type) {
+    type = await fetchDocumentTypes(newDocument.type);
+  }
+
+
+
   const documentObject = newDocument.toObject();
   delete documentObject._id;
   delete documentObject.createdAt;
@@ -127,6 +145,7 @@ export const addingDocument = async (
     coordinates,
     media,
     stakeholders,
+    type,
   };
 
   return document;
@@ -159,6 +178,12 @@ export const getAllDocuments = async (): Promise<IDocumentResponse[]> => {
         stakeholder = await fetchStakeholders(document.stakeholders);
       }
 
+      //call method to fetch documentTypes
+      let type: IDocumentType | null = null;
+      if (document.type) {
+        type = await fetchDocumentTypes(document.type);
+      }
+
       const documentObject = document.toObject();
       delete documentObject._id;
       delete documentObject.createdAt;
@@ -172,10 +197,11 @@ export const getAllDocuments = async (): Promise<IDocumentResponse[]> => {
         coordinates: coordinate || null,
         media: media || null,
         stakeholders: stakeholder,
+        type: type,
       };
     }),
   );
-
+  // console.log('Documents', DocumentsResponse);
   return DocumentsResponse;
 };
 
@@ -211,6 +237,14 @@ export const getDocumentById = async (
     stakeholder = await fetchStakeholders(document.stakeholders);
   }
 
+  
+  //call method to fetch documentTypes
+  let type: IDocumentType | null = null;
+  if (document.type) {
+    type = await fetchDocumentTypes(document.type);
+  }
+
+
 
   const documentObject = document.toObject();
   delete documentObject._id;
@@ -225,6 +259,7 @@ export const getDocumentById = async (
     coordinates: coordinate || null,
     media: media || null,
     stakeholders: stakeholder,
+    type: type,
   };
 };
 
@@ -249,6 +284,8 @@ export const searchDocuments = async (
     if (filters.stakeholders &&
       Array.isArray(filters.stakeholders) &&
       filters.stakeholders.length > 0) {
+
+     // const stakeholderIds = await fetchStakeholdersForSearch(filters.stakeholders); // Convert the type name to ObjectId   
       if (filters.stakeholders.length === 1) {
         // Single item-look for any array containing this item
         filterConditions.push({
@@ -272,9 +309,17 @@ export const searchDocuments = async (
         architecturalScale: filters.architecturalScale
       });
     }
+    // if (filters.type) {
+    //   filterConditions.push({ type: filters.type });
+    // }
     if (filters.type) {
-      filterConditions.push({ type: filters.type });
+    //  const documentTypeId = await fetchDocumentTypesForSearch(filters.type); // Convert the type name to ObjectId    
+      if (filters.type) {
+        filterConditions.push({ type: filters.type });
+      }
     }
+
+
     if (filters.date) {
       filterConditions.push({ date: { $regex: filters.date, $options: 'i' } });
     }
@@ -332,6 +377,12 @@ export const searchDocuments = async (
       }
 
 
+         
+     //call method to fetch documentTypes
+     let type: IDocumentType | null = null;
+     if (document.type) {
+        type = await fetchDocumentTypes(document.type);
+     }
 
       return {
         id: document.id,
@@ -339,6 +390,7 @@ export const searchDocuments = async (
         coordinates: coordinate || null,
         media: media || null,
         stakeholders: stakeholder,
+        type: type,
       } as IDocumentResponse;
     }),
   );
@@ -415,6 +467,16 @@ export const updatingDocument = async (
     }
   }
 
+
+   //Check existence of documentType in DB
+    if (updatedDocument.type) {
+      const existingDocumentType = await DocumentType.findById(updatedDocument.type);
+      if (!existingDocumentType) {
+        throw new DocumentTypeNotFoundError();
+      }
+    }
+   
+
   // Update connections
   if (updateData.connections && updateData.connections.length > 0) {
     // Clear existing connections
@@ -478,6 +540,13 @@ export const updatingDocument = async (
   }
 
 
+  //call method to fetch documentTypes
+  let type: IDocumentType | null = null;
+  if (updatedDocument.type) {
+      type = await fetchDocumentTypes(updatedDocument.type);
+  }
+   
+
   const documentObject = updatedDocument.toObject();
   delete documentObject._id;
   delete documentObject.createdAt;
@@ -490,6 +559,7 @@ export const updatingDocument = async (
     coordinates,
     media: media || null,
     stakeholders: stakeholder,
+    type: type,
   };
 
   return document;
@@ -501,24 +571,38 @@ export const deleteDocumentByName = async (name: string): Promise<string> => {
   return 'Documents deleted successfully';
 };
 
-export const getDocumentTypes = () => {
-  const docTypes = Object.entries(DocTypeEnum).map(([key, value]) => ({
-    label: key,
-    value: value,
-  }));
-
+export const getDocumentTypes = async () => {
+  const docTypes = await DocumentType.find(); // Fetch document types from the DB
   if (docTypes.length === 0) {
-    throw new CustomError('No document types available', 404);
+    throw new DocumentTypeNotFoundError;
   }
 
-  return docTypes;
+
+  const result = docTypes.map(docType => ({
+    label: docType.type,  
+    value: docType._id.toString(), 
+  }));
+  return result;
 };
+
+
+
 
 export const getDocumentByType = async (
   type: string,
 ): Promise<IDocumentResponse[]> => {
-  const documents = await Document.find({ type });
 
+ //First check existence of type in documentType collection and return corresponding objectId
+ //const documentType = await DocumentType.findOne({ type: { $regex: new RegExp('^' + type + '$', 'i') },});
+
+ const documentType = await DocumentType.findById(type);
+ // Not Found DocumentType
+ if (!documentType) {
+   throw new DocumentTypeNotFoundError;
+ }
+
+ // Then find documents of that type based on documentTypeId
+ const documents = await Document.find({ type: documentType}).select('-createdAt -updatedAt -__v');;
   // Not Found Document
   if (documents.length === 0) {
     throw new DocNotFoundError();
@@ -563,6 +647,13 @@ export const getDocumentByType = async (
         stakeholder = await fetchStakeholders(document.stakeholders);
       }
 
+     
+      //call method to fetch documentTypes
+      let type: IDocumentType | null = null;
+      if (document.type) {
+      type = await fetchDocumentTypes(document.type);
+     }
+   
 
       //*****************
       return {
@@ -571,38 +662,15 @@ export const getDocumentByType = async (
         coordinates: coordinate || null,
         media: media || null,
         stakeholders: stakeholder,
+        type: type,
       } as IDocumentResponse;
     }),
   );
 };
 
 
-export const fetchMedia = async (
-  mediaIds: ObjectId[],
-): Promise<IReturnMedia[] | null> => {
-  if (mediaIds.length > 0) {
-    const mediaResults = await Promise.all(
-      mediaIds.map((mediaId) => getMediaMetadataById(mediaId.toString())),
-    );
-    return mediaResults.filter(
-      (metadata): metadata is IReturnMedia => metadata !== null,
-    );
-  }
-  return null;
-};
 
 
-export const fetchStakeholders = async (
-  stakeholderIds: ObjectId[],
-): Promise<IStakeholder[]> => {
-  if (stakeholderIds.length > 0) {
-    const stakeholdersResults = await Promise.all(
-      stakeholderIds.map((stakeholderId) => getStakeholdersById(stakeholderId.toString())),
-    );
-    return stakeholdersResults.filter(
-      (stakeholder): stakeholder is IStakeholder => stakeholder !== null,
-    );
-  }
-  return [];
-};
+
+
 
