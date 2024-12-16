@@ -30,7 +30,7 @@ const DocumentDetailsModal: React.FC<DocumentDetailsModalProps> = ({
   allDocuments,
   setAllDocuments,
   filteredDocuments,
-  setFilteredDocuments
+  setFilteredDocuments,
 }) => {
   const { isLoggedIn, user } = useAuth();
   const [modalOpen, setModalOpen] = useState(false);
@@ -39,10 +39,10 @@ const DocumentDetailsModal: React.FC<DocumentDetailsModalProps> = ({
   const [connectedDocuments, setConnectedDocuments] = useState<any>([]);
   const [currentDocument, setCurrentDocument] = useState<IDocument>(document);
   const [documentLabel, setDocumentLabel] = useState<string>(
-    document.scale === 'ARCHITECTURAL' 
-    && document.architecturalScale 
-    ? ` - ${document.architecturalScale}` 
-    : '');
+    document.scale === 'ARCHITECTURAL' && document.architecturalScale
+      ? ` - ${document.architecturalScale}`
+      : '',
+  );
 
   const matchType = (type: string) => {
     switch (type) {
@@ -74,19 +74,24 @@ const DocumentDetailsModal: React.FC<DocumentDetailsModalProps> = ({
 
   useEffect(() => {
     if (!currentDocument.connections) {
-      setConnectedDocuments([]); 
+      setConnectedDocuments([]);
       return;
     }
 
     const docs = currentDocument.connections?.map((conn) => {
       return {
-        doc : allDocuments.find((doc) => doc.id === conn.document.toString()),
-        type: conn.type
-      }
+        doc: allDocuments.find((doc) => doc.id === conn.document.toString()),
+        type: conn.type,
+      };
     });
 
     setConnectedDocuments(docs);
-    setDocumentLabel(currentDocument.scale === 'ARCHITECTURAL' && currentDocument.architecturalScale ? ` - ${currentDocument.architecturalScale}` : '');
+    setDocumentLabel(
+      currentDocument.scale === 'ARCHITECTURAL' &&
+        currentDocument.architecturalScale
+        ? ` - ${currentDocument.architecturalScale}`
+        : '',
+    );
   }, [currentDocument]);
 
   const list = [
@@ -94,7 +99,9 @@ const DocumentDetailsModal: React.FC<DocumentDetailsModalProps> = ({
     {
       label: 'Stakeholders',
       content: Array.isArray(currentDocument.stakeholders)
-        ? currentDocument.stakeholders.map(stakeholder => stakeholder.type).join(' - ')
+        ? currentDocument.stakeholders
+            .map((stakeholder) => stakeholder.type)
+            .join(' - ')
         : currentDocument.stakeholders,
     },
     {
@@ -105,16 +112,23 @@ const DocumentDetailsModal: React.FC<DocumentDetailsModalProps> = ({
     },
     { label: 'Issuance Date', content: currentDocument.date },
     { label: 'Type', content: matchType(currentDocument.type.type) },
-    { 
-      label: 'Connections', 
+    {
+      label: 'Connections',
       content: connectedDocuments.map((cd: any) => {
         return (
-          <div key={cd.id} onClick={()=>{setCurrentDocument(cd.doc)}}>
-            <span className='text-blue-600 hover:underline cursor-pointer'>{cd.doc?.title}</span>
+          <div
+            key={cd.id}
+            onClick={() => {
+              setCurrentDocument(cd.doc);
+            }}
+          >
+            <span className="text-blue-600 hover:underline cursor-pointer">
+              {cd.doc?.title}
+            </span>
             <span> - {cd.type} </span>
           </div>
-        )
-      }) 
+        );
+      }),
     },
     { label: 'Language', content: currentDocument.language },
     { label: 'Coordinates', content: currentDocument.coordinates?.name },
@@ -122,12 +136,15 @@ const DocumentDetailsModal: React.FC<DocumentDetailsModalProps> = ({
       label: 'Original Resources',
       content: currentDocument.media?.map((m, i) => {
         const separator =
-        currentDocument.media && i !== currentDocument.media.length - 1 ? ' - ' : '';
+          currentDocument.media && i !== currentDocument.media.length - 1
+            ? ' - '
+            : '';
         return (
           <span key={m.id}>
             <a href={CDN_URL + m.url} target="blank">
               {m.filename}
             </a>
+            {m.pages ? ` (n° pag: ${m.pages})` : ''}
             {separator}
           </span>
         );
@@ -143,8 +160,10 @@ const DocumentDetailsModal: React.FC<DocumentDetailsModalProps> = ({
           <DocumentIcon
             type={currentDocument.type.type}
             stakeholders={
-              Array.isArray(currentDocument.stakeholders) 
-                ? currentDocument.stakeholders.map((stakeholder: IStakeholder) => stakeholder.type) 
+              Array.isArray(currentDocument.stakeholders)
+                ? currentDocument.stakeholders.map(
+                    (stakeholder: IStakeholder) => stakeholder.type,
+                  )
                 : []
             }
           />
@@ -189,7 +208,6 @@ const DocumentDetailsModal: React.FC<DocumentDetailsModalProps> = ({
             console.log('Navigate to node:', document.id);
             // Call the navigate function with the node id
             navigate('/diagram/' + document.id);
-
           }}
         />
       </div>

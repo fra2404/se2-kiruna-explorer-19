@@ -20,6 +20,7 @@ export interface IDocument {
       filename: string;
       type: string;
       mimetype: string;
+      pages?: number;
     },
   ];
   coordinates?: ICoordinate | null;
