@@ -1,10 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import InputComponent from '../../atoms/input/input';
-import { stakeholderOptions } from '../../../shared/stakeholder.options.const';
-import { documentTypeOptions } from '../../../shared/type.options.const';
 import { scaleOptions } from '../../../shared/scale.options.const';
 import { years, months, getDays } from '../../../utils/date';
-import API from '../../../API';
+import API, { getDocumentTypes, getStakeholders } from '../../../API';
 import { Tabs, Tab, Box } from '@mui/material';
 
 interface FiltersProps {
@@ -36,6 +34,45 @@ interface FiltersProps {
 const Filters: React.FC<FiltersProps> = ({ filters, setFilters }) => {
     const [coordinatesOptions, setCoordinatesOptions] = useState([]);
     const [activeTab, setActiveTab] = useState(0);
+
+    const [stakeholderOptions, setStakeholderOptions] = useState<{ value: string; label: string }[]>([])
+    const [documentTypeOptions, setDocumentTypeOptions] = useState<{ value: string; label: string }[]>([]);
+
+    useEffect(() => {
+      // Function that retrieves stakeholders from backend
+      const fetchStakeholders = async () => {
+        try {
+          const options = await getStakeholders();
+          setStakeholderOptions(options);
+        } catch (error) {
+          console.error('Error when retrieving stakeholders:', error);
+        }
+      };
+  
+      fetchStakeholders();
+    }, []);
+
+    const createDocumentOption = (
+        value: string,
+        label: string,
+      ) => ({
+        value,
+        label
+      });
+
+    useEffect(() => {
+      // Function that retrieves document types from the backend
+      const fetchDocumentTypes = async () => {
+        try {
+          const options = await getDocumentTypes();
+          setDocumentTypeOptions(options.map((o) => createDocumentOption(o.value, o.label)));
+        } catch (error) {
+          console.error('Error when retrieving document types:', error);
+        }
+      };
+
+      fetchDocumentTypes();
+    }, []);
 
     useEffect(() => {
         API.getCoordinates().then((coordinates) => {

@@ -266,9 +266,9 @@ const Diagram = () => {
             }
 
             // Check the type of the document
-            const docType = Array.isArray(types.docTypes) ? types.docTypes.find((docTypes: any) => docTypes.value === doc.type.toUpperCase()) : null;
-            console.log(`Document type is ${docType.value}`);
-            switch (docType.value) {
+            const docType = Array.isArray(types) ? types.find((docTypes: any) => docTypes.label === doc.type.type.toUpperCase()) : null;
+            console.log(`Document type is ${docType.label}`);
+            switch (docType.label) {
                 case "AGREEMENT":
                     doc.image = AgreementIcon;
                     break;

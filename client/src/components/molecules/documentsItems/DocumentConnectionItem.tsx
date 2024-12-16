@@ -15,8 +15,8 @@ export const DocumentConnectionItem: React.FC<DocumentConnectionItemProps> = ({
     <div className="flex">
       <div className="size-8 ml-1 mr-3">
         <DocumentIcon
-          type={document.type}
-          stakeholders={document.stakeholders}
+          type={document.type.type}
+          stakeholders={document.stakeholders?.map((s) => s.type)}
         />
       </div>
       <span className="text-lg mr-3">

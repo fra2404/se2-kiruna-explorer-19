@@ -1,6 +1,6 @@
-import React, { ChangeEvent, useEffect, useState, useCallback, useRef } from 'react';
-import Select, { components } from 'react-select';
-import { FaEye, FaEyeSlash, FaCheck } from 'react-icons/fa';
+import React, { ChangeEvent, useEffect, useState, useCallback } from 'react';
+import Select from 'react-select';
+import { FaEye, FaEyeSlash } from 'react-icons/fa';
 
 interface Option {
   value: string;
@@ -43,7 +43,6 @@ interface InputComponentProps {
   onKeyDown?: (event: React.KeyboardEvent<HTMLInputElement>) => void;
   error?: string;
   addNew?: boolean;
-  onAddNew?: (newOption: Option) => void;
   onAddNewSelect?: () => void; // Aggiungi questa proprietà
   inputRef?: React.RefObject<HTMLInputElement | HTMLTextAreaElement>; // Aggiungi inputRef
 }
@@ -92,14 +91,13 @@ const InputComponent: React.FC<InputComponentProps> = ({
   onKeyDown,
   error,
   addNew = false,
-  onAddNew,
-  onAddNewSelect, // Aggiungi questa proprietà
-  inputRef, // Aggiungi inputRef
+  onAddNewSelect,
+  inputRef,
 }) => {
   const [isEmailValid, setIsEmailValid] = useState<boolean>(true);
   const [isFieldEmpty, setIsFieldEmpty] = useState<boolean>(false);
   const [selectedOption, setSelectedOption] = useState<Option | null>(
-    options.find((option) => option.value === defaultValue) || null,
+    options.find((option) => option.value === value) || options.find((option) => option.value === defaultValue) || null ,
   );
   const [selectedOptions, setSelectedOptions] = useState<Option[]>(
     Array.isArray(value) ? (value) : [],
@@ -182,7 +180,7 @@ const InputComponent: React.FC<InputComponentProps> = ({
     if (onChange) {
       if (returnObject) {
         if (selectedOption) {
-          onChange(selectedOption); // Passa l'intero oggetto selezionato
+          onChange(selectedOption); // Pass the entire selected object
         }
       } else {
         onChange({
@@ -196,9 +194,12 @@ const InputComponent: React.FC<InputComponentProps> = ({
   }
 
   const handleSelectChange = (selectedOption: Option | null) => {
-    if (selectedOption && selectedOption.value === 'add-new') {
+    if(selectedOption && selectedOption.value === '') {
+      deselectOptions();
+    }
+    else if (selectedOption && selectedOption.value === 'add-new') {
       if (onAddNewSelect) {
-        onAddNewSelect(); // Notifica il componente padre
+        onAddNewSelect(); // Notifies the parent component
       }
     } else {
       changingSelectedOption(selectedOption);
@@ -208,7 +209,7 @@ const InputComponent: React.FC<InputComponentProps> = ({
   const handleMultiSelectChange = (selectedOptions: Option[]) => {
     if (selectedOptions.some(option => option.value === 'add-new')) {
       if (onAddNewSelect) {
-        onAddNewSelect(); // Notifica il componente padre
+        onAddNewSelect(); // Notifies the parent component
       }
     } else {
       setSelectedOptions(selectedOptions);
@@ -218,9 +219,19 @@ const InputComponent: React.FC<InputComponentProps> = ({
     }
   };
 
-  const selectOptions = addNew
-    ? [{ value: 'add-new', label: '+ Add New' }, ...options]
-    : options;
+  let selectOptions;
+  
+  if(addNew) {
+    if(selectedOption)
+      selectOptions = [{ value: 'add-new', label: '+ Add New' }, { value: '', label: 'Cancel selection' }, ...options];
+    else
+      selectOptions = [{ value: 'add-new', label: '+ Add New' }, ...options];
+  }
+  else if(selectedOption) {
+    selectOptions = [{ value: '', label: 'Cancel selection' }, ...options];
+  }
+  else
+    selectOptions = options;
 
   return (
     <div className="mb-4">
@@ -246,7 +257,7 @@ const InputComponent: React.FC<InputComponentProps> = ({
             disabled={disabled}
             max={type === 'date' ? max : undefined}
             onKeyDown={onKeyDown}
-            ref={inputRef as React.RefObject<HTMLInputElement>} // Aggiungi inputRef
+            ref={inputRef as React.RefObject<HTMLInputElement>}
           />
           {type === 'password' && (
             <button
@@ -270,14 +281,14 @@ const InputComponent: React.FC<InputComponentProps> = ({
           onBlur={handleBlur}
           disabled={disabled}
           maxLength={maxLength}
-          ref={inputRef as React.RefObject<HTMLTextAreaElement>} // Aggiungi inputRef
+          ref={inputRef as React.RefObject<HTMLTextAreaElement>}
         />
       )}
       {type === 'select' && (
         <Select
           className="shadow appearance-none rounded w-full text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
           options={selectOptions}
-          onChange={handleSelectChange}
+          onChange={(s) => handleSelectChange(s)}
           components={{ SingleValue: CustomSingleValue }}
           name={name}
           value={selectedOption}

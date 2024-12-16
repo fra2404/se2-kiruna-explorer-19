@@ -1,9 +1,10 @@
 import React, { useState, useEffect, useRef } from 'react';
 import InputComponent from '../../atoms/input/input';
 import ButtonRounded from '../../atoms/button/ButtonRounded';
-import { getDocumentTypes, createDocumentType } from '../../../API'; // Importa le funzioni getDocumentTypes e createDocumentType
+import { createDocumentType } from '../../../API'; // Importa le funzioni getDocumentTypes e createDocumentType
 import { IDocumentType } from '../../../utils/interfaces/documentTypes.interface';
-
+import { DocumentIcon } from '../documentsItems/DocumentIcon';
+import { IStakeholder } from '../../../utils/interfaces/stakeholders.interface';
 interface Step2Props {
   description: string;
   setDescription: (value: string) => void;
@@ -12,6 +13,8 @@ interface Step2Props {
   docType: IDocumentType;
   setDocType: (value: IDocumentType) => void;
   documentTypeOptions: { value: string; label: string }[];
+  setDocumentTypeOptions: (documentTypeOptions: { value: string; label: string }[]) => void;
+  stakeholders: IStakeholder[];
   errors: { [key: string]: string };
 }
 
@@ -23,49 +26,35 @@ const Step2: React.FC<Step2Props> = ({
   docType,
   setDocType,
   documentTypeOptions,
+  setDocumentTypeOptions,
+  stakeholders,
   errors,
 }) => {
   const [isAddingNewDocType, setIsAddingNewDocType] = useState(false);
   const [newDocTypeLabel, setNewDocTypeLabel] = useState('');
-  const [docTypeOptions, setDocTypeOptions] = useState<{ value: string; label: string }[]>([]);
-  const [inputKey, setInputKey] = useState(0); // Aggiungi uno stato per la chiave dinamica
-  const newDocTypeInputRef = useRef<HTMLInputElement>(null); // Crea un riferimento per il campo di input
+  const [inputKey, setInputKey] = useState(0); // Adds a state for the dynamic key
+  const newDocTypeInputRef = useRef<HTMLInputElement>(null); // Creates a reference for the input field
 
   useEffect(() => {
-    setInputKey((prevKey) => prevKey + 1); // Forza il rerender quando docType cambia
+    setInputKey((prevKey) => prevKey + 1); // Forces the pagve refresh when docType changes
   }, [docType]);
 
   useEffect(() => {
     if (isAddingNewDocType && newDocTypeInputRef.current) {
-      newDocTypeInputRef.current.focus(); // Imposta il focus sul campo di input
+      newDocTypeInputRef.current.focus(); // Sets the focus on the input field
     }
   }, [isAddingNewDocType]);
-
-  useEffect(() => {
-    // Funzione per recuperare i tipi di documento dal backend
-    const fetchDocumentTypes = async () => {
-      try {
-        const options = await getDocumentTypes();
-        setDocTypeOptions(options);
-      } catch (error) {
-        console.error('Errore nel recupero dei tipi di documento:', error);
-      }
-    };
-
-    fetchDocumentTypes();
-  }, []);
 
   const handleSaveNewDocType = async () => {
     try {
       const newDocType = await createDocumentType(newDocTypeLabel);
-      const formattedDocType = { value: newDocType.value, label: newDocType.label };
-      setDocTypeOptions([...docTypeOptions, formattedDocType]);
+      const formattedDocType = { value: newDocType.value, label: newDocType.label, icon: <DocumentIcon type={newDocType.label} stakeholders={stakeholders.map((s) => s.type)}/> };
+      setDocumentTypeOptions([...documentTypeOptions, formattedDocType]);
       setDocType({ _id: newDocType.value, type: newDocType.label });
-      console.log('Tipo di documento selezionato:', newDocType.value);
       setIsAddingNewDocType(false);
       setNewDocTypeLabel('');
     } catch (error) {
-      console.error('Errore nella creazione del nuovo tipo di documento:', error);
+      console.error('Error when creating a new document:', error);
     }
   };
 
@@ -106,56 +95,58 @@ const Step2: React.FC<Step2Props> = ({
       </div>
 
       {/* Type of document */}
-      <div className="my-2 col-span-2">
-        <InputComponent
-          key={inputKey} // Aggiungi la chiave dinamica qui
-          label="Type"
-          type="select"
-          options={docTypeOptions}
-          value={docType._id} // Passa l'_id del docType come valore
-          onChange={(e) => {
-            if ('target' in e) {
-              const selectedOption = docTypeOptions.find(option => option.value === e.target.value);
-              if (selectedOption) {
-                setDocType({ _id: selectedOption.value, type: selectedOption.label });
-                console.log('Tipo di documento selezionato:', selectedOption.value);
+      {documentTypeOptions.length > 0 && 
+        <div className="my-2 col-span-2">
+          <InputComponent
+            key={inputKey} // Add the dynamic key here
+            label="Type"
+            type="select"
+            options={documentTypeOptions}
+            value={docType._id} // Passes the docType id as value
+            onChange={(e) => {
+              if ('target' in e) {
+                const selectedOption = documentTypeOptions.find(option => option.value === e.target.value);
+                if (selectedOption) {
+                  setDocType({ _id: selectedOption.value, type: selectedOption.label });
+                }
               }
-            }
-          }}
-          required={true}
-          placeholder="Select document type..."
-          error={errors.docType}
-          addNew={true}
-          onAddNewSelect={() => setIsAddingNewDocType(true)}
-        />
-        {isAddingNewDocType && (
-          <div className="flex items-center p-2 mt-2">
-            <InputComponent
-              label="New Document Type"
-              type="text"
-              value={newDocTypeLabel}
-              onChange={(v) => {
-                if ('target' in v) {
-                  setNewDocTypeLabel(v.target.value);
-                }
-              }}
-              placeholder="Enter new document type"
-              onKeyDown={(e) => {
-                if (e.key === 'Enter') {
-                  handleSaveNewDocType();
-                }
-              }}
-              inputRef={newDocTypeInputRef} // Imposta il riferimento al campo di input
-            />
-            <ButtonRounded
-              variant="filled"
-              text="Confirm"
-              className="ml-4 bg-black text-white text-xs pt-2 pb-2 pl-3 pr-3"
-              onClick={handleSaveNewDocType}
-            />
-          </div>
-        )}
-      </div>
+            }}
+            defaultValue={docType._id}
+            required={true}
+            placeholder="Select document type..."
+            error={errors.docType}
+            addNew={true}
+            onAddNewSelect={() => setIsAddingNewDocType(true)}
+          />
+          {isAddingNewDocType && (
+            <div className="flex items-center p-2 mt-2">
+              <InputComponent
+                label="New Document Type"
+                type="text"
+                value={newDocTypeLabel}
+                onChange={(v) => {
+                  if ('target' in v) {
+                    setNewDocTypeLabel(v.target.value);
+                  }
+                }}
+                placeholder="Enter new document type"
+                onKeyDown={(e) => {
+                  if (e.key === 'Enter') {
+                    handleSaveNewDocType();
+                  }
+                }}
+                inputRef={newDocTypeInputRef} // Sets the input field ref
+              />
+              <ButtonRounded
+                variant="filled"
+                text="Confirm"
+                className="ml-4 bg-black text-white text-xs pt-2 pb-2 pl-3 pr-3"
+                onClick={handleSaveNewDocType}
+              />
+            </div>
+          )}
+        </div>
+      }
     </>
   );
 };

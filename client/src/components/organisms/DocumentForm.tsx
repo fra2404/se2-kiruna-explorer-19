@@ -141,49 +141,27 @@ const DocumentForm = ({
     label,
     icon: (
       <DocumentIcon
-        type={value}
+        type={label}
         stakeholders={Array.isArray(stakeholders) ? stakeholders.map(s => s.type) : []}
       />
     ),
   });
 
-  const fixedDocumentTypeOptions = [
-    createDocumentOption('AGREEMENT', 'Agreement', stakeholders),
-    createDocumentOption('CONFLICT', 'Conflict', stakeholders),
-    createDocumentOption('CONSULTATION', 'Consultation', stakeholders),
-    createDocumentOption('DESIGN_DOC', 'Design document', stakeholders),
-    createDocumentOption(
-      'INFORMATIVE_DOC',
-      'Informative document',
-      stakeholders,
-    ),
-    createDocumentOption('MATERIAL_EFFECTS', 'Material effects', stakeholders),
-    createDocumentOption(
-      'PRESCRIPTIVE_DOC',
-      'Prescriptive document',
-      stakeholders,
-    ),
-    createDocumentOption('TECHNICAL_DOC', 'Technical document', stakeholders),
-  ];
-
-  const [dynamicDocumentTypeOptions, setDynamicDocumentTypeOptions] = useState<{ value: string; label: string }[]>([]);
+  const [documentTypeOptions, setDocumentTypeOptions] = useState<{ value: string; label: string }[]>([]);
 
   useEffect(() => {
-    // Funzione per recuperare i tipi di documento dal backend
+    // Function that retrieves document types from the backend
     const fetchDocumentTypes = async () => {
       try {
         const options = await getDocumentTypes();
-        setDynamicDocumentTypeOptions(options);
+        setDocumentTypeOptions(options.map((o) => createDocumentOption(o.value, o.label, stakeholders)));
       } catch (error) {
-        console.error('Errore nel recupero dei tipi di documento:', error);
+        console.error('Error when retrieving document types:', error);
       }
     };
 
     fetchDocumentTypes();
   }, []);
-
-  const documentTypeOptions = [...fixedDocumentTypeOptions, ...dynamicDocumentTypeOptions];
-  console.log("docTypeOptions", documentTypeOptions)
 
   // Connection modal : To enter a new connection
   const [connectionModalOpen, setConnectionModalOpen] = useState(false);
@@ -443,15 +421,10 @@ const DocumentForm = ({
                 language={language}
                 setLanguage={setLanguage}
                 docType={docType ?? { _id: '', type: '' }}
-                                setDocType={(value) => {
-                  const selectedOption = documentTypeOptions.find(option => option.value === value.type);
-                  if (selectedOption) {
-                    setDocType({ _id: selectedOption.value, type: selectedOption.label });
-                  } else {
-                    setDocType({ _id: '', type: '' });
-                  }
-                }}
+                setDocType={setDocType}
                 documentTypeOptions={documentTypeOptions}
+                setDocumentTypeOptions={setDocumentTypeOptions}
+                stakeholders={stakeholders}
                 errors={errors}
               />
             </div>

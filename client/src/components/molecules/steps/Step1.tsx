@@ -3,9 +3,8 @@ import InputComponent from '../../atoms/input/input';
 import './Step1.css';
 import { scaleOptions } from '../../../shared/scale.options.const';
 import { years, months, getDays } from '../../../utils/date';
-import { FaCheck } from 'react-icons/fa';
 import ButtonRounded from '../../atoms/button/ButtonRounded';
-import { getStakeholders, createStakeholder } from '../../../API'; // Importa le funzioni getStakeholders e createStakeholder
+import { getStakeholders, createStakeholder } from '../../../API'; // Imports getStakeholders and createStakeholder functions
 import { IStakeholder } from '../../../utils/interfaces/stakeholders.interface';
 
 interface Step1Props {
@@ -47,8 +46,8 @@ const Step1: React.FC<Step1Props> = ({
   const [stakeholderOptions, setStakeholderOptions] = useState<{ value: string; label: string }[]>([]);
   const [isAddingNewStakeholder, setIsAddingNewStakeholder] = useState(false);
   const [newOptionLabel, setNewOptionLabel] = useState('');
-  const [inputKey, setInputKey] = useState(0); // Aggiungi uno stato per la chiave dinamica
-  const newStakeholderInputRef = useRef<HTMLInputElement>(null); // Crea un riferimento per il campo di input
+  const [inputKey, setInputKey] = useState(0); // Add a state fot the dynamic key
+  const newStakeholderInputRef = useRef<HTMLInputElement>(null); // Creates a refereng for the input field
 
   useEffect(() => {
     if (issuanceDate) {
@@ -79,18 +78,18 @@ const Step1: React.FC<Step1Props> = ({
 
   useEffect(() => {
     if (isAddingNewStakeholder && newStakeholderInputRef.current) {
-      newStakeholderInputRef.current.focus(); // Imposta il focus sul campo di input
+      newStakeholderInputRef.current.focus(); // Sets the focus on the input field
     }
   }, [isAddingNewStakeholder]);
 
   useEffect(() => {
-    // Funzione per recuperare gli stakeholder dal backend
+    // Function that retrieves stakeholders from backend
     const fetchStakeholders = async () => {
       try {
         const options = await getStakeholders();
         setStakeholderOptions(options);
       } catch (error) {
-        console.error('Errore nel recupero degli stakeholder:', error);
+        console.error('Error when retrieving stakeholders:', error);
       }
     };
 
@@ -107,9 +106,9 @@ const Step1: React.FC<Step1Props> = ({
       setStakeholders(updatedStakeholders);
       setIsAddingNewStakeholder(false);
       setNewOptionLabel('');
-      setInputKey((prevKey) => prevKey + 1); // Aggiorna la chiave dinamica per forzare il rerender
+      setInputKey((prevKey) => prevKey + 1); // Updates the dynamic key to force the refresh of the page
     } catch (error) {
-      console.error('Errore nella creazione del nuovo stakeholder:', error);
+      console.error('Error when creating a new stakeholder:', error);
     }
   };
 
@@ -135,7 +134,7 @@ const Step1: React.FC<Step1Props> = ({
       {/* Stakeholders */}
       <div className="my-2">
         <InputComponent
-          key={inputKey} // Aggiungi la chiave dinamica qui
+          key={inputKey} // Add the dynamic key here
           label="Stakeholder(s)"
           type="multi-select"
           options={stakeholderOptions}
@@ -175,12 +174,12 @@ const Step1: React.FC<Step1Props> = ({
                   handleSaveNewStakeholder(newOptionLabel);
                 }
               }}
-              inputRef={newStakeholderInputRef} // Imposta il riferimento al campo di input
+              inputRef={newStakeholderInputRef} // Sets the input filed reference
             />
             <ButtonRounded
               variant="filled"
               text="Confirm"
-              className="ml-4 bg-black text-white text-xs pt-2 pb-2 pl-3 pr-3" // Aggiungi margine sinistro
+              className="ml-4 bg-black text-white text-xs pt-2 pb-2 pl-3 pr-3"
               onClick={() => handleSaveNewStakeholder(newOptionLabel)}
             />
           </div>
