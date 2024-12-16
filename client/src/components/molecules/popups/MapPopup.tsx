@@ -13,12 +13,6 @@ interface MapPopupProps {
   markerDocuments: IDocument[];
   onYesClick: () => void;
   onCancelClick: () => void;
-  coordinates: any;
-  setCoordinates: (coordinates: any) => void;
-  allDocuments: IDocument[];
-  setDocuments: (documents: IDocument[]) => void;
-  filteredDocuments: IDocument[];
-  setFilteredDocuments: (filteredDocuments: IDocument[]) => void;
 }
 
 export const MapPopup: React.FC<MapPopupProps> = ({
@@ -26,13 +20,7 @@ export const MapPopup: React.FC<MapPopupProps> = ({
   message,
   markerDocuments,
   onYesClick,
-  onCancelClick,
-  coordinates,
-  setCoordinates,
-  allDocuments,
-  setDocuments,
-  filteredDocuments,
-  setFilteredDocuments
+  onCancelClick
 }) => {
   const popupRef = useRef<L.Popup>(null);
   const { isLoggedIn, user } = useAuth();
@@ -45,12 +33,6 @@ export const MapPopup: React.FC<MapPopupProps> = ({
       <br />
       <MarkerDocumentList 
         markerDocuments={markerDocuments}
-        coordinates={coordinates}
-        setCoordinates={setCoordinates}
-        allDocuments={allDocuments}
-        setDocuments={setDocuments}
-        filteredDocuments={filteredDocuments}
-        setFilteredDocuments={setFilteredDocuments}
       />
 
       <hr />

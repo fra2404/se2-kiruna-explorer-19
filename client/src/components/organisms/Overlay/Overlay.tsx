@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useContext, useState } from 'react';
 import Modal from 'react-modal';
 
 import { modalStyles } from '../../../pages/KirunaMap';
@@ -10,6 +10,7 @@ import { AllMunicipalityDocuments } from '../coordsOverlay/AllMunicipalityDocume
 import { useAuth } from '../../../context/AuthContext';
 import { UserRoleEnum } from '../../../utils/interfaces/user.interface';
 import './Overlay.css';
+import SidebarContext from '../../../context/SidebarContext';
 
 interface OverlayProps {
   coordinates: any; //Need to pass coordinates to the modal as parameter
@@ -18,7 +19,6 @@ interface OverlayProps {
   setDocuments: (documents: IDocument[]) => void;
   filteredDocuments: IDocument[];
   setFilteredDocuments: (filteredDocuments: IDocument[]) => void;
-  sidebarVisible: boolean
 }
 
 const Overlay: React.FC<OverlayProps> = ({
@@ -27,8 +27,7 @@ const Overlay: React.FC<OverlayProps> = ({
   documents,
   setDocuments,
   filteredDocuments,
-  setFilteredDocuments,
-  sidebarVisible
+  setFilteredDocuments
 }) => {
   const [isHoveredMunicipality, setIsHoveredMunicipality] = useState(false);
   const [showMunicipalityDocuments, setShowMunicipalityDocuments] =
@@ -38,6 +37,8 @@ const Overlay: React.FC<OverlayProps> = ({
   const [isHoveredNewDocument, setIsHoveredNewDocument] = useState(false);
 
   const { isLoggedIn, user } = useAuth();
+
+  const {sidebarVisible} = useContext(SidebarContext);
 
   const municipalityDocumentsModalStyles = {
     content: {

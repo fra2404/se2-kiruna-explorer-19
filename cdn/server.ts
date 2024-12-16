@@ -50,7 +50,7 @@ const storage = multer.diskStorage({
         cb(null, `${payload.id}${extension}`); // Usa l'ID passato come nome del file
     },
 });
-const upload = multer({ 
+const upload = multer({
     storage,
     limits: { fileSize: 5 * 1024 * 1024 }, // Limit file size to 5MB
 });
@@ -215,7 +215,7 @@ app.post(
                 mediaId: fileNameWithoutExt,
                 metadata: {
                     size: req.file.size,
-                    page: numberOfPages
+                    pages: numberOfPages
                 },
                 url: `${req.protocol}://${req.get('host')}/cdn/${payload.folder ? payload.folder + '/' : ''}${fileNameWithoutExt}`
             };

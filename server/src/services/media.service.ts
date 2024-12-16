@@ -96,7 +96,7 @@ export const updateMediaMetadata = async (
     updateFields.pages = metadata.pages;
   }
   updateFields.size = metadata.size;
-  
+
   if (updateFields.length === 0 || updateFields.size === undefined || updateFields.size === null) {
     throw new CustomError('No fields to update', 400); // Custom error for no updates
   }

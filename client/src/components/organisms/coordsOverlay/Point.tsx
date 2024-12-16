@@ -1,4 +1,4 @@
-import React, {useEffect, useRef, useState } from 'react';
+import React, {useContext, useEffect, useRef, useState } from 'react';
 import { Marker, useMap } from 'react-leaflet';
 import { DivIcon, LatLng } from 'leaflet';
 import Modal from 'react-modal';
@@ -10,6 +10,8 @@ import { DocumentIcon } from '../../molecules/documentsItems/DocumentIcon';
 import { renderToString } from 'react-dom/server';
 import { CoordsIconStyle } from '../../molecules/MapIconsStyles';
 import { Area } from './Area';
+import SidebarContext from '../../../context/SidebarContext';
+import { kirunaLatLngCoords } from '../../molecules/CustomMap';
 
 interface PointProps {
   id: string;
@@ -41,6 +43,7 @@ export const Point: React.FC<PointProps> = ({
   const [modalOpen, setModalOpen] = useState(false);
   const [selectedPointId, setSelectedPointId] = useState('');
   const markerRef = useRef<L.Marker>(null);
+  const {selectedDocument} = useContext(SidebarContext);
 
   let markerText: any;
 
@@ -89,6 +92,25 @@ export const Point: React.FC<PointProps> = ({
       }
     }
   }
+
+  useEffect(() => {
+    if(selectedDocument && pointDocuments.includes(selectedDocument)) {
+      map.flyTo(markerRef.current?.getLatLng() ?? kirunaLatLngCoords);
+      if(!popupOpen) {
+        setTimeout(() => markerRef.current?.openPopup(), 50);
+        popupOpen = true;
+      }
+      if(type == 'Polygon') {
+        polygonRef.current?.addTo(map); //Needs to be added twice, otherwise it won't work
+        polygonRef.current?.addTo(map);
+      }
+    }
+    else {
+      popupOpen = false;
+      markerRef.current?.closePopup();
+      polygonRef.current?.remove();
+    }
+  }, [selectedDocument])
 
   useEffect(() => {
     polygonRef.current?.addEventListener("add", () => {
@@ -147,12 +169,6 @@ export const Point: React.FC<PointProps> = ({
           onCancelClick={() => {
             markerRef.current?.closePopup();
           }}
-          coordinates={coordinates}
-          setCoordinates={setCoordinates}
-          allDocuments={allDocuments}
-          setDocuments={setAllDocuments}
-          filteredDocuments={filteredDocuments}
-          setFilteredDocuments={setFilteredDocuments}
         />
 
         {(type=='Polygon') &&
@@ -185,7 +201,7 @@ export const Point: React.FC<PointProps> = ({
 };
 
 
-function calculateCentroid(coords: LatLng[]): LatLng {
+export function calculateCentroid(coords: LatLng[]): LatLng {
   let latSum = 0, lngSum = 0;
   const n = coords.length;
 

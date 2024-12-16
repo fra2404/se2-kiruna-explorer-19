@@ -12,8 +12,6 @@ import { IDocument } from '../../utils/interfaces/document.interface';
 interface HeaderProps {
   page: string;
   headerRef?: any;
-  sidebarVisible: boolean;
-  setSidebarVisible: (sidebarVisible: boolean) => void;
   setManageCoordsModalOpen?: (manageCoordsModalOpen: boolean) => void;
   coordinates: any;
   setCoordinates: (coordinates: any) => void;
@@ -26,8 +24,6 @@ interface HeaderProps {
 export const Header: React.FC<HeaderProps> = ({
   page,
   headerRef,
-  sidebarVisible,
-  setSidebarVisible,
   setManageCoordsModalOpen,
   coordinates,
   setCoordinates,
@@ -80,6 +76,17 @@ export const Header: React.FC<HeaderProps> = ({
             <>
               <img src='./src/assets/logo.png' alt='Logo' className='h-12 border border-black rounded-full '/>
               <h1 className={mapType == "osm" || page != 'map' ? 'font-bold text-black ml-2 text-3xl' : "font-bold text-white ml-2 text-3xl"}>Kiruna eXplorer</h1>
+              {/* Date and time */}
+              <ButtonRounded variant="filled" className="bg-black px-3 py-2 ml-4"
+                text={dateTime}
+                style={{
+                  display: 'flex',
+                  justifyContent: 'center',
+                  alignItems: 'center',
+                  pointerEvents: "auto",
+                  fontSize: '15px'
+                }} 
+              />
             </>
           }
           variant='text'
@@ -91,17 +98,6 @@ export const Header: React.FC<HeaderProps> = ({
         />
 
         <div className='flex items-center gap-4'>
-          {/* Date and time */}
-          <ButtonRounded variant="filled" className="bg-black p-3"
-            text={dateTime}
-            style={{
-              display: 'flex',
-              justifyContent: 'center',
-              alignItems: 'center',
-              pointerEvents: "auto"
-            }} 
-          />
-
           {/* Button to switch the map/diagram view */}
           <ButtonRounded
             variant="filled"
@@ -134,14 +130,13 @@ export const Header: React.FC<HeaderProps> = ({
           {/* Sidebar */}
           <div className='ml-auto' style={{ pointerEvents: "auto" }}>
             <Sidebar
-              sidebarVisible={sidebarVisible}
-              setSidebarVisible={setSidebarVisible}
               coordinates={coordinates}
               setCoordinates={setCoordinates}
               allDocuments={allDocuments}
               setAllDocuments={setAllDocuments}
               filteredDocuments={filteredDocuments}
               setFilteredDocuments={setFilteredDocuments}
+              page={page}
             />
           </div>
         </div>
