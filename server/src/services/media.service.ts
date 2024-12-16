@@ -92,11 +92,11 @@ export const updateMediaMetadata = async (
 ): Promise<void> => {
   const updateFields: any = {};
 
-  if (metadata.pages != null) {
-    updateFields.pages = metadata.pages;
+  if (metadata.page != null) {
+    updateFields.pages = metadata.page;
   }
   updateFields.size = metadata.size;
-  
+
   if (updateFields.length === 0 || updateFields.size === undefined || updateFields.size === null) {
     throw new CustomError('No fields to update', 400); // Custom error for no updates
   }

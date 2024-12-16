@@ -1,6 +1,6 @@
 import Document from '../schemas/document.schema';
 import Stakeholder from '../schemas/stakeholder.schema';
-import DocumentType from '@schemas/documentType.schema';
+import DocumentType from '../schemas/documentType.schema';
 import MediaDocument from '../schemas/media.schema';
 import { Coordinate } from '../schemas/coordinate.schema';
 import { IDocument, IDocumentFilters } from '@interfaces/document.interface';
@@ -77,7 +77,6 @@ export const addingDocument = async (
     }
   }
 
-
   //Check existence of documentType in DB
   if (documentData.type) {
     const existingDocumentType = await DocumentType.findById(documentData.type);
@@ -130,8 +129,6 @@ export const addingDocument = async (
   if (newDocument.type) {
     type = await fetchDocumentTypes(newDocument.type);
   }
-
-
 
   const documentObject = newDocument.toObject();
   delete documentObject._id;
@@ -416,7 +413,6 @@ export const updatingDocument = async (
     await updatedDocument.save();
   }
 
-
   if (updateData.coordinates) {
     const existingCoordinate = await Coordinate.findById(
       updateData.coordinates,
@@ -456,9 +452,8 @@ export const updatingDocument = async (
     }
   }
 
-
   // Check for duplicate stakeholder IDs in the array
-  if (updatedDocument.stakeholders && updatedDocument.stakeholders.length > 0) {
+  if (updatedDocument.stakeholders && updatedDocument.stakeholders.length > 0) {    
     for (let i = 0; i < updatedDocument.stakeholders.length; i++) {
       const stakeholderId = updatedDocument.stakeholders[i];
       if (updatedDocument.stakeholders.indexOf(stakeholderId) !== i) {
@@ -466,7 +461,6 @@ export const updatingDocument = async (
       }
     }
   }
-
 
    //Check existence of documentType in DB
     if (updatedDocument.type) {
@@ -476,7 +470,6 @@ export const updatingDocument = async (
       }
     }
    
-
   // Update connections
   if (updateData.connections && updateData.connections.length > 0) {
     // Clear existing connections
@@ -532,13 +525,11 @@ export const updatingDocument = async (
     media = await fetchMedia(updatedDocument.media);
   }
 
-
   //call method to fetch stakeholders
   let stakeholder: IStakeholder[] = [];
   if (updatedDocument.stakeholders && updatedDocument.stakeholders.length > 0) {
     stakeholder = await fetchStakeholders(updatedDocument.stakeholders);
   }
-
 
   //call method to fetch documentTypes
   let type: IDocumentType | null = null;
@@ -546,7 +537,6 @@ export const updatingDocument = async (
       type = await fetchDocumentTypes(updatedDocument.type);
   }
    
-
   const documentObject = updatedDocument.toObject();
   delete documentObject._id;
   delete documentObject.createdAt;
@@ -577,16 +567,12 @@ export const getDocumentTypes = async () => {
     throw new DocumentTypeNotFoundError;
   }
 
-
   const result = docTypes.map(docType => ({
     label: docType.type,  
     value: docType._id.toString(), 
   }));
   return result;
 };
-
-
-
 
 export const getDocumentByType = async (
   type: string,
@@ -667,10 +653,3 @@ export const getDocumentByType = async (
     }),
   );
 };
-
-
-
-
-
-
-
