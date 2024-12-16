@@ -92,8 +92,8 @@ export const updateMediaMetadata = async (
 ): Promise<void> => {
   const updateFields: any = {};
 
-  if (metadata.page != null) {
-    updateFields.pages = metadata.page;
+  if (metadata.pages != null) {
+    updateFields.pages = metadata.pages;
   }
   updateFields.size = metadata.size;
 
