@@ -41,17 +41,12 @@ const Step1: React.FC<Step1Props> = ({
     issuanceDate ? issuanceDate.split('-')[2] : '',
   );
 
-  console.log('architecturalScale:', architecturalScale);
-
   useEffect(() => {
     if (issuanceDate) {
       const [year, month, day] = issuanceDate.split('-');
       setSelectedYear(year || '');
       setSelectedMonth(month || '');
       setSelectedDay(day || '');
-      console.log('useEffect - selectedYear:', year);
-      console.log('useEffect - selectedMonth:', month);
-      console.log('useEffect - selectedDay:', day);
     }
   }, [issuanceDate]);
 
@@ -133,7 +128,6 @@ const Step1: React.FC<Step1Props> = ({
           onChange={(e) => {
             if ('target' in e) {
               const selectedOption = e.target.value;
-              console.log('onChange - selectedOption:', selectedOption);
               setScale(selectedOption);
             }
           }}
