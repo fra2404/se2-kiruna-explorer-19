@@ -112,11 +112,11 @@ const Diagram = () => {
     positionX: 0,
     positionY: 0,
     scale: 1,
-    gridSize: 20, // La dimensione iniziale dei quadretti
+    gridSize: 40, // La dimensione iniziale dei quadretti
   });
 
   const calculateGridSize = (scale: number) => {
-    const baseSize = 40; // La dimensione base dei quadretti (in px)
+    const baseSize = 80; // La dimensione base dei quadretti (in px)
     const newSize = baseSize * scale; // Modifica la dimensione in base allo zoom
     return newSize;
   };
