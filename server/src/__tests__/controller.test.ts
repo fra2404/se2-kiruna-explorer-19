@@ -839,32 +839,27 @@ describe('Tests for document controllers', () => {
   //getDocumentTypesController
   describe('Tests for getDocumentTypesController', () => {
     //test 1
-    test('Shoulde retrive all document types', () => {
+    test('Should retrive all document types', async() => {
       //Data mock
       const mockDocTypes = [
-        { label: 'Agreement', value: DocTypeEnum.Agreement },
-        { label: 'Conflict', value: DocTypeEnum.Conflict },
-        { label: 'Consultation', value: DocTypeEnum.Consultation },
-        { label: 'DesignDoc', value: DocTypeEnum.DesignDoc },
-        { label: 'InformativeDoc', value: DocTypeEnum.InformativeDoc },
-        { label: 'MaterialEffects', value: DocTypeEnum.MaterialEffects },
-        { label: 'PrescriptiveDoc', value: DocTypeEnum.PrescriptiveDoc },
-        { label: 'TechnicalDoc', value: DocTypeEnum.TechnicalDoc },
+        { label: DocTypeEnum.Agreement, value: "ty1" },
+        { label: DocTypeEnum.Conflict, value: "ty2" },
+        { label: 'CustomType1', value: "ty3" }
       ];
 
       //Support functions mocking
       (getDocumentTypes as jest.Mock).mockReturnValue(mockDocTypes);
 
       //Call of getDocumentTypesController
-      getDocumentTypesController(req as Request, res as Response, next);
+      await getDocumentTypesController(req as Request, res as Response, next);
 
       expect(res.status).toHaveBeenCalledWith(200);
-      expect(res.json).toHaveBeenCalledWith({ docTypes: mockDocTypes });
+      expect(res.json).toHaveBeenCalledWith(mockDocTypes);
       expect(next).not.toHaveBeenCalled();
     });
 
     //test 2
-    test('Should throw an error', () => {
+    test('Should throw an error', async() => {
       //Data mock
       const err = new Error();
 
@@ -874,7 +869,7 @@ describe('Tests for document controllers', () => {
       });
 
       //Call of getDocumentTypesController
-      getDocumentTypesController(req as Request, res as Response, next);
+      await getDocumentTypesController(req as Request, res as Response, next);
 
       expect(next).toHaveBeenCalledWith(err);
     });

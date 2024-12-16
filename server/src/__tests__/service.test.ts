@@ -1359,7 +1359,7 @@ describe('Tests for document services', () => {
       jest.spyOn(require("../services/coordinate.service"), "getCoordinateById")
         .mockResolvedValue(mockCoordinate);
       jest.spyOn(require("../services/media.service"), "fetchMedia")
-        .mockResolvedValue(mockMedia);
+        .mockResolvedValueOnce(mockMedia);
       (DocumentType.findById as jest.Mock).mockImplementation(async() => DocTypeEnum.Agreement);
       jest.spyOn(require("../services/stakeholder.service"), "fetchStakeholders")
         .mockResolvedValue(StakeholderEnum.Citizens);
@@ -1433,7 +1433,7 @@ describe('Tests for document services', () => {
       jest.spyOn(require("../services/coordinate.service"), "getCoordinateById")
         .mockResolvedValue(mockCoordinate);
       jest.spyOn(require("../services/media.service"), "fetchMedia")
-        .mockResolvedValue(mockMedia);
+        .mockResolvedValueOnce(mockMedia);
       jest.spyOn(require("../services/stakeholder.service"), "fetchStakeholders")
         .mockResolvedValue(StakeholderEnum.Citizens);
       jest.spyOn(require("../services/documentType.service"), "fetchDocumentTypes")
@@ -1791,29 +1791,36 @@ describe('Tests for document services', () => {
   /* ************************************************** */
 
   //getDocumentByType
-  describe.skip('Tests for getDocumentByType', () => {
+  describe('Tests for getDocumentByType', () => {
     afterEach(() => {
       jest.clearAllMocks();
     });
 
     //Mocked data
+    const mockedType = {
+      _id: "ty1",
+      type: DocTypeEnum.Agreement
+    }
+
     //Just essential fields are filled
     const mockDocuments = [
       {
         id: "d1",
         title: "Document 1",
         summary: "Test document 1",
+        stakeholders: ["st1"],
         coordinates: "c1",
         media: ["m1", "m2"],
-        type: DocTypeEnum.Agreement
+        type: mockedType._id
       },
       {
         id: "d2",
         title: "Document 2",
         summary: "Test document 2",
+        stakeholders: ["st2", "st3"],
         coordinates: null,
         media: [],
-        type: DocTypeEnum.Agreement
+        type: mockedType._id
       }
     ];
 
@@ -1832,56 +1839,103 @@ describe('Tests for document services', () => {
     //test 1
     test("Should return all the documents of the specified type", async () => {
       //Support functions mocking
-      jest.spyOn(Document, "find").mockResolvedValue(
-        mockDocuments.map((doc) => ({
-          ...doc,
-          toObject: () => doc
-        }))
-      );
+      jest.spyOn(DocumentType, 'findById').mockResolvedValueOnce(mockedType);
+
+      (Document.find as jest.Mock).mockImplementation(() => ({
+        select: jest.fn().mockImplementation(async() =>
+          mockDocuments.map((doc) => ({
+            ...doc,
+            toObject: () => doc
+          }))
+        )
+      }));
+
       (getCoordinateById as jest.Mock).mockImplementation(async() => mockCoordinate);
-      
       jest.spyOn(require("../services/media.service"), "getMediaMetadataById")
        .mockResolvedValueOnce(mockMedias[0])
        .mockResolvedValueOnce(mockMedias[1])
-      
+      jest.spyOn(require("../services/stakeholder.service"), "fetchStakeholders")
+        .mockResolvedValueOnce(StakeholderEnum.LKAB)
+        .mockResolvedValueOnce([StakeholderEnum.Citizens, StakeholderEnum.RegionalAuthority]);
+      jest.spyOn(require("../services/documentType.service"), 'fetchDocumentTypes')
+        .mockResolvedValueOnce({
+          id: 'ty1',
+          type: DocTypeEnum.Agreement
+        })
+        .mockResolvedValueOnce({
+          id: 'ty1',
+          type: DocTypeEnum.Agreement
+        }); //fetchDocumentTypes must be called 2 times because the mocked documents are 2
 
       //Call of getDocumentByType
       const result = await getDocumentByType(DocTypeEnum.Agreement);
 
-      expect(Document.find).toHaveBeenCalledWith({ type: DocTypeEnum.Agreement });
+      expect(DocumentType.findById).toHaveBeenCalledWith(DocTypeEnum.Agreement);
+      expect(Document.find).toHaveBeenCalled();
       expect(getCoordinateById).toHaveBeenCalledWith("c1");
       expect(getMediaMetadataById).toHaveBeenCalledTimes(2);
+      expect(fetchStakeholders).toHaveBeenCalledTimes(2);
+      expect(fetchDocumentTypes).toHaveBeenCalledTimes(2);
+
       expect(result).toEqual([
         {
           id: 'd1',
           title: 'Document 1',
           summary: 'Test document 1',
+          stakeholders: [StakeholderEnum.Citizens, StakeholderEnum.RegionalAuthority],
           coordinates: mockCoordinate,
           media: [mockMedias[0], mockMedias[1]],
-          type: DocTypeEnum.Agreement
+          type: {
+            id: "ty1",
+            type: DocTypeEnum.Agreement
+          }
         },
         {
           id: 'd2',
           title: 'Document 2',
           summary: 'Test document 2',
+          stakeholders: StakeholderEnum.LKAB,
           coordinates: null,
           media: null,
-          type: DocTypeEnum.Agreement
+          type: {
+            id: "ty1",
+            type: DocTypeEnum.Agreement
+          }
         }
       ]);
     });
 
     //test 2
-    test('Should throw a DocNotFoundErr', async () => {
+    test('Should throw a DocumentTypeNotFoundError', async () => {
+      //Data mock
+      const err = new DocumentTypeNotFoundError();
+
+      //Support functions mocking
+      (DocumentType.findById as jest.Mock).mockImplementation(async () => null);
+
+      //Call of getDocumentByType
+      await expect(getDocumentByType('wrongType')).rejects.toThrow(err);
+
+      expect(DocumentType.findById).toHaveBeenCalledWith('wrongType');
+    });
+
+    //test 3
+    test('Should throw a DocNotFoundError if the input type does not match any document', async () => {
       //Data mock
       const err = new DocNotFoundError();
 
-      (Document.find as jest.Mock).mockImplementation(async () => []);
+      //Support functions mocking
+      (DocumentType.findById as jest.Mock).mockImplementation(async () => mockedType);
+      (Document.find as jest.Mock).mockImplementation(() => ({
+          select: jest.fn().mockImplementation(async() => [])
+        })
+      );
 
-      await expect(getDocumentByType('FakeType')).rejects.toThrow(err);
+      //Call of getDocumentByType
+      await expect(getDocumentByType(DocTypeEnum.Agreement)).rejects.toThrow(err);
 
-      expect(Document.find).toHaveBeenCalledWith({ type: 'FakeType' });
-      expect(getCoordinateById).not.toHaveBeenCalled();
+      expect(DocumentType.findById).toHaveBeenCalledWith(DocTypeEnum.Agreement);
+      expect(Document.find).toHaveBeenCalled();
     });
   }); //getDocumentByType
 }); //END OF DOCUMENT SERVICES
@@ -2125,7 +2179,7 @@ describe('Tests for media services', () => {
   /* ************************************************** */
 
   //fetchMedia
-  describe.skip('Tests for fetchMedia', () => {
+  describe('Tests for fetchMedia', () => {
     afterEach(() => {
       jest.clearAllMocks();
     });
