@@ -74,7 +74,7 @@ const Diagram = () => {
   const minYear = graphBEInfo.minYear;
   const maxYear = graphBEInfo.maxYear;
   const networkRef = useRef<any>(null);
-  const gridRef = useRef<HTMLDivElement>(null); // Aggiunta per la griglia
+  const gridRef = useRef<HTMLDivElement>(null); // Added for the grid
 
   let lastPosition: any = null;
   const max_zoom = 2;
@@ -568,7 +568,7 @@ const Diagram = () => {
     const network = networkRef.current;
 
     if (network) {
-      // Imposta gli eventi per aggiornare la griglia
+      // Sets the events to update the grid
       network.on('zoom', () => updateGrid(network));
       network.on('dragEnd', () => updateGrid(network));
       network.on('initRedraw', () => updateGrid(network));
@@ -582,25 +582,25 @@ const Diagram = () => {
     const network = networkRef.current;
 
     if (network) {
-      // Ottieni i nodi dal grafo
+      // Retrieves the diagram nodes
       const nodes = state.graph.nodes.map((node) =>
         network.getPosition(node.id),
       );
 
-      // Calcola la dimensione della griglia basata sui nodi
+      // Computes the grid dimension based on nodes
       const { gridX, gridY } = calculateGridSizeFromNodes(nodes);
 
-      // Gestisce lo zoom
+      // Manages the zoom
       network.on('zoom', function (params: any) {
         setBackgroundStyle((prev) => ({
           ...prev,
           scale: params.scale,
-          gridSizeX: gridX * params.scale, // Scala la griglia in base allo zoom
-          gridSizeY: gridY * params.scale, // Scala la griglia in base allo zoom
+          gridSizeX: gridX * params.scale, // Scales the grid according to zoom level
+          gridSizeY: gridY * params.scale,
         }));
       });
 
-      // Gestisce lo spostamento della vista, incluse le frecce
+      // Manages the view movement, movement by arrows included
       network.on('pan', function () {
         const position = network.getViewPosition();
         const newBackgroundPosition = calculateBackgroundPosition(
@@ -614,7 +614,7 @@ const Diagram = () => {
         }));
       });
 
-      // Gestisce il movimento tramite drag
+      // Manages movement by dragging
       network.on('dragEnd', function () {
         const position = network.getViewPosition();
         const newBackgroundPosition = calculateBackgroundPosition(
@@ -628,7 +628,7 @@ const Diagram = () => {
         }));
       });
     }
-  }, [backgroundStyle.scale, state.graph.nodes]); // Ricalcola quando i nodi cambiano o lo zoom cambia
+  }, [backgroundStyle.scale, state.graph.nodes]); // Recomputed when nodes or zoom change
 
   useEffect(() => {
     // Check the boundaries of the selected node
@@ -731,7 +731,7 @@ const Diagram = () => {
       linear-gradient(to bottom, #e0e0e0 1px, transparent 1px)
     `,
           backgroundSize: '40px 40px',
-          zIndex: -1, // Posiziona la griglia dietro i nodi
+          zIndex: -1, // Positions the grid behind the nodes
         }}
       />
 
@@ -777,7 +777,7 @@ const Diagram = () => {
               const { nodes } = event;
               const network = networkRef.current;
 
-              // Salva posizione dei nodi
+              // Saves nodes position
               if (nodes && nodes.length > 0) {
                 nodes.forEach((nodeId: string | number) => {
                   const position = network.getPosition(nodeId);
@@ -788,17 +788,17 @@ const Diagram = () => {
                 });
               }
 
-              // Aggiorna la griglia
+              // Updates the grid
               updateGrid(network);
             },
             zoom: function () {
               const network = networkRef.current;
-              // Aggiorna la griglia al cambio di zoom
+              // Updates the grid on zoom change
               updateGrid(network);
             },
             initRedraw: function () {
               const network = networkRef.current;
-              // Aggiorna la griglia durante il redraw
+              // Updates the grid when redrawing
               updateGrid(network);
             },
             selectNode: function (event: { nodes: any[] }) {
@@ -848,7 +848,7 @@ const Diagram = () => {
           getNetwork={(network) => {
             networkRef.current = network;
 
-            // Aggiorna la griglia al caricamento iniziale
+            // Updates the grid on the initial load
             updateGrid(network);
           }}
         />

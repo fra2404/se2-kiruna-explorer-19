@@ -43,6 +43,7 @@ const StakeholderLegend = () => {
               padding: '5px',
               borderRadius: '4px',
               cursor: 'default', // Keep cursor as default arrow
+              fontWeight: 'bold'
             }}
           >
             <span style={{ marginLeft: '10px', color, cursor: 'default' }}>

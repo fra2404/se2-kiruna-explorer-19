@@ -12,7 +12,7 @@ import {
   TechnicalDocIcon,
 } from '../../../assets/icons';
 
-// Funzione di hash per convertire una stringa in un valore numerico
+// Hash function to convert a string in a numeric value
 const hashString = (str: string): number => {
   let hash = 0;
   for (let i = 0; i < str.length; i++) {
@@ -23,16 +23,16 @@ const hashString = (str: string): number => {
   return hash;
 };
 
-// Funzione per convertire un valore numerico in un colore esadecimale
+// Function to convert a numeric value in an hexadecimal color
 const numberToColorHex = (num: number): string => {
   let r = (num >> 16) & 0xff;
   let g = (num >> 8) & 0xff;
   let b = num & 0xff;
 
-  // Calcola la luminosità del colore
+  // Computes color brightness
   const brightness = (r * 299 + g * 587 + b * 114) / 1000;
 
-  // Se il colore è troppo chiaro, scuriscilo
+  // If the color is too bright, make it darker
   if (brightness > 200 || (r > 200 && g > 200 && b > 200)) {
     r = Math.floor(r * 0.7);
     g = Math.floor(g * 0.7);
@@ -63,7 +63,7 @@ export const stakeholdersColors = (
         case 'citizens':
           return '#a7cbce';
         default:
-          // Genera un colore esadecimale unico per i tipi di stakeholder non predefiniti
+          // Generatex a unique Hexadecimal color for not-predefined stakeholder types
           return numberToColorHex(hashString(stakeholder.type));
       }
     } else {
