@@ -581,12 +581,18 @@ const DocumentForm = ({
       {showSummary && (
         <Modal
           isOpen={true}
-          onRequestClose={() => setShowSummary(false)}
+          onRequestClose={() => {
+            setModalOpen(false)
+            setShowSummary(false)
+          }}
           style={connectionModalStyles}
         >
           <div className="relative">
             <button
-              onClick={() => setShowSummary(false)}
+              onClick={() => {
+                setModalOpen(false)
+                setShowSummary(false)
+              }}
               className="absolute top-0 right-0 p-2 text-xl text-gray-500 hover:text-gray-700"
             >
               &times;
