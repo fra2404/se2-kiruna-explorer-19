@@ -1,9 +1,8 @@
 import Stakeholder from '../schemas/stakeholder.schema';
-import { CustomError } from '@utils/customError';
-import { IStakeholder } from '@interfaces/stakeholder.interface';
-import { StakeholderNotFoundError } from '@utils/errors';
+import { CustomError } from '../utils/customError';
+import { IStakeholder } from '../interfaces/stakeholder.interface';
+import { StakeholderNotFoundError } from '../utils/errors';
 import { ObjectId } from 'mongoose';
-
 
 //Add new stakeholder
 export const addingStakeholder = async (
@@ -71,17 +70,13 @@ export const fetchStakeholders = async (
 export const fetchStakeholdersForSearch = async (
   stakeholderNames: string[],  
 ): Promise<ObjectId[]> => {
-  console.log("Searching for stakeholder names: ", stakeholderNames);
-  
   if (stakeholderNames && stakeholderNames.length > 0) {
     // Find stakeholders by names
     const stakeholders = await Stakeholder.find({
       type: { $in: stakeholderNames.map(type => new RegExp('^' + type + '$', 'i')) } 
     }).select('-createdAt -updatedAt -__v');
-
-    console.log("Found stakeholders: ", stakeholders);
-    if (stakeholders.length > 0) {
-      
+    
+    if (stakeholders.length > 0) {      
       return stakeholders.map(stakeholder => (stakeholder._id as unknown) as ObjectId); // Return the stakeholder IDs
     }
   }

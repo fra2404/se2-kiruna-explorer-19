@@ -1,6 +1,6 @@
 import { Request, Response, NextFunction } from 'express';
 import { addingDocumentType, getAllDocumentTypes } from '../services/documentType.service'
-import { IDocumentType } from '@interfaces/documentType.interface';
+import { IDocumentType } from '../interfaces/documentType.interface';
 
 //Add DocumentType
 export const addDocumentTypeController = async (

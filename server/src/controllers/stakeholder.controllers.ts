@@ -3,7 +3,7 @@ import {
     addingStakeholder,
     getAllStakeholders,
 } from '../services/stakeholder.service';
-import { IStakeholder } from '@interfaces/stakeholder.interface';
+import { IStakeholder } from '../interfaces/stakeholder.interface';
 
 
 

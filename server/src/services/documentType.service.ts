@@ -1,7 +1,7 @@
 import DocumentType from '../schemas/documentType.schema';
-import { CustomError } from '@utils/customError';
-import { IDocumentType } from '@interfaces/documentType.interface';
-import { DocumentTypeNotFoundError } from '@utils/errors';
+import { CustomError } from '../utils/customError';
+import { IDocumentType } from '../interfaces/documentType.interface';
+import { DocumentTypeNotFoundError } from '../utils/errors';
 import { ObjectId } from 'mongoose';
 import { ObjectId as MongoObjectId } from 'mongodb';
 
