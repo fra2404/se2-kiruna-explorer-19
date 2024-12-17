@@ -5,15 +5,6 @@ import './Diagram.css';
 import { useState, useEffect, useRef, useContext } from 'react';
 import API, { getTypes } from '../API';
 import ErrorImage from '../assets/icons/error.png';
-import DefaultIcon from '../assets/icons/default-icon.svg';
-import AgreementIcon from '../assets/icons/agreement-icon.svg';
-import ConflictIcon from '../assets/icons/conflict-icon.svg';
-import ConsultationIcon from '../assets/icons/consultation-icon.svg';
-import DesignDocIcon from '../assets/icons/design-doc-icon.svg';
-import InformativeDocIcon from '../assets/icons/informative-doc-icon.svg';
-import MaterialEffectsIcon from '../assets/icons/material-effects-icon.svg';
-import PrescriptiveDocIcon from '../assets/icons/prescriptive-doc-icon.svg';
-import TechnicalDocIcon from '../assets/icons/technical-doc-icon.svg';
 import 'vis-network/styles/vis-network.css';
 import { swedishFlagBlue, swedishFlagYellow } from '../utils/colors';
 import { IDocument } from '../utils/interfaces/document.interface.js';
@@ -24,6 +15,9 @@ import { Header } from '../components/organisms/Header.js';
 import useDocuments from '../utils/hooks/documents.js';
 import { DocumentConnectionsList } from '../components/molecules/documentsItems/DocumentConnectionsList.js';
 import SidebarContext from '../context/SidebarContext.js';
+import { DocumentIcon } from '../components/molecules/documentsItems/DocumentIcon.js';
+import ReactDOMServer from 'react-dom/server';
+import StakeholderLegend from '../components/molecules/StakeholderLegend.js';
 
 const LABEL_FONT = { size: 50, color: '#000000' };
 const OFFSET_VIEW = { x: 200, y: 500 };
@@ -355,36 +349,18 @@ const Diagram = () => {
               docTypes.label === doc.type.type.toUpperCase(),
           )
         : null;
-      switch (docType?.label) {
-        case 'AGREEMENT':
-          doc.image = AgreementIcon;
-          break;
-        case 'CONFLICT':
-          doc.image = ConflictIcon;
-          break;
-        case 'CONSULTATION':
-          doc.image = ConsultationIcon;
-          break;
-        case 'PRESCRIPTIVE_DOC':
-          doc.image = PrescriptiveDocIcon;
-          break;
-        case 'INFORMATIVE_DOC':
-          doc.image = InformativeDocIcon;
-          break;
-        case 'DESIGN_DOC':
-          doc.image = DesignDocIcon;
-          break;
-        case 'TECHNICAL_DOC':
-          doc.image = TechnicalDocIcon;
-          break;
-        case 'MATERIAL_EFFECTS':
-          doc.image = MaterialEffectsIcon;
-          break;
-        default:
-          // Default icon for the documents that do not have an image (new types)
-          doc.image = DefaultIcon;
-          break;
-      }
+
+      // Convert DocumentIcon component to base64 image
+      const iconElement = (
+        <DocumentIcon
+          type={docType?.label || 'DEFAULT'}
+          stakeholders={doc.stakeholders || []}
+        />
+      );
+      const svgString = ReactDOMServer.renderToString(iconElement);
+      const base64Image = `data:image/svg+xml;base64,${btoa(svgString)}`;
+
+      doc.image = base64Image;
 
       // Check the connections
       let connectionColor: string;
@@ -588,11 +564,6 @@ const Diagram = () => {
     }
   }, [selectedDocument, state.graph.nodes]);
 
-  const gridStyle = {
-    backgroundSize: `${backgroundStyle.gridSize}px ${backgroundStyle.gridSize}px`, // La dimensione della griglia cambia con lo zoom
-    backgroundPosition: `${backgroundStyle.positionX}px ${backgroundStyle.positionY}px`, // Posizione dello sfondo
-  };
-
   useEffect(() => {
     const network = networkRef.current;
 
@@ -784,6 +755,17 @@ const Diagram = () => {
         }}
       >
         <Legend />
+      </div>
+
+      <div
+        style={{
+          position: 'absolute',
+          top: `${headerRef.current?.offsetHeight ? headerRef.current?.offsetHeight + 10 : 0}px`,
+          right: '10px',
+          zIndex: 10,
+        }}
+      >
+        <StakeholderLegend />
       </div>
 
       {state.graph && (

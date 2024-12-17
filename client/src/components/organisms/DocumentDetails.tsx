@@ -32,7 +32,7 @@ const DocumentDetails: React.FC<DocumentDetailsProps> = ({
   setAllDocuments,
   filteredDocuments,
   setFilteredDocuments,
-  page
+  page,
 }) => {
   const { isLoggedIn, user } = useAuth();
   const [modalOpen, setModalOpen] = useState(false);
@@ -76,7 +76,7 @@ const DocumentDetails: React.FC<DocumentDetailsProps> = ({
 
   useEffect(() => {
     if (!document.connections) {
-      setConnectedDocuments([]); 
+      setConnectedDocuments([]);
       return;
     }
 
@@ -88,7 +88,11 @@ const DocumentDetails: React.FC<DocumentDetailsProps> = ({
     });
 
     setConnectedDocuments(docs);
-    setDocumentLabel(document.scale === 'ARCHITECTURAL' && document.architecturalScale ? ` - ${document.architecturalScale}` : '');
+    setDocumentLabel(
+      document.scale === 'ARCHITECTURAL' && document.architecturalScale
+        ? ` - ${document.architecturalScale}`
+        : '',
+    );
   }, [document]);
 
   const list = [
@@ -107,13 +111,20 @@ const DocumentDetails: React.FC<DocumentDetailsProps> = ({
     },
     { label: 'Issuance Date', content: document.date },
     { label: 'Type', content: matchType(document.type.type) },
-    { 
-      label: 'Connections', 
+    {
+      label: 'Connections',
       content: connectedDocuments.map((cd: any) => {
         return (
-          <div key={cd.id} onClick={()=>{setSelectedDocument(cd.doc)}}>
-            <span className='text-blue-600 hover:underline cursor-pointer'>{cd.doc?.title}</span>
-            <span className='font-normal text-base'> - {cd.type} </span>
+          <div
+            key={cd.id}
+            onClick={() => {
+              setSelectedDocument(cd.doc);
+            }}
+          >
+            <span className="text-blue-600 hover:underline cursor-pointer">
+              {cd.doc?.title}
+            </span>
+            <span className="font-normal text-base"> - {cd.type} </span>
           </div>
         );
       }),
@@ -124,7 +135,7 @@ const DocumentDetails: React.FC<DocumentDetailsProps> = ({
       label: 'Original Resources',
       content: document.media?.map((m, i) => {
         const separator =
-        document.media && i !== document.media.length - 1 ? ' - ' : '';
+          document.media && i !== document.media.length - 1 ? ' - ' : '';
         return (
           <span key={m.id}>
             <a href={CDN_URL + m.url} target="blank">
@@ -146,7 +157,12 @@ const DocumentDetails: React.FC<DocumentDetailsProps> = ({
           <DocumentIcon
             type={document.type.type}
             stakeholders={
-              Array.isArray(document.stakeholders) ? document.stakeholders.map((s) => s.type) : []
+              Array.isArray(document.stakeholders)
+                ? document.stakeholders.map((s) => ({
+                    _id: s._id,
+                    type: s.type,
+                  }))
+                : []
             }
           />
         </div>
@@ -155,7 +171,8 @@ const DocumentDetails: React.FC<DocumentDetailsProps> = ({
         <div className="col-start-3 col-span-10 px-2 overflow-x-hidden text-base">
           {list.map((item) => (
             <div key={nanoid()}>
-              {item.label}: <span className="font-bold text-xl">{item.content}</span>
+              {item.label}:{' '}
+              <span className="font-bold text-xl">{item.content}</span>
             </div>
           ))}
         </div>
@@ -164,11 +181,11 @@ const DocumentDetails: React.FC<DocumentDetailsProps> = ({
       {/* Description / Summary container */}
       <div className="col-start-8 col-span-5 px-2 border-t-2 text-left">
         <h3>Description:</h3>
-        <p className='text-base'>{document.summary}</p>
+        <p className="text-base">{document.summary}</p>
       </div>
 
       <div className="flex justify-end space-x-4 mr-2">
-        { page == 'map' && 
+        {page == 'map' && (
           <ButtonRounded
             text="See on the diagram"
             variant="outlined"
@@ -177,7 +194,7 @@ const DocumentDetails: React.FC<DocumentDetailsProps> = ({
               navigate('/diagram');
             }}
           />
-        }
+        )}
         {
           /* Button to edit the document */
           isLoggedIn && user && user.role === UserRoleEnum.Uplanner && (

@@ -12,27 +12,51 @@ import {
   TechnicalDocIcon,
 } from '../../../assets/icons';
 
+// Funzione di hash per convertire una stringa in un valore numerico
+const hashString = (str: string): number => {
+  let hash = 0;
+  for (let i = 0; i < str.length; i++) {
+    const char = str.charCodeAt(i);
+    hash = (hash << 5) - hash + char;
+    hash |= 0; // Convert to 32bit integer
+  }
+  return hash;
+};
+
+// Funzione per convertire un valore numerico in un colore esadecimale
+const numberToColorHex = (num: number): string => {
+  const r = (num >> 16) & 0xff;
+  const g = (num >> 8) & 0xff;
+  const b = num & 0xff;
+  return `#${((1 << 24) + (r << 16) + (g << 8) + b).toString(16).slice(1)}`;
+};
+
 export const stakeholdersColors = (
-  stakeholders: (string | undefined)[],
+  stakeholders: { _id: string; type: string }[],
 ): string[] => {
   if (stakeholders.length === 0) {
     return ['#000'];
   }
 
   const colors = stakeholders.map((stakeholder) => {
-    switch (typeof stakeholder === 'string' ? stakeholder.toLowerCase() : undefined) {      
-      case 'lkab':
-        return '#1b1c1f';
-      case 'municipality':
-        return '#82605c';
-      case 'regional authority':
-        return '#64242e';
-      case 'architecture firms':
-        return '#aca596';
-      case 'citizens':
-        return '#a7cbce';
-      default:
-        return '#829c9f';
+    if (stakeholder.type) {
+      switch (stakeholder.type.toLowerCase()) {
+        case 'lkab':
+          return '#1b1c1f';
+        case 'municipality':
+          return '#82605c';
+        case 'regional authority':
+          return '#64242e';
+        case 'architecture firms':
+          return '#aca596';
+        case 'citizens':
+          return '#a7cbce';
+        default:
+          // Genera un colore esadecimale unico per i tipi di stakeholder non predefiniti
+          return numberToColorHex(hashString(stakeholder.type));
+      }
+    } else {
+      return '#829c9f';
     }
   });
 
@@ -41,17 +65,14 @@ export const stakeholdersColors = (
 
 interface DocumentIconProps {
   type: string;
-  stakeholders: string | string[] | undefined;
+  stakeholders: { _id: string; type: string }[];
 }
 
 export const DocumentIcon: React.FC<DocumentIconProps> = ({
   type,
   stakeholders,
 }) => {
-  const stakeholdersArray = Array.isArray(stakeholders)
-    ? stakeholders
-    : [stakeholders];
-  const colors = stakeholdersColors(stakeholdersArray);
+  const colors = stakeholdersColors(stakeholders);
 
   // Define custom icons for different categories
   if (!type || typeof type !== 'string') return <FaQuestion size={20} />;

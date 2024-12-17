@@ -18,9 +18,7 @@ import Step3 from '../molecules/steps/Step3';
 import Step4 from '../molecules/steps/Step4';
 import Step5 from '../molecules/steps/Step5';
 import Step6 from '../molecules/steps/Step6';
-import {
-  IDocument,
-} from '../../utils/interfaces/document.interface';
+import { IDocument } from '../../utils/interfaces/document.interface';
 
 import './DocumentForm.css';
 import LightDivider from '../atoms/light-divider/light-divider';
@@ -96,7 +94,11 @@ const DocumentForm = ({
   const [title, setTitle] = useState(selectedDocument?.title ?? '');
   const [stakeholders, setStakeholders] = useState<IStakeholder[]>(
     Array.isArray(selectedDocument?.stakeholders)
-      ? selectedDocument.stakeholders.map((s) => ({ _id: s._id, id: s._id, type: s.type }))
+      ? selectedDocument.stakeholders.map((s) => ({
+          _id: s._id,
+          id: s._id,
+          type: s.type,
+        }))
       : [],
   );
   const [scale, setScale] = useState<string | undefined>(
@@ -110,8 +112,12 @@ const DocumentForm = ({
       ? new Date(selectedDocument.date).toISOString().split('T')[0]
       : new Date().toISOString().split('T')[0],
   );
-  const [docType, setDocType] = useState<{ _id: string; type: string } | undefined>(
-    selectedDocument?.type ? { _id: selectedDocument.type._id, type: selectedDocument.type.type } : undefined,
+  const [docType, setDocType] = useState<
+    { _id: string; type: string } | undefined
+  >(
+    selectedDocument?.type
+      ? { _id: selectedDocument.type._id, type: selectedDocument.type.type }
+      : undefined,
   );
   const [connections, setConnections] = useState<Connection[]>(
     selectedDocument?.connections?.map((c) => {
@@ -142,19 +148,29 @@ const DocumentForm = ({
     icon: (
       <DocumentIcon
         type={label}
-        stakeholders={Array.isArray(stakeholders) ? stakeholders.map(s => s.type) : []}
+        stakeholders={
+          Array.isArray(stakeholders)
+            ? stakeholders.map((s) => ({ _id: s._id, type: s.type }))
+            : []
+        }
       />
     ),
   });
 
-  const [documentTypeOptions, setDocumentTypeOptions] = useState<{ value: string; label: string }[]>([]);
+  const [documentTypeOptions, setDocumentTypeOptions] = useState<
+    { value: string; label: string }[]
+  >([]);
 
   useEffect(() => {
     // Function that retrieves document types from the backend
     const fetchDocumentTypes = async () => {
       try {
         const options = await getDocumentTypes();
-        setDocumentTypeOptions(options.map((o) => createDocumentOption(o.value, o.label, stakeholders)));
+        setDocumentTypeOptions(
+          options.map((o) =>
+            createDocumentOption(o.value, o.label, stakeholders),
+          ),
+        );
       } catch (error) {
         console.error('Error when retrieving document types:', error);
       }
@@ -219,7 +235,7 @@ const DocumentForm = ({
       newErrors.docType = 'Document type is required';
     if (position && !selectedCoordId && !coordName)
       newErrors.newPoint = 'A new point must have a valid name';
-    if(position && !selectedCoordId && !isMarkerInsideKiruna(position))
+    if (position && !selectedCoordId && !isMarkerInsideKiruna(position))
       newErrors.newPoint = 'Point must be inside of Kiruna Borders';
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
@@ -266,7 +282,7 @@ const DocumentForm = ({
     return {
       id: selectedDocument?.id ?? '',
       title,
-      stakeholders: stakeholders.map(s => s._id),
+      stakeholders: stakeholders.map((s) => s._id),
       scale: scale ?? '',
       architecturalScale: scale === 'ARCHITECTURAL' ? architecturalScale : '',
       type: docType?._id ?? '',
@@ -308,7 +324,7 @@ const DocumentForm = ({
           filteredDocuments.map((doc: IDocument) => {
             return doc.id == selectedDocument.id ? responseDocument : doc;
           }),
-        )
+        );
       }
     }
   };
@@ -437,11 +453,13 @@ const DocumentForm = ({
               <h3
                 className="header-text text-xl font-bold mb-2 cursor-pointer"
                 onClick={() => {
-                  setShowFiles(!showFiles)} 
-                }
+                  setShowFiles(!showFiles);
+                }}
               >
-                Files{/*
-                */}<span className="align-middle">
+                Files
+                {/*
+                 */}
+                <span className="align-middle">
                   <ToggleButton
                     showContent={showFiles}
                     onToggle={() => setShowFiles(!showFiles)}
@@ -467,8 +485,10 @@ const DocumentForm = ({
                 className="header-text text-xl font-bold mb-2 cursor-pointer"
                 onClick={() => setShowConnections(!showConnections)}
               >
-                Connections{/*
-                */}<span className="align-middle">
+                Connections
+                {/*
+                 */}
+                <span className="align-middle">
                   <ToggleButton
                     showContent={showConnections}
                     onToggle={() => setShowConnections(!showConnections)}
@@ -476,7 +496,6 @@ const DocumentForm = ({
                 </span>
               </h3>
               {showConnections && (
-                
                 <Step4
                   connections={connections}
                   handleDeleteConnection={handleDeleteConnection}
@@ -501,8 +520,10 @@ const DocumentForm = ({
                   popupRef.current?.remove();
                 }}
               >
-                Georeferencing{/*
-                */}<span className="align-middle">
+                Georeferencing
+                {/*
+                 */}
+                <span className="align-middle">
                   <ToggleButton
                     showContent={showGeoreferencing}
                     onToggle={() => {
@@ -513,7 +534,6 @@ const DocumentForm = ({
                 </span>
               </h3>
               {showGeoreferencing && (
-                
                 <Step5
                   coordinates={coordinates}
                   setCoordinates={setCoordinates}
