@@ -1,4 +1,4 @@
-import { useState, useRef, useEffect } from 'react';
+import { useState, useRef, useEffect, useContext } from 'react';
 import { useMapEvents } from 'react-leaflet';
 import { LatLng } from 'leaflet';
 import Modal from 'react-modal';
@@ -30,6 +30,7 @@ import { DocumentIcon } from '../molecules/documentsItems/DocumentIcon';
 import useToast from '../../utils/hooks/toast';
 import { isMarkerInsideKiruna } from '../../utils/isMarkerInsideKiruna';
 import { IStakeholder } from '../../utils/interfaces/stakeholders.interface';
+import SidebarContext from '../../context/SidebarContext';
 
 Modal.setAppElement('#root');
 
@@ -49,7 +50,6 @@ interface DocumentFormProps {
   filteredDocuments: IDocument[];
   setFilteredDocuments: (documents: IDocument[]) => void;
   setModalOpen: (open: boolean) => void;
-  selectedDocument?: IDocument;
 }
 
 const DocumentForm = ({
@@ -62,7 +62,6 @@ const DocumentForm = ({
   filteredDocuments,
   setFilteredDocuments,
   showCoordNamePopup = false,
-  selectedDocument,
   setModalOpen,
 }: DocumentFormProps) => {
   const [currentStep, setCurrentStep] = useState(1);
@@ -71,6 +70,8 @@ const DocumentForm = ({
   );
   const [showSummary, setShowSummary] = useState(false);
   const [errors, setErrors] = useState<{ [key: string]: string }>({});
+
+  const { selectedDocument, setSelectedDocument } = useContext(SidebarContext);
 
   const featureGroupRef = useRef<L.FeatureGroup>(null);
   const popupRef = useRef<L.Popup>(null);
@@ -298,6 +299,7 @@ const DocumentForm = ({
     if (responseDocument) {
       if (!selectedDocument) {
         setDocuments(documents.concat(responseDocument));
+        setFilteredDocuments(documents.concat(responseDocument));
       } else {
         setDocuments(
           documents.map((doc: IDocument) => {
@@ -309,6 +311,7 @@ const DocumentForm = ({
             return doc.id == selectedDocument.id ? responseDocument : doc;
           }),
         )
+        setSelectedDocument(responseDocument)
       }
     }
   };
