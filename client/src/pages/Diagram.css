@@ -4,8 +4,7 @@
   font-family: 'Material Icons';
   font-style: normal;
   font-weight: 400;
-  src: url(https://fonts.gstatic.com/s/materialicons/v142/flUhRq6tzZclQEJ-Vdg-IuiaDsNc.woff2)
-    format('woff2');
+  src: url(https://fonts.gstatic.com/s/materialicons/v142/flUhRq6tzZclQEJ-Vdg-IuiaDsNc.woff2) format('woff2');
 }
 
 /* End import */
@@ -16,10 +15,13 @@
   height: 100%;
   background-image: linear-gradient(to right, #e0e0e0 1px, transparent 1px),
     linear-gradient(to bottom, #e0e0e0 1px, transparent 1px);
-  background-size: 50px 50px; /* La dimensione iniziale dei quadretti */
+  background-size: 50px 50px;
+  /* La dimensione iniziale dei quadretti */
   background-color: #ffffff;
-  background-position: 0 0; /* Posizione iniziale dello sfondo */
-  will-change: transform; /* Ottimizzazione per animazioni */
+  background-position: 0 0;
+  /* Posizione iniziale dello sfondo */
+  will-change: transform;
+  /* Ottimizzazione per animazioni */
 }
 
 div.vis-network div.vis-navigation div.vis-button.vis-up,
@@ -54,7 +56,7 @@ div.vis-network div.vis-navigation div.vis-button:hover {
 }
 
 .vis-button.vis-right:after {
-  font-family: 'Material Icons' !important;
+  font-family: 'Material Icons', sans-serif !important;
   content: '\e5c8';
   color: white !important;
 }

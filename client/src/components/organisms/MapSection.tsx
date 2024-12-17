@@ -89,40 +89,43 @@ const MapSection: React.FC<MapSectionProps> = ({
         className="w-full grid grid-rows-[auto_1fr] md:text-center"
         style={{ height: '70vh' }}
       >
-        <div className="w-80 justify-self-end" style={{ zIndex: 1000 }}>
-          <InputComponent
-            label="Select an area or point that already exists"
-            type="select"
-            options={[
-              {value: 'all_municipality', label: 'All Municipality'},
-              ...Object.entries(coordinates).map(
-                ([areaId, info]: [string, any]) => {
-                  return { value: areaId, label: info['name'] };
-                },
-              )]
-            }
-            defaultValue={selectedCoordIdProp? selectedCoordId : 'all_municipality'}
-            value={selectedCoordId}
-            onChange={(v: any) => {
-              popupRef.current?.remove();
-              featureGroupRef.current?.remove();
-              setSelectedCoordId(v.target.value != 'all_municipality' ? v.target.value : undefined);
-              setCoordNamePopupOpen(false);
-              if (
-                selectedCoordId &&
-                coordinates[v.target.value]['type'] == 'Point'
-              ) {
-                setPosition(
-                  new LatLng(
-                    coordinates[v.target.value]['coordinates'][0],
-                    coordinates[v.target.value]['coordinates'][1],
-                  ),
-                );
-              } else {
-                setPosition(undefined);
+        <div className='w-full text-start'>
+          Select a Point/Area that already exist from the dropdown  or double click on the map to create a new point
+          <div className="w-80 justify-self-end" style={{ zIndex: 1000 }}>
+            <InputComponent
+              label=''
+              type="select"
+              options={[
+                {value: 'all_municipality', label: 'All Municipality'},
+                ...Object.entries(coordinates).map(
+                  ([areaId, info]: [string, any]) => {
+                    return { value: areaId, label: info['name'] };
+                  },
+                )]
               }
-            }}
-          />
+              defaultValue={selectedCoordIdProp? selectedCoordId : 'all_municipality'}
+              value={selectedCoordId}
+              onChange={(v: any) => {
+                popupRef.current?.remove();
+                featureGroupRef.current?.remove();
+                setSelectedCoordId(v.target.value != 'all_municipality' ? v.target.value : undefined);
+                setCoordNamePopupOpen(false);
+                if (
+                  selectedCoordId && coordinates[v.target.value] &&
+                  coordinates[v.target.value]['type'] == 'Point'
+                ) {
+                  setPosition(
+                    new LatLng(
+                      coordinates[v.target.value]['coordinates'][0],
+                      coordinates[v.target.value]['coordinates'][1],
+                    ),
+                  );
+                } else {
+                  setPosition(undefined);
+                }
+              }}
+            />
+          </div>
         </div>
 
         <CustomMap center={position}>
