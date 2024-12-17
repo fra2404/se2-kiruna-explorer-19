@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 import '../../src/global.js';
 import Graph from 'react-graph-vis';
 import './Diagram.css';
@@ -44,6 +43,7 @@ const graphBEInfo = await API.getGraphInfo();
 const Diagram = () => {
   const { setFeedbackFromError } = useContext(FeedbackContext);
   const headerRef = useRef<HTMLDivElement>(null);
+  const legendRef = useRef<HTMLDivElement>(null);
   const { selectedDocument, setSelectedDocument, setSidebarVisible } =
     useContext(SidebarContext);
   const [types, setTypes] = useState<any[]>([]);
@@ -498,6 +498,7 @@ const Diagram = () => {
     y: computeStyleY(node),
     shape: 'box',
     font: { ...LABEL_FONT, color: '#FFFFFF' },
+    fixed: { x: true, y: true },
   }));
 
   for (let year = minYear; year <= maxYear; year++) {
@@ -753,6 +754,7 @@ const Diagram = () => {
           left: '10px',
           zIndex: 10,
         }}
+        ref={legendRef}
       >
         <Legend />
       </div>
@@ -760,8 +762,8 @@ const Diagram = () => {
       <div
         style={{
           position: 'absolute',
-          top: `${headerRef.current?.offsetHeight ? headerRef.current?.offsetHeight + 10 : 0}px`,
-          right: '10px',
+          top: `${headerRef.current?.offsetHeight && legendRef.current?.offsetHeight ? headerRef.current?.offsetHeight + legendRef.current?.offsetHeight + 20 : 0}px`,
+          left: '10px',
           zIndex: 1,
         }}
       >
