@@ -102,22 +102,17 @@ const Overlay: React.FC<OverlayProps> = ({
         />
       )}
 
-      <Modal
-        style={modalStyles}
-        isOpen={modalOpen}
-        onRequestClose={() => setModalOpen(false)}
-      >
-        <DocumentForm
-          coordinates={coordinates}
-          setCoordinates={setCoordinates}
-          positionProp={undefined}
-          setModalOpen={setModalOpen}
-          documents={documents}
-          setDocuments={setDocuments}
-          filteredDocuments={filteredDocuments}
-          setFilteredDocuments={setFilteredDocuments}
-        />
-      </Modal>
+      <DocumentForm
+        coordinates={coordinates}
+        setCoordinates={setCoordinates}
+        positionProp={undefined}
+        modalOpen={modalOpen}
+        setModalOpen={setModalOpen}
+        documents={documents}
+        setDocuments={setDocuments}
+        filteredDocuments={filteredDocuments}
+        setFilteredDocuments={setFilteredDocuments}
+      />
 
       <Modal
         style={municipalityDocumentsModalStyles}

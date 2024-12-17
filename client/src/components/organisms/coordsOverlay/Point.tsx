@@ -176,24 +176,19 @@ export const Point: React.FC<PointProps> = ({
         )}
       </Marker>
 
-      <Modal
-        style={modalStyles}
-        isOpen={modalOpen}
-        onRequestClose={() => setModalOpen(false)}
-      >
-        <DocumentForm
-          coordinates={coordinates}
-          setCoordinates={setCoordinates}
-          documents={allDocuments}
-          setDocuments={setAllDocuments}
-          filteredDocuments={filteredDocuments}
-          setFilteredDocuments={setFilteredDocuments}
-          selectedCoordIdProp={
-            id != 'all_municipality' ? selectedPointId : undefined
-          }
-          setModalOpen={setModalOpen}
-        />
-      </Modal>
+      <DocumentForm
+        coordinates={coordinates}
+        setCoordinates={setCoordinates}
+        documents={allDocuments}
+        setDocuments={setAllDocuments}
+        filteredDocuments={filteredDocuments}
+        setFilteredDocuments={setFilteredDocuments}
+        selectedCoordIdProp={
+          id != 'all_municipality' ? selectedPointId : undefined
+        }
+        modalOpen={modalOpen}
+        setModalOpen={setModalOpen}
+      />
     </>
   );
 };
