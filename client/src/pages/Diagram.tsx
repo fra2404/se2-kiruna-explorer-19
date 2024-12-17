@@ -112,12 +112,12 @@ const Diagram = () => {
     positionX: 0,
     positionY: 0,
     scale: 1,
-    gridSize: 40, // La dimensione iniziale dei quadretti
+    gridSize: 40, // Initial size of the grid
   });
 
   const calculateGridSize = (scale: number) => {
-    const baseSize = 80; // La dimensione base dei quadretti (in px)
-    const newSize = baseSize * scale; // Modifica la dimensione in base allo zoom
+    const baseSize = 80; // Base size of the grid (in px)
+    const newSize = baseSize * scale; // Changes the size according to zoom
     return newSize;
   };
 
@@ -125,7 +125,7 @@ const Diagram = () => {
     position: { x: number; y: number },
     scale: number,
   ) => {
-    const scaleFactor = 1 / scale; // Correzione per la velocità inversa dello sfondo
+    const scaleFactor = 1 / scale; // Fix for inverse background speed
     const scaledX = position.x * scaleFactor;
     const scaledY = position.y * scaleFactor;
     return { x: scaledX, y: scaledY };
@@ -395,7 +395,7 @@ const Diagram = () => {
     });
 
     const nodes_documents = filteredDocuments
-      .filter((doc: any) => doc.year !== null) // Filtra documenti con anno definito
+      .filter((doc: any) => doc.year !== null) // Filters documents with defined year
       .map((doc: any) => ({
         id: doc.id,
         shape: 'image',
@@ -407,21 +407,21 @@ const Diagram = () => {
         architecturalScale: doc.architecturalScale,
       }))
       .map((node) => {
-        // Recupera la posizione salvata da localStorage
+        // Retrieves the saved position fron local storage
         const savedPosition = localStorage.getItem(`node-${node.id}`);
         if (savedPosition) {
           const { x, y } = JSON.parse(savedPosition);
-          return { ...node, x, y }; // Usa la posizione salvata
+          return { ...node, x, y }; // Uses the saved position
         }
-        // Calcola la posizione predefinita solo se non salvata
+        // Computes the default position only if not saved
         return {
           ...node,
-          x: (node.year - 2000) * YEAR_SPACING, // Mappa l'anno
+          x: (node.year - 2000) * YEAR_SPACING, // Maps the year
           y: scaleMapping[
             node.scale == 'ARCHITECTURAL'
               ? node.architecturalScale
               : (node.scale as keyof typeof scaleMapping)
-          ], // Mappa la scala
+          ], // Maps the scale
         };
       });
 
@@ -514,8 +514,7 @@ const Diagram = () => {
   useEffect(() => {
     const network = networkRef.current; // Get the network object from the ref
 
-    if (network) {
-      // if the network is available then...
+    if (network) {  // if the network is available then...
       // If a node is selected, then the graph will be centered on that node
       if (selectedDocument) {
         network.fit({
@@ -571,7 +570,7 @@ const Diagram = () => {
     const network = networkRef.current;
 
     if (network) {
-      // Gestisci lo zoom
+      // Manages the zoom
       network.on('zoom', function (params: any) {
         setBackgroundStyle((prev) => ({
           ...prev,
@@ -580,7 +579,7 @@ const Diagram = () => {
         }));
       });
 
-      // Gestisci il movimento della vista, incluso tramite le frecce
+      // Manages the view movement, movement by arrows included
       network.on('pan', function () {
         const position = network.getViewPosition();
         const newBackgroundPosition = calculateBackgroundPosition(
@@ -594,7 +593,7 @@ const Diagram = () => {
         }));
       });
 
-      // Gestisci lo spostamento tramite drag
+      // Manages movement by dragging
       network.on('dragEnd', function () {
         const position = network.getViewPosition();
         const newBackgroundPosition = calculateBackgroundPosition(
