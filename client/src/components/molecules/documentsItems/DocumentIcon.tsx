@@ -25,9 +25,20 @@ const hashString = (str: string): number => {
 
 // Funzione per convertire un valore numerico in un colore esadecimale
 const numberToColorHex = (num: number): string => {
-  const r = (num >> 16) & 0xff;
-  const g = (num >> 8) & 0xff;
-  const b = num & 0xff;
+  let r = (num >> 16) & 0xff;
+  let g = (num >> 8) & 0xff;
+  let b = num & 0xff;
+
+  // Calcola la luminosità del colore
+  const brightness = (r * 299 + g * 587 + b * 114) / 1000;
+
+  // Se il colore è troppo chiaro, scuriscilo
+  if (brightness > 200 || (r > 200 && g > 200 && b > 200)) {
+    r = Math.floor(r * 0.7);
+    g = Math.floor(g * 0.7);
+    b = Math.floor(b * 0.7);
+  }
+
   return `#${((1 << 24) + (r << 16) + (g << 8) + b).toString(16).slice(1)}`;
 };
 
