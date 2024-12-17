@@ -217,7 +217,6 @@ const DocumentForm = ({
       newErrors.issuanceDate = 'Issuance date is required';
     if (!docType || (docType._id ?? '').trim() === '')
       newErrors.docType = 'Document type is required';
-    console.log("doc", docType)
     if (position && !selectedCoordId && !coordName)
       newErrors.newPoint = 'A new point must have a valid name';
     if(position && !selectedCoordId && !isMarkerInsideKiruna(position))

@@ -164,7 +164,6 @@ async function editDocument(documentData: {
   connections: { document: string; type: string }[];
   media: string[];
 }): Promise<{ success: boolean; document?: IDocument }> {
-  console.log(documentData);
   const response = await fetch(`${SERVER_URL}/documents/${documentData.id}`, {
     method: 'PUT',
     credentials: 'include',
@@ -179,7 +178,6 @@ async function editDocument(documentData: {
   }
 
   const document = await response.json();
-  console.log(document);
   return { success: true, document };
 }
 

@@ -588,7 +588,7 @@ export const getDocumentByType = async (
  }
 
  // Then find documents of that type based on documentTypeId
- const documents = await Document.find({ type: documentType}).select('-createdAt -updatedAt -__v');;
+ const documents = await Document.find({ type: documentType }).select('-createdAt -updatedAt -__v');;
   // Not Found Document
   if (documents.length === 0) {
     throw new DocNotFoundError();

@@ -8,21 +8,13 @@ import Toast from './Toast';
 import useToast from '../../utils/hooks/toast';
 
 interface AllDocumentsListProps {
-    coordinates: any;
-    setCoordinates: (coordinates: any) => void;
-    allDocuments: IDocument[];
-    setAllDocuments: (allDocuments: IDocument[]) => void;
-    filteredDocuments: IDocument[];
-    setFilteredDocuments: (documents: IDocument[]) => void;
+  filteredDocuments: IDocument[];
+  setFilteredDocuments: (documents: IDocument[]) => void;
 }
 
 const AllDocumentsList: React.FC<AllDocumentsListProps> = ({
-    coordinates,
-    setCoordinates,
-    allDocuments,
-    setAllDocuments,
-    filteredDocuments,
-    setFilteredDocuments
+  filteredDocuments,
+  setFilteredDocuments
 }) => {
   const [filters, setFilters] = useState<{
     type: string;
@@ -78,13 +70,7 @@ const AllDocumentsList: React.FC<AllDocumentsListProps> = ({
             filteredDocuments.map((doc) => (
             <DocumentItem 
               key={doc.id}
-              document={doc} 
-              coordinates={coordinates}
-              setCoordinates={setCoordinates}
-              allDocuments={allDocuments}
-              setAllDocuments={setAllDocuments}
-              filteredDocuments={filteredDocuments}
-              setFilteredDocuments={setFilteredDocuments}
+              document={doc}
             />
             ))
           }

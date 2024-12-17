@@ -1,19 +1,19 @@
-import { useAuth } from '../../../context/AuthContext';
-import { modalStyles } from '../../../pages/KirunaMap';
-import { UserRoleEnum } from '../../../utils/interfaces/user.interface';
-import ButtonRounded from '../../atoms/button/ButtonRounded';
-import { DocumentIcon } from '../../molecules/documentsItems/DocumentIcon';
+import { useAuth } from '../../context/AuthContext';
+import { modalStyles } from '../../pages/KirunaMap';
+import { UserRoleEnum } from '../../utils/interfaces/user.interface';
+import ButtonRounded from '../atoms/button/ButtonRounded';
+import { DocumentIcon } from '../molecules/documentsItems/DocumentIcon';
 import Modal from 'react-modal';
-import DocumentForm from '../DocumentForm';
-import { IDocument } from '../../../utils/interfaces/document.interface';
-import { useState, useEffect } from 'react';
+import DocumentForm from './DocumentForm';
+import { IDocument } from '../../utils/interfaces/document.interface';
+import { useState, useEffect, useContext } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { CDN_URL } from '../../../utils/constants';
+import { CDN_URL } from '../../utils/constants';
 import { nanoid } from 'nanoid';
-import { scaleOptions } from '../../../shared/scale.options.const';
-import { IStakeholder } from '../../../utils/interfaces/stakeholders.interface';
+import { scaleOptions } from '../../shared/scale.options.const';
+import SidebarContext from '../../context/SidebarContext';
 
-interface DocumentDetailsModalProps {
+interface DocumentDetailsProps {
   document: IDocument;
   coordinates: any;
   setCoordinates: (coordinates: any) => void;
@@ -21,9 +21,10 @@ interface DocumentDetailsModalProps {
   setAllDocuments: (documents: IDocument[]) => void;
   filteredDocuments: IDocument[];
   setFilteredDocuments: (documents: IDocument[]) => void;
+  page: string;
 }
 
-const DocumentDetailsModal: React.FC<DocumentDetailsModalProps> = ({
+const DocumentDetails: React.FC<DocumentDetailsProps> = ({
   document,
   coordinates,
   setCoordinates,
@@ -31,13 +32,14 @@ const DocumentDetailsModal: React.FC<DocumentDetailsModalProps> = ({
   setAllDocuments,
   filteredDocuments,
   setFilteredDocuments,
+  page
 }) => {
   const { isLoggedIn, user } = useAuth();
   const [modalOpen, setModalOpen] = useState(false);
   const navigate = useNavigate();
 
   const [connectedDocuments, setConnectedDocuments] = useState<any>([]);
-  const [currentDocument, setCurrentDocument] = useState<IDocument>(document);
+  const { setSelectedDocument } = useContext(SidebarContext);
   const [documentLabel, setDocumentLabel] = useState<string>(
     document.scale === 'ARCHITECTURAL' && document.architecturalScale
       ? ` - ${document.architecturalScale}`
@@ -73,12 +75,12 @@ const DocumentDetailsModal: React.FC<DocumentDetailsModalProps> = ({
   };
 
   useEffect(() => {
-    if (!currentDocument.connections) {
-      setConnectedDocuments([]);
+    if (!document.connections) {
+      setConnectedDocuments([]); 
       return;
     }
 
-    const docs = currentDocument.connections?.map((conn) => {
+    const docs = document.connections?.map((conn) => {
       return {
         doc: allDocuments.find((doc) => doc.id === conn.document.toString()),
         type: conn.type,
@@ -86,59 +88,43 @@ const DocumentDetailsModal: React.FC<DocumentDetailsModalProps> = ({
     });
 
     setConnectedDocuments(docs);
-    setDocumentLabel(
-      currentDocument.scale === 'ARCHITECTURAL' &&
-        currentDocument.architecturalScale
-        ? ` - ${currentDocument.architecturalScale}`
-        : '',
-    );
-  }, [currentDocument]);
+    setDocumentLabel(document.scale === 'ARCHITECTURAL' && document.architecturalScale ? ` - ${document.architecturalScale}` : '');
+  }, [document]);
 
   const list = [
-    { label: 'Title', content: currentDocument.title },
+    { label: 'Title', content: document.title },
     {
       label: 'Stakeholders',
-      content: Array.isArray(currentDocument.stakeholders)
-        ? currentDocument.stakeholders
-            .map((stakeholder) => stakeholder.type)
-            .join(' - ')
-        : currentDocument.stakeholders,
+      content: Array.isArray(document.stakeholders)
+        ? document.stakeholders.map((s) => s.type).join(' - ')
+        : document.stakeholders,
     },
     {
       label: 'Scale',
-      content: currentDocument.scale
-        ? `${getScaleLabel(currentDocument.scale)}${documentLabel}`
+      content: document.scale
+        ? `${getScaleLabel(document.scale)}${documentLabel}`
         : 'Unknown',
     },
-    { label: 'Issuance Date', content: currentDocument.date },
-    { label: 'Type', content: matchType(currentDocument.type.type) },
-    {
-      label: 'Connections',
+    { label: 'Issuance Date', content: document.date },
+    { label: 'Type', content: matchType(document.type.type) },
+    { 
+      label: 'Connections', 
       content: connectedDocuments.map((cd: any) => {
         return (
-          <div
-            key={cd.id}
-            onClick={() => {
-              setCurrentDocument(cd.doc);
-            }}
-          >
-            <span className="text-blue-600 hover:underline cursor-pointer">
-              {cd.doc?.title}
-            </span>
-            <span> - {cd.type} </span>
+          <div key={cd.id} onClick={()=>{setSelectedDocument(cd.doc)}}>
+            <span className='text-blue-600 hover:underline cursor-pointer'>{cd.doc?.title}</span>
+            <span className='font-normal text-base'> - {cd.type} </span>
           </div>
         );
       }),
     },
-    { label: 'Language', content: currentDocument.language },
-    { label: 'Coordinates', content: currentDocument.coordinates?.name },
+    { label: 'Language', content: document.language },
+    { label: 'Coordinates', content: document.coordinates?.name },
     {
       label: 'Original Resources',
-      content: currentDocument.media?.map((m, i) => {
+      content: document.media?.map((m, i) => {
         const separator =
-          currentDocument.media && i !== currentDocument.media.length - 1
-            ? ' - '
-            : '';
+        document.media && i !== document.media.length - 1 ? ' - ' : '';
         return (
           <span key={m.id}>
             <a href={CDN_URL + m.url} target="blank">
@@ -154,38 +140,44 @@ const DocumentDetailsModal: React.FC<DocumentDetailsModalProps> = ({
 
   return (
     <>
-      <div className="w-full p-8 grid grid-cols-12 text-sm">
+      <div className="w-full p-8 grid grid-cols-12 text-sm mt-14 text-left">
         {/* Icon container */}
         <div className="col-span-2 px-2">
           <DocumentIcon
-            type={currentDocument.type.type}
+            type={document.type.type}
             stakeholders={
-              Array.isArray(currentDocument.stakeholders)
-                ? currentDocument.stakeholders.map(
-                    (stakeholder: IStakeholder) => stakeholder.type,
-                  )
-                : []
+              Array.isArray(document.stakeholders) ? document.stakeholders.map((s) => s.type) : []
             }
           />
         </div>
 
         {/* Middle section */}
-        <div className="col-start-3 col-span-5 border-r border-l px-2 overflow-x-hidden">
+        <div className="col-start-3 col-span-10 px-2 overflow-x-hidden text-base">
           {list.map((item) => (
             <div key={nanoid()}>
-              {item.label}: <span className="font-bold">{item.content}</span>
+              {item.label}: <span className="font-bold text-xl">{item.content}</span>
             </div>
           ))}
         </div>
-
-        {/* Description / Summary container */}
-        <div className="col-start-8 col-span-5 px-2">
-          <h1>Description:</h1>
-          <p>{currentDocument.summary}</p>
-        </div>
       </div>
 
-      <div className="flex justify-end space-x-4">
+      {/* Description / Summary container */}
+      <div className="col-start-8 col-span-5 px-2 border-t-2 text-left">
+        <h3>Description:</h3>
+        <p className='text-base'>{document.summary}</p>
+      </div>
+
+      <div className="flex justify-end space-x-4 mr-2">
+        { page == 'map' && 
+          <ButtonRounded
+            text="See on the diagram"
+            variant="outlined"
+            className="border-black text-black text-base px-4 py-2"
+            onClick={() => {
+              navigate('/diagram');
+            }}
+          />
+        }
         {
           /* Button to edit the document */
           isLoggedIn && user && user.role === UserRoleEnum.Uplanner && (
@@ -199,17 +191,6 @@ const DocumentDetailsModal: React.FC<DocumentDetailsModalProps> = ({
             />
           )
         }
-
-        <ButtonRounded
-          text="See on the diagram"
-          variant="outlined"
-          className="border-black text-black text-base px-4 py-2"
-          onClick={() => {
-            console.log('Navigate to node:', document.id);
-            // Call the navigate function with the node id
-            navigate('/diagram/' + document.id);
-          }}
-        />
       </div>
       <Modal
         style={modalStyles}
@@ -217,7 +198,7 @@ const DocumentDetailsModal: React.FC<DocumentDetailsModalProps> = ({
         onRequestClose={() => setModalOpen(false)}
       >
         <DocumentForm
-          selectedCoordIdProp={currentDocument.coordinates?._id}
+          selectedCoordIdProp={document.coordinates?._id}
           coordinates={coordinates}
           setCoordinates={setCoordinates}
           documents={allDocuments}
@@ -225,11 +206,11 @@ const DocumentDetailsModal: React.FC<DocumentDetailsModalProps> = ({
           filteredDocuments={filteredDocuments}
           setFilteredDocuments={setFilteredDocuments}
           setModalOpen={setModalOpen}
-          selectedDocument={currentDocument}
+          selectedDocument={document}
         />
       </Modal>
     </>
   );
 };
 
-export default DocumentDetailsModal;
+export default DocumentDetails;

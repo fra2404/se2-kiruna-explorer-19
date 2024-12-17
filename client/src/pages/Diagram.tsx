@@ -20,15 +20,13 @@ import {
     swedishFlagYellow,
 } from '../utils/colors';
 import { IDocument } from "../utils/interfaces/document.interface.js";
-import DocumentDetailsModal from '../components/organisms/modals/DocumentDetailsModal';
-import Modal from 'react-modal';
 import Legend from './Legend';
 import { LatLng } from "leaflet";
 import FeedbackContext from "../context/FeedbackContext.js";
 import { Header } from "../components/organisms/Header.js";
-import { useParams } from "react-router-dom";
 import useDocuments from "../utils/hooks/documents.js";
 import { DocumentConnectionsList } from "../components/molecules/documentsItems/DocumentConnectionsList.js";
+import SidebarContext from "../context/SidebarContext.js";
 
 const LABEL_FONT = { size: 50, color: "#000000" };
 const OFFSET_VIEW = { x: 200, y: 500 };
@@ -50,30 +48,13 @@ const options = {
     },
 };
 
-const modalStyles = {
-    content: {
-        top: '50%',
-        left: '50%',
-        right: 'auto',
-        bottom: 'auto',
-        margin: '0 auto',
-        transform: 'translate(-50%, -50%)',
-        width: '90%',
-    },
-    overlay: { zIndex: 1000 },
-};
-
 const graphBEInfo = await API.getGraphInfo();
 
 const Diagram = () => {
     const { setFeedbackFromError } = useContext(FeedbackContext);
     const headerRef = useRef<HTMLDivElement>(null);
-    const [selectedDocument, setSelectedDocument] = useState<IDocument[]>([]);
-    const [isModalOpen, setIsModalOpen] = useState(false);
+    const {selectedDocument, setSelectedDocument, setSidebarVisible} = useContext(SidebarContext);
     const [types, setTypes] = useState<any[]>([]);
-
-    //Manages the sidebar
-    const [sidebarVisible, setSidebarVisible] = useState(false);
 
     //Needed to show a document's information when hovering on it
     const [documentInfoPopup, setDocumentInfoPopup] = useState<{visible: boolean, x: number, y: number, content: any}>({ visible: false, x: 0, y: 0, content: '' });
@@ -91,23 +72,24 @@ const Diagram = () => {
     const minYear = graphBEInfo.minYear;
     const maxYear = graphBEInfo.maxYear;
     const networkRef = useRef<any>(null);
-    const { id } = useParams();
 
     let lastPosition: any = null;
     const max_zoom = 2;
     const min_zoom = 0.1;
 
-    const openModal = (document: IDocument) => {
+    const [firstLoad, setFirstLoad]=useState(true);
+
+    const openSidebar = (document: IDocument) => {
         // Search in the original documents and show the document in the modal 
         const sdocument = allDocuments.find((doc) => doc.id === document.id);
         if (sdocument) {
-            setSelectedDocument([sdocument]);
-            setIsModalOpen(true);
+          setSelectedDocument(sdocument);
+          setSidebarVisible(true);
         }
     };
 
     const handleNodeClick = (document: IDocument) => {
-        openModal(document);
+      openSidebar(document);
     }
 
     // State to store the min and max values from all the nodes 
@@ -117,10 +99,7 @@ const Diagram = () => {
         if (event.deltaY !== 0 || event.deltaX !== 0) {
             const network = networkRef.current;
             const currentPosition = network.getViewPosition();
-            console.log(`Values min Y are ${graphBounds.minY}`)
-            console.log(`Values max Y are ${graphBounds.maxY}`)
-            console.log(`Values min X are ${graphBounds.minX}`)
-            console.log(`Values max X are ${graphBounds.maxX}`)
+            
             if (currentPosition.y < graphBounds.minY - OFFSET_VIEW.y) {
                 if (currentPosition.x < graphBounds.minX - OFFSET_VIEW.x) {
                     network.moveTo({ position: { x: graphBounds.minX + OFFSET_VIEW.x, y: graphBounds.minY - OFFSET_VIEW.y } });
@@ -142,15 +121,11 @@ const Diagram = () => {
                     network.moveTo({ position: { x: currentPosition.x, y: graphBounds.maxY + OFFSET_VIEW.y } });
                 }
             }
-            else {
-                if (currentPosition.x < graphBounds.minX - OFFSET_VIEW.x) {
-                    console.log(`x position is lower than min x`);
-                    network.moveTo({ position: { x: graphBounds.minX + OFFSET_VIEW.x, y: currentPosition.y } });
-                }
-                else if (currentPosition.x > graphBounds.maxX + OFFSET_VIEW.x) {
-                    console.log(`x position is higher than max x`);
-                    network.moveTo({ position: { x: graphBounds.maxX - OFFSET_VIEW.x, y: currentPosition.y } });
-                }
+            else if (currentPosition.x < graphBounds.minX - OFFSET_VIEW.x) {
+              network.moveTo({ position: { x: graphBounds.minX + OFFSET_VIEW.x, y: currentPosition.y } });
+            }
+            else if (currentPosition.x > graphBounds.maxX + OFFSET_VIEW.x) {
+              network.moveTo({ position: { x: graphBounds.maxX - OFFSET_VIEW.x, y: currentPosition.y } });
             }
 
         }
@@ -158,7 +133,6 @@ const Diagram = () => {
 
     const savePosition = () => {
         const position = networkRef.current.getViewPosition();
-        console.log(`Starting position is ${position.y}`);
         lastPosition = position;
     }
 
@@ -267,7 +241,6 @@ const Diagram = () => {
 
             // Check the type of the document
             const docType = Array.isArray(types) ? types.find((docTypes: any) => docTypes.label === doc.type.type.toUpperCase()) : null;
-            console.log(`Document type is ${docType.label}`);
             switch (docType.label) {
                 case "AGREEMENT":
                     doc.image = AgreementIcon;
@@ -308,16 +281,12 @@ const Diagram = () => {
                 doc.connections.forEach((connection: any) => {
                     // Modify the style of the connections according to their type
                     if (connection.type.toUpperCase() === "DIRECT") {
-                        console.log("Direct connection");
                         connectionColor = "#007BFF";
                     } else if (connection.type.toUpperCase() === "COLLATERAL") {
-                        dashesType = [2, 2]; // This is good for collateral connections
                         connectionColor = "#FFA500";
                     } else if (connection.type.toUpperCase() === "PROJECTION") {
-                        dashesType = [1, 3];
                         connectionColor = "#28A745";
                     } else if (connection.type.toUpperCase() === "UPDATE") {
-                        dashesType = [2, 1, 1];
                         connectionColor = "#6F42C1";
                     }
 
@@ -340,16 +309,6 @@ const Diagram = () => {
                 shape: "image",
                 image: doc.image,
                 size: 50,
-                borderWidth: 4,
-                borderWidthSelected: 4,
-                shapeProperties: {
-                  useBorderWithImage: doc.id == id,
-                  useImageSize: false
-                },
-                color: {
-                  background: 'transparent',
-                  border: swedishFlagBlue,
-                },
                 brokenImage: ErrorImage,
                 year: doc.year,
                 scale: doc.scale,
@@ -406,7 +365,6 @@ const Diagram = () => {
     };
 
     const computeStyleY = (node: any) => {
-        console.log(`Computing style for scale ${node.scale}`);
         return scaleMapping[node.scale == 'ARCHITECTURAL' ? node.architecturalScale : node.scale as keyof typeof scaleMapping];
     }
 
@@ -442,17 +400,18 @@ const Diagram = () => {
         const network = networkRef.current; // Get the network object from the ref
 
         if (network) {  // if the network is available then...
-            // If a params is defined in the URL, then the graph will be centered on that node
-            if (id) {
+            // If a node is selected, then the graph will be centered on that node
+            if (selectedDocument) {
                 network.fit({
                     nodes: state.graph.nodes.filter((node: any) => {
-                        return node.id === id;
+                        return node.id === selectedDocument.id;
                     }).map((node: any) => node.id),
                     animation: false
                 });
+                setFirstLoad(false)
             }
-            // Else center based on the current year
-            else {
+            // Else center based on the current year (only at launch)
+            else if(firstLoad) {
                 network.fit({
                     // Filter only the node that are in the current year. In this way the graph will be centered on the current year at launch.
                     nodes: state.graph.nodes.filter((node: any) => {
@@ -461,7 +420,6 @@ const Diagram = () => {
                     }).map((node: any) => node.id),
                     animation: false
                 });
-
             }
 
             network.moveTo({ scale: 0.4 })  // Set the initial zoom level
@@ -483,7 +441,7 @@ const Diagram = () => {
             });
 
         }
-    }, [id, state.graph.nodes]);
+    }, [selectedDocument, state.graph.nodes]);
 
 
     useEffect(() => {
@@ -511,9 +469,6 @@ const Diagram = () => {
             }
 
             const nodeCurrentPosition = { x: node.x, y: node.y };
-
-            console.log("Selected node", event.nodes[0]);
-            console.log("Node IDs:", state.graph.nodes.map(node => node.id));
 
             const draggedNode = state.graph.nodes.find(n => n.id === event.nodes[0]);
 
@@ -555,7 +510,6 @@ const Diagram = () => {
         const network = networkRef.current;
         if (network) {
             network.on("dragStart", saveNodePosition);
-            console.log("Old position is", nodeLastPosition);
             network.on("dragEnd", checkNodeConstraints);
         }
 
@@ -563,7 +517,6 @@ const Diagram = () => {
 
 
     useEffect(() => {
-        console.log("Adding event listeners");
         const network = networkRef.current;
 
         network.on("dragStart", savePosition);
@@ -576,8 +529,6 @@ const Diagram = () => {
             <Header 
                 headerRef={headerRef}
                 page='graph'
-                sidebarVisible={sidebarVisible}
-                setSidebarVisible={setSidebarVisible}
                 coordinates={coordinates}
                 setCoordinates={setCoordinates}
                 allDocuments={allDocuments}
@@ -606,15 +557,15 @@ const Diagram = () => {
                             const {node, pointer} = event;
                             const selectedNode = state.graph.nodes.find(n =>  n.id == node);
                             if(selectedNode) {
-                                const selectedDocument = allDocuments.find((doc) => doc.id === selectedNode.id);
-                                if(selectedDocument) {
+                                const sDocument = allDocuments.find((doc) => doc.id === selectedNode.id);
+                                if(sDocument) {
                                     setDocumentInfoPopup({
                                         visible: true,
                                         x: pointer.DOM.x,
                                         y: pointer.DOM.y,
                                         content: (
                                             <DocumentConnectionsList 
-                                                document={selectedDocument}
+                                                document={sDocument}
                                                 allDocuments={allDocuments}
                                             />
                                         )
@@ -650,21 +601,6 @@ const Diagram = () => {
                     {documentInfoPopup.content}
                 </div>
             )}
-            <Modal
-                style={modalStyles}
-                isOpen={isModalOpen}
-                onRequestClose={() => setIsModalOpen(false)}
-            >
-                <DocumentDetailsModal
-                    document={selectedDocument[0]}
-                    coordinates={coordinates}
-                    setCoordinates={setCoordinates}
-                    allDocuments={allDocuments}
-                    setAllDocuments={setAllDocuments}
-                    filteredDocuments={filteredDocuments}
-                    setFilteredDocuments={setFilteredDocuments}
-                />
-            </Modal>
         </div>
     );
 };

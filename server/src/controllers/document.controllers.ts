@@ -251,7 +251,6 @@ export const getDocumentTypesController = async (
   }
 };
 
-
 /**
  * @swagger
  * /documents/types/{type}:
