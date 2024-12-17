@@ -39,11 +39,12 @@ const StakeholderLegend = () => {
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'center', // Center items horizontally
-              marginBottom: '10px',
+              marginTop: '5px',
+              marginBottom: '5px',
               padding: '5px',
-              borderRadius: '4px',
               cursor: 'default', // Keep cursor as default arrow
-              fontWeight: 'bold'
+              fontWeight: 'bold',
+              borderBottom: '1px solid lightgray',
             }}
           >
             <span style={{ marginLeft: '10px', color, cursor: 'default' }}>
