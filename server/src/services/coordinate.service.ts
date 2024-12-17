@@ -3,6 +3,7 @@ import { ICoordinate } from '../interfaces/coordinate.interface';
 import { CustomError } from '../utils/customError';
 import { PositionError } from '../utils/errors';
 import Document from '../schemas/document.schema';
+import { ObjectId } from 'mongoose';
 
 // Function to get a coordinate by its ID
 export const getCoordinateById = async (
@@ -72,3 +73,17 @@ export const deleteCoordinateById = async (id: string): Promise<boolean> => {
 
   return true;
 };
+
+
+
+export const checkCoordinateExistence = async (
+  coordinateId: ObjectId | null
+): Promise<void> => {
+  if (coordinateId) {
+    const existingCoordinate = await Coordinate.findById(coordinateId);
+    if (!existingCoordinate) {
+      throw new PositionError();
+    }
+  }
+};
+

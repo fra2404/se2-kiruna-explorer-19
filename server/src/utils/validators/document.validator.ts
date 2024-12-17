@@ -253,17 +253,16 @@ export const validateSearchDocument = [
 ]
 
 
+
 const validateScale = (scale: ScaleTypeEnum, architecturalScale?: string) => {
   if (scale === ScaleTypeEnum.Architectural) {
     if (!architecturalScale || !/^1:\d+$/.test(architecturalScale)) {
       throw new Error('Architectural Scale must be in the 1:number format');
     }
-  } else {
-    if ([ScaleTypeEnum.BlueprintMaterialEffects, ScaleTypeEnum.Text, ScaleTypeEnum.Concept].includes(scale)) {
+  } else if ([ScaleTypeEnum.BlueprintMaterialEffects, ScaleTypeEnum.Text, ScaleTypeEnum.Concept].includes(scale)) {   
       if (architecturalScale) {
         throw new Error('Architectural Scale must be empty when scale is a string');
       }
-    }
   }
   return true;
 };
@@ -318,18 +317,6 @@ const validateStakeholderContent = async (stakeholders: mongoose.Types.ObjectId[
 };
 
 
-// const validateStakeholderContentForSearch = async (stakeholders: string[]) => {
-//   for (const stakeholderType of stakeholders) {
-//     // Check if the stakeholder exists
-//     const stakeholder = await Stakeholder.findOne({ type: stakeholderType });
-//     if (!stakeholder) {
-//       throw new Error(`Stakeholder ${stakeholderType} not found`);
-//     }
-//   }
-//   return true;
-// };
-
-
 const validateStakeholderEmptiness = (stakeholders: mongoose.Types.ObjectId[]) => {
   if (Array.isArray(stakeholders) && stakeholders.length === 0) {
     throw new Error('Stakeholders cannot be an empty array');
@@ -362,12 +349,3 @@ const validateStakeholderEmptiness = (stakeholders: mongoose.Types.ObjectId[]) =
     return true;
   };
   
-
-//  const validateDocumentTypeContentForSearch = async (documentType: string) => {
-//     // Check if the type exists in DB
-//   const type = await DocumentType.findOne({ type: { $regex: new RegExp('^' + documentType + '$', 'i') } });
-//   if (!type) {
-//     throw new Error(`Document Type with name ${documentType} not found`);
-//   }
-//   return true;
-// }; 

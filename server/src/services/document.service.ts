@@ -1,41 +1,36 @@
 import Document from '../schemas/document.schema';
-import Stakeholder from '../schemas/stakeholder.schema';
 import DocumentType from '../schemas/documentType.schema';
 import MediaDocument from '../schemas/media.schema';
-import { Coordinate } from '../schemas/coordinate.schema';
 import { IDocument, IDocumentFilters } from '@interfaces/document.interface';
 import { IDocumentResponse } from '@interfaces/document.return.interface';
 import {
   DocNotFoundError,
   MediaNotFoundError,
-  PositionError,
-  StakeholderNotFoundError,
   DocumentTypeNotFoundError,
 } from '../utils/errors';
 import { ICoordinate } from '@interfaces/coordinate.interface';
-import { getCoordinateById } from './coordinate.service';
+import { checkCoordinateExistence, getCoordinateById } from './coordinate.service';
 import { fetchMedia, getMediaMetadataById } from './media.service';
-import { ObjectId as MongoObjectId } from 'mongodb';
+import { ObjectId as MongoObjectId, ObjectId } from 'mongodb';
 import { IReturnMedia } from '@interfaces/media.return.interface';
 import { IStakeholder } from '@interfaces/stakeholder.interface';
-import { fetchStakeholders, fetchStakeholdersForSearch, getStakeholdersById } from './stakeholder.service';
+import { checkStakeholderExistence, fetchStakeholders } from './stakeholder.service';
 import { IDocumentType } from '@interfaces/documentType.interface';
-import { fetchDocumentTypes, fetchDocumentTypesForSearch, getDocumentTypeById } from './documentType.service';
+import { checkDocumentTypeExistence, fetchDocumentTypes } from './documentType.service';
+
 
 
 //addDocument(Story 1)
 export const addingDocument = async (
   documentData: IDocument,
 ): Promise<IDocumentResponse | null> => {
+  
+
   // Check existence of Coordinate in DB
   if (documentData.coordinates) {
-    const existingCoordinate = await Coordinate.findById(
-      documentData.coordinates,
-    );
-    if (!existingCoordinate) {
-      throw new PositionError();
-    }
+    await checkCoordinateExistence(documentData.coordinates);
   }
+
 
   // Check existence of Connection in DB
   if (documentData.connections && documentData.connections.length > 0) {
@@ -57,34 +52,18 @@ export const addingDocument = async (
     }
   }
 
-  //Check existence of stakeholder in DB
+  // //Check existence of stakeholder in DB
   if (documentData.stakeholders && documentData.stakeholders.length > 0) {
-    for (const stakeholderId of documentData.stakeholders) {
-      const existingStakeholder = await Stakeholder.findById(stakeholderId);
-      if (!existingStakeholder) {
-        throw new StakeholderNotFoundError();
-      }
-    }
+    await checkStakeholderExistence(documentData.stakeholders);
   }
 
-  // Check for duplicate stakeholder IDs in the array
-  if (documentData.stakeholders && documentData.stakeholders.length > 0) {
-    for (let i = 0; i < documentData.stakeholders.length; i++) {
-      const stakeholderId = documentData.stakeholders[i];
-      if (documentData.stakeholders.indexOf(stakeholderId) !== i) {
-        throw new Error("Duplicate stakeholderID found");
-      }
-    }
-  }
 
   //Check existence of documentType in DB
-  if (documentData.type) {
-    const existingDocumentType = await DocumentType.findById(documentData.type);
-    if (!existingDocumentType) {
-      throw new DocumentTypeNotFoundError();
-    }
-  }
-
+   if(documentData.type)
+   {
+    await checkDocumentTypeExistence(documentData.type);
+   }
+   
   // Add new document
   const newDocument = new Document(documentData);
   await newDocument.save();
@@ -148,6 +127,8 @@ export const addingDocument = async (
   return document;
 };
 
+
+
 // Get all documents with their coordinates as IDocumentResponse
 export const getAllDocuments = async (): Promise<IDocumentResponse[]> => {
   const documents = await Document.find(); // Fetch all documents
@@ -198,7 +179,6 @@ export const getAllDocuments = async (): Promise<IDocumentResponse[]> => {
       };
     }),
   );
-  // console.log('Documents', DocumentsResponse);
   return DocumentsResponse;
 };
 
@@ -282,7 +262,7 @@ export const searchDocuments = async (
       Array.isArray(filters.stakeholders) &&
       filters.stakeholders.length > 0) {
 
-     // const stakeholderIds = await fetchStakeholdersForSearch(filters.stakeholders); // Convert the type name to ObjectId   
+  
       if (filters.stakeholders.length === 1) {
         // Single item-look for any array containing this item
         filterConditions.push({
@@ -413,13 +393,9 @@ export const updatingDocument = async (
     await updatedDocument.save();
   }
 
+  // Check existence of Coordinate in DB
   if (updateData.coordinates) {
-    const existingCoordinate = await Coordinate.findById(
-      updateData.coordinates,
-    );
-    if (!existingCoordinate) {
-      throw new PositionError();
-    }
+    await checkCoordinateExistence(updateData.coordinates);
   }
 
   ////Added By Mina
@@ -444,31 +420,15 @@ export const updatingDocument = async (
 
   //Check existence of stakeholder in DB
   if (updatedDocument.stakeholders && updatedDocument.stakeholders.length > 0) {
-    for (const stakeholderId of updatedDocument.stakeholders) {
-      const existingStakeholder = await Stakeholder.findById(stakeholderId);
-      if (!existingStakeholder) {
-        throw new StakeholderNotFoundError();
-      }
-    }
-  }
-
-  // Check for duplicate stakeholder IDs in the array
-  if (updatedDocument.stakeholders && updatedDocument.stakeholders.length > 0) {    
-    for (let i = 0; i < updatedDocument.stakeholders.length; i++) {
-      const stakeholderId = updatedDocument.stakeholders[i];
-      if (updatedDocument.stakeholders.indexOf(stakeholderId) !== i) {
-        throw new Error("Duplicate stakeholderID found");
-      }
-    }
+    await checkStakeholderExistence(updatedDocument.stakeholders);
   }
 
    //Check existence of documentType in DB
-    if (updatedDocument.type) {
-      const existingDocumentType = await DocumentType.findById(updatedDocument.type);
-      if (!existingDocumentType) {
-        throw new DocumentTypeNotFoundError();
-      }
+   if(updatedDocument.type)
+    {
+     await checkDocumentTypeExistence(updatedDocument.type);
     }
+
    
   // Update connections
   if (updateData.connections && updateData.connections.length > 0) {
@@ -578,13 +538,11 @@ export const getDocumentByType = async (
   type: string,
 ): Promise<IDocumentResponse[]> => {
 
- //First check existence of type in documentType collection and return corresponding objectId
- //const documentType = await DocumentType.findOne({ type: { $regex: new RegExp('^' + type + '$', 'i') },});
 
  const documentType = await DocumentType.findById(type);
  // Not Found DocumentType
  if (!documentType) {
-   throw new DocumentTypeNotFoundError;
+   throw new DocumentTypeNotFoundError();
  }
 
  // Then find documents of that type based on documentTypeId
@@ -641,8 +599,7 @@ export const getDocumentByType = async (
      }
    
 
-      //*****************
-      return {
+       return {
         id: document.id,
         ...documentObject,
         coordinates: coordinate || null,
@@ -653,3 +610,10 @@ export const getDocumentByType = async (
     }),
   );
 };
+
+
+
+
+
+
+
