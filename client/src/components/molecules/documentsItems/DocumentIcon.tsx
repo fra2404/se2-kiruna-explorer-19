@@ -1,5 +1,4 @@
 import React from 'react';
-import { FaQuestion } from 'react-icons/fa';
 
 import {
   AgreementIcon,
@@ -11,6 +10,7 @@ import {
   PrescriptiveDocIcon,
   TechnicalDocIcon,
 } from '../../../assets/icons';
+import DefaultIcon from '../../../assets/icons/default-icon';
 
 export const stakeholdersColors = (
   stakeholders: (string | undefined)[],
@@ -54,7 +54,7 @@ export const DocumentIcon: React.FC<DocumentIconProps> = ({
   const colors = stakeholdersColors(stakeholdersArray);
 
   // Define custom icons for different categories
-  if (!type || typeof type !== 'string') return <FaQuestion size={20} />;
+  if (!type || typeof type !== 'string') return <DefaultIcon fillColor={colors} />;
   switch (type.toUpperCase()) {
     case 'AGREEMENT':
       return <AgreementIcon fillColor={colors} />;
@@ -74,6 +74,6 @@ export const DocumentIcon: React.FC<DocumentIconProps> = ({
       return <TechnicalDocIcon fillColor={colors} />;
     default:
       // Default icon if type doesn't match any of the above
-      return <FaQuestion size={20} />;
+      return <DefaultIcon fillColor={colors} />;;
   }
 };
