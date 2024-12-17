@@ -1,4 +1,4 @@
-import React, {useContext, useEffect, useRef, useState } from 'react';
+import React, { useContext, useEffect, useRef, useState } from 'react';
 import { Marker, useMap } from 'react-leaflet';
 import { DivIcon, LatLng } from 'leaflet';
 import Modal from 'react-modal';
@@ -38,123 +38,119 @@ export const Point: React.FC<PointProps> = ({
   allDocuments,
   setAllDocuments,
   filteredDocuments,
-  setFilteredDocuments
+  setFilteredDocuments,
 }) => {
   const [modalOpen, setModalOpen] = useState(false);
   const [selectedPointId, setSelectedPointId] = useState('');
   const markerRef = useRef<L.Marker>(null);
-  const {selectedDocument} = useContext(SidebarContext);
+  const { selectedDocument } = useContext(SidebarContext);
 
   let markerText: any;
 
-  if(pointDocuments.length == 1) {
-    markerText = <DocumentIcon type={pointDocuments[0].type.type} stakeholders={pointDocuments[0].stakeholders?.map((s) => s.type) } /> ;
-  }
-  else {
+  if (pointDocuments.length == 1) {
+    markerText = (
+      <DocumentIcon
+        type={pointDocuments[0].type.type}
+        stakeholders={pointDocuments[0].stakeholders ?? []}
+      />
+    );
+  } else {
     markerText = pointDocuments.length;
   }
 
   //Show area when clicking/overing a marker
-  let polygonFirstLoad = true;      //This variable checks if its the first time that an area is loaded on a map. If so, it hides the area
+  let polygonFirstLoad = true; //This variable checks if its the first time that an area is loaded on a map. If so, it hides the area
   let popupOpen = false;
   const polygonRef = useRef<L.Polygon>(null);
   const map = useMap();
 
   const handleClick = () => {
-    if(!popupOpen) {
+    if (!popupOpen) {
       popupOpen = true;
       markerRef.current?.openPopup();
-      if(type == 'Polygon') {
+      if (type == 'Polygon') {
         polygonRef.current?.addTo(map);
       }
     }
-  }
+  };
 
   const handlePopupClose = () => {
     popupOpen = false;
-    if(type == 'Polygon') {
+    if (type == 'Polygon') {
       polygonRef.current?.remove();
     }
-  }
+  };
 
   const handleMouseOver = () => {
     markerRef.current?.openPopup();
-    if(type == 'Polygon') {
+    if (type == 'Polygon') {
       polygonRef.current?.addTo(map);
     }
-  }
+  };
 
   const handleMouseOut = () => {
-    if(!popupOpen) {
+    if (!popupOpen) {
       markerRef.current?.closePopup();
-      if((type == 'Polygon')) {
+      if (type == 'Polygon') {
         polygonRef.current?.remove();
       }
     }
-  }
+  };
 
   useEffect(() => {
-    if(selectedDocument && pointDocuments.includes(selectedDocument)) {
+    if (selectedDocument && pointDocuments.includes(selectedDocument)) {
       map.flyTo(markerRef.current?.getLatLng() ?? kirunaLatLngCoords);
-      if(!popupOpen) {
+      if (!popupOpen) {
         setTimeout(() => markerRef.current?.openPopup(), 50);
         popupOpen = true;
       }
-      if(type == 'Polygon') {
+      if (type == 'Polygon') {
         polygonRef.current?.addTo(map); //Needs to be added twice, otherwise it won't work
         polygonRef.current?.addTo(map);
       }
-    }
-    else {
+    } else {
       popupOpen = false;
       markerRef.current?.closePopup();
       polygonRef.current?.remove();
     }
-  }, [selectedDocument])
+  }, [selectedDocument]);
 
   useEffect(() => {
-    polygonRef.current?.addEventListener("add", () => {
-      if(polygonFirstLoad) {
+    polygonRef.current?.addEventListener('add', () => {
+      if (polygonFirstLoad) {
         polygonRef.current?.remove();
         polygonFirstLoad = false;
       }
-    })
-  }, [polygonRef.current])
+    });
+  }, [polygonRef.current]);
 
   return (
     <>
-      <Marker key={id} 
+      <Marker
+        key={id}
         position={
-          type == "Point" ? 
-            pointCoordinates as LatLng 
-          : 
-            calculateCentroid(pointCoordinates as LatLng[])
+          type == 'Point'
+            ? (pointCoordinates as LatLng)
+            : calculateCentroid(pointCoordinates as LatLng[])
         }
-        
-        ref={markerRef} 
-        
+        ref={markerRef}
         icon={
           new DivIcon({
             iconSize: [45, 45],
-            className: "pointIcon",
+            className: 'pointIcon',
             html: renderToString(
-              <div style={
-                CoordsIconStyle(pointDocuments, true)
-              }>
-                <span style={{transform: "rotate(45deg)"}}>
-                  { markerText }
-                </span>
-              </div>
+              <div style={CoordsIconStyle(pointDocuments, true)}>
+                <span style={{ transform: 'rotate(45deg)' }}>{markerText}</span>
+              </div>,
             ),
-            iconAnchor: [10, 41]
+            iconAnchor: [10, 41],
           })
         }
-
         eventHandlers={{
           mouseover: handleMouseOver,
           mouseout: handleMouseOut,
           click: handleClick,
-          popupclose: handlePopupClose
+          popupclose: handlePopupClose,
         }}
       >
         <MapPopup
@@ -171,38 +167,35 @@ export const Point: React.FC<PointProps> = ({
           }}
         />
 
-        {(type=='Polygon') &&
+        {type == 'Polygon' && (
           <Area
             id={id}
             areaCoordinates={pointCoordinates as LatLng[]}
             areaRef={polygonRef}
           />
-        }
+        )}
       </Marker>
 
-      <Modal
-        style={modalStyles}
-        isOpen={modalOpen}
-        onRequestClose={() => setModalOpen(false)}
-      >
-        <DocumentForm
-          coordinates={coordinates}
-          setCoordinates={setCoordinates}
-          documents={allDocuments}
-          setDocuments={setAllDocuments}
-          filteredDocuments={filteredDocuments}
-          setFilteredDocuments={setFilteredDocuments}
-          selectedCoordIdProp={id != 'all_municipality' ? selectedPointId : undefined}
-          setModalOpen={setModalOpen}
-        />
-      </Modal>
+      <DocumentForm
+        coordinates={coordinates}
+        setCoordinates={setCoordinates}
+        documents={allDocuments}
+        setDocuments={setAllDocuments}
+        filteredDocuments={filteredDocuments}
+        setFilteredDocuments={setFilteredDocuments}
+        selectedCoordIdProp={
+          id != 'all_municipality' ? selectedPointId : undefined
+        }
+        modalOpen={modalOpen}
+        setModalOpen={setModalOpen}
+      />
     </>
   );
 };
 
-
 export function calculateCentroid(coords: LatLng[]): LatLng {
-  let latSum = 0, lngSum = 0;
+  let latSum = 0,
+    lngSum = 0;
   const n = coords.length;
 
   coords.forEach((c: any) => {

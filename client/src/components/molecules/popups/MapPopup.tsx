@@ -28,6 +28,7 @@ export const MapPopup: React.FC<MapPopupProps> = ({
   return (
     <Popup 
       ref={popupRef} offset={[10, -10]}
+      autoClose={false}
     >
       <span className="text-lg font-bold">{name}</span>
       <br />

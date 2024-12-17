@@ -1,4 +1,4 @@
-import { useState, useRef, useEffect } from 'react';
+import { useState, useRef, useEffect, useContext } from 'react';
 import { useMapEvents } from 'react-leaflet';
 import { LatLng } from 'leaflet';
 import Modal from 'react-modal';
@@ -18,9 +18,7 @@ import Step3 from '../molecules/steps/Step3';
 import Step4 from '../molecules/steps/Step4';
 import Step5 from '../molecules/steps/Step5';
 import Step6 from '../molecules/steps/Step6';
-import {
-  IDocument,
-} from '../../utils/interfaces/document.interface';
+import { IDocument } from '../../utils/interfaces/document.interface';
 
 import './DocumentForm.css';
 import LightDivider from '../atoms/light-divider/light-divider';
@@ -30,6 +28,8 @@ import { DocumentIcon } from '../molecules/documentsItems/DocumentIcon';
 import useToast from '../../utils/hooks/toast';
 import { isMarkerInsideKiruna } from '../../utils/isMarkerInsideKiruna';
 import { IStakeholder } from '../../utils/interfaces/stakeholders.interface';
+import SidebarContext from '../../context/SidebarContext';
+import { modalStyles } from '../../pages/KirunaMap';
 
 Modal.setAppElement('#root');
 
@@ -48,8 +48,8 @@ interface DocumentFormProps {
   setDocuments: (documents: IDocument[]) => void;
   filteredDocuments: IDocument[];
   setFilteredDocuments: (documents: IDocument[]) => void;
+  modalOpen: boolean;
   setModalOpen: (open: boolean) => void;
-  selectedDocument?: IDocument;
 }
 
 const DocumentForm = ({
@@ -62,7 +62,7 @@ const DocumentForm = ({
   filteredDocuments,
   setFilteredDocuments,
   showCoordNamePopup = false,
-  selectedDocument,
+  modalOpen,
   setModalOpen,
 }: DocumentFormProps) => {
   const [currentStep, setCurrentStep] = useState(1);
@@ -71,6 +71,8 @@ const DocumentForm = ({
   );
   const [showSummary, setShowSummary] = useState(false);
   const [errors, setErrors] = useState<{ [key: string]: string }>({});
+
+  const { selectedDocument, setSelectedDocument } = useContext(SidebarContext);
 
   const featureGroupRef = useRef<L.FeatureGroup>(null);
   const popupRef = useRef<L.Popup>(null);
@@ -96,7 +98,11 @@ const DocumentForm = ({
   const [title, setTitle] = useState(selectedDocument?.title ?? '');
   const [stakeholders, setStakeholders] = useState<IStakeholder[]>(
     Array.isArray(selectedDocument?.stakeholders)
-      ? selectedDocument.stakeholders.map((s) => ({ _id: s._id, id: s._id, type: s.type }))
+      ? selectedDocument.stakeholders.map((s) => ({
+          _id: s._id,
+          id: s._id,
+          type: s.type,
+        }))
       : [],
   );
   const [scale, setScale] = useState<string | undefined>(
@@ -110,8 +116,12 @@ const DocumentForm = ({
       ? new Date(selectedDocument.date).toISOString().split('T')[0]
       : new Date().toISOString().split('T')[0],
   );
-  const [docType, setDocType] = useState<{ _id: string; type: string } | undefined>(
-    selectedDocument?.type ? { _id: selectedDocument.type._id, type: selectedDocument.type.type } : undefined,
+  const [docType, setDocType] = useState<
+    { _id: string; type: string } | undefined
+  >(
+    selectedDocument?.type
+      ? { _id: selectedDocument.type._id, type: selectedDocument.type.type }
+      : undefined,
   );
   const [connections, setConnections] = useState<Connection[]>(
     selectedDocument?.connections?.map((c) => {
@@ -142,19 +152,29 @@ const DocumentForm = ({
     icon: (
       <DocumentIcon
         type={label}
-        stakeholders={Array.isArray(stakeholders) ? stakeholders.map(s => s.type) : []}
+        stakeholders={
+          Array.isArray(stakeholders)
+            ? stakeholders.map((s) => ({ _id: s._id, type: s.type }))
+            : []
+        }
       />
     ),
   });
 
-  const [documentTypeOptions, setDocumentTypeOptions] = useState<{ value: string; label: string }[]>([]);
+  const [documentTypeOptions, setDocumentTypeOptions] = useState<
+    { value: string; label: string }[]
+  >([]);
 
   useEffect(() => {
     // Function that retrieves document types from the backend
     const fetchDocumentTypes = async () => {
       try {
         const options = await getDocumentTypes();
-        setDocumentTypeOptions(options.map((o) => createDocumentOption(o.value, o.label, stakeholders)));
+        setDocumentTypeOptions(
+          options.map((o) =>
+            createDocumentOption(o.value, o.label, stakeholders),
+          ),
+        );
       } catch (error) {
         console.error('Error when retrieving document types:', error);
       }
@@ -219,7 +239,7 @@ const DocumentForm = ({
       newErrors.docType = 'Document type is required';
     if (position && !selectedCoordId && !coordName)
       newErrors.newPoint = 'A new point must have a valid name';
-    if(position && !selectedCoordId && !isMarkerInsideKiruna(position))
+    if (position && !selectedCoordId && !isMarkerInsideKiruna(position))
       newErrors.newPoint = 'Point must be inside of Kiruna Borders';
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
@@ -266,7 +286,7 @@ const DocumentForm = ({
     return {
       id: selectedDocument?.id ?? '',
       title,
-      stakeholders: stakeholders.map(s => s._id),
+      stakeholders: stakeholders.map((s) => s._id),
       scale: scale ?? '',
       architecturalScale: scale === 'ARCHITECTURAL' ? architecturalScale : '',
       type: docType?._id ?? '',
@@ -295,9 +315,11 @@ const DocumentForm = ({
   const handleSuccessfulSave = (responseDocument: IDocument) => {
     showToast('Document saved successfully', 'success');
     setShowSummary(true);
+    setModalOpen(false);
     if (responseDocument) {
       if (!selectedDocument) {
         setDocuments(documents.concat(responseDocument));
+        setFilteredDocuments(documents.concat(responseDocument));
       } else {
         setDocuments(
           documents.map((doc: IDocument) => {
@@ -309,6 +331,7 @@ const DocumentForm = ({
             return doc.id == selectedDocument.id ? responseDocument : doc;
           }),
         )
+        setSelectedDocument(responseDocument)
       }
     }
   };
@@ -370,200 +393,210 @@ const DocumentForm = ({
 
   return (
     <>
-      <div className="relative">
-        <ModalHeader
-          currentStep={currentStep}
-          hasErrors={hasErrors}
-          scrollToStep={scrollToStep}
-          setModalOpen={setModalOpen}
-          selectedDocument={selectedDocument}
-        />
-        <form className="m-6" onSubmit={handleSubmit}>
-          <div className="grid grid-cols-1 gap-x-4 gap-y-2 mt-16">
-            <div
-              onClick={() => handleStepClick(1)}
-              tabIndex={0} // Ensure the element is focusable
-              ref={stepRefs[0]}
-              className={`header-section ${hasErrors(1) ? 'error' : ''} scroll-margin-top`}
-            >
-              <h3 className="header-text text-xl font-bold mb-2">
-                Document Info
-              </h3>
-              <Step1
-                title={title}
-                setTitle={setTitle}
-                stakeholders={stakeholders}
-                setStakeholders={setStakeholders}
-                scale={scale ?? ''}
-                setScale={setScale}
-                issuanceDate={issuanceDate}
-                setIssuanceDate={setIssuanceDate}
-                architecturalScale={architecturalScale ?? ''}
-                setArchitecturalScale={setArchitecturalScale}
-                errors={errors}
-              />
-            </div>
-            <LightDivider />
-            <div
-              onClick={() => handleStepClick(2)}
-              tabIndex={0} // Ensure the element is focusable
-              ref={stepRefs[1]}
-              className={`header-section ${hasErrors(2) ? 'error' : ''} scroll-margin-top`}
-            >
-              <h3 className="header-text text-xl font-bold mb-2">
-                Description
-              </h3>
-
-              <Step2
-                description={description}
-                setDescription={setDescription}
-                language={language}
-                setLanguage={setLanguage}
-                docType={docType ?? { _id: '', type: '' }}
-                setDocType={setDocType}
-                documentTypeOptions={documentTypeOptions}
-                setDocumentTypeOptions={setDocumentTypeOptions}
-                stakeholders={stakeholders}
-                errors={errors}
-              />
-            </div>
-            <LightDivider />
-            <div
-              onClick={() => handleStepClick(3)}
-              tabIndex={0} // Ensure the element is focusable
-              ref={stepRefs[2]}
-              className={`header-section ${hasErrors(3) ? 'error' : ''} scroll-margin-top`}
-            >
-              <h3
-                className="header-text text-xl font-bold mb-2 cursor-pointer"
-                onClick={() => {
-                  setShowFiles(!showFiles)} 
-                }
+      <Modal
+        style={modalStyles}
+        isOpen={modalOpen}
+        onRequestClose={() => setModalOpen(false)}
+      >
+        <div className="relative">
+          <ModalHeader
+            currentStep={currentStep}
+            hasErrors={hasErrors}
+            scrollToStep={scrollToStep}
+            setModalOpen={setModalOpen}
+            selectedDocument={selectedDocument}
+          />
+          <form className="m-6" onSubmit={handleSubmit}>
+            <div className="grid grid-cols-1 gap-x-4 gap-y-2 mt-16">
+              <div
+                onClick={() => handleStepClick(1)}
+                tabIndex={0} // Ensure the element is focusable
+                ref={stepRefs[0]}
+                className={`header-section ${hasErrors(1) ? 'error' : ''} scroll-margin-top`}
               >
-                Files{/*
-                */}<span className="align-middle">
-                  <ToggleButton
-                    showContent={showFiles}
-                    onToggle={() => setShowFiles(!showFiles)}
-                  />
-                </span>
-              </h3>
-              {showFiles && (
-                <Step3
-                  files={files}
-                  setFiles={setFiles}
-                  existingFiles={existingFiles}
-                />
-              )}
-            </div>
-            <LightDivider />
-            <div
-              onClick={() => handleStepClick(4)}
-              tabIndex={0} // Ensure the element is focusable
-              ref={stepRefs[3]}
-              className={`header-section ${hasErrors(4) ? 'error' : ''} scroll-margin-top`}
-            >
-              <h3
-                className="header-text text-xl font-bold mb-2 cursor-pointer"
-                onClick={() => setShowConnections(!showConnections)}
-              >
-                Connections{/*
-                */}<span className="align-middle">
-                  <ToggleButton
-                    showContent={showConnections}
-                    onToggle={() => setShowConnections(!showConnections)}
-                  />
-                </span>
-              </h3>
-              {showConnections && (
-                
-                <Step4
-                  connections={connections}
-                  handleDeleteConnection={handleDeleteConnection}
-                  setConnectionModalOpen={setConnectionModalOpen}
-                  allDocuments={documents}
-                />
-              )}
-            </div>
-            <LightDivider />
-            <div
-              onClick={() => handleStepClick(5)}
-              tabIndex={0} // Ensure the element is focusable
-              ref={stepRefs[4]}
-              className={`header-section ${hasErrors(5) ? 'error' : ''} scroll-margin-top`}
-            >
-              <h3
-                className="header-text text-xl font-bold mb-2 cursor-pointer"
-                onClick={() => {
-                  setShowGeoreferencing(!showGeoreferencing);
-                  setConnectToMap(!connectToMap);
-                  featureGroupRef.current?.remove();
-                  popupRef.current?.remove();
-                }}
-              >
-                Georeferencing{/*
-                */}<span className="align-middle">
-                  <ToggleButton
-                    showContent={showGeoreferencing}
-                    onToggle={() => {
-                      setShowGeoreferencing(!showGeoreferencing);
-                      setConnectToMap(!connectToMap);
-                    }}
-                  />
-                </span>
-              </h3>
-              {showGeoreferencing && (
-                
-                <Step5
-                  coordinates={coordinates}
-                  setCoordinates={setCoordinates}
-                  showToastMessage={showToast}
-                  selectedCoordIdProp={selectedCoordId ?? ''}
-                  selectedCoordId={selectedCoordId ?? ''}
-                  setSelectedCoordId={setSelectedCoordId}
-                  setCoordNamePopupOpen={setCoordNamePopupOpen}
-                  position={position}
-                  setPosition={setPosition}
-                  coordNamePopupOpen={coordNamePopupOpen}
-                  coordName={coordName}
-                  setCoordName={setCoordName}
-                  MapClickHandler={MapClickHandler}
+                <h3 className="header-text text-xl font-bold mb-2">
+                  Document Info
+                </h3>
+                <Step1
+                  title={title}
+                  setTitle={setTitle}
+                  stakeholders={stakeholders}
+                  setStakeholders={setStakeholders}
+                  scale={scale ?? ''}
+                  setScale={setScale}
+                  issuanceDate={issuanceDate}
+                  setIssuanceDate={setIssuanceDate}
+                  architecturalScale={architecturalScale ?? ''}
+                  setArchitecturalScale={setArchitecturalScale}
                   errors={errors}
-                  featureGroupRef={featureGroupRef}
-                  popupRef={popupRef}
                 />
-              )}
-            </div>
-          </div>
-          <div className="flex justify-end mt-4">
-            <ButtonRounded
-              variant="filled"
-              text="Save"
-              className="bg-black text-white text-base pt-2 pb-2 pl-4 pr-4"
-              onClick={handleSubmit}
-            />
-          </div>
+              </div>
+              <LightDivider />
+              <div
+                onClick={() => handleStepClick(2)}
+                tabIndex={0} // Ensure the element is focusable
+                ref={stepRefs[1]}
+                className={`header-section ${hasErrors(2) ? 'error' : ''} scroll-margin-top`}
+              >
+                <h3 className="header-text text-xl font-bold mb-2">
+                  Description
+                </h3>
 
-          {toast.isShown && (
-            <Toast
-              isShown={toast.isShown}
-              message={toast.message}
-              type={toast.type}
-              onClose={hideToast}
-            />
-          )}
-        </form>
-      </div>
+                <Step2
+                  description={description}
+                  setDescription={setDescription}
+                  language={language}
+                  setLanguage={setLanguage}
+                  docType={docType ?? { _id: '', type: '' }}
+                  setDocType={setDocType}
+                  documentTypeOptions={documentTypeOptions}
+                  setDocumentTypeOptions={setDocumentTypeOptions}
+                  stakeholders={stakeholders}
+                  errors={errors}
+                />
+              </div>
+              <LightDivider />
+              <div
+                onClick={() => handleStepClick(3)}
+                tabIndex={0} // Ensure the element is focusable
+                ref={stepRefs[2]}
+                className={`header-section ${hasErrors(3) ? 'error' : ''} scroll-margin-top`}
+              >
+                <h3
+                  className="header-text text-xl font-bold mb-2 cursor-pointer"
+                  onClick={() => {
+                    setShowFiles(!showFiles);
+                  }}
+                >
+                  Files
+                  {/*
+                  */}
+                  <span className="align-middle">
+                    <ToggleButton
+                      showContent={showFiles}
+                      onToggle={() => setShowFiles(!showFiles)}
+                    />
+                  </span>
+                </h3>
+                {showFiles && (
+                  <Step3
+                    files={files}
+                    setFiles={setFiles}
+                    existingFiles={existingFiles}
+                  />
+                )}
+              </div>
+              <LightDivider />
+              <div
+                onClick={() => handleStepClick(4)}
+                tabIndex={0} // Ensure the element is focusable
+                ref={stepRefs[3]}
+                className={`header-section ${hasErrors(4) ? 'error' : ''} scroll-margin-top`}
+              >
+                <h3
+                  className="header-text text-xl font-bold mb-2 cursor-pointer"
+                  onClick={() => setShowConnections(!showConnections)}
+                >
+                  Connections
+                  {/*
+                  */}
+                  <span className="align-middle">
+                    <ToggleButton
+                      showContent={showConnections}
+                      onToggle={() => setShowConnections(!showConnections)}
+                    />
+                  </span>
+                </h3>
+                {showConnections && (
+                  <Step4
+                    connections={connections}
+                    handleDeleteConnection={handleDeleteConnection}
+                    setConnectionModalOpen={setConnectionModalOpen}
+                    allDocuments={documents}
+                  />
+                )}
+              </div>
+              <LightDivider />
+              <div
+                onClick={() => handleStepClick(5)}
+                tabIndex={0} // Ensure the element is focusable
+                ref={stepRefs[4]}
+                className={`header-section ${hasErrors(5) ? 'error' : ''} scroll-margin-top`}
+              >
+                <h3
+                  className="header-text text-xl font-bold mb-2 cursor-pointer"
+                  onClick={() => {
+                    setShowGeoreferencing(!showGeoreferencing);
+                    setConnectToMap(!connectToMap);
+                    featureGroupRef.current?.remove();
+                    popupRef.current?.remove();
+                  }}
+                >
+                  Georeferencing
+                  {/*
+                  */}
+                  <span className="align-middle">
+                    <ToggleButton
+                      showContent={showGeoreferencing}
+                      onToggle={() => {
+                        setShowGeoreferencing(!showGeoreferencing);
+                        setConnectToMap(!connectToMap);
+                      }}
+                    />
+                  </span>
+                </h3>
+                {showGeoreferencing && (
+                  <Step5
+                    coordinates={coordinates}
+                    setCoordinates={setCoordinates}
+                    showToastMessage={showToast}
+                    selectedCoordIdProp={selectedCoordId ?? ''}
+                    selectedCoordId={selectedCoordId ?? ''}
+                    setSelectedCoordId={setSelectedCoordId}
+                    setCoordNamePopupOpen={setCoordNamePopupOpen}
+                    position={position}
+                    setPosition={setPosition}
+                    coordNamePopupOpen={coordNamePopupOpen}
+                    coordName={coordName}
+                    setCoordName={setCoordName}
+                    MapClickHandler={MapClickHandler}
+                    errors={errors}
+                    featureGroupRef={featureGroupRef}
+                    popupRef={popupRef}
+                  />
+                )}
+              </div>
+            </div>
+            <div className="flex justify-end mt-4">
+              <ButtonRounded
+                variant="filled"
+                text="Save"
+                className="bg-black text-white text-base pt-2 pb-2 pl-4 pr-4"
+                onClick={handleSubmit}
+              />
+            </div>
+
+            {toast.isShown && (
+              <Toast
+                isShown={toast.isShown}
+                message={toast.message}
+                type={toast.type}
+                onClose={hideToast}
+              />
+            )}
+          </form>
+        </div>
+      </Modal>
 
       {showSummary && (
         <Modal
           isOpen={true}
-          onRequestClose={() => setShowSummary(false)}
+          onRequestClose={() => setShowSummary(false) }
           style={connectionModalStyles}
         >
           <div className="relative">
             <button
-              onClick={() => setShowSummary(false)}
+              onClick={() => setShowSummary(false) }
               className="absolute top-0 right-0 p-2 text-xl text-gray-500 hover:text-gray-700"
             >
               &times;

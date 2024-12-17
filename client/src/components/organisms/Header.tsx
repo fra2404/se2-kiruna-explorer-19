@@ -1,13 +1,13 @@
-import { useState, useEffect, useRef, useContext } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import { useAuth } from '../../context/AuthContext';
 import { LoginModal } from './modals/LoginModal';
 import DropdownModal from '../molecules/DropdownModal';
 import ButtonRounded from '../atoms/button/ButtonRounded';
-import MapStyleContext from '../../context/MapStyleContext';
 import { Sidebar } from './Sidebar';
 import { IDocument } from '../../utils/interfaces/document.interface';
+import logo from '../../assets/logo.png'
 
 interface HeaderProps {
   page: string;
@@ -39,8 +39,6 @@ export const Header: React.FC<HeaderProps> = ({
   const [loginModalOpen, setLoginModalOpen] = useState(false);
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
-
-  const { mapType } = useContext(MapStyleContext);
 
   useEffect(() => {
     const interval = setInterval(() => {
@@ -74,10 +72,10 @@ export const Header: React.FC<HeaderProps> = ({
         <ButtonRounded
           text={
             <>
-              <img src='./src/assets/logo.png' alt='Logo' className='h-12 border border-black rounded-full '/>
-              <h1 className={mapType == "osm" || page != 'map' ? 'font-bold text-black ml-2 text-3xl' : "font-bold text-white ml-2 text-3xl"}>Kiruna eXplorer</h1>
+              <img src={logo} alt='Logo' className='h-12 border border-black rounded-full '/>
+              <h1 className={"font-bold text-white ml-2 text-3xl"}>Kiruna eXplorer</h1>
               {/* Date and time */}
-              <div className="bg-black text-white rounded-full px-3 py-2 ml-4"
+              <div className="text-white rounded-full px-3 py-2 ml-4"
                 style={{
                   display: 'flex',
                   justifyContent: 'center',
@@ -90,7 +88,7 @@ export const Header: React.FC<HeaderProps> = ({
               </div>
             </>
           }
-          variant='text'
+          variant='filled'
           style={{
             pointerEvents: 'auto'
           }}
