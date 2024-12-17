@@ -88,23 +88,18 @@ const ClickMarker: React.FC<ClickMarkerProps> = ({
         }
       </Popup>
 
-      <Modal
-        style={modalStyles}
-        isOpen={modalOpen}
-        onRequestClose={() => setModalOpen(false)}
-      >
-        <DocumentForm
-          coordinates={coordinates}
-          setCoordinates={setCoordinates}
-          documents={documents}
-          setDocuments={setDocuments}
-          filteredDocuments={filteredDocuments}
-          setFilteredDocuments={setFilteredDocuments}
-          positionProp={position}
-          showCoordNamePopup={true}
-          setModalOpen={setModalOpen}
-        />
-      </Modal>
+      <DocumentForm
+        coordinates={coordinates}
+        setCoordinates={setCoordinates}
+        documents={documents}
+        setDocuments={setDocuments}
+        filteredDocuments={filteredDocuments}
+        setFilteredDocuments={setFilteredDocuments}
+        positionProp={position}
+        showCoordNamePopup={true}
+        modalOpen={modalOpen}
+        setModalOpen={setModalOpen}
+      />
     </>
   );
 };

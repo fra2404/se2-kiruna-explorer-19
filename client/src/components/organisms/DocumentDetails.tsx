@@ -209,23 +209,18 @@ const DocumentDetails: React.FC<DocumentDetailsProps> = ({
           )
         }
       </div>
-      <Modal
-        style={modalStyles}
-        isOpen={modalOpen}
-        onRequestClose={() => setModalOpen(false)}
-      >
-        <DocumentForm
-          selectedCoordIdProp={document.coordinates?._id}
-          coordinates={coordinates}
-          setCoordinates={setCoordinates}
-          documents={allDocuments}
-          setDocuments={setAllDocuments}
-          filteredDocuments={filteredDocuments}
-          setFilteredDocuments={setFilteredDocuments}
-          setModalOpen={setModalOpen}
-          selectedDocument={document}
-        />
-      </Modal>
+      
+      <DocumentForm
+        selectedCoordIdProp={document.coordinates?._id}
+        coordinates={coordinates}
+        setCoordinates={setCoordinates}
+        documents={allDocuments}
+        setDocuments={setAllDocuments}
+        filteredDocuments={filteredDocuments}
+        setFilteredDocuments={setFilteredDocuments}
+        modalOpen={modalOpen}
+        setModalOpen={setModalOpen}
+      />
     </>
   );
 };

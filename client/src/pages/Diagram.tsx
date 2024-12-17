@@ -86,6 +86,12 @@ const Diagram = () => {
     // Search in the original documents and show the document in the modal
     const sdocument = allDocuments.find((doc) => doc.id === document.id);
     if (sdocument) {
+      setDocumentInfoPopup({
+        visible: false,
+        x: 0,
+        y: 0,
+        content: '',
+      });
       setSelectedDocument(sdocument);
       setSidebarVisible(true);
     }

@@ -1,16 +1,16 @@
 import Modal from 'react-modal';
-import { Marker, Polygon, useMapEvents } from 'react-leaflet';
+import { useMapEvents } from 'react-leaflet';
 import { useContext, useRef, useState } from 'react';
 import MapStyleContext from '../../../context/MapStyleContext';
 import MarkerClusterGroup from 'react-leaflet-markercluster';
 import { ICoordinate, IDocument } from '../../../utils/interfaces/document.interface';
 import { renderToString } from 'react-dom/server';
 import { DivIcon, LatLng } from 'leaflet';
-import { DeleteCoordPopup } from '../../molecules/popups/DeleteCoordPopup';
-import API, { createCoordinate } from '../../../API';
+import { createCoordinate } from '../../../API';
 import CustomMap from '../../molecules/CustomMap';
 import DrawingPanel from '../../molecules/DrawingPanel';
 import NamePopup from '../../molecules/popups/NamePopup';
+import { ManageCoordsPoint } from '../coordsOverlay/ManageCoordsPoint';
 
 interface ManageCoordsModalProps {
   manageCoordsModalOpen: boolean,
@@ -41,9 +41,7 @@ export const ManageCoordsModal: React.FC<ManageCoordsModalProps> = ({
     overlay: { zIndex: 1000 },
   }
 
-  const {swedishFlagBlue, swedishFlagYellow, satMapMainColor, mapType} = useContext(MapStyleContext);
-  const markerRef = useRef<L.Marker>(null);
-  const polygonRef = useRef<L.Polygon>(null);
+  const { swedishFlagBlue, swedishFlagYellow } = useContext(MapStyleContext);
   
   //Refs needed for area drawing
   const popupRef = useRef<L.Popup>(null);
@@ -131,53 +129,19 @@ export const ManageCoordsModal: React.FC<ManageCoordsModalProps> = ({
           }}>
             {Object.entries(coordinates).map(([coordId, coordInfo]: any) => {
               const filteredDocuments = documents.filter((d) => d.coordinates?._id == coordId);
-
-              if (coordInfo.type == 'Point') {
+              
                 return (
-                  <Marker
+                  <ManageCoordsPoint
                     key={coordId}
-                    position={ coordInfo.coordinates }
-                    ref={markerRef}
-                  >
-                    <DeleteCoordPopup 
-                      name={coordInfo.name}
-                      message={
-                        filteredDocuments.length == 0 ?
-                          "Do you want to delete this point?"
-                        : "There are documents associated to this point, you cannot delete it"
-                      }
-                      showButtons={filteredDocuments.length == 0}
-                      onYesClick={async () => await onYesClick(markerRef, coordId, coordinates, setCoordinates)}
-                      onCancelClick={() => {
-                        markerRef.current?.closePopup();
-                      }}
-                    />
-                  </Marker>
+                    id={coordId}
+                    name={coordInfo.name}
+                    pointCoordinates={coordInfo.coordinates}
+                    type={coordInfo.type}
+                    coordinates={coordinates}
+                    setCoordinates={setCoordinates}
+                    filteredDocuments={filteredDocuments}
+                  />
                 );
-              } else {
-                return (
-                  <Polygon
-                    key={coordId}
-                    pathOptions={{ color: mapType == "sat" ? satMapMainColor : swedishFlagBlue }}
-                    positions={ coordInfo.coordinates }
-                    ref={polygonRef}
-                  >
-                    <DeleteCoordPopup 
-                      name={coordInfo.name}
-                      message={
-                        filteredDocuments.length == 0 ?
-                          "Do you want to delete this area?"
-                        : "There are documents associated to this area, you cannot delete it"
-                      }
-                      showButtons={filteredDocuments.length == 0}
-                      onYesClick={async () => await onYesClick(polygonRef, coordId, coordinates, setCoordinates)}
-                      onCancelClick={() => {
-                        polygonRef.current?.closePopup();
-                      }}
-                    />
-                  </Polygon>
-                );
-              }
             })}
           </MarkerClusterGroup>
 
@@ -206,19 +170,4 @@ export const ManageCoordsModal: React.FC<ManageCoordsModalProps> = ({
       </div>
     </Modal>
   );
-}
-
-async function onYesClick(
-  ref: any,
-  coordToDelete: string,
-  coordinates: any,
-  setCoordinates: (coordinates: any) => void
-) {
-  ref.current?.closePopup();
-  const response = await API.deleteCoordinate(coordToDelete);
-  if(response.success) {
-    const {[coordToDelete]: _, ...coordinatesUpdated} = coordinates;
-    console.log(coordinatesUpdated);
-    setCoordinates(coordinatesUpdated);
-  }
 }
