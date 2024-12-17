@@ -1,19 +1,9 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 import '../../src/global.js';
 import Graph from 'react-graph-vis';
 import './Diagram.css';
 import { useState, useEffect, useRef, useContext } from 'react';
 import API, { getTypes } from '../API';
 import ErrorImage from '../assets/icons/error.png';
-import DefaultIcon from '../assets/icons/default-icon.svg';
-import AgreementIcon from '../assets/icons/agreement-icon.svg';
-import ConflictIcon from '../assets/icons/conflict-icon.svg';
-import ConsultationIcon from '../assets/icons/consultation-icon.svg';
-import DesignDocIcon from '../assets/icons/design-doc-icon.svg';
-import InformativeDocIcon from '../assets/icons/informative-doc-icon.svg';
-import MaterialEffectsIcon from '../assets/icons/material-effects-icon.svg';
-import PrescriptiveDocIcon from '../assets/icons/prescriptive-doc-icon.svg';
-import TechnicalDocIcon from '../assets/icons/technical-doc-icon.svg';
 import 'vis-network/styles/vis-network.css';
 import { swedishFlagBlue, swedishFlagYellow } from '../utils/colors';
 import { IDocument } from '../utils/interfaces/document.interface.js';
@@ -24,6 +14,9 @@ import { Header } from '../components/organisms/Header.js';
 import useDocuments from '../utils/hooks/documents.js';
 import { DocumentConnectionsList } from '../components/molecules/documentsItems/DocumentConnectionsList.js';
 import SidebarContext from '../context/SidebarContext.js';
+import { DocumentIcon } from '../components/molecules/documentsItems/DocumentIcon.js';
+import ReactDOMServer from 'react-dom/server';
+import StakeholderLegend from '../components/molecules/StakeholderLegend.js';
 
 const LABEL_FONT = { size: 50, color: '#000000' };
 const OFFSET_VIEW = { x: 200, y: 500 };
@@ -50,6 +43,7 @@ const graphBEInfo = await API.getGraphInfo();
 const Diagram = () => {
   const { setFeedbackFromError } = useContext(FeedbackContext);
   const headerRef = useRef<HTMLDivElement>(null);
+  const legendRef = useRef<HTMLDivElement>(null);
   const { selectedDocument, setSelectedDocument, setSidebarVisible } =
     useContext(SidebarContext);
   const [types, setTypes] = useState<any[]>([]);
@@ -80,6 +74,7 @@ const Diagram = () => {
   const minYear = graphBEInfo.minYear;
   const maxYear = graphBEInfo.maxYear;
   const networkRef = useRef<any>(null);
+  const gridRef = useRef<HTMLDivElement>(null); // Added for the grid
 
   let lastPosition: any = null;
   const max_zoom = 2;
@@ -115,10 +110,23 @@ const Diagram = () => {
     gridSize: 40, // Initial size of the grid
   });
 
-  const calculateGridSize = (scale: number) => {
-    const baseSize = 80; // Base size of the grid (in px)
-    const newSize = baseSize * scale; // Changes the size according to zoom
-    return newSize;
+  const calculateGridSizeFromNodes = (nodes: any[]) => {
+    if (nodes.length < 2) return { gridX: 50, gridY: 50 }; // Default size if no nodes
+
+    // Get min and max X and Y values
+    const xValues = nodes.map((node) => node.x);
+    const yValues = nodes.map((node) => node.y);
+
+    const minX = Math.min(...xValues);
+    const maxX = Math.max(...xValues);
+    const minY = Math.min(...yValues);
+    const maxY = Math.max(...yValues);
+
+    // Calculate distance between points
+    const gridX = Math.abs((maxX - minX) / (nodes.length - 1));
+    const gridY = Math.abs((maxY - minY) / (nodes.length - 1));
+
+    return { gridX, gridY };
   };
 
   const calculateBackgroundPosition = (
@@ -129,6 +137,18 @@ const Diagram = () => {
     const scaledX = position.x * scaleFactor;
     const scaledY = position.y * scaleFactor;
     return { x: scaledX, y: scaledY };
+  };
+
+  const updateGrid = (network: any) => {
+    const grid = gridRef.current;
+
+    if (!grid) return;
+
+    const view = network.getViewPosition();
+    const scale = network.getScale();
+
+    grid.style.backgroundSize = `${100 * scale}px ${100 * scale}px`;
+    grid.style.backgroundPosition = `${-view.x * scale}px ${-view.y * scale}px`;
   };
 
   const checkGraphConstraints = (event: any) => {
@@ -329,36 +349,18 @@ const Diagram = () => {
               docTypes.label === doc.type.type.toUpperCase(),
           )
         : null;
-      switch (docType?.label) {
-        case 'AGREEMENT':
-          doc.image = AgreementIcon;
-          break;
-        case 'CONFLICT':
-          doc.image = ConflictIcon;
-          break;
-        case 'CONSULTATION':
-          doc.image = ConsultationIcon;
-          break;
-        case 'PRESCRIPTIVE_DOC':
-          doc.image = PrescriptiveDocIcon;
-          break;
-        case 'INFORMATIVE_DOC':
-          doc.image = InformativeDocIcon;
-          break;
-        case 'DESIGN_DOC':
-          doc.image = DesignDocIcon;
-          break;
-        case 'TECHNICAL_DOC':
-          doc.image = TechnicalDocIcon;
-          break;
-        case 'MATERIAL_EFFECTS':
-          doc.image = MaterialEffectsIcon;
-          break;
-        default:
-          // Default icon for the documents that do not have an image (new types)
-          doc.image = DefaultIcon;
-          break;
-      }
+
+      // Convert DocumentIcon component to base64 image
+      const iconElement = (
+        <DocumentIcon
+          type={docType?.label || 'DEFAULT'}
+          stakeholders={doc.stakeholders || []}
+        />
+      );
+      const svgString = ReactDOMServer.renderToString(iconElement);
+      const base64Image = `data:image/svg+xml;base64,${btoa(svgString)}`;
+
+      doc.image = base64Image;
 
       // Check the connections
       let connectionColor: string;
@@ -496,6 +498,7 @@ const Diagram = () => {
     y: computeStyleY(node),
     shape: 'box',
     font: { ...LABEL_FONT, color: '#FFFFFF' },
+    fixed: { x: true, y: true },
   }));
 
   for (let year = minYear; year <= maxYear; year++) {
@@ -514,7 +517,8 @@ const Diagram = () => {
   useEffect(() => {
     const network = networkRef.current; // Get the network object from the ref
 
-    if (network) {  // if the network is available then...
+    if (network) {
+      // if the network is available then...
       // If a node is selected, then the graph will be centered on that node
       if (selectedDocument) {
         network.fit({
@@ -561,21 +565,39 @@ const Diagram = () => {
     }
   }, [selectedDocument, state.graph.nodes]);
 
-  const gridStyle = {
-    backgroundSize: `${backgroundStyle.gridSize}px ${backgroundStyle.gridSize}px`, // La dimensione della griglia cambia con lo zoom
-    backgroundPosition: `${backgroundStyle.positionX}px ${backgroundStyle.positionY}px`, // Posizione dello sfondo
-  };
+  useEffect(() => {
+    const network = networkRef.current;
+
+    if (network) {
+      // Sets the events to update the grid
+      network.on('zoom', () => updateGrid(network));
+      network.on('dragEnd', () => updateGrid(network));
+      network.on('initRedraw', () => updateGrid(network));
+    }
+
+    // Aggiorna la griglia inizialmente
+    updateGrid(network);
+  }, [state.graph.nodes]); // Dipende dai nodi caricati dinamicamente
 
   useEffect(() => {
     const network = networkRef.current;
 
     if (network) {
+      // Retrieves the diagram nodes
+      const nodes = state.graph.nodes.map((node) =>
+        network.getPosition(node.id),
+      );
+
+      // Computes the grid dimension based on nodes
+      const { gridX, gridY } = calculateGridSizeFromNodes(nodes);
+
       // Manages the zoom
       network.on('zoom', function (params: any) {
         setBackgroundStyle((prev) => ({
           ...prev,
           scale: params.scale,
-          gridSize: calculateGridSize(params.scale),
+          gridSizeX: gridX * params.scale, // Scales the grid according to zoom level
+          gridSizeY: gridY * params.scale,
         }));
       });
 
@@ -607,7 +629,7 @@ const Diagram = () => {
         }));
       });
     }
-  }, [backgroundStyle.scale]);
+  }, [backgroundStyle.scale, state.graph.nodes]); // Recomputed when nodes or zoom change
 
   useEffect(() => {
     // Check the boundaries of the selected node
@@ -689,9 +711,31 @@ const Diagram = () => {
 
   return (
     <div
-      style={{ height: '100vh', position: 'relative', ...gridStyle, overflow: 'hidden' }}
-      className="grid-background"
+      style={{
+        height: '100vh',
+        position: 'relative',
+        overflow: 'hidden',
+      }}
+      className="grid-container"
     >
+      <div
+        ref={gridRef}
+        className="grid-background"
+        style={{
+          position: 'absolute',
+          top: 0,
+          left: 0,
+          width: '100%',
+          height: '100%',
+          backgroundImage: `
+      linear-gradient(to right, #e0e0e0 1px, transparent 1px),
+      linear-gradient(to bottom, #e0e0e0 1px, transparent 1px)
+    `,
+          backgroundSize: '40px 40px',
+          zIndex: -1, // Positions the grid behind the nodes
+        }}
+      />
+
       <Header
         headerRef={headerRef}
         page="graph"
@@ -710,8 +754,20 @@ const Diagram = () => {
           left: '10px',
           zIndex: 10,
         }}
+        ref={legendRef}
       >
         <Legend />
+      </div>
+
+      <div
+        style={{
+          position: 'absolute',
+          top: `${headerRef.current?.offsetHeight && legendRef.current?.offsetHeight ? headerRef.current?.offsetHeight + legendRef.current?.offsetHeight + 20 : 0}px`,
+          left: '10px',
+          zIndex: 1,
+        }}
+      >
+        <StakeholderLegend />
       </div>
 
       {state.graph && (
@@ -722,6 +778,8 @@ const Diagram = () => {
             dragEnd: function (event: any) {
               const { nodes } = event;
               const network = networkRef.current;
+
+              // Saves nodes position
               if (nodes && nodes.length > 0) {
                 nodes.forEach((nodeId: string | number) => {
                   const position = network.getPosition(nodeId);
@@ -731,6 +789,19 @@ const Diagram = () => {
                   );
                 });
               }
+
+              // Updates the grid
+              updateGrid(network);
+            },
+            zoom: function () {
+              const network = networkRef.current;
+              // Updates the grid on zoom change
+              updateGrid(network);
+            },
+            initRedraw: function () {
+              const network = networkRef.current;
+              // Updates the grid when redrawing
+              updateGrid(network);
             },
             selectNode: function (event: { nodes: any[] }) {
               const { nodes } = event;
@@ -767,12 +838,20 @@ const Diagram = () => {
               }
             },
             blurNode: function () {
-              setDocumentInfoPopup({ visible: false, x: 0, y: 0, content: '' });
+              setDocumentInfoPopup({
+                visible: false,
+                x: 0,
+                y: 0,
+                content: '',
+              });
             },
           }}
           style={{ height: '100%' }}
           getNetwork={(network) => {
             networkRef.current = network;
+
+            // Updates the grid on the initial load
+            updateGrid(network);
           }}
         />
       )}

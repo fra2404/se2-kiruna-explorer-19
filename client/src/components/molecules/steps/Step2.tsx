@@ -13,7 +13,9 @@ interface Step2Props {
   docType: IDocumentType;
   setDocType: (value: IDocumentType) => void;
   documentTypeOptions: { value: string; label: string }[];
-  setDocumentTypeOptions: (documentTypeOptions: { value: string; label: string }[]) => void;
+  setDocumentTypeOptions: (
+    documentTypeOptions: { value: string; label: string }[],
+  ) => void;
   stakeholders: IStakeholder[];
   errors: { [key: string]: string };
 }
@@ -48,7 +50,19 @@ const Step2: React.FC<Step2Props> = ({
   const handleSaveNewDocType = async () => {
     try {
       const newDocType = await createDocumentType(newDocTypeLabel);
-      const formattedDocType = { value: newDocType.value, label: newDocType.label, icon: <DocumentIcon type={newDocType.label} stakeholders={stakeholders.map((s) => s.type)}/> };
+      const formattedDocType = {
+        value: newDocType.value,
+        label: newDocType.label,
+        icon: (
+          <DocumentIcon
+            type={newDocType.label}
+            stakeholders={stakeholders.map((s) => ({
+              _id: s._id,
+              type: s.type,
+            }))}
+          />
+        ),
+      };
       setDocumentTypeOptions([...documentTypeOptions, formattedDocType]);
       setDocType({ _id: newDocType.value, type: newDocType.label });
       setIsAddingNewDocType(false);
@@ -95,7 +109,7 @@ const Step2: React.FC<Step2Props> = ({
       </div>
 
       {/* Type of document */}
-      {documentTypeOptions.length > 0 && 
+      {documentTypeOptions.length > 0 && (
         <div className="my-2 col-span-2">
           <InputComponent
             key={inputKey} // Add the dynamic key here
@@ -105,9 +119,14 @@ const Step2: React.FC<Step2Props> = ({
             value={docType._id} // Passes the docType id as value
             onChange={(e) => {
               if ('target' in e) {
-                const selectedOption = documentTypeOptions.find(option => option.value === e.target.value);
+                const selectedOption = documentTypeOptions.find(
+                  (option) => option.value === e.target.value,
+                );
                 if (selectedOption) {
-                  setDocType({ _id: selectedOption.value, type: selectedOption.label });
+                  setDocType({
+                    _id: selectedOption.value,
+                    type: selectedOption.label,
+                  });
                 }
               }
             }}
@@ -146,7 +165,7 @@ const Step2: React.FC<Step2Props> = ({
             </div>
           )}
         </div>
-      }
+      )}
     </>
   );
 };
