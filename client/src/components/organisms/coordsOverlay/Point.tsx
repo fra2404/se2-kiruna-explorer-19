@@ -48,7 +48,7 @@ export const Point: React.FC<PointProps> = ({
   let markerText: any;
 
   if(pointDocuments.length == 1) {
-    markerText = <DocumentIcon type={pointDocuments[0].type} stakeholders={pointDocuments[0].stakeholders} /> ;
+    markerText = <DocumentIcon type={pointDocuments[0].type.type} stakeholders={pointDocuments[0].stakeholders?.map((s) => s.type) } /> ;
   }
   else {
     markerText = pointDocuments.length;

@@ -1,0 +1,86 @@
+[{
+  "_id": {
+    "$oid": "671f579a201615b583057f71"
+  },
+  "email": "fransyalbano@gmail.com",
+  "password": "$2b$10$JJcHejANqm74vM0htu4equAJx1ZyFtD2LIUGIo5m74XgIvz4ftc7y",
+  "name": "Francesco",
+  "surname": "Albano",
+  "role": "PLANNER",
+  "createdAt": {
+    "$date": "2024-10-28T09:21:30.424Z"
+  },
+  "updatedAt": {
+    "$date": "2024-10-28T09:21:30.424Z"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "673c5ed99e7e206218f0f13a"
+  },
+  "email": "femrun@hi2.in",
+  "password": "$2b$10$bTpgPKsC5u7Ew9iwhbq7mu.BPqXXBnoFurSuk1jOVwxxd172jdzhO",
+  "name": "Test",
+  "surname": "Test",
+  "role": "PLANNER",
+  "createdAt": {
+    "$date": "2024-11-19T09:48:09.092Z"
+  },
+  "updatedAt": {
+    "$date": "2024-11-19T09:48:09.092Z"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "673c6e1f03a72e3d2e7e8c01"
+  },
+  "email": "email@email.com",
+  "password": "$2b$10$Nd5BtOo/gQHv0G52I8ZqUe48Jw0RG8URprfRhNI2qHELL.INmFbgC",
+  "name": "Francesco",
+  "surname": "Albano",
+  "phone": "26237282922",
+  "role": "VISITOR",
+  "createdAt": {
+    "$date": "2024-11-19T10:53:19.577Z"
+  },
+  "updatedAt": {
+    "$date": "2024-11-19T10:53:19.577Z"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "673c6e7303a72e3d2e7e8c03"
+  },
+  "email": "t@t.it",
+  "password": "$2b$10$VabRPmObBil1Sq3vvlePe.Zi7KPzZ0AtZ6XaPP9GlVXQldwFBCo6m",
+  "name": "test",
+  "surname": "test",
+  "role": "VISITOR",
+  "createdAt": {
+    "$date": "2024-11-19T10:54:43.869Z"
+  },
+  "updatedAt": {
+    "$date": "2024-11-19T10:54:43.869Z"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "673c6ef903a72e3d2e7e8c05"
+  },
+  "email": "a@a.it",
+  "password": "$2b$10$CdyTBJzxzU5zK8kse8Nh3uD6nol6ZqUYSZkW0hDXx8fIoFHSGZWVS",
+  "name": "t",
+  "surname": "t",
+  "role": "RESIDENT",
+  "createdAt": {
+    "$date": "2024-11-19T10:56:57.774Z"
+  },
+  "updatedAt": {
+    "$date": "2024-11-19T10:56:57.774Z"
+  },
+  "__v": 0
+}]

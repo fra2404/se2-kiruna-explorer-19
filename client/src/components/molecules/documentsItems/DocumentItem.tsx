@@ -26,8 +26,8 @@ export const DocumentItem: React.FC<DocumentItemProps> = ({
     >
       <div className="flex-none size-8 ml-1 mr-3 self-center">
         <DocumentIcon
-          type={document.type}
-          stakeholders={document.stakeholders}
+          type={document.type.type}
+          stakeholders={document.stakeholders?.map((s) => s.type)}
         />
       </div>
       <span className="flex-1 text-lg font-bold self-center mr-3">

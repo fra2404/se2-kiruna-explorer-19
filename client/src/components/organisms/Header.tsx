@@ -77,8 +77,7 @@ export const Header: React.FC<HeaderProps> = ({
               <img src='./src/assets/logo.png' alt='Logo' className='h-12 border border-black rounded-full '/>
               <h1 className={mapType == "osm" || page != 'map' ? 'font-bold text-black ml-2 text-3xl' : "font-bold text-white ml-2 text-3xl"}>Kiruna eXplorer</h1>
               {/* Date and time */}
-              <ButtonRounded variant="filled" className="bg-black px-3 py-2 ml-4"
-                text={dateTime}
+              <div className="bg-black text-white rounded-full px-3 py-2 ml-4"
                 style={{
                   display: 'flex',
                   justifyContent: 'center',
@@ -86,7 +85,9 @@ export const Header: React.FC<HeaderProps> = ({
                   pointerEvents: "auto",
                   fontSize: '15px'
                 }} 
-              />
+              >
+                {dateTime}
+              </div>
             </>
           }
           variant='text'

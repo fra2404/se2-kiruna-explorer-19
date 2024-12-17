@@ -689,7 +689,7 @@ const Diagram = () => {
 
   return (
     <div
-      style={{ height: '100vh', position: 'relative', ...gridStyle }}
+      style={{ height: '100vh', position: 'relative', ...gridStyle, overflow: 'hidden' }}
       className="grid-background"
     >
       <Header
