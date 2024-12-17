@@ -1,0 +1,434 @@
+[{
+  "_id": {
+    "$oid": "6742f1fe57f257b6aee9c7a5"
+  },
+  "title": "Compilation of responses “So what the people of Kiruna think?” (15)",
+  "stakeholders": [
+    "Municipality",
+    "Citizens"
+  ],
+  "scale": "TEXT",
+  "type": "INFORMATIVE_DOC",
+  "date": "2007-01-01",
+  "connections": [],
+  "language": "Swedish",
+  "media": [],
+  "summary": "This document is a compilation of the responses to the survey 'What is your impression of Kiruna?' From the citizens' responses to this last part of the survey, it is evident that certain buildings, such as the Kiruna Church, the Hjalmar Lundbohmsgården, and the Town Hall, are considered of significant value to the population. The municipality views the experience of this survey positively, to the extent that over the years it will propose various consultation opportunities.",
+  "createdAt": {
+    "$date": "2024-11-24T09:29:34.652Z"
+  },
+  "updatedAt": {
+    "$date": "2024-11-30T15:08:59.384Z"
+  },
+  "__v": 0,
+  "architecturalScale": ""
+},
+{
+  "_id": {
+    "$oid": "672b800a79021ce0217a1118"
+  },
+  "title": "Detail plan for Bolagsomradet Gruvstad - spark (18)",
+  "stakeholders": [
+    "Municipality"
+  ],
+  "scale": "ARCHITECTURAL",
+  "architecturalScale": "1:8000",
+  "type": "PRESCRIPTIVE_DOC",
+  "date": "2010-10-20",
+  "connections": [
+    {
+      "document": {
+        "$oid": "672b814479021ce0217a11a1"
+      },
+      "type": "DIRECT"
+    },
+    {
+      "document": {
+        "$oid": "672bc1c45b72bcff14418a18"
+      },
+      "type": "DIRECT"
+    },
+    {
+      "document": {
+        "$oid": "672bd1cda944d686347c669c"
+      },
+      "type": "DIRECT"
+    },
+    {
+      "document": {
+        "$oid": "672bad49439c738e4a05a96c"
+      },
+      "type": "DIRECT"
+    }
+  ],
+  "language": "Swedish",
+  "media": [],
+  "coordinates": {
+    "$oid": "6728d4d2245d2a20cb85bfd1"
+  },
+  "summary": "This is the first of 8 detailed plans located in the old center of Kiruna, aimed at transforming the residential areas into mining industry zones to allow the demolition of buildings. The area includes the town hall, the Ullspiran district, and the A10 highway, and it will be the first to be dismantled. The plan consists, like all detailed plans, of two documents: the area map that regulates it, and a text explaining the reasons that led to the drafting of the plan with these characteristics. The plan gained legal validity in 2012.",
+  "createdAt": {
+    "$date": "2024-11-06T14:41:15.019Z"
+  },
+  "updatedAt": {
+    "$date": "2024-11-26T09:28:17.884Z"
+  },
+  "__v": 85
+},
+{
+  "_id": {
+    "$oid": "672b814479021ce0217a11a1"
+  },
+  "title": "Development Plan (41)",
+  "stakeholders": [
+    "Municipality",
+    "Architecture Firms"
+  ],
+  "scale": "ARCHITECTURAL",
+  "type": "DESIGN_DOC",
+  "date": "2014-03-17",
+  "connections": [
+    {
+      "document": {
+        "$oid": "672c84a838a749525a2b77ab"
+      },
+      "type": "DIRECT"
+    },
+    {
+      "document": {
+        "$oid": "672b800a79021ce0217a1118"
+      },
+      "type": "DIRECT"
+    }
+  ],
+  "language": "Swedish",
+  "media": [],
+  "coordinates": {
+    "$oid": "6728d8b58a63c6544fc7ccad"
+  },
+  "summary": "The development plan shapes the form of the new city. The document, unlike previous competition documents, is written entirely in Swedish, which reflects the target audience: the citizens of Kiruna. The plan obviously contains many elements of the winning master plan from the competition, some recommended by the jury, and others that were deemed appropriate to integrate later. The document is divided into four parts, with the third part, spanning 80 pages, describing the shape the new city will take and the strategies to be implemented for its relocation through plans, sections, images, diagrams, and texts. The document also includes numerous studies aimed at demonstrating the future success of the project",
+  "createdAt": {
+    "$date": "2024-11-06T14:46:28.380Z"
+  },
+  "updatedAt": {
+    "$date": "2024-11-30T15:12:55.808Z"
+  },
+  "__v": 61,
+  "architecturalScale": "1:7500"
+},
+{
+  "_id": {
+    "$oid": "672bad49439c738e4a05a96c"
+  },
+  "title": "Detail plan for square and commercial street (50)",
+  "stakeholders": [
+    "Municipality"
+  ],
+  "scale": "ARCHITECTURAL",
+  "type": "PRESCRIPTIVE_DOC",
+  "date": "2016-06-22",
+  "connections": [
+    {
+      "document": {
+        "$oid": "672b800a79021ce0217a1118"
+      },
+      "type": "DIRECT"
+    }
+  ],
+  "language": "Swedish",
+  "media": [],
+  "coordinates": {
+    "$oid": "6728d4d2245d2a20cb85bfd1"
+  },
+  "summary": "This plan, approved in July 2016, is the first detailed plan to be implemented from the new masterplan (Adjusted development plan). The document defines the entire area near the town hall, comprising a total of 9 blocks known for their density. Among these are the 6 buildings that will face the main square. The functions are mixed, both public and private, with residential being prominent, as well as the possibility of incorporating accommodation facilities such as hotels. For all buildings in this plan, the only height limit is imposed by air traffic.",
+  "createdAt": {
+    "$date": "2024-11-06T17:54:18.000Z"
+  },
+  "updatedAt": {
+    "$date": "2024-11-26T09:28:17.887Z"
+  },
+  "__v": 87,
+  "architecturalScale": "1:1000"
+},
+{
+  "_id": {
+    "$oid": "672bc1c45b72bcff14418a18"
+  },
+  "title": "Deformation forecast (45)",
+  "stakeholders": [
+    "LKAB"
+  ],
+  "scale": "ARCHITECTURAL",
+  "type": "TECHNICAL_DOC",
+  "date": "2014-12-01",
+  "connections": [
+    {
+      "document": {
+        "$oid": "672b800a79021ce0217a1118"
+      },
+      "type": "DIRECT"
+    }
+  ],
+  "language": "Swedish",
+  "media": [],
+  "coordinates": {
+    "$oid": "6728d8da8a63c6544fc7ccb8"
+  },
+  "summary": "The development plan shapes the form of the new city. The document, unlike previous competition documents, is written entirely in Swedish, which reflects the target audience: the citizens of Kiruna. The plan obviously contains many elements of the winning masterplan from the competition, some recommended by the jury, and others that were deemed appropriate to integrate later. The document is divided into four parts, with the third part, spanning 80 pages, describing the shape the new city will take and the strategies to be implemented for its relocation through plans, sections, images, diagrams, and texts. The document also includes numerous studies aimed at demonstrating the future success of the project.",
+  "createdAt": {
+    "$date": "2024-11-06T19:21:40.503Z"
+  },
+  "updatedAt": {
+    "$date": "2024-11-25T16:59:22.107Z"
+  },
+  "__v": 79,
+  "architecturalScale": "1:12000"
+},
+{
+  "_id": {
+    "$oid": "672bd1cda944d686347c669c"
+  },
+  "title": "Town Hall demolition (64)",
+  "stakeholders": [
+    "LKAB"
+  ],
+  "scale": "BLUEPRINT/MATERIAL EFFECTS",
+  "type": "MATERIAL_EFFECTS",
+  "date": "2019-04-01",
+  "connections": [
+    {
+      "document": {
+        "$oid": "672b800a79021ce0217a1118"
+      },
+      "type": "DIRECT"
+    }
+  ],
+  "language": "",
+  "media": [],
+  "coordinates": {
+    "$oid": "6728d4d2245d2a20cb85bfd1"
+  },
+  "summary": "After the construction of the new town hall was completed, the old building, nicknamed \"The Igloo,\" was demolished. The only elements preserved were the door handles, a masterpiece of Sami art made of wood and bone, and the clock tower, which once stood on the roof of the old town hall. The clock tower was relocated to the central square of New Kiruna, in front of the new building.",
+  "createdAt": {
+    "$date": "2024-11-06T20:30:05.343Z"
+  },
+  "updatedAt": {
+    "$date": "2024-11-25T16:59:22.110Z"
+  },
+  "__v": 83
+},
+{
+  "_id": {
+    "$oid": "672c84a838a749525a2b77ab"
+  },
+  "title": "Adjusted development plan (47)",
+  "stakeholders": [
+    "Municipality",
+    "Architectura Firms"
+  ],
+  "scale": "ARCHITECTURAL",
+  "type": "DESIGN_DOC",
+  "date": "2015-01-01",
+  "connections": [
+    {
+      "document": {
+        "$oid": "672b814479021ce0217a11a1"
+      },
+      "type": "DIRECT"
+    }
+  ],
+  "language": "Swedish",
+  "media": [],
+  "coordinates": {
+    "$oid": "6728d8b58a63c6544fc7ccad"
+  },
+  "summary": "This document is the update of the Development Plan, one year after its creation, modifications are made to the general master plan, which is published under the name 'Adjusted Development Plan91,' and still represents the version used today after 10 years. Certainly, there are no drastic differences compared to the previous plan, but upon careful comparison, several modified elements stand out. For example, the central square now takes its final shape, as well as the large school complex just north of it, which appears for the first time",
+  "createdAt": {
+    "$date": "2024-11-07T09:13:12.833Z"
+  },
+  "updatedAt": {
+    "$date": "2024-11-24T10:44:38.850Z"
+  },
+  "__v": 4,
+  "architecturalScale": "1:7500"
+},
+{
+  "_id": {
+    "$oid": "67320d424311bbcdea7b9a22"
+  },
+  "title": "Construction of Scandic Hotel begins (63)",
+  "stakeholders": [
+    "LKAB"
+  ],
+  "scale": "BLUEPRINT/MATERIAL EFFECTS",
+  "type": "MATERIAL_EFFECTS",
+  "date": "2019-04-01",
+  "connections": [],
+  "language": "",
+  "media": [],
+  "coordinates": {
+    "$oid": "67320d424311bbcdea7b9a1e"
+  },
+  "summary": "After two extensions of the land acquisition agreement, necessary because this document in Sweden is valid for only two years, construction of the hotel finally began in 2019.",
+  "createdAt": {
+    "$date": "2024-11-11T13:57:22.862Z"
+  },
+  "updatedAt": {
+    "$date": "2024-11-24T10:28:25.394Z"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "673603af185d8426adac821a"
+  },
+  "title": "Construction of Aurora Center begins (65)",
+  "stakeholders": [
+    "LKAB"
+  ],
+  "scale": "BLUEPRINT/MATERIAL EFFECTS",
+  "type": "MATERIAL_EFFECTS",
+  "date": "2019-05-01",
+  "connections": [],
+  "language": "",
+  "media": [],
+  "coordinates": {
+    "$oid": "6728d9168a63c6544fc7ccc6"
+  },
+  "summary": "Shortly after the construction of the Scandic hotel began, work on the Aurora Center also started, a multifunctional complex that includes the municipal library of Kiruna. The two buildings are close to each other and connected by a skywalk, just like in the old town center.",
+  "createdAt": {
+    "$date": "2024-11-14T14:05:35.957Z"
+  },
+  "updatedAt": {
+    "$date": "2024-11-24T10:31:51.831Z"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "674300e619d5dd2e2b8854a1"
+  },
+  "title": "Construction of Block 1 begins (69)",
+  "stakeholders": [
+    "LKAB"
+  ],
+  "scale": "BLUEPRINT/MATERIAL EFFECTS",
+  "type": "MATERIAL_EFFECTS",
+  "date": "2019-06-01",
+  "connections": [],
+  "language": "",
+  "media": [],
+  "coordinates": {
+    "$oid": "674300e619d5dd2e2b88549d"
+  },
+  "summary": "Simultaneously with the start of construction on the Aurora Center, work also began on Block 1, another mixed-use building overlooking the main square and the road leading to old Kiruna. These are the first residential buildings in the new town",
+  "createdAt": {
+    "$date": "2024-11-24T10:33:10.342Z"
+  },
+  "updatedAt": {
+    "$date": "2024-11-24T10:33:10.342Z"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "674991bd0452a1900fc47dc7"
+  },
+  "title": "a",
+  "stakeholders": [
+    "Architecture Firms"
+  ],
+  "scale": "CONCEPT",
+  "architecturalScale": "",
+  "type": "AGREEMENT",
+  "date": "2024-11-29",
+  "connections": [],
+  "language": "",
+  "media": [],
+  "summary": "",
+  "createdAt": {
+    "$date": "2024-11-29T10:04:45.651Z"
+  },
+  "updatedAt": {
+    "$date": "2024-12-01T13:46:32.005Z"
+  },
+  "__v": 0,
+  "coordinates": {
+    "$oid": "6728d4d2245d2a20cb85bfd1"
+  }
+},
+{
+  "_id": {
+    "$oid": "674991f60452a1900fc47e14"
+  },
+  "title": "b",
+  "stakeholders": [
+    "LKAB"
+  ],
+  "scale": "ARCHITECTURAL",
+  "architecturalScale": "1:1000",
+  "type": "AGREEMENT",
+  "date": "2024-11-29",
+  "connections": [],
+  "language": "",
+  "media": [],
+  "summary": "",
+  "createdAt": {
+    "$date": "2024-11-29T10:05:42.742Z"
+  },
+  "updatedAt": {
+    "$date": "2024-11-29T10:05:42.742Z"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "6749947a0452a1900fc47f7c"
+  },
+  "title": "c",
+  "stakeholders": [
+    "LKAB"
+  ],
+  "scale": "ARCHITECTURAL",
+  "architecturalScale": "1:1000",
+  "type": "AGREEMENT",
+  "date": "2024-11-29",
+  "connections": [],
+  "language": "",
+  "media": [],
+  "summary": "",
+  "createdAt": {
+    "$date": "2024-11-29T10:16:26.767Z"
+  },
+  "updatedAt": {
+    "$date": "2024-11-29T10:16:26.767Z"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "674994ae0452a1900fc47f80"
+  },
+  "title": "d",
+  "stakeholders": [
+    "LKAB"
+  ],
+  "scale": "ARCHITECTURAL",
+  "architecturalScale": "1:1000",
+  "type": "AGREEMENT",
+  "date": "2024-11-29",
+  "connections": [],
+  "language": "",
+  "media": [],
+  "summary": "",
+  "createdAt": {
+    "$date": "2024-11-29T10:17:18.592Z"
+  },
+  "updatedAt": {
+    "$date": "2024-11-30T15:02:49.312Z"
+  },
+  "__v": 0,
+  "coordinates": {
+    "$oid": "6728d4d2245d2a20cb85bfd1"
+  }
+}]

@@ -41,10 +41,10 @@ const DocumentDetails: React.FC<DocumentDetailsProps> = ({
   const [connectedDocuments, setConnectedDocuments] = useState<any>([]);
   const { setSelectedDocument } = useContext(SidebarContext);
   const [documentLabel, setDocumentLabel] = useState<string>(
-    document.scale === 'ARCHITECTURAL' 
-    && document.architecturalScale 
-    ? ` - ${document.architecturalScale}` 
-    : '');
+    document.scale === 'ARCHITECTURAL' && document.architecturalScale
+      ? ` - ${document.architecturalScale}`
+      : '',
+  );
 
   const matchType = (type: string) => {
     switch (type) {
@@ -65,7 +65,7 @@ const DocumentDetails: React.FC<DocumentDetailsProps> = ({
       case 'TECHNICAL_DOC':
         return 'Technical Document';
       default:
-        return 'Unknown';
+        return type; // Return the type as is if it doesn't match predefined types
     }
   };
 
@@ -82,9 +82,9 @@ const DocumentDetails: React.FC<DocumentDetailsProps> = ({
 
     const docs = document.connections?.map((conn) => {
       return {
-        doc : allDocuments.find((doc) => doc.id === conn.document.toString()),
-        type: conn.type
-      }
+        doc: allDocuments.find((doc) => doc.id === conn.document.toString()),
+        type: conn.type,
+      };
     });
 
     setConnectedDocuments(docs);
@@ -96,7 +96,7 @@ const DocumentDetails: React.FC<DocumentDetailsProps> = ({
     {
       label: 'Stakeholders',
       content: Array.isArray(document.stakeholders)
-        ? document.stakeholders.join(' - ')
+        ? document.stakeholders.map((s) => s.type).join(' - ')
         : document.stakeholders,
     },
     {
@@ -106,7 +106,7 @@ const DocumentDetails: React.FC<DocumentDetailsProps> = ({
         : 'Unknown',
     },
     { label: 'Issuance Date', content: document.date },
-    { label: 'Type', content: matchType(document.type) },
+    { label: 'Type', content: matchType(document.type.type) },
     { 
       label: 'Connections', 
       content: connectedDocuments.map((cd: any) => {
@@ -115,8 +115,8 @@ const DocumentDetails: React.FC<DocumentDetailsProps> = ({
             <span className='text-blue-600 hover:underline cursor-pointer'>{cd.doc?.title}</span>
             <span className='font-normal text-base'> - {cd.type} </span>
           </div>
-        )
-      }) 
+        );
+      }),
     },
     { label: 'Language', content: document.language },
     { label: 'Coordinates', content: document.coordinates?.name },
@@ -130,6 +130,7 @@ const DocumentDetails: React.FC<DocumentDetailsProps> = ({
             <a href={CDN_URL + m.url} target="blank">
               {m.filename}
             </a>
+            {m.pages ? ` (n° pag: ${m.pages})` : ''}
             {separator}
           </span>
         );
@@ -143,9 +144,9 @@ const DocumentDetails: React.FC<DocumentDetailsProps> = ({
         {/* Icon container */}
         <div className="col-span-2 px-2">
           <DocumentIcon
-            type={document.type}
+            type={document.type.type}
             stakeholders={
-              Array.isArray(document.stakeholders) ? document.stakeholders : []
+              Array.isArray(document.stakeholders) ? document.stakeholders.map((s) => s.type) : []
             }
           />
         </div>
@@ -173,10 +174,7 @@ const DocumentDetails: React.FC<DocumentDetailsProps> = ({
             variant="outlined"
             className="border-black text-black text-base px-4 py-2"
             onClick={() => {
-              console.log('Navigate to node:', document.id);
-              // Call the navigate function with the node id
               navigate('/diagram');
-
             }}
           />
         }

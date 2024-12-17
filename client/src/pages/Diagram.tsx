@@ -241,7 +241,7 @@ const Diagram = () => {
 
             // Check the type of the document
             const docType = Array.isArray(types) ? types.find((docTypes: any) => docTypes.label === doc.type.type.toUpperCase()) : null;
-            switch (docType?.label) {
+            switch (docType.label) {
                 case "AGREEMENT":
                     doc.image = AgreementIcon;
                     break;
@@ -281,16 +281,12 @@ const Diagram = () => {
                 doc.connections.forEach((connection: any) => {
                     // Modify the style of the connections according to their type
                     if (connection.type.toUpperCase() === "DIRECT") {
-                        console.log("Direct connection");
                         connectionColor = "#007BFF";
                     } else if (connection.type.toUpperCase() === "COLLATERAL") {
-                        dashesType = [2, 2]; // This is good for collateral connections
                         connectionColor = "#FFA500";
                     } else if (connection.type.toUpperCase() === "PROJECTION") {
-                        dashesType = [1, 3];
                         connectionColor = "#28A745";
                     } else if (connection.type.toUpperCase() === "UPDATE") {
-                        dashesType = [2, 1, 1];
                         connectionColor = "#6F42C1";
                     }
 
