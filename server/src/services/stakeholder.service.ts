@@ -68,18 +68,53 @@ export const fetchStakeholders = async (
 
 
 export const fetchStakeholdersForSearch = async (
-  stakeholderNames: string[],  
+  stakeholderNames: string[],
 ): Promise<ObjectId[]> => {
   if (stakeholderNames && stakeholderNames.length > 0) {
     // Find stakeholders by names
     const stakeholders = await Stakeholder.find({
-      type: { $in: stakeholderNames.map(type => new RegExp('^' + type + '$', 'i')) } 
+      type: { $in: stakeholderNames.map(type => new RegExp('^' + type + '$', 'i')) }
     }).select('-createdAt -updatedAt -__v');
-    
-    if (stakeholders.length > 0) {      
+
+    if (stakeholders.length > 0) {
       return stakeholders.map(stakeholder => (stakeholder._id as unknown) as ObjectId); // Return the stakeholder IDs
     }
   }
-  
+
   return []; // no stakeholders found
+};
+
+
+export const checkStakeholderExistence = async (
+  stakeholderIds: (string | ObjectId)[]
+): Promise<void> => {
+  if (stakeholderIds && stakeholderIds.length > 0) {
+    // Check for existence of stakeholders in DB
+    for (const stakeholderId of stakeholderIds) {
+      const existingStakeholder = await Stakeholder.findById(stakeholderId);
+      if (!existingStakeholder) {
+        throw new StakeholderNotFoundError();
+      }
+    }
+
+    // Check for duplicate stakeholder IDs in the array
+    for (let i = 0; i < stakeholderIds.length; i++) {
+      const stakeholderId = stakeholderIds[i];
+      if (stakeholderIds.indexOf(stakeholderId) !== i) {
+        throw new Error("Duplicate stakeholderID found");
+      }
+    }
+  }
+};
+
+
+/* instanbul ignore next */
+export const deleteStakeholdersByNamePrefix = async (
+  namePrefix: string,
+): Promise<string> => {
+  const result = await Stakeholder.deleteMany({ type: { $regex: `^${namePrefix}` } });
+  if (result.deletedCount === 0) {
+    throw new StakeholderNotFoundError();
+  }
+  return `${result.deletedCount} stakeholder(s) deleted successfully`;
 };

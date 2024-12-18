@@ -3,7 +3,6 @@ import { CustomError } from '../utils/customError';
 import { IDocumentType } from '../interfaces/documentType.interface';
 import { DocumentTypeNotFoundError } from '../utils/errors';
 import { ObjectId } from 'mongoose';
-import { ObjectId as MongoObjectId } from 'mongodb';
 
 //Add new documentType
 export const addingDocumentType = async (
@@ -57,9 +56,9 @@ export const fetchDocumentTypes = async (
 ): Promise<IDocumentType | null> => {
   if (documentTypeId) {
     const documentType = await getDocumentTypeById(documentTypeId.toString());
-    if (documentType) 
-       return documentType;
-}
+    if (documentType)
+      return documentType;
+  }
   return null;
 };
 
@@ -77,4 +76,25 @@ export const fetchDocumentTypesForSearch = async (
     }
   }
   return null;
+};
+
+
+export const checkDocumentTypeExistence = async (documentTypeId: ObjectId | null | undefined): Promise<void> => {
+  if (documentTypeId) {
+    const existingDocumentType = await DocumentType.findById(documentTypeId);
+    if (!existingDocumentType) {
+      throw new DocumentTypeNotFoundError();
+    }
+  }
+};
+
+/* instanbul ignore next */
+export const deleteDocumentTypesByNamePrefix = async (
+  namePrefix: string,
+): Promise<string> => {
+  const result = await DocumentType.deleteMany({ type: { $regex: `^${namePrefix}` } });
+  if (result.deletedCount === 0) {
+    throw new DocumentTypeNotFoundError();
+  }
+  return `${result.deletedCount} document type(s) deleted successfully`;
 };
