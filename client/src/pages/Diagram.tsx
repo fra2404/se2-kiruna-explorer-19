@@ -841,7 +841,7 @@ const Diagram = () => {
                 const selectedEdge: {from: any, to: any, color: string, id: string, document: string, type: string} | undefined = state.graph.edges.find((e) => e.id == edges[0]) as {from: any, to: any, color: string, id: string, document: string} | undefined
                 if (selectedEdge) {
                   const updatedEdges = state.graph.edges.map((edge: any) =>
-                    edge.id === edges[0] || ((edge.from == selectedEdge.from || edge.from == selectedEdge.to) && (edge.to == selectedEdge.from || edge.from == selectedEdge.to) && edge.type == selectedEdge.type)
+                    edge.id === edges[0]
                       ? { ...edge, smooth: { enabled: !edge.smooth?.enabled, type: 'curvedCW', roundness: 0.2 } }
                       : edge
                   );

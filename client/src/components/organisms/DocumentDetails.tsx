@@ -91,7 +91,7 @@ const DocumentDetails: React.FC<DocumentDetailsProps> = ({
         ? ` - ${document.architecturalScale}`
         : '',
     );
-  }, [document]);
+  }, [document, allDocuments]);
 
   const list = [
     { label: 'Title', content: document.title },
