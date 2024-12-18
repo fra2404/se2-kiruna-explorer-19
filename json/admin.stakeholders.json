@@ -1,0 +1,37 @@
+[{
+  "_id": {
+    "$oid": "675da468561b34e474e92811"
+  },
+  "type": "Kiruna Kommun"
+},
+{
+  "_id": {
+    "$oid": "675da577561b34e474e92815"
+  },
+  "type": "Citizens"
+},
+{
+  "_id": {
+    "$oid": "675da5b7561b34e474e92819"
+  },
+  "type": "Architecture Firms"
+},
+{
+  "_id": {
+    "$oid": "675da5e6561b34e474e9281d"
+  },
+  "type": "LKAB"
+},
+{
+  "_id": {
+    "$oid": "6762a0c8b9fa7c995f7a0f12"
+  },
+  "type": "Norrbotten Museum",
+  "createdAt": {
+    "$date": "2024-12-18T10:15:36.602Z"
+  },
+  "updatedAt": {
+    "$date": "2024-12-18T10:15:36.602Z"
+  },
+  "__v": 0
+}]
