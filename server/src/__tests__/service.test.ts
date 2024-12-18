@@ -46,6 +46,9 @@ import {
   getMediaMetadataById,
   fetchMedia
 } from '@services/media.service';
+import { 
+  getGraphDatas 
+} from '../services/graph.service';
 import {
   fetchDocumentTypes,
   addingDocumentType,
@@ -53,9 +56,6 @@ import {
   fetchDocumentTypesForSearch, 
   getDocumentTypeById 
 } from '../services/documentType.service';
-import { 
-  getGraphDatas 
-} from '../services/graph.service';
 import {
   fetchStakeholders,
   addingStakeholder,

@@ -1,13 +1,16 @@
 import { Request, Response, NextFunction } from 'express';
 import { jest } from '@jest/globals';
+import mongoose from 'mongoose';
 
 import { IDocument } from '@interfaces/document.interface';
 import checkHeader from '../middlewares/checkHeader.middleware';
 import { errorHandler } from '../middlewares/errorHandler.middleware';
 import documentSchema from '@schemas/document.schema';
 import { DocTypeEnum } from '@utils/enums/doc-type.enum';
+import Document from '../schemas/document.schema';
 
 import { CustomError } from '@utils/customError';
+import { ScaleTypeEnum } from '@utils/enums/scale-type-enum';
 
 //Mock of the objs that will be used for the connection - for suite n#1
 let req: Partial<Request>;
@@ -123,4 +126,31 @@ describe('Test for the middlewares', () => {
             expect(next).not.toHaveBeenCalled();
           });
     }); //errorHandler
+});
+
+/* ******************************************* Suite n#2 - SCHEMAS ******************************************* */
+describe('Uncoveres tests for document schema', () => {
+    //The architecturale scale option was added in later commits
+    //This feature is now tested in a more explicit way because the alredy existing tests doesn't cover it
+    
+    afterAll(async () => {
+      jest.clearAllMocks();
+    });
+  
+    test('Should validate the "architecturalScale" field if the scale is setted "ARCHITECTURAL"', async () => {
+      const invalidDocumentData = {
+        title: 'Sample Document',
+        stakeholders: [new mongoose.Types.ObjectId()],
+        scale: ScaleTypeEnum.Architectural,
+        type: new mongoose.Types.ObjectId(),
+        date: '2000-01-01',
+      };
+  
+      // README: 
+      // The data is "wrong" because despite the scale is "ARCHITECTURAL" 
+      // the "architecturalScale" field isn't filled, so this is an error!
+
+      const document = new Document(invalidDocumentData);
+      await expect(document.save()).rejects.toThrow(mongoose.Error.ValidationError);
+    });
 });
