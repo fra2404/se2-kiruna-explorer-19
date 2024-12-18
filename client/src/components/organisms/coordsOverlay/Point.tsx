@@ -98,10 +98,10 @@ export const Point: React.FC<PointProps> = ({
   useEffect(() => {
     if (selectedDocument && pointDocuments.includes(selectedDocument)) {
       map.flyTo(markerRef.current?.getLatLng() ?? kirunaLatLngCoords);
-      if (!popupOpen) {
-        setTimeout(() => markerRef.current?.openPopup(), 50);
-        popupOpen = true;
-      }
+
+      setTimeout(() => markerRef.current?.openPopup(), 50);
+      popupOpen = true;
+
       if (type == 'Polygon') {
         polygonRef.current?.addTo(map); //Needs to be added twice, otherwise it won't work
         polygonRef.current?.addTo(map);
