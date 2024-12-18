@@ -66,7 +66,7 @@ const Diagram = () => {
   const [state, setState] = useState({
     graph: {
       nodes: [] as any[],
-      edges: [] as { from: any; to: any; color: string }[],
+      edges: [] as { from: any; to: any; color: string; id: string }[],
     },
   });
 
@@ -96,8 +96,8 @@ const Diagram = () => {
       setSidebarVisible(true);
     }
   };
-
   const handleNodeClick = (document: IDocument) => {
+    console.log('Selected node:', document.id);
     openSidebar(document);
   };
 
@@ -390,18 +390,26 @@ const Diagram = () => {
             connectionColor = '#6F42C1';
           }
 
-          const isEdgeCurved = localStorage.getItem(`edge-${connection.document}`)
+          const isEdgeCurved = localStorage.getItem(
+            `edge-${connection.document}`,
+          );
           let isCurved;
-          if(isEdgeCurved) {
+          if (isEdgeCurved) {
             isCurved = JSON.parse(isEdgeCurved).isCurved;
-          }
-          else {
-            isCurved = false
+          } else {
+            isCurved = false;
           }
 
-          console.log(connection)
+          console.log(connection);
 
-          if(!connections.find((c) => ((c.from == doc.id || c.from == connection.document) && (c.to == doc.id || c.from == connection.document) && c.type == connection.type))) {
+          if (
+            !connections.find(
+              (c) =>
+                (c.from == doc.id || c.from == connection.document) &&
+                (c.to == doc.id || c.from == connection.document) &&
+                c.type == connection.type,
+            )
+          ) {
             connections.push({
               ...connection,
               from: doc.id,
@@ -409,8 +417,8 @@ const Diagram = () => {
               color: connectionColor,
               dashes: dashesType,
               width: connectionWidth,
-              smooth: { enabled: isCurved, type: "curvedCW", roundness: 0.2 },
-              arrows: 'none'
+              smooth: { enabled: isCurved, type: 'curvedCW', roundness: 0.2 },
+              arrows: 'none',
             });
           }
         });
@@ -421,13 +429,24 @@ const Diagram = () => {
       .filter((doc: any) => doc.year !== null) // Filters documents with defined year
       .map((doc: any) => ({
         id: doc.id,
-        shape: 'image',
         image: doc.image,
         size: 50,
         brokenImage: ErrorImage,
         year: doc.year,
         scale: doc.scale,
         architecturalScale: doc.architecturalScale,
+        shape:
+          selectedDocument && selectedDocument.id === doc.id
+            ? 'circularImage'
+            : 'image', // Change shape to circularImage when selected
+        borderWidth: selectedDocument && selectedDocument.id === doc.id ? 1 : 0, // Set border width to 10px for the selected node
+        color: {
+          border:
+            selectedDocument && selectedDocument.id === doc.id
+              ? 'trasparent'
+              : 'transparent', // Color the border only for the selected node
+          background: 'transparent', // Keep the background transparent
+        },
       }))
       .map((node) => {
         // Retrieves the saved position fron local storage
@@ -488,7 +507,7 @@ const Diagram = () => {
         edges: connections,
       },
     });
-  }, [filteredDocuments, types]);
+  }, [filteredDocuments, types, selectedDocument]);
 
   const occupiedPositions = [] as any;
   const computeYearX = (year: number) => {
@@ -835,27 +854,61 @@ const Diagram = () => {
             },
 
             click: (event: any) => {
-              console.log(event)
-              if(event.nodes.length == 0) {
-                const { edges } = event
-                const selectedEdge: {from: any, to: any, color: string, id: string, document: string, type: string} | undefined = state.graph.edges.find((e) => e.id == edges[0]) as {from: any, to: any, color: string, id: string, document: string} | undefined
+              console.log(event);
+              if (event.nodes.length == 0) {
+                const { edges } = event;
+                const selectedEdge:
+                  | {
+                      from: any;
+                      to: any;
+                      color: string;
+                      id: string;
+                      document: string;
+                      type: string;
+                    }
+                  | undefined = state.graph.edges.find(
+                  (e) => e.id == edges[0],
+                ) as
+                  | {
+                      from: any;
+                      to: any;
+                      color: string;
+                      id: string;
+                      document: string;
+                    }
+                  | undefined;
                 if (selectedEdge) {
                   const updatedEdges = state.graph.edges.map((edge: any) =>
-                    edge.id === edges[0] || ((edge.from == selectedEdge.from || edge.from == selectedEdge.to) && (edge.to == selectedEdge.from || edge.from == selectedEdge.to) && edge.type == selectedEdge.type)
-                      ? { ...edge, smooth: { enabled: !edge.smooth?.enabled, type: 'curvedCW', roundness: 0.2 } }
-                      : edge
+                    edge.id === edges[0] ||
+                    ((edge.from == selectedEdge.from ||
+                      edge.from == selectedEdge.to) &&
+                      (edge.to == selectedEdge.from ||
+                        edge.from == selectedEdge.to) &&
+                      edge.type == selectedEdge.type)
+                      ? {
+                          ...edge,
+                          smooth: {
+                            enabled: !edge.smooth?.enabled,
+                            type: 'curvedCW',
+                            roundness: 0.2,
+                          },
+                        }
+                      : edge,
                   );
-                  setState({graph: {nodes: state.graph.nodes, edges: updatedEdges }});
+                  setState({
+                    graph: { nodes: state.graph.nodes, edges: updatedEdges },
+                  });
 
-                  const isEdgeCurved = localStorage.getItem(`edge-${selectedEdge.document}`)
-                  if(isEdgeCurved) {
+                  const isEdgeCurved = localStorage.getItem(
+                    `edge-${selectedEdge.document}`,
+                  );
+                  if (isEdgeCurved) {
                     const isCurved = JSON.parse(isEdgeCurved).isCurved;
                     localStorage.setItem(
                       `edge-${selectedEdge.document}`,
                       JSON.stringify({ isCurved: !isCurved }),
                     );
-                  }
-                  else {
+                  } else {
                     localStorage.setItem(
                       `edge-${selectedEdge.document}`,
                       JSON.stringify({ isCurved: true }),
