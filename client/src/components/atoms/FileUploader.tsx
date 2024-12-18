@@ -58,6 +58,9 @@ const FileUploader = ({
         'text/plain': ['.txt'],
         'text/csv': ['.csv'],
         'text/markdown': ['.md'],
+        'image/jpeg': ['.jpeg'],
+        'image/jpg': ['.jpg'],
+        'image/png': ['.png'],
       },
       multiple: true,
     });
@@ -79,7 +82,7 @@ const FileUploader = ({
           <p>Drag & drop files or click to upload</p>
         )}
       </div>
-      <p className="text-sm mt-1">(.pdf, .txt, .csv, .md)</p>
+      <p className="text-sm mt-1">(.pdf, .txt, .csv, .md, .jpeg, .jpg, .png)</p>
 
       {/* Error Messages */}
       {errorMessage && <div className="text-red-500 mt-2">{errorMessage}</div>}

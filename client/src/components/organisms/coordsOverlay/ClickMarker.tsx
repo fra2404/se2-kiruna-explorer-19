@@ -1,11 +1,9 @@
 import React, { useState, useRef } from 'react';
 import { useMapEvents, Popup } from 'react-leaflet';
 import { LatLng } from 'leaflet';
-import Modal from 'react-modal';
 import ButtonRounded from '../../atoms/button/ButtonRounded';
 import { IDocument } from '../../../utils/interfaces/document.interface';
 import DocumentForm from '../DocumentForm';
-import { modalStyles } from '../../../pages/KirunaMap';
 import { isMarkerInsideKiruna } from '../../../utils/isMarkerInsideKiruna';
 
 interface ClickMarkerProps {

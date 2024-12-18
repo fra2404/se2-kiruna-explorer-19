@@ -551,7 +551,7 @@ const Diagram = () => {
         });
       }
 
-      network.moveTo({ scale: 0.4 }); // Set the initial zoom level
+      network.moveTo({ scale: 0.35 }); // Set the initial zoom level
       network.on('zoom', function (params: any) {
         if (params.scale < min_zoom || params.scale > max_zoom) {
           network.moveTo({

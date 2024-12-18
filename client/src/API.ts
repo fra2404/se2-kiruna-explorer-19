@@ -94,7 +94,9 @@ async function getDocuments(): Promise<IDocument[]> {
     }
 
     const documents = await response.json();
-    return documents; // Return documents directly
+    return documents.sort((a: IDocument, b: IDocument) => {
+      return new Date(a.date).getTime() - new Date(b.date).getTime()
+    }); // Return documents after sorting them by date
   } catch (error) {
     console.log(error);
     return [];

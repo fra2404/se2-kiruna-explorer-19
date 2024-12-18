@@ -1,0 +1,36 @@
+[{
+  "_id": {
+    "$oid": "675f08a90ad9c508f56cf6a2"
+  },
+  "type": "INFORMATIVE_DOC"
+},
+{
+  "_id": {
+    "$oid": "675f08da0ad9c508f56cf6a6"
+  },
+  "type": "PRESCRIPTIVE_DOC"
+},
+{
+  "_id": {
+    "$oid": "675f08fa0ad9c508f56cf6aa"
+  },
+  "type": "DESIGN_DOC"
+},
+{
+  "_id": {
+    "$oid": "675f09500ad9c508f56cf6b0"
+  },
+  "type": "TECHNICAL_DOC"
+},
+{
+  "_id": {
+    "$oid": "675f096c0ad9c508f56cf6b4"
+  },
+  "type": "MATERIAL_EFFECTS"
+},
+{
+  "_id": {
+    "$oid": "675f09bd0ad9c508f56cf6bc"
+  },
+  "type": "AGREEMENT"
+}]
