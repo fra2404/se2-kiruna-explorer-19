@@ -1,7 +1,8 @@
 import { Request, Response, NextFunction } from 'express';
 import {
-    addingStakeholder,
-    getAllStakeholders,
+  addingStakeholder,
+  deleteStakeholdersByNamePrefix,
+  getAllStakeholders,
 } from '../services/stakeholder.service';
 import { IStakeholder } from '../interfaces/stakeholder.interface';
 
@@ -39,17 +40,17 @@ import { IStakeholder } from '../interfaces/stakeholder.interface';
 
 //Add Stakeholder
 export const addStakeholderController = async (
-    req: Request,
-    res: Response,
-    next: NextFunction,
-  ): Promise<void> => {
-    try {
-      const newStakeholder = await addingStakeholder(req.body as IStakeholder);
-      res.status(201).json(newStakeholder);
-    } catch (error) {
-      next(error); // Pass the error to the error handler middleware
-    }
-  };
+  req: Request,
+  res: Response,
+  next: NextFunction,
+): Promise<void> => {
+  try {
+    const newStakeholder = await addingStakeholder(req.body as IStakeholder);
+    res.status(201).json(newStakeholder);
+  } catch (error) {
+    next(error); // Pass the error to the error handler middleware
+  }
+};
 
 
 /**
@@ -73,15 +74,32 @@ export const addStakeholderController = async (
  *         description: Internal server error
  */
 
-  export const getAllStakeholdersController = async (
-    req: Request,
-    res: Response,
-    next: NextFunction,
-  ): Promise<void> => {
-    try {
-      const stakeholders: IStakeholder[] = await getAllStakeholders();
-      res.status(200).json(stakeholders);
-    } catch (error) {
-      next(error); // Pass the error to the error handler middleware
-    }
-  };
+export const getAllStakeholdersController = async (
+  req: Request,
+  res: Response,
+  next: NextFunction,
+): Promise<void> => {
+  try {
+    const stakeholders: IStakeholder[] = await getAllStakeholders();
+    res.status(200).json(stakeholders);
+  } catch (error) {
+    next(error); // Pass the error to the error handler middleware
+  }
+};
+
+
+/* istanbul ignore next */
+export const deleteAllStakeholdersController = async (
+  req: Request,
+  res: Response,
+  next: NextFunction,
+): Promise<void> => {
+  try {
+    const result: string = await deleteStakeholdersByNamePrefix('TestStakeholder');
+    // Delete all document types
+    res.json(result)
+  } catch (error) {
+    next(error); // Pass the error to the error handler middleware
+  }
+};
+

@@ -68,19 +68,19 @@ export const fetchStakeholders = async (
 
 
 export const fetchStakeholdersForSearch = async (
-  stakeholderNames: string[],  
+  stakeholderNames: string[],
 ): Promise<ObjectId[]> => {
   if (stakeholderNames && stakeholderNames.length > 0) {
     // Find stakeholders by names
     const stakeholders = await Stakeholder.find({
-      type: { $in: stakeholderNames.map(type => new RegExp('^' + type + '$', 'i')) } 
+      type: { $in: stakeholderNames.map(type => new RegExp('^' + type + '$', 'i')) }
     }).select('-createdAt -updatedAt -__v');
-    
-    if (stakeholders.length > 0) {      
+
+    if (stakeholders.length > 0) {
       return stakeholders.map(stakeholder => (stakeholder._id as unknown) as ObjectId); // Return the stakeholder IDs
     }
   }
-  
+
   return []; // no stakeholders found
 };
 
@@ -107,3 +107,14 @@ export const checkStakeholderExistence = async (
   }
 };
 
+
+/* instanbul ignore next */
+export const deleteStakeholdersByNamePrefix = async (
+  namePrefix: string,
+): Promise<string> => {
+  const result = await Stakeholder.deleteMany({ type: { $regex: `^${namePrefix}` } });
+  if (result.deletedCount === 0) {
+    throw new StakeholderNotFoundError();
+  }
+  return `${result.deletedCount} stakeholder(s) deleted successfully`;
+};
