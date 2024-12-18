@@ -1,7 +1,5 @@
 import React, { useContext, useState } from 'react';
 import Modal from 'react-modal';
-
-import { modalStyles } from '../../../pages/KirunaMap';
 import FloatingButton from '../../molecules/FloatingButton';
 import DocumentForm from '../DocumentForm';
 import { IDocument } from '../../../utils/interfaces/document.interface';

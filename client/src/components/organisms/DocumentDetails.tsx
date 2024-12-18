@@ -1,9 +1,7 @@
 import { useAuth } from '../../context/AuthContext';
-import { modalStyles } from '../../pages/KirunaMap';
 import { UserRoleEnum } from '../../utils/interfaces/user.interface';
 import ButtonRounded from '../atoms/button/ButtonRounded';
 import { DocumentIcon } from '../molecules/documentsItems/DocumentIcon';
-import Modal from 'react-modal';
 import DocumentForm from './DocumentForm';
 import { IDocument } from '../../utils/interfaces/document.interface';
 import { useState, useEffect, useContext } from 'react';
@@ -130,7 +128,7 @@ const DocumentDetails: React.FC<DocumentDetailsProps> = ({
       }),
     },
     { label: 'Language', content: document.language },
-    { label: 'Coordinates', content: document.coordinates?.name },
+    { label: 'Coordinates', content: document.coordinates?.name ?? 'All Municipality' },
     {
       label: 'Original Resources',
       content: document.media?.map((m, i) => {

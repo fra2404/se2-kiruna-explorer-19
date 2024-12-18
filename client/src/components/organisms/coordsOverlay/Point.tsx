@@ -1,10 +1,8 @@
 import React, { useContext, useEffect, useRef, useState } from 'react';
 import { Marker, useMap } from 'react-leaflet';
 import { DivIcon, LatLng } from 'leaflet';
-import Modal from 'react-modal';
 import { IDocument } from '../../../utils/interfaces/document.interface';
 import { MapPopup } from '../../molecules/popups/MapPopup';
-import { modalStyles } from '../../../pages/KirunaMap';
 import DocumentForm from '../DocumentForm';
 import { DocumentIcon } from '../../molecules/documentsItems/DocumentIcon';
 import { renderToString } from 'react-dom/server';

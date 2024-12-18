@@ -316,6 +316,22 @@ const DocumentForm = ({
     showToast('Document saved successfully', 'success');
     setShowSummary(true);
     setModalOpen(false);
+
+    //Empties the documents variables when we insert a new dcument successfully
+    setTitle('');
+    setStakeholders([]);
+    setScale('');
+    setArchitecturalScale('');
+    setIssuanceDate(new Date().toISOString().split('T')[0]);
+    setDocType(undefined);
+    setConnections([]);
+    setLanguage('');
+    setDescription('');
+    setPosition(undefined);
+    setSelectedCoordId(undefined);
+    setCoordName('');
+    setCoordNamePopupOpen(false);
+
     if (responseDocument) {
       if (!selectedDocument) {
         setDocuments(documents.concat(responseDocument));
