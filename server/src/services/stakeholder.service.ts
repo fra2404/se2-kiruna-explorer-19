@@ -83,3 +83,27 @@ export const fetchStakeholdersForSearch = async (
   
   return []; // no stakeholders found
 };
+
+
+export const checkStakeholderExistence = async (
+  stakeholderIds: (string | ObjectId)[]
+): Promise<void> => {
+  if (stakeholderIds && stakeholderIds.length > 0) {
+    // Check for existence of stakeholders in DB
+    for (const stakeholderId of stakeholderIds) {
+      const existingStakeholder = await Stakeholder.findById(stakeholderId);
+      if (!existingStakeholder) {
+        throw new StakeholderNotFoundError();
+      }
+    }
+
+    // Check for duplicate stakeholder IDs in the array
+    for (let i = 0; i < stakeholderIds.length; i++) {
+      const stakeholderId = stakeholderIds[i];
+      if (stakeholderIds.indexOf(stakeholderId) !== i) {
+        throw new Error("Duplicate stakeholderID found");
+      }
+    }
+  }
+};
+

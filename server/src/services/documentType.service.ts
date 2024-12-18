@@ -78,3 +78,13 @@ export const fetchDocumentTypesForSearch = async (
   }
   return null;
 };
+
+
+export const checkDocumentTypeExistence = async (documentTypeId: ObjectId | null | undefined): Promise<void> => {
+  if (documentTypeId) {
+    const existingDocumentType = await DocumentType.findById(documentTypeId);
+    if (!existingDocumentType) {
+      throw new DocumentTypeNotFoundError();
+    }
+  }
+};
