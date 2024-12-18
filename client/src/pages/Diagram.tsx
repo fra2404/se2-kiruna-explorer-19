@@ -439,7 +439,8 @@ const Diagram = () => {
           selectedDocument && selectedDocument.id === doc.id
             ? 'circularImage'
             : 'image', // Change shape to circularImage when selected
-        borderWidth: selectedDocument && selectedDocument.id === doc.id ? 1 : 0, // Set border width to 10px for the selected node
+        borderWidth:
+          selectedDocument && selectedDocument.id === doc.id ? 100 : 0, // Set border width to 10px for the selected node
         color: {
           border:
             selectedDocument && selectedDocument.id === doc.id
