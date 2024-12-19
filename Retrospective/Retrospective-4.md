@@ -12,7 +12,7 @@
   - Done: 34
 - Nr of hours planned vs spent (as a team)
   - Planned: 93h00m
-  - Spent: 92h55m
+  - Spent: 93h40m
 
 **Remember**  a story is done ONLY if it fits the Definition of Done:
  
@@ -27,8 +27,8 @@
 | Story  | # Tasks | Points | Hours est. | Hours actual |
 |--------|---------|--------|------------|--------------|
 | _#0_   | 33      |    -   | 82h10m     | 83h30m       |
-| KX17   | 2       | 5      | 03h00m     | 02h20m       |
-| KX12   | 1       | 21     | 02h00m     | 02h30m       |
+| KX17   | 2       | 5      | 03h00m     | 03h00m       |
+| KX12   | 1       | 21     | 02h00m     | 03h00m       |
 | KX13   | 2       | 5      | 05h30m     | 03h50m       |
 | KX15   | 1       | 3      | 0h20m      | 0h20m        |
    
@@ -43,7 +43,7 @@
 
 - Total estimation error ratio: sum of total hours spent / sum of total hours effort - 1
 
-    $$\frac{\sum_i spent_{task_i}}{\sum_i estimation_{task_i}} - 1 = \frac{92.92}{93.00} - 1 = -0.0009$$
+    $$\frac{\sum_i spent_{task_i}}{\sum_i estimation_{task_i}} - 1 = \frac{92.92}{93.66} - 1 = -0.008$$
     
 - Absolute relative task estimation error: sum( abs( spent-task-i / estimation-task-i - 1))/n
 
