@@ -27,7 +27,7 @@ services:
       - DOCKER_ENV=true
     networks:
       - my-network
-    restart: on-failure # Riavvia il container se il comando `npm run dev` fallisce
+    restart: on-failure
 
   # Client (Vite con build)
   client:
