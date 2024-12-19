@@ -20,14 +20,14 @@ services:
   server:
     image: fraalbi24/se2-kiruna-explorer-19-server:final
     depends_on:
-      mongo:
-        condition: service_healthy
+      - mongo
     ports:
       - "5001:5001"
     environment:
       - DOCKER_ENV=true
     networks:
       - my-network
+    restart: on-failure # Riavvia il container se il comando `npm run dev` fallisce
 
   # Client (Vite con build)
   client:
