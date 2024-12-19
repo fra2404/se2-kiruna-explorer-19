@@ -6,18 +6,23 @@ import { MapStyleProvider } from './context/MapStyleContext.tsx';
 import KirunaMap from './pages/KirunaMap.tsx';
 import { MunicipalityCoordinatesProvider } from './context/MunicipalityCoordinatesContext.tsx';
 import Diagram from './pages/Diagram.tsx';
+import LandingPage from './pages/LandingPage.tsx';
+import { SidebarProvider } from './context/SidebarContext.tsx';
 
 function App() {
   return (
     <AuthProvider>
       <ModalProvider>
         <MapStyleProvider>
-          <MunicipalityCoordinatesProvider>
-            <Routes>
-              <Route path="/" element={<KirunaMap />} />
-              <Route path="/diagram" element={<Diagram />} />
-            </Routes>
-          </MunicipalityCoordinatesProvider>
+          <SidebarProvider>
+            <MunicipalityCoordinatesProvider>
+              <Routes>
+                <Route path="/" element={<LandingPage />} />
+                <Route path="/map" element={<KirunaMap />} />
+                <Route path="/diagram" element={<Diagram />} />
+              </Routes>
+            </MunicipalityCoordinatesProvider>
+          </SidebarProvider>
         </MapStyleProvider>
       </ModalProvider>
     </AuthProvider>

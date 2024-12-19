@@ -1,6 +1,4 @@
 import { IDocument, IConnection } from '@interfaces/document.interface';
-import { DocTypeEnum } from '@utils/enums/doc-type.enum';
-import { StakeholderEnum } from '@utils/enums/stakeholder.enum';
 import { LinkTypeEnum } from '@utils/enums/link-type.enum';
 import { ScaleTypeEnum } from '@utils/enums/scale-type-enum';
 import mongoose, { Document, Schema } from 'mongoose';
@@ -31,9 +29,9 @@ const documentSchema = new Schema<DocumentDocument>(
     },
     stakeholders: [
       {
-        type: String,
+        type: Schema.Types.ObjectId,
+        ref: 'Stakeholder',
         required: true,
-        enum: StakeholderEnum,
       },
     ],
     scale: {
@@ -46,9 +44,9 @@ const documentSchema = new Schema<DocumentDocument>(
       required: function () { return this.scale === 'ARCHITECTURAL'; }, // Only if scale is 'Architectural'
     },
     type: {
-      type: String,
+      type: Schema.Types.ObjectId,
+      ref: 'Documenttype',
       required: true,
-      enum: DocTypeEnum,
     },
     date: {
       type: String,

@@ -42,6 +42,9 @@ interface InputComponentProps {
   returnObject?: boolean;
   onKeyDown?: (event: React.KeyboardEvent<HTMLInputElement>) => void;
   error?: string;
+  addNew?: boolean;
+  onAddNewSelect?: () => void; // Aggiungi questa proprietà
+  inputRef?: React.RefObject<HTMLInputElement | HTMLTextAreaElement>; // Aggiungi inputRef
 }
 
 const mockFlags = {
@@ -87,11 +90,14 @@ const InputComponent: React.FC<InputComponentProps> = ({
   returnObject = false,
   onKeyDown,
   error,
+  addNew = false,
+  onAddNewSelect,
+  inputRef,
 }) => {
   const [isEmailValid, setIsEmailValid] = useState<boolean>(true);
   const [isFieldEmpty, setIsFieldEmpty] = useState<boolean>(false);
   const [selectedOption, setSelectedOption] = useState<Option | null>(
-    options.find((option) => option.value === defaultValue) || null,
+    options.find((option) => option.value === value) || options.find((option) => option.value === defaultValue) || null ,
   );
   const [selectedOptions, setSelectedOptions] = useState<Option[]>(
     Array.isArray(value) ? (value) : [],
@@ -137,31 +143,6 @@ const InputComponent: React.FC<InputComponentProps> = ({
     }
   }, [value, type, validateEmail, validateField]);
 
-  const customOption = useCallback(
-    (props: { data: Option; innerRef: any; innerProps: any }) => {
-      const { data, innerRef, innerProps } = props;
-      return (
-        <div ref={innerRef} {...innerProps} className="flex items-center p-2">
-          {data.icon && (
-            <span
-              className="mr-2"
-              style={{ maxWidth: '20px', maxHeight: '20px' }}
-            >
-              {data.icon}
-            </span>
-          )}
-          {data.code && (
-            <span>{mockFlags[data.code as keyof typeof mockFlags]}</span>
-          )}
-          <p className="ml-2">
-            {data.prefix} {data.label}
-          </p>
-        </div>
-      );
-    },
-    [],
-  );
-
   const handleBlur = useCallback(() => {
     setIsTouched(true);
     if (type === 'email') {
@@ -182,46 +163,75 @@ const InputComponent: React.FC<InputComponentProps> = ({
     setShowPassword(!showPassword);
   };
 
-  const handleSelectChange = (selectedOption: Option | null) => {
-    if (selectedOption && selectedOption.value === '') {
-      setSelectedOption(null);
-      if (onChange) {
+  const deselectOptions = () => {
+    setSelectedOption(null);
+    if (onChange) {
+      onChange({
+        target: {
+          value: '',
+          name,
+        } as any,
+      } as ChangeEvent<HTMLSelectElement>);
+    }
+  }
+
+  const changingSelectedOption = (selectedOption: Option | null) => {
+    setSelectedOption(selectedOption);
+    if (onChange) {
+      if (returnObject) {
+        if (selectedOption) {
+          onChange(selectedOption); // Pass the entire selected object
+        }
+      } else {
         onChange({
           target: {
-            value: '',
+            value: selectedOption ? selectedOption.value : '',
             name,
           } as any,
         } as ChangeEvent<HTMLSelectElement>);
       }
-    } else {
-      setSelectedOption(selectedOption);
-      if (onChange) {
-        if (returnObject) {
-          if (selectedOption) {
-            onChange(selectedOption); // Passa l'intero oggetto selezionato
-          }
-        } else {
-          onChange({
-            target: {
-              value: selectedOption ? selectedOption.value : '',
-              name,
-            } as any,
-          } as ChangeEvent<HTMLSelectElement>);
-        }
+    }
+  }
+
+  const handleSelectChange = (selectedOption: Option | null) => {
+    if(selectedOption && selectedOption.value === '') {
+      deselectOptions();
+    }
+    else if (selectedOption && selectedOption.value === 'add-new') {
+      if (onAddNewSelect) {
+        onAddNewSelect(); // Notifies the parent component
       }
+    } else {
+      changingSelectedOption(selectedOption);
     }
   };
 
   const handleMultiSelectChange = (selectedOptions: Option[]) => {
-    setSelectedOptions(selectedOptions);
-    if (onChange) {
-      onChange(selectedOptions);
+    if (selectedOptions.some(option => option.value === 'add-new')) {
+      if (onAddNewSelect) {
+        onAddNewSelect(); // Notifies the parent component
+      }
+    } else {
+      setSelectedOptions(selectedOptions);
+      if (onChange) {
+        onChange(selectedOptions);
+      }
     }
   };
 
-  const selectOptions = selectedOption
-    ? [{ value: '', label: 'Cancel selection' }, ...options]
-    : options;
+  let selectOptions;
+  
+  if(addNew) {
+    if(selectedOption)
+      selectOptions = [{ value: 'add-new', label: '+ Add New' }, { value: '', label: 'Cancel selection' }, ...options];
+    else
+      selectOptions = [{ value: 'add-new', label: '+ Add New' }, ...options];
+  }
+  else if(selectedOption) {
+    selectOptions = [{ value: '', label: 'Cancel selection' }, ...options];
+  }
+  else
+    selectOptions = options;
 
   return (
     <div className="mb-4">
@@ -247,6 +257,7 @@ const InputComponent: React.FC<InputComponentProps> = ({
             disabled={disabled}
             max={type === 'date' ? max : undefined}
             onKeyDown={onKeyDown}
+            ref={inputRef as React.RefObject<HTMLInputElement>}
           />
           {type === 'password' && (
             <button
@@ -270,14 +281,15 @@ const InputComponent: React.FC<InputComponentProps> = ({
           onBlur={handleBlur}
           disabled={disabled}
           maxLength={maxLength}
+          ref={inputRef as React.RefObject<HTMLTextAreaElement>}
         />
       )}
       {type === 'select' && (
         <Select
           className="shadow appearance-none rounded w-full text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
           options={selectOptions}
-          onChange={handleSelectChange}
-          components={{ SingleValue: CustomSingleValue, Option: customOption }}
+          onChange={(s) => handleSelectChange(s)}
+          components={{ SingleValue: CustomSingleValue }}
           name={name}
           value={selectedOption}
           defaultValue={options.find((option) => option.value === defaultValue)}
@@ -316,7 +328,7 @@ const InputComponent: React.FC<InputComponentProps> = ({
         <Select
           isMulti
           className="shadow appearance-none rounded w-full text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-          options={options}
+          options={selectOptions}
           onChange={(selectedOptions) =>
             handleMultiSelectChange(selectedOptions as Option[])
           }
@@ -328,6 +340,7 @@ const InputComponent: React.FC<InputComponentProps> = ({
           getOptionLabel={(option) => option.label}
           getOptionValue={(option) => option.value}
           menuPortalTarget={document.body}
+          components={{ SingleValue: CustomSingleValue }}
           styles={{
             control: (provided) => ({
               ...provided,

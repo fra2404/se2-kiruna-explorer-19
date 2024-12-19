@@ -2,7 +2,9 @@ import { body, param } from 'express-validator';
 import { IConnection } from '@interfaces/document.interface';
 import mongoose from 'mongoose';
 import { ScaleTypeEnum } from '@utils/enums/scale-type-enum';
-import { StakeholderEnum } from '@utils/enums/stakeholder.enum';
+import Stakeholder from '@schemas/stakeholder.schema';
+import DocumentType from '@schemas/documentType.schema';
+
 
 
 export const validateAddDocument = [
@@ -20,8 +22,13 @@ export const validateAddDocument = [
       return validateStakeholderEmptiness(value);
     }
     )
-    .custom((value) => {
-      return validateStakeholderContent(value);
+    .custom(async (value) => {
+      await validateStakeholderContent(value);
+      return true;
+    })
+    .custom(async (value) => {
+      await validateStakeholderRepetition(value);
+      return true;
     }),
   body('scale')
     .notEmpty()
@@ -31,22 +38,15 @@ export const validateAddDocument = [
     .isIn(Object.values(ScaleTypeEnum))
     .withMessage('Scale is invalid')
     .custom((value, { req }) => validateScale(value, req.body.architecturalScale)),
-  //**********************************/
-
   body('type')
     .notEmpty()
     .withMessage('Type is required')
-    .isIn([
-      'AGREEMENT',
-      'CONFLICT',
-      'CONSULTATION',
-      'DESIGN_DOC',
-      'INFORMATIVE_DOC',
-      'MATERIAL_EFFECTS',
-      'PRESCRIPTIVE_DOC',
-      'TECHNICAL_DOC',
-    ])
-    .withMessage('Type is invalid'),
+    .isString()
+    .withMessage('Type must be a string')
+    .custom(async (value) => {
+      await validateDocumentTypeContent(value);
+      return true;
+    }),
   body('connections')
     .optional()
     .isArray()
@@ -107,17 +107,10 @@ export const validateDocumentType = [
   param('type')
     .trim()
     .toUpperCase()
-    .isIn([
-      'AGREEMENT',
-      'CONFLICT',
-      'CONSULTATION',
-      'DESIGN_DOC',
-      'INFORMATIVE_DOC',
-      'MATERIAL_EFFECTS',
-      'PRESCRIPTIVE_DOC',
-      'TECHNICAL_DOC',
-    ])
-    .withMessage('Type is invalid'),
+    .custom(async (value) => {
+      await validateDocumentTypeContent(value);
+      return true;
+    }),
 ];
 
 export const validateUpdateDocument = [
@@ -125,13 +118,16 @@ export const validateUpdateDocument = [
   body('stakeholders')
     .optional()
     .isArray()
-    .withMessage('Stakeholders must be an array')
+    .withMessage('Stakeholders must be an array of ObjectID')
     .custom((value) => {
       return validateStakeholderEmptiness(value);
     }
     )
     .custom((value) => {
       return validateStakeholderContent(value);
+    })
+    .custom((value) => {
+      return validateStakeholderRepetition(value);
     }),
   body('scale')
     .optional()
@@ -142,17 +138,12 @@ export const validateUpdateDocument = [
     .custom((value, { req }) => validateScale(value, req.body.architecturalScale)),
   body('type')
     .optional()
-    .isIn([
-      'AGREEMENT',
-      'CONFLICT',
-      'CONSULTATION',
-      'DESIGN_DOC',
-      'INFORMATIVE_DOC',
-      'MATERIAL_EFFECTS',
-      'PRESCRIPTIVE_DOC',
-      'TECHNICAL_DOC',
-    ])
-    .withMessage('Type is invalid'),
+    .isString()
+    .withMessage('Type must be a string')
+    .custom(async (value) => {
+      await validateDocumentTypeContent(value);
+      return true;
+    }),
   body('connections')
     .optional()
     .isArray()
@@ -218,14 +209,19 @@ export const validateSearchDocument = [
       return true;
     }),
 
+  body('type')
+    .optional()
+    .isString()
+    .withMessage('Type must be a string')
+    .custom(async (value) => {
+      await validateDocumentTypeContent(value);
+      return true;
+    }),
 
   body('stakeholders')
     .optional()
     .isArray()
     .withMessage('Stakeholders must be an array')
-    //   .custom((value) => {
-    //     return validateStakeholderEmptiness(value);
-    //  })  //I do not know if needed or I should consider empty array like not filtering by stakeholder?!
     .custom((value) => {
       return validateStakeholderContent(value);
     }),
@@ -257,20 +253,16 @@ export const validateSearchDocument = [
 ]
 
 
+
 const validateScale = (scale: ScaleTypeEnum, architecturalScale?: string) => {
   if (scale === ScaleTypeEnum.Architectural) {
     if (!architecturalScale || !/^1:\d+$/.test(architecturalScale)) {
       throw new Error('Architectural Scale must be in the 1:number format');
     }
-  } else {
-    if ([ScaleTypeEnum.BlueprintMaterialEffects, ScaleTypeEnum.Text, ScaleTypeEnum.Concept].includes(scale)) {
+  } else if ([ScaleTypeEnum.BlueprintMaterialEffects, ScaleTypeEnum.Text, ScaleTypeEnum.Concept].includes(scale)) {   
       if (architecturalScale) {
         throw new Error('Architectural Scale must be empty when scale is a string');
       }
-    }
-    //else if (![ScaleTypeEnum.BlueprintMaterialEffects, ScaleTypeEnum.Text, ScaleTypeEnum.Concept].includes(scale)) {
-    //   throw new Error(`Invalid scale: ${scale}`);
-    // }
   }
   return true;
 };
@@ -307,19 +299,53 @@ const validateDate = (value: string) => {
 };
 
 
-const validateStakeholderContent = (stakeholders: string[]) => {
-  const validStakeholders: string[] = Object.values(StakeholderEnum)
-  stakeholders.forEach((stakeholder) => {
-    if (!validStakeholders.includes(stakeholder)) {
-      throw new Error(`Invalid stakeholder: ${stakeholder}`);
-    }
-  });
-  return true;
-}
 
-const validateStakeholderEmptiness = (stakeholders: string[]) => {
+//--------------------------Stakeholder------------------------------
+const validateStakeholderContent = async (stakeholders: mongoose.Types.ObjectId[]) => {
+  for (const stakeholderId of stakeholders) {
+    // Check if the ObjectId is valid
+    if (!mongoose.Types.ObjectId.isValid(stakeholderId)) {
+      throw new Error('Stakeholder(s) must be valid MongoDB ObjectId');
+    }
+    // Check if the stakeholder exists in DB
+    const stakeholder = await Stakeholder.findById(stakeholderId);
+    if (!stakeholder) {
+      throw new Error(`Stakeholder with ID ${stakeholderId} not found`);
+    }
+  }
+  return true;
+};
+
+
+const validateStakeholderEmptiness = (stakeholders: mongoose.Types.ObjectId[]) => {
   if (Array.isArray(stakeholders) && stakeholders.length === 0) {
     throw new Error('Stakeholders cannot be an empty array');
   }
   return true;
-}
+};
+
+
+  const validateStakeholderRepetition = async (stakeholders: mongoose.Types.ObjectId[]) => {
+    for (let i = 0; i < stakeholders.length; i++) {
+      if (stakeholders.indexOf(stakeholders[i]) !== i) {
+        throw new Error('Stakeholders cannot be duplicate.');
+      }
+    }
+    return true;
+  }; 
+
+
+//--------------------------Document Type------------------------------
+  const validateDocumentTypeContent = async (documentTypes: mongoose.Types.ObjectId) => {
+        // Check if the ObjectId is valid
+      if (!mongoose.Types.ObjectId.isValid(documentTypes)) {
+        throw new Error('DocumentType must be valid MongoDB ObjectId');
+      }
+      // Check if the documentType exists in DB
+      const type = await DocumentType.findById(documentTypes);
+      if (!type) {
+        throw new Error(`Document Type with ID ${documentTypes} not found`);
+      }
+    return true;
+  };
+  

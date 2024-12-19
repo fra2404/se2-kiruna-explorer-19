@@ -1,0 +1,881 @@
+[{
+  "_id": {
+    "$oid": "6742f1fe57f257b6aee9c7a5"
+  },
+  "title": "Compilation of responses “So what the people of Kiruna think?” (15)",
+  "stakeholders": [
+    "675da468561b34e474e92811",
+    "675da577561b34e474e92815"
+  ],
+  "scale": "TEXT",
+  "type": {
+    "$oid": "675f08a90ad9c508f56cf6a2"
+  },
+  "date": "2007-01-01",
+  "connections": [],
+  "language": "Swedish",
+  "media": [],
+  "summary": "This document is a compilation of the responses to the survey 'What is your impression of Kiruna?' From the citizens' responses to this last part of the survey, it is evident that certain buildings, such as the Kiruna Church, the Hjalmar Lundbohmsgården, and the Town Hall, are considered of significant value to the population. The municipality views the experience of this survey positively, to the extent that over the years it will propose various consultation opportunities.",
+  "createdAt": {
+    "$date": "2024-11-24T09:29:34.652Z"
+  },
+  "updatedAt": {
+    "$date": "2024-11-30T15:08:59.384Z"
+  },
+  "__v": 0,
+  "architecturalScale": ""
+},
+{
+  "_id": {
+    "$oid": "672b800a79021ce0217a1118"
+  },
+  "title": "Detail plan for Bolagsomradet Gruvstad - spark (18)",
+  "stakeholders": [
+    {
+      "$oid": "675da468561b34e474e92811"
+    }
+  ],
+  "scale": "ARCHITECTURAL",
+  "architecturalScale": "1:8000",
+  "type": {
+    "$oid": "675f08da0ad9c508f56cf6a6"
+  },
+  "date": "2010-10-20",
+  "connections": [
+    {
+      "document": {
+        "$oid": "672bd1cda944d686347c669c"
+      },
+      "type": "COLLATERAL"
+    },
+    {
+      "document": {
+        "$oid": "672b814479021ce0217a11a1"
+      },
+      "type": "DIRECT"
+    },
+    {
+      "document": {
+        "$oid": "672bad49439c738e4a05a96c"
+      },
+      "type": "DIRECT"
+    },
+    {
+      "document": {
+        "$oid": "672bc1c45b72bcff14418a18"
+      },
+      "type": "DIRECT"
+    }
+  ],
+  "language": "Swedish",
+  "media": [
+    {
+      "$oid": "6762ab42b9fa7c995f7a2166"
+    },
+    {
+      "$oid": "6762ab43b9fa7c995f7a216b"
+    }
+  ],
+  "coordinates": {
+    "$oid": "6728d4d2245d2a20cb85bfd1"
+  },
+  "summary": "This is the first of 8 detailed plans located in the old center of Kiruna, aimed at transforming the residential areas into mining industry zones to allow the demolition of buildings. The area includes the town hall, the Ullspiran district, and the A10 highway, and it will be the first to be dismantled. The plan consists, like all detailed plans, of two documents: the area map that regulates it, and a text explaining the reasons that led to the drafting of the plan with these characteristics. The plan gained legal validity in 2012.",
+  "createdAt": {
+    "$date": "2024-11-06T14:41:15.019Z"
+  },
+  "updatedAt": {
+    "$date": "2024-12-18T11:19:43.606Z"
+  },
+  "__v": 129
+},
+{
+  "_id": {
+    "$oid": "672b814479021ce0217a11a1"
+  },
+  "title": "Development Plan (41)",
+  "stakeholders": [
+    {
+      "$oid": "675da468561b34e474e92811"
+    },
+    {
+      "$oid": "675da5b7561b34e474e92819"
+    }
+  ],
+  "scale": "ARCHITECTURAL",
+  "type": {
+    "$oid": "675f08fa0ad9c508f56cf6aa"
+  },
+  "date": "2014-03-17",
+  "connections": [
+    {
+      "document": {
+        "$oid": "672b800a79021ce0217a1118"
+      },
+      "type": "DIRECT"
+    },
+    {
+      "document": {
+        "$oid": "672c84a838a749525a2b77ab"
+      },
+      "type": "DIRECT"
+    }
+  ],
+  "language": "Swedish",
+  "media": [
+    {
+      "$oid": "6762ab62b9fa7c995f7a21e0"
+    }
+  ],
+  "coordinates": {
+    "$oid": "6728d8b58a63c6544fc7ccad"
+  },
+  "summary": "The development plan shapes the form of the new city. The document, unlike previous competition documents, is written entirely in Swedish, which reflects the target audience: the citizens of Kiruna. The plan obviously contains many elements of the winning master plan from the competition, some recommended by the jury, and others that were deemed appropriate to integrate later. The document is divided into four parts, with the third part, spanning 80 pages, describing the shape the new city will take and the strategies to be implemented for its relocation through plans, sections, images, diagrams, and texts. The document also includes numerous studies aimed at demonstrating the future success of the project",
+  "createdAt": {
+    "$date": "2024-11-06T14:46:28.380Z"
+  },
+  "updatedAt": {
+    "$date": "2024-12-18T11:02:19.063Z"
+  },
+  "__v": 82,
+  "architecturalScale": "1:7500"
+},
+{
+  "_id": {
+    "$oid": "672bad49439c738e4a05a96c"
+  },
+  "title": "Detail plan for square and commercial street (50)",
+  "stakeholders": [
+    {
+      "$oid": "675da468561b34e474e92811"
+    }
+  ],
+  "scale": "ARCHITECTURAL",
+  "type": {
+    "$oid": "675f08da0ad9c508f56cf6a6"
+  },
+  "date": "2016-06-22",
+  "connections": [
+    {
+      "document": {
+        "$oid": "674991f60452a1900fc47e14"
+      },
+      "type": "UPDATE"
+    },
+    {
+      "document": {
+        "$oid": "674991bd0452a1900fc47dc7"
+      },
+      "type": "PROJECTION"
+    },
+    {
+      "document": {
+        "$oid": "672b800a79021ce0217a1118"
+      },
+      "type": "DIRECT"
+    }
+  ],
+  "language": "Swedish",
+  "media": [],
+  "coordinates": {
+    "$oid": "6728d4d2245d2a20cb85bfd1"
+  },
+  "summary": "This plan, approved in July 2016, is the first detailed plan to be implemented from the new masterplan (Adjusted development plan). The document defines the entire area near the town hall, comprising a total of 9 blocks known for their density. Among these are the 6 buildings that will face the main square. The functions are mixed, both public and private, with residential being prominent, as well as the possibility of incorporating accommodation facilities such as hotels. For all buildings in this plan, the only height limit is imposed by air traffic.",
+  "createdAt": {
+    "$date": "2024-11-06T17:54:18.000Z"
+  },
+  "updatedAt": {
+    "$date": "2024-12-18T11:16:13.846Z"
+  },
+  "__v": 131,
+  "architecturalScale": "1:1000"
+},
+{
+  "_id": {
+    "$oid": "672bc1c45b72bcff14418a18"
+  },
+  "title": "Deformation forecast (45)",
+  "stakeholders": [
+    {
+      "$oid": "675da5e6561b34e474e9281d"
+    }
+  ],
+  "scale": "ARCHITECTURAL",
+  "type": {
+    "$oid": "675f09500ad9c508f56cf6b0"
+  },
+  "date": "2014-12-01",
+  "connections": [
+    {
+      "document": {
+        "$oid": "672b800a79021ce0217a1118"
+      },
+      "type": "DIRECT"
+    },
+    {
+      "document": {
+        "$oid": "6762a067b9fa7c995f7a0ec5"
+      },
+      "type": "DIRECT"
+    }
+  ],
+  "language": "Swedish",
+  "media": [
+    {
+      "$oid": "6762ab89b9fa7c995f7a22a1"
+    },
+    {
+      "$oid": "6762ab89b9fa7c995f7a22a6"
+    }
+  ],
+  "coordinates": {
+    "$oid": "6728d8da8a63c6544fc7ccb8"
+  },
+  "summary": "The development plan shapes the form of the new city. The document, unlike previous competition documents, is written entirely in Swedish, which reflects the target audience: the citizens of Kiruna. The plan obviously contains many elements of the winning masterplan from the competition, some recommended by the jury, and others that were deemed appropriate to integrate later. The document is divided into four parts, with the third part, spanning 80 pages, describing the shape the new city will take and the strategies to be implemented for its relocation through plans, sections, images, diagrams, and texts. The document also includes numerous studies aimed at demonstrating the future success of the project.",
+  "createdAt": {
+    "$date": "2024-11-06T19:21:40.503Z"
+  },
+  "updatedAt": {
+    "$date": "2024-12-18T11:19:43.614Z"
+  },
+  "__v": 98,
+  "architecturalScale": "1:12000"
+},
+{
+  "_id": {
+    "$oid": "672bd1cda944d686347c669c"
+  },
+  "title": "Town Hall demolition (64)",
+  "stakeholders": [
+    "675da5e6561b34e474e9281d"
+  ],
+  "scale": "BLUEPRINT/MATERIAL EFFECTS",
+  "type": {
+    "$oid": "675f096c0ad9c508f56cf6b4"
+  },
+  "date": "2019-04-01",
+  "connections": [
+    {
+      "document": {
+        "$oid": "672b800a79021ce0217a1118"
+      },
+      "type": "COLLATERAL"
+    }
+  ],
+  "language": "",
+  "media": [],
+  "coordinates": {
+    "$oid": "6728d4d2245d2a20cb85bfd1"
+  },
+  "summary": "After the construction of the new town hall was completed, the old building, nicknamed \"The Igloo,\" was demolished. The only elements preserved were the door handles, a masterpiece of Sami art made of wood and bone, and the clock tower, which once stood on the roof of the old town hall. The clock tower was relocated to the central square of New Kiruna, in front of the new building.",
+  "createdAt": {
+    "$date": "2024-11-06T20:30:05.343Z"
+  },
+  "updatedAt": {
+    "$date": "2024-12-18T11:00:19.766Z"
+  },
+  "__v": 99
+},
+{
+  "_id": {
+    "$oid": "672c84a838a749525a2b77ab"
+  },
+  "title": "Adjusted development plan (47)",
+  "stakeholders": [
+    {
+      "$oid": "675da468561b34e474e92811"
+    },
+    {
+      "$oid": "675da5b7561b34e474e92819"
+    }
+  ],
+  "scale": "ARCHITECTURAL",
+  "type": {
+    "$oid": "675f08fa0ad9c508f56cf6aa"
+  },
+  "date": "2015-01-01",
+  "connections": [
+    {
+      "document": {
+        "$oid": "672b814479021ce0217a11a1"
+      },
+      "type": "DIRECT"
+    }
+  ],
+  "language": "Swedish",
+  "media": [
+    {
+      "$oid": "6762abbab9fa7c995f7a23b9"
+    }
+  ],
+  "coordinates": {
+    "$oid": "6728d8b58a63c6544fc7ccad"
+  },
+  "summary": "This document is the update of the Development Plan, one year after its creation, modifications are made to the general master plan, which is published under the name 'Adjusted Development Plan91,' and still represents the version used today after 10 years. Certainly, there are no drastic differences compared to the previous plan, but upon careful comparison, several modified elements stand out. For example, the central square now takes its final shape, as well as the large school complex just north of it, which appears for the first time",
+  "createdAt": {
+    "$date": "2024-11-07T09:13:12.833Z"
+  },
+  "updatedAt": {
+    "$date": "2024-12-18T11:02:19.066Z"
+  },
+  "__v": 8,
+  "architecturalScale": "1:7500"
+},
+{
+  "_id": {
+    "$oid": "67320d424311bbcdea7b9a22"
+  },
+  "title": "Construction of Scandic Hotel begins (63)",
+  "stakeholders": [
+    "675da5e6561b34e474e9281d"
+  ],
+  "scale": "BLUEPRINT/MATERIAL EFFECTS",
+  "type": {
+    "$oid": "675f096c0ad9c508f56cf6b4"
+  },
+  "date": "2019-04-01",
+  "connections": [],
+  "language": "",
+  "media": [],
+  "coordinates": {
+    "$oid": "67320d424311bbcdea7b9a1e"
+  },
+  "summary": "After two extensions of the land acquisition agreement, necessary because this document in Sweden is valid for only two years, construction of the hotel finally began in 2019.",
+  "createdAt": {
+    "$date": "2024-11-11T13:57:22.862Z"
+  },
+  "updatedAt": {
+    "$date": "2024-11-24T10:28:25.394Z"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "673603af185d8426adac821a"
+  },
+  "title": "Construction of Aurora Center begins (65)",
+  "stakeholders": [
+    "675da5e6561b34e474e9281d"
+  ],
+  "scale": "BLUEPRINT/MATERIAL EFFECTS",
+  "type": {
+    "$oid": "675f096c0ad9c508f56cf6b4"
+  },
+  "date": "2019-05-01",
+  "connections": [],
+  "language": "",
+  "media": [],
+  "coordinates": {
+    "$oid": "6728d9168a63c6544fc7ccc6"
+  },
+  "summary": "Shortly after the construction of the Scandic hotel began, work on the Aurora Center also started, a multifunctional complex that includes the municipal library of Kiruna. The two buildings are close to each other and connected by a skywalk, just like in the old town center.",
+  "createdAt": {
+    "$date": "2024-11-14T14:05:35.957Z"
+  },
+  "updatedAt": {
+    "$date": "2024-11-24T10:31:51.831Z"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "674300e619d5dd2e2b8854a1"
+  },
+  "title": "Construction of Block 1 begins (69)",
+  "stakeholders": [
+    "675da5e6561b34e474e9281d"
+  ],
+  "scale": "BLUEPRINT/MATERIAL EFFECTS",
+  "type": {
+    "$oid": "675f096c0ad9c508f56cf6b4"
+  },
+  "date": "2019-06-01",
+  "connections": [],
+  "language": "",
+  "media": [],
+  "coordinates": {
+    "$oid": "674300e619d5dd2e2b88549d"
+  },
+  "summary": "Simultaneously with the start of construction on the Aurora Center, work also began on Block 1, another mixed-use building overlooking the main square and the road leading to old Kiruna. These are the first residential buildings in the new town",
+  "createdAt": {
+    "$date": "2024-11-24T10:33:10.342Z"
+  },
+  "updatedAt": {
+    "$date": "2024-11-24T10:33:10.342Z"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "6762983ab9fa7c995f7a0c0e"
+  },
+  "title": "Mail to Kiruna Kommun (2)",
+  "stakeholders": [
+    {
+      "$oid": "675da5e6561b34e474e9281d"
+    }
+  ],
+  "scale": "TEXT",
+  "architecturalScale": "",
+  "type": {
+    "$oid": "675f08da0ad9c508f56cf6a6"
+  },
+  "date": "2004-03-19",
+  "connections": [],
+  "language": "Swedish",
+  "media": [
+    {
+      "$oid": "6762abe1b9fa7c995f7a247b"
+    }
+  ],
+  "summary": "This document is considered the act that initiates the process of relocating Kiruna. The company communicates its intention to construct a new mining level at a depth of 1,365 meters. Along with this, LKAB urges the municipality to begin the necessary planning to relocate the city, referring to a series of meetings held in previous months between the two stakeholders.",
+  "createdAt": {
+    "$date": "2024-12-18T09:39:06.286Z"
+  },
+  "updatedAt": {
+    "$date": "2024-12-18T11:02:57.440Z"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "676298e6b9fa7c995f7a0c83"
+  },
+  "title": "Vision 2099 (4)",
+  "stakeholders": [
+    {
+      "$oid": "675da468561b34e474e92811"
+    }
+  ],
+  "scale": "TEXT",
+  "architecturalScale": "",
+  "type": {
+    "$oid": "675f08fa0ad9c508f56cf6aa"
+  },
+  "date": "2004",
+  "connections": [],
+  "language": "Swedish",
+  "media": [
+    {
+      "$oid": "676298e6b9fa7c995f7a0c73"
+    },
+    {
+      "$oid": "676298e6b9fa7c995f7a0c78"
+    }
+  ],
+  "summary": "Vision 2099 is to be considered the first project for the new city of Kiruna. It was created by the municipality in response to the letter from LKAB. In these few lines, all the main aspects and expectations of the municipality for the new city are condensed. The document, which despite being a project document is presented anonymously, had the strength to influence the design process. The principles it contains proved to be fundamental in subsequent planning documents.",
+  "createdAt": {
+    "$date": "2024-12-18T09:41:58.716Z"
+  },
+  "updatedAt": {
+    "$date": "2024-12-18T11:45:25.056Z"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "67629a07b9fa7c995f7a0cdd"
+  },
+  "title": "Detailed plan for LINBANAN 1. (42)",
+  "stakeholders": [
+    {
+      "$oid": "675da468561b34e474e92811"
+    }
+  ],
+  "scale": "ARCHITECTURAL",
+  "architecturalScale": "1:500",
+  "type": {
+    "$oid": "675f08da0ad9c508f56cf6a6"
+  },
+  "date": "2014-03",
+  "connections": [],
+  "language": "Swedish",
+  "media": [
+    {
+      "$oid": "67629a06b9fa7c995f7a0ccc"
+    },
+    {
+      "$oid": "67629a07b9fa7c995f7a0cd1"
+    }
+  ],
+  "coordinates": {
+    "$oid": "67629a05b9fa7c995f7a0cc9"
+  },
+  "summary": "This is the first Detailed Plan for the new city center, covering a very small area. It regulates the use of a portion of land that will host a single building. Its boundaries coincide with the outer footprint of the new Town Hall, \"Kristallen,\" the first building to be constructed in the new Kiruna.",
+  "createdAt": {
+    "$date": "2024-12-18T09:46:47.287Z"
+  },
+  "updatedAt": {
+    "$date": "2024-12-18T09:46:47.287Z"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "67629af2b9fa7c995f7a0ceb"
+  },
+  "title": "Detailed overview plan for the Central Area of Kiruna 2014 (44)",
+  "stakeholders": [
+    {
+      "$oid": "675da468561b34e474e92811"
+    }
+  ],
+  "scale": "ARCHITECTURAL",
+  "architecturalScale": "1:30000",
+  "type": {
+    "$oid": "675f08da0ad9c508f56cf6a6"
+  },
+  "date": "2014-06-01",
+  "connections": [],
+  "language": "Swedish",
+  "media": [
+    {
+      "$oid": "6762ac16b9fa7c995f7a258c"
+    },
+    {
+      "$oid": "6762ac17b9fa7c995f7a2591"
+    },
+    {
+      "$oid": "6762ac17b9fa7c995f7a2596"
+    },
+    {
+      "$oid": "6762ac17b9fa7c995f7a259b"
+    }
+  ],
+  "summary": "The Detailed Overview Plan is one of the three planning instruments available to Swedish administrations and represents an intermediate scale. Like the Overview Plan, compliance with it is not mandatory, but it serves as a supporting plan for Detailed Plans, sharing the characteristic of regulating a specific area of the Kiruna municipality rather than its entire extent, as the Overview Plan does. This specific plan focuses on the central area of Kiruna and its surroundings, incorporating all the projections of the Development Plan into a prescriptive tool.",
+  "createdAt": {
+    "$date": "2024-12-18T09:50:42.196Z"
+  },
+  "updatedAt": {
+    "$date": "2024-12-18T11:03:51.900Z"
+  },
+  "__v": 0,
+  "coordinates": {
+    "$oid": "67629b89b9fa7c995f7a0cf0"
+  }
+},
+{
+  "_id": {
+    "$oid": "67629c46b9fa7c995f7a0db3"
+  },
+  "title": "Construction of new city hall begins (48)",
+  "stakeholders": [
+    {
+      "$oid": "675da5e6561b34e474e9281d"
+    }
+  ],
+  "scale": "BLUEPRINT/MATERIAL EFFECTS",
+  "architecturalScale": "",
+  "type": {
+    "$oid": "675f096c0ad9c508f56cf6b4"
+  },
+  "date": "2015",
+  "connections": [],
+  "language": "",
+  "media": [],
+  "coordinates": {
+    "$oid": "67629a05b9fa7c995f7a0cc9"
+  },
+  "summary": "The Kiruna Town Hall was the first building to be rebuild in the new town center in 2015. It remained isolated for quite some time due to a slowdown in mining activities.",
+  "createdAt": {
+    "$date": "2024-12-18T09:56:22.561Z"
+  },
+  "updatedAt": {
+    "$date": "2024-12-18T09:56:22.561Z"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "67629e4ab9fa7c995f7a0dca"
+  },
+  "title": "Detail plan for square and commercial street (49)",
+  "stakeholders": [
+    {
+      "$oid": "675da468561b34e474e92811"
+    }
+  ],
+  "scale": "ARCHITECTURAL",
+  "architecturalScale": "1:1000",
+  "type": {
+    "$oid": "675f08da0ad9c508f56cf6a6"
+  },
+  "date": "2016-06-22",
+  "connections": [],
+  "language": "Swedish",
+  "media": [
+    {
+      "$oid": "6762ac35b9fa7c995f7a2666"
+    },
+    {
+      "$oid": "6762ac35b9fa7c995f7a266b"
+    }
+  ],
+  "coordinates": {
+    "$oid": "67629ca3b9fa7c995f7a0dc1"
+  },
+  "summary": "This plan, approved in July 2016, is the first detailed plan to be implemented from the new masterplan (Adjusted development plan). The document defines the entire area near the town hall, comprising a total of 9 blocks known for their density. Among these are the 6 buildings that will face the main square. The functions are mixed, both public and private, with residential being prominent, as well as the possibility of incorporating accommodation facilities such as hotels. For all buildings in this plan, the only height limit is imposed by air traffic",
+  "createdAt": {
+    "$date": "2024-12-18T10:04:58.149Z"
+  },
+  "updatedAt": {
+    "$date": "2024-12-18T11:04:21.830Z"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "67629f28b9fa7c995f7a0ddb"
+  },
+  "title": "Detailed plan for Gruvstapark 2, etapp3, del av SJ-omradet m m (58)",
+  "stakeholders": [
+    {
+      "$oid": "675da468561b34e474e92811"
+    }
+  ],
+  "scale": "ARCHITECTURAL",
+  "architecturalScale": "1:1500",
+  "type": {
+    "$oid": "675f08da0ad9c508f56cf6a6"
+  },
+  "date": "2018-10-01",
+  "connections": [
+    {
+      "document": {
+        "$oid": "6762a1cfb9fa7c995f7a0f29"
+      },
+      "type": "PROJECTION"
+    }
+  ],
+  "language": "Swedish",
+  "media": [
+    {
+      "$oid": "6762ac50b9fa7c995f7a26da"
+    },
+    {
+      "$oid": "6762ac50b9fa7c995f7a26df"
+    }
+  ],
+  "coordinates": {
+    "$oid": "67629ed6b9fa7c995f7a0dd2"
+  },
+  "summary": "The third Detailed Plan of the second demolition phase covers a narrow, elongated area straddling the old railway. Like all areas within the \"Gruvstadpark 2\" zone, its sole designated land use is for mining activities, although it will temporarily be used as a park during an interim phase.",
+  "createdAt": {
+    "$date": "2024-12-18T10:08:40.126Z"
+  },
+  "updatedAt": {
+    "$date": "2024-12-18T11:22:10.331Z"
+  },
+  "__v": 1
+},
+{
+  "_id": {
+    "$oid": "6762a067b9fa7c995f7a0ec5"
+  },
+  "title": "Deformation forecast (62)",
+  "stakeholders": [
+    {
+      "$oid": "675da5e6561b34e474e9281d"
+    }
+  ],
+  "scale": "ARCHITECTURAL",
+  "architecturalScale": "1:12000",
+  "type": {
+    "$oid": "675f09500ad9c508f56cf6b0"
+  },
+  "date": "2019-04-01",
+  "connections": [
+    {
+      "document": {
+        "$oid": "672bc1c45b72bcff14418a18"
+      },
+      "type": "DIRECT"
+    }
+  ],
+  "language": "Swedish",
+  "media": [
+    {
+      "$oid": "6762aad9b9fa7c995f7a2068"
+    }
+  ],
+  "coordinates": {
+    "$oid": "6762a005b9fa7c995f7a0ebc"
+  },
+  "summary": "The third deformation forecast was published in 2019, five years after the second. The line has not moved; what changes, as in the previous version, are the timing of the interventions and the shape of the areas underlying the deformation zone",
+  "createdAt": {
+    "$date": "2024-12-18T10:13:59.993Z"
+  },
+  "updatedAt": {
+    "$date": "2024-12-18T11:19:43.611Z"
+  },
+  "__v": 1
+},
+{
+  "_id": {
+    "$oid": "6762a112b9fa7c995f7a0f1a"
+  },
+  "title": "Demolition documentation, Kiruna City Hall (76)",
+  "stakeholders": [
+    {
+      "$oid": "6762a0c8b9fa7c995f7a0f12"
+    }
+  ],
+  "scale": "TEXT",
+  "architecturalScale": "",
+  "type": {
+    "$oid": "675f08a90ad9c508f56cf6a2"
+  },
+  "date": "2020-11-26",
+  "connections": [],
+  "language": "Swedish",
+  "media": [
+    {
+      "$oid": "6762ac75b9fa7c995f7a27ae"
+    }
+  ],
+  "coordinates": {
+    "$oid": "67629a05b9fa7c995f7a0cc9"
+  },
+  "summary": "This document was created to preserve the memory of the symbolic building before its demolition in April 2019. Conducted by the Norrbotten Museum, the detailed 162-page study analyzed the building's materials, both physically and chemically, taking advantage of the demolition to explore aspects that couldn't be examined while it was in use. This meticulous effort reflects a commitment to preserving knowledge of every detail of the structure.",
+  "createdAt": {
+    "$date": "2024-12-18T10:16:50.321Z"
+  },
+  "updatedAt": {
+    "$date": "2024-12-18T11:05:26.931Z"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "6762a1cfb9fa7c995f7a0f29"
+  },
+  "title": "Gruvstadspark 2, etapp 5, Kyrkan (81)",
+  "stakeholders": [
+    {
+      "$oid": "675da468561b34e474e92811"
+    }
+  ],
+  "scale": "ARCHITECTURAL",
+  "architecturalScale": "1:2000",
+  "type": {
+    "$oid": "675f08da0ad9c508f56cf6a6"
+  },
+  "date": "2021-09-04",
+  "connections": [
+    {
+      "document": {
+        "$oid": "67629f28b9fa7c995f7a0ddb"
+      },
+      "type": "PROJECTION"
+    }
+  ],
+  "language": "Swedish",
+  "media": [
+    {
+      "$oid": "6762ac89b9fa7c995f7a281e"
+    },
+    {
+      "$oid": "6762ac8ab9fa7c995f7a2823"
+    }
+  ],
+  "coordinates": {
+    "$oid": "6762a177b9fa7c995f7a0f20"
+  },
+  "summary": "The last detailed plan of the second planning phase concerns the area surrounding the Kiruna Church. Situated within a park, the area includes only six buildings, half of which serve religious functions. The plan also specifies that the church will be dismantled between 2025 and 2026 and reassembled at its new site by 2029.",
+  "createdAt": {
+    "$date": "2024-12-18T10:19:59.892Z"
+  },
+  "updatedAt": {
+    "$date": "2024-12-18T11:22:10.329Z"
+  },
+  "__v": 1
+},
+{
+  "_id": {
+    "$oid": "6762a2e9b9fa7c995f7a0f39"
+  },
+  "title": "Kiruna Church closes (102)",
+  "stakeholders": [
+    {
+      "$oid": "675da5e6561b34e474e9281d"
+    }
+  ],
+  "scale": "BLUEPRINT/MATERIAL EFFECTS",
+  "architecturalScale": "",
+  "type": {
+    "$oid": "675f096c0ad9c508f56cf6b4"
+  },
+  "date": "2024-06-02",
+  "connections": [],
+  "language": "",
+  "media": [],
+  "coordinates": {
+    "$oid": "6762a2d8b9fa7c995f7a0f31"
+  },
+  "summary": "On June 2, the Kiruna Church was closed to begin the necessary preparations for its relocation, following a solemn ceremony. The relocation is scheduled for the summer of 2025 and will take two days. Both the new site and the route for the move have already been determined. A significant period will pass between the relocation and the reopening of the church, voted \"Sweden's most beautiful building constructed before 1950.\"",
+  "createdAt": {
+    "$date": "2024-12-18T10:24:41.561Z"
+  },
+  "updatedAt": {
+    "$date": "2024-12-18T10:24:41.561Z"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "6762b348b9fa7c995f7a3a83"
+  },
+  "title": "Document 1",
+  "stakeholders": [
+    {
+      "$oid": "675da5b7561b34e474e92819"
+    }
+  ],
+  "scale": "ARCHITECTURAL",
+  "architecturalScale": "1:1000",
+  "type": {
+    "$oid": "675f09bd0ad9c508f56cf6bc"
+  },
+  "date": "2024-12-18",
+  "connections": [],
+  "language": "",
+  "media": [],
+  "summary": "",
+  "createdAt": {
+    "$date": "2024-12-18T11:34:32.292Z"
+  },
+  "updatedAt": {
+    "$date": "2024-12-18T11:34:48.752Z"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "6762b37cb9fa7c995f7a3af4"
+  },
+  "title": "Document 2",
+  "stakeholders": [
+    {
+      "$oid": "675da5b7561b34e474e92819"
+    }
+  ],
+  "scale": "CONCEPT",
+  "architecturalScale": "",
+  "type": {
+    "$oid": "675f09bd0ad9c508f56cf6bc"
+  },
+  "date": "2024-12-18",
+  "connections": [],
+  "language": "",
+  "media": [],
+  "coordinates": {
+    "$oid": "6728d4d2245d2a20cb85bfd1"
+  },
+  "summary": "",
+  "createdAt": {
+    "$date": "2024-12-18T11:35:24.486Z"
+  },
+  "updatedAt": {
+    "$date": "2024-12-18T11:35:24.486Z"
+  },
+  "__v": 0
+}]

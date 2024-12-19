@@ -2,9 +2,9 @@ import GradientSVG from '../../components/atoms/GradientSVG';
 
 export default function ConflictIcon({
   fillColor,
-}: {
+}: Readonly<{
   fillColor: string[] | string;
-}) {
+}>) {
   return (
     <GradientSVG fillColor={fillColor}>
       <path

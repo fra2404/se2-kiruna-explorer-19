@@ -30,6 +30,14 @@ import {
 import { 
   getGraphDatas 
 } from "../services/graph.service";
+import {
+  addingDocumentType,
+  getAllDocumentTypes
+} from '../services/documentType.service';
+import {
+  addingStakeholder,
+  getAllStakeholders
+} from "../services/stakeholder.service"
 
 import {
   getUsers,
@@ -61,6 +69,14 @@ import {
 import { 
   getGraphConstruction 
 } from "../controllers/graph.controllers";
+import {
+  addDocumentTypeController,
+  getAllDocumentTypesController
+} from '../controllers/documentType.controllers';
+import {
+  addStakeholderController,
+  getAllStakeholdersController
+} from '../controllers/stakeholder.controllers';
 
 import { IUserResponse } from '../interfaces/user.return.interface';
 import { CustomRequest } from '../interfaces/customRequest.interface';
@@ -73,13 +89,15 @@ import {
   PositionError,
   MediaNotFoundError,
 } from '@utils/errors';
-import { mock } from 'node:test';
+import { StakeholderEnum } from '@utils/enums/stakeholder.enum';
 
 jest.mock('../services/user.service'); //For suite n#1
 jest.mock('../services/document.service'); //For suite n#2
 jest.mock('../services/coordinate.service'); //For suite n#3
 jest.mock('../services/media.service'); //For suite n#4
 jest.mock('../services/graph.service'); //For suite n#5
+jest.mock('../services/documentType.service'); //For suite n#6
+jest.mock('../services/stakeholder.service'); //For suite n#7
 
 /* ******************************************* Suite n#1 - USERS ******************************************* */
 describe('Tests for user controllers', () => {
@@ -839,32 +857,27 @@ describe('Tests for document controllers', () => {
   //getDocumentTypesController
   describe('Tests for getDocumentTypesController', () => {
     //test 1
-    test('Shoulde retrive all document types', () => {
+    test('Should retrive all document types', async() => {
       //Data mock
       const mockDocTypes = [
-        { label: 'Agreement', value: DocTypeEnum.Agreement },
-        { label: 'Conflict', value: DocTypeEnum.Conflict },
-        { label: 'Consultation', value: DocTypeEnum.Consultation },
-        { label: 'DesignDoc', value: DocTypeEnum.DesignDoc },
-        { label: 'InformativeDoc', value: DocTypeEnum.InformativeDoc },
-        { label: 'MaterialEffects', value: DocTypeEnum.MaterialEffects },
-        { label: 'PrescriptiveDoc', value: DocTypeEnum.PrescriptiveDoc },
-        { label: 'TechnicalDoc', value: DocTypeEnum.TechnicalDoc },
+        { label: DocTypeEnum.Agreement, value: "ty1" },
+        { label: DocTypeEnum.Conflict, value: "ty2" },
+        { label: 'CustomType1', value: "ty3" }
       ];
 
       //Support functions mocking
       (getDocumentTypes as jest.Mock).mockReturnValue(mockDocTypes);
 
       //Call of getDocumentTypesController
-      getDocumentTypesController(req as Request, res as Response, next);
+      await getDocumentTypesController(req as Request, res as Response, next);
 
       expect(res.status).toHaveBeenCalledWith(200);
-      expect(res.json).toHaveBeenCalledWith({ docTypes: mockDocTypes });
+      expect(res.json).toHaveBeenCalledWith(mockDocTypes);
       expect(next).not.toHaveBeenCalled();
     });
 
     //test 2
-    test('Should throw an error', () => {
+    test('Should throw an error', async() => {
       //Data mock
       const err = new Error();
 
@@ -874,7 +887,7 @@ describe('Tests for document controllers', () => {
       });
 
       //Call of getDocumentTypesController
-      getDocumentTypesController(req as Request, res as Response, next);
+      await getDocumentTypesController(req as Request, res as Response, next);
 
       expect(next).toHaveBeenCalledWith(err);
     });
@@ -1529,3 +1542,241 @@ describe('Tests for graph controllers', () => {
   }); //getGraphConstruction
   /* ************************************************** */
 }) //END OF GRAPH CONTROLLERS
+
+/* **************************************** Suite n#6 - DOCUMENT TYPES **************************************** */
+describe('Tests for document type controllers', () => {
+  //Connection mocking
+  let req: Partial<Request>;
+  let res: Partial<Response>;
+  let next: NextFunction;
+
+  //addDocumentTypeController
+  describe('Tests for addDocumentTypeController', () => {
+    afterEach(() => {
+      jest.clearAllMocks();
+    });
+
+    //Connection mocking
+    beforeEach(() => {
+      req = {} as unknown as Request;
+
+      res = {
+        status: jest.fn().mockReturnThis(),
+        json: jest.fn(),
+      } as unknown as Response;
+
+      next = jest.fn();
+    });
+
+    //test 1
+    test('Should create a new document type', async () => {
+      //Data mock
+      const mockType = { id: 'ty1', type: DocTypeEnum.Agreement };
+
+      //Support functions mocking
+      jest.spyOn(require('../services/documentType.service'), 'addingDocumentType')
+        .mockResolvedValueOnce(mockType)
+  
+      //Call of addDocumentTypeController
+      await addDocumentTypeController(req as Request, res as Response, next);
+  
+      expect(addingDocumentType).toHaveBeenCalled();
+      expect(res.status).toHaveBeenCalledWith(201);
+      expect(res.json).toHaveBeenCalledWith(mockType);
+    });
+
+    //test 2
+    test('Should throw an error if the connection fails', async () => {
+      //Data mock
+      const err = new CustomError('Internal Server Error', 500);
+
+      //Support functions mocking
+      jest.spyOn(require('../services/documentType.service'), 'addingDocumentType')
+        .mockRejectedValueOnce(err);
+  
+      //Call of addDocumentTypeController
+      await addDocumentTypeController(req as Request, res as Response, next);
+  
+      expect(next).toHaveBeenCalledWith(err);
+      expect(res.status).not.toHaveBeenCalled();
+      expect(res.json).not.toHaveBeenCalled();
+    });
+  }); //addDocumentTypeController
+  /* ************************************************** */
+
+  //getAllDocumentTypesController
+  describe('Tests for getAllDocumentTypesController', () => {
+    afterEach(() => {
+      jest.clearAllMocks();
+    });
+
+    //Connection mocking
+    beforeEach(() => {
+      req = {} as unknown as Request;
+
+      res = {
+        status: jest.fn().mockReturnThis(),
+        json: jest.fn(),
+      } as unknown as Response;
+
+      next = jest.fn();
+    });
+
+    //test 1
+    test('Should retrieve all available document types', async () => {
+      //Data mock
+      const mockTypes = [
+        { id: 'ty1', type: DocTypeEnum.Agreement },
+        { id: 'ty2', type: DocTypeEnum.Conflict }
+      ];
+
+      //Support functions mocking
+      jest.spyOn(require('../services/documentType.service'), 'getAllDocumentTypes')
+        .mockResolvedValueOnce(mockTypes);
+  
+      //Call of getAllDocumentTypesController
+      await getAllDocumentTypesController(req as Request, res as Response, next);
+  
+      expect(getAllDocumentTypes).toHaveBeenCalled();
+      expect(res.status).toHaveBeenCalledWith(200);
+      expect(res.json).toHaveBeenCalledWith(mockTypes);
+    });
+
+    //test 2
+    test('Should throw an error if the connection fails', async () => {
+      //Data mock
+      const err = new CustomError('Internal Server Error', 500);
+
+      //Support functions mocking
+      jest.spyOn(require('../services/documentType.service'), 'getAllDocumentTypes')
+        .mockRejectedValueOnce(err);
+  
+      //Call of getAllDocumentTypesController
+      await getAllDocumentTypesController(req as Request, res as Response, next);
+  
+      expect(next).toHaveBeenCalledWith(err);
+      expect(res.status).not.toHaveBeenCalled();
+      expect(res.json).not.toHaveBeenCalled();
+    });
+  }); //getAllDocumentTypesController
+  /* ************************************************** */
+}) //END OF DOCUMENT TYPES CONTROLLERS
+
+/* **************************************** Suite n#6 - STAKEHOLDERS **************************************** */
+describe('Tests for stakeholder controllers', () => {
+  //Connection mocking
+  let req: Partial<Request>;
+  let res: Partial<Response>;
+  let next: NextFunction;
+
+  //addStakeholderController
+  describe('Tests for addStakeholderController', () => {
+    afterEach(() => {
+      jest.clearAllMocks();
+    });
+
+    //Connection mocking
+    beforeEach(() => {
+      req = {} as unknown as Request;
+
+      res = {
+        status: jest.fn().mockReturnThis(),
+        json: jest.fn(),
+      } as unknown as Response;
+
+      next = jest.fn();
+    });
+
+    //test 1
+    test('Should create a new stakeholder', async () => {
+      //Data mock
+      const mockStakeholder = { id: 'sh1', type: StakeholderEnum.LKAB };
+
+      //Support functions mocking
+      jest.spyOn(require('../services/stakeholder.service'), 'addingStakeholder')
+        .mockResolvedValueOnce(mockStakeholder);
+  
+      //Call of addStakeholderController
+      await addStakeholderController(req as Request, res as Response, next);
+  
+      expect(addingStakeholder).toHaveBeenCalledWith(req.body);
+      expect(res.status).toHaveBeenCalledWith(201);
+      expect(res.json).toHaveBeenCalledWith(mockStakeholder);
+    });
+
+    //test 2
+    test('Should throw an error if the connection fails', async () => {
+      //Data mock
+      const err = new CustomError('Internal Server Error', 500);
+
+      //Support functions mocking
+      jest.spyOn(require('../services/stakeholder.service'), 'addingStakeholder')
+        .mockRejectedValueOnce(err);
+  
+      //Call of addStakeholderController
+      await addStakeholderController(req as Request, res as Response, next);
+  
+      expect(next).toHaveBeenCalledWith(err);
+      expect(res.status).not.toHaveBeenCalled();
+      expect(res.json).not.toHaveBeenCalled();
+    });
+  }); //addStakeholderController
+  /* ************************************************** */
+
+  //getAllStakeholdersController
+  describe('Tests for getAllStakeholdersController', () => {
+    afterEach(() => {
+      jest.clearAllMocks();
+    });
+
+    //Connection mocking
+    beforeEach(() => {
+      req = {} as unknown as Request;
+
+      res = {
+        status: jest.fn().mockReturnThis(),
+        json: jest.fn(),
+      } as unknown as Response;
+
+      next = jest.fn();
+    });
+
+    //test 1
+    test('Should retrieve all the available stakeholders', async () => {
+      //Data mock
+      const mockStakeholders = [
+        { id: 'sh1', type: StakeholderEnum.LKAB },
+        { id: 'sh2', type: StakeholderEnum.Citizens }
+      ];
+
+      //Support functions mocking
+      jest.spyOn(require('../services/stakeholder.service'), 'getAllStakeholders')
+        .mockResolvedValueOnce(mockStakeholders);
+  
+      //Call of getAllStakeholdersController
+      await getAllStakeholdersController(req as Request, res as Response, next);
+  
+      expect(getAllStakeholders).toHaveBeenCalled();
+      expect(res.status).toHaveBeenCalledWith(200);
+      expect(res.json).toHaveBeenCalledWith(mockStakeholders);
+    });
+
+    //test 2
+    test('Should throw an error if the connection fails', async () => {
+      //Data mock
+      const err = new CustomError('Internal Server Error', 500);
+
+      //Support functions mocking
+      jest.spyOn(require('../services/stakeholder.service'), 'getAllStakeholders')
+        .mockRejectedValueOnce(err);
+  
+      //Call of getAllStakeholdersController
+      await getAllStakeholdersController(req as Request, res as Response, next);
+  
+      expect(next).toHaveBeenCalledWith(err);
+      expect(res.status).not.toHaveBeenCalled();
+      expect(res.json).not.toHaveBeenCalled();
+    });
+  }); //getAllStakeholdersController
+  /* ************************************************** */
+}) //END OF STAKEHOLDERS CONTROLLERS

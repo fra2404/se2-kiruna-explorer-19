@@ -2,7 +2,7 @@ import { ReactNode, createContext, useMemo } from "react"
 import { municipalityCoordinates } from "../utils/municipalityCoordinates"
 
 interface MunicipalityCoordinatesContextType {
-  municipalityCoordinates: number[][][]
+  municipalityCoordinates: number[][][],
 }
 
 const MunicipalityCoordinatesContext = createContext<MunicipalityCoordinatesContextType>(

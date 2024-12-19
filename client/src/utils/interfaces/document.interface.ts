@@ -1,12 +1,14 @@
 import { ObjectId } from 'mongoose';
+import { IStakeholder } from './stakeholders.interface';
+import { IDocumentType } from './documentTypes.interface';
 
 export interface IDocument {
   id: string;
   title: string;
-  stakeholders?: string;
+  stakeholders?: IStakeholder[];
   scale?: string;
   architecturalScale?: string;
-  type: DocTypeEnum;
+  type: IDocumentType;
   date: string;
   summary: string;
   connections?: IConnection[];
@@ -18,6 +20,7 @@ export interface IDocument {
       filename: string;
       type: string;
       mimetype: string;
+      pages?: number;
     },
   ];
   coordinates?: ICoordinate | null;
@@ -42,15 +45,4 @@ enum LinkTypeEnum {
   Collateral = 'COLLATERAL',
   Projection = 'PROJECTION',
   Update = 'UPDATE',
-}
-
-enum DocTypeEnum {
-  Agreement = 'AGREEMENT',
-  Conflict = 'CONFLICT',
-  Consultation = 'CONSULTATION',
-  DesignDoc = 'DESIGN_DOC',
-  InformativeDoc = 'INFORMATIVE_DOC',
-  MaterialEffects = 'MATERIAL_EFFECTS',
-  PrescriptiveDoc = 'PRESCRIPTIVE_DOC',
-  TechnicalDoc = 'TECHNICAL_DOC',
 }

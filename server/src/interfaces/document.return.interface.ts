@@ -1,19 +1,18 @@
 import { ICoordinate } from '@interfaces/coordinate.interface';
 import { DocTypeEnum } from '@utils/enums/doc-type.enum';
-import { StakeholderEnum } from '@utils/enums/stakeholder.enum';
-import { LinkTypeEnum } from '@utils/enums/link-type.enum';
 import { ScaleTypeEnum } from '@utils/enums/scale-type-enum';
 import { IConnection } from './document.interface';
-import { ObjectId } from 'mongoose';
 import { IReturnMedia } from './media.return.interface';
+import { IStakeholder } from './stakeholder.interface';
+import { IDocumentType } from './documentType.interface';
 
 export interface IDocumentResponse {
   id: string;
   title: string;
-  stakeholders?: StakeholderEnum[];
+  stakeholders?: IStakeholder[] | null;
   scale?: ScaleTypeEnum;
   architecturalScale?: string;  //Added due to changing in scale
-  type: DocTypeEnum;
+  type?: IDocumentType | null;
   date: string;
   summary: string;
   connections?: IConnection[];

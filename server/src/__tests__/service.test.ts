@@ -9,6 +9,8 @@ import Document from '../schemas/document.schema';
 import { Coordinate } from '../schemas/coordinate.schema';
 import Media from '../schemas/media.schema';
 import MediaDocument from '../schemas/media.schema';
+import Stakeholder from '../schemas/stakeholder.schema';
+import DocumentType from '../schemas/documentType.schema';
 
 import { IUser } from '../interfaces/user.interface';
 import { IConnection, IDocument, IDocumentFilters } from '../interfaces/document.interface';
@@ -29,8 +31,7 @@ import {
   searchDocuments,
   updatingDocument,
   getDocumentTypes,
-  getDocumentByType,
-  fetchMedia
+  getDocumentByType
 } from '../services/document.service';
 import {
   addCoordinateService,
@@ -43,10 +44,25 @@ import {
   uploadMediaService,
   updateMediaMetadata,
   getMediaMetadataById,
+  fetchMedia
 } from '@services/media.service';
 import { 
   getGraphDatas 
 } from '../services/graph.service';
+import {
+  fetchDocumentTypes,
+  addingDocumentType,
+  getAllDocumentTypes,
+  fetchDocumentTypesForSearch, 
+  getDocumentTypeById 
+} from '../services/documentType.service';
+import {
+  fetchStakeholders,
+  addingStakeholder,
+  getAllStakeholders,
+  getStakeholdersById,
+  fetchStakeholdersForSearch
+} from "../services/stakeholder.service"
 
 import { UserRoleEnum } from '../utils/enums/user-role.enum';
 import { DocTypeEnum } from '../utils/enums/doc-type.enum';
@@ -58,7 +74,11 @@ import {
   UserNotAuthorizedError,
   PositionError,
   MediaNotFoundError,
+  StakeholderNotFoundError,
+  DocumentTypeNotFoundError
 } from '../utils/errors';
+import { mock } from 'node:test';
+import { IDocumentType } from '@interfaces/documentType.interface';
 
 //MOCKS
 jest.mock('../schemas/user.schema'); //suite n#1
@@ -66,6 +86,8 @@ jest.mock('../schemas/coordinate.schema'); //suite n#2
 jest.mock('../schemas/document.schema'); //suite n#3
 jest.mock('../schemas/media.schema'); //suite n#4
 jest.mock('../schemas/document.schema'); //suite n#5
+jest.mock('../schemas/documentType.schema'); //suite n#6
+jest.mock('../schemas/stakeholder.schema'); //suite n#7
 
 jest.mock('bcrypt'); //Used in suite n#1
 jest.mock('jsonwebtoken'); //Used in suite n#1
@@ -323,6 +345,7 @@ describe('Tests for user services', () => {
       );
     });
   }); //loginUser
+  /* ************************************************** */
 }); //END OF USER SERVICES
 
 /* ******************************************* Suite n#2 - COORDINATES ******************************************* */
@@ -457,7 +480,7 @@ describe('Tests for coordinate services', () => {
         mockCoordinates.map((coordinate) => ({
           ...coordinate,
           toObject: () => coordinate,
-        })),
+        }))
       );
 
       //Call of getAllCoordinates
@@ -560,50 +583,6 @@ describe('Tests for coordinate services', () => {
 
 /* ******************************************* Suite n#3 - DOCUMENTS ******************************************* */
 describe('Tests for document services', () => {
-  //fetchMedia
-  describe('Tests for fetchMedia', () => {
-    afterEach(() => {
-      jest.clearAllMocks();
-    });
-
-    //Data mock
-    const mockMedias = [
-      { id: "media1", url: "https://example.com/media1" },
-      { id: "media2", url: "https://example.com/media2" }
-    ]
-
-    //test 1
-    test("It should return null if no ids are given as an input", async () => {
-      //Call of fetchMedia
-      const result = await fetchMedia([]);
-
-      expect(result).toBeNull();
-    });
-
-    //test 2
-    it("Should return the asked medias", async () => {
-      //Input mock
-      const mediaIds = ["media1", "media2"] as unknown as ObjectId[];
-      
-      //Support functions mocking
-      jest.spyOn(require("../services/media.service"), "getMediaMetadataById" )
-        .mockResolvedValueOnce(mockMedias[0])
-        .mockResolvedValueOnce(mockMedias[1]);
-  
-      //Call of fetchMedia
-      const result = await fetchMedia(mediaIds as unknown as ObjectId[]);
-  
-      expect(getMediaMetadataById).toHaveBeenCalledTimes(mediaIds.length);
-      expect(getMediaMetadataById).toHaveBeenCalledWith("media1");
-      expect(getMediaMetadataById).toHaveBeenCalledWith("media2");
-      expect(result).toEqual([
-        { id: "media1", url: "https://example.com/media1" },
-        { id: "media2", url: "https://example.com/media2" },
-      ]);
-    });
-  }); //fetchMedia
-  /* ************************************************** */
-  
   //addingDocument
   describe('Tests for addingDocument', () => {
     afterEach(() => {
@@ -625,6 +604,11 @@ describe('Tests for document services', () => {
       name: 'Test Coordinate',
     };
 
+    const mockDocumentType = { 
+      id: 'ty1', 
+      type: DocTypeEnum.Agreement
+    };
+
     //Just essentials fields are filled in this fake document
     const mockConnectedDoc = {
       id: 'cd1',
@@ -640,9 +624,11 @@ describe('Tests for document services', () => {
     const mockDocumentData = {
       title: 'Test Document',
       summary: 'Test summary',
+      type: mockDocumentType.id,
       coordinates: mockCoordinate.id,
       media: ["media1", "media2"],
-      connections: [{document: 'cd1'}]
+      connections: [{document: 'cd1'}],
+      stakeholders: [StakeholderEnum.LKAB]
     } as unknown as IDocument;
 
     const mockNewDocument = {
@@ -666,10 +652,18 @@ describe('Tests for document services', () => {
       const MockedDocument = Document as jest.Mocked<typeof Document>;
       MockedDocument.mockImplementation(() => mockNewDocument as any);
 
-      jest.spyOn(Document.prototype, "save").mockResolvedValue(mockNewDocument);
+      jest.spyOn(Stakeholder, "findById").mockResolvedValueOnce(mockDocumentData.stakeholders);
+      jest.spyOn(Coordinate, "findById").mockResolvedValueOnce(mockCoordinate);
+      jest.spyOn(DocumentType, "findById").mockResolvedValueOnce(mockDocumentType);
+      jest.spyOn(Document.prototype, "save").mockResolvedValueOnce(mockNewDocument);
+
       jest.spyOn(require("../services/coordinate.service"), "getCoordinateById")
-        .mockResolvedValue(mockCoordinate);
-      jest.spyOn(require("../services/document.service"), "fetchMedia").mockResolvedValue(mockMedia);
+        .mockResolvedValueOnce(mockCoordinate);
+      jest.spyOn(require("../services/media.service"), "fetchMedia").mockResolvedValueOnce(mockMedia);
+      jest.spyOn(require("../services/stakeholder.service"), "fetchStakeholders")
+        .mockResolvedValueOnce(mockDocumentData.stakeholders);
+      jest.spyOn(require("../services/documentType.service"), "fetchDocumentTypes")
+        .mockResolvedValueOnce(mockDocumentType);
     
       //Call of addingDocument
       const result = await addingDocument(mockDocumentData);
@@ -677,10 +671,17 @@ describe('Tests for document services', () => {
       expect(Coordinate.findById).toHaveBeenCalledWith(mockCoordinate.id);
       expect(Document.findById).toHaveBeenCalledWith("cd1");
       expect(MediaDocument.findById).toHaveBeenCalledTimes(2);
+      expect(Stakeholder.findById).toHaveBeenCalled();
+
       expect(getCoordinateById).toHaveBeenCalled();
       expect(fetchMedia).toHaveBeenCalled();
+      expect(fetchStakeholders).toHaveBeenCalled();
+      expect(fetchDocumentTypes).toHaveBeenCalled();
+
       expect(result).toEqual({
         id: 'd1',
+        type: mockDocumentType,
+        stakeholders: [StakeholderEnum.LKAB],
         coordinates: mockCoordinate,
         media: mockMedia
       });
@@ -733,6 +734,79 @@ describe('Tests for document services', () => {
       expect(Document.findById).toHaveBeenCalledWith("cd1");
       expect(MediaDocument.findById).toHaveBeenCalled();
     });
+
+    //test 5
+    test("Should throw StakeholderNotFoundError", async () => {
+      //Data mocking
+      const err = new StakeholderNotFoundError();
+
+      //Support functions mocking
+      (Coordinate.findById as jest.Mock).mockImplementation(async () => mockCoordinate);
+      (Document.findById as jest.Mock).mockImplementation(async() => mockConnectedDoc);
+      (MediaDocument.findById as jest.Mock).mockImplementation(async() => mockMedia);
+      (Stakeholder.findById as jest.Mock).mockImplementation(async() => null);
+
+      //Call of addingDocument
+      await expect(addingDocument(mockDocumentData)).rejects.toThrow(err);
+
+      expect(Coordinate.findById).toHaveBeenCalledWith(mockDocumentData.coordinates);
+      expect(Document.findById).toHaveBeenCalledWith("cd1");
+      expect(MediaDocument.findById).toHaveBeenCalledTimes(2);
+      expect(Stakeholder.findById).toHaveBeenCalled();
+    });
+
+    //test 6
+    test("Should throw an error if the same stakeholder is added more than once", async () => {
+      //Data mocking
+      const mockWrongData = {
+        title: 'Test Document',
+        summary: 'Test summary',
+        coordinates: mockCoordinate.id,
+        media: ["media1", "media2"],
+        connections: [{document: 'cd1'}],
+        stakeholders: [StakeholderEnum.LKAB, StakeholderEnum.LKAB]
+      } as unknown as IDocument;
+
+      const err = new Error("Duplicate stakeholderID found");
+
+      //Support functions mocking
+      (Coordinate.findById as jest.Mock).mockImplementation(async () => mockCoordinate);
+      (Document.findById as jest.Mock).mockImplementation(async() => mockConnectedDoc);
+      (MediaDocument.findById as jest.Mock).mockImplementation(async() => mockMedia);
+      jest.spyOn(Stakeholder, "findById")
+        .mockResolvedValueOnce(mockWrongData.stakeholders[0])
+        .mockResolvedValueOnce(mockWrongData.stakeholders[1])
+
+      //Call of addingDocument
+      await expect(addingDocument(mockWrongData)).rejects.toThrow(err);
+
+      expect(Coordinate.findById).toHaveBeenCalledWith(mockDocumentData.coordinates);
+      expect(Document.findById).toHaveBeenCalledWith("cd1");
+      expect(MediaDocument.findById).toHaveBeenCalledTimes(2);
+      expect(Stakeholder.findById).toHaveBeenCalled();
+    });
+
+    //test 7
+    test("Should throw DocumentTypeNotFoundError", async () => {
+      //Data mocking
+      const err = new DocumentTypeNotFoundError();
+
+      //Support functions mocking
+      (Coordinate.findById as jest.Mock).mockImplementation(async () => mockCoordinate);
+      (Document.findById as jest.Mock).mockImplementation(async() => mockConnectedDoc);
+      (MediaDocument.findById as jest.Mock).mockImplementation(async() => mockMedia);
+      (Stakeholder.findById as jest.Mock).mockImplementation(async() => mockDocumentData.stakeholders);
+      (DocumentType.findById as jest.Mock).mockImplementation(async() => null);
+
+      //Call of addingDocument
+      await expect(addingDocument(mockDocumentData)).rejects.toThrow(err);
+
+      expect(Coordinate.findById).toHaveBeenCalledWith(mockDocumentData.coordinates);
+      expect(Document.findById).toHaveBeenCalledWith("cd1");
+      expect(MediaDocument.findById).toHaveBeenCalledTimes(2);
+      expect(Stakeholder.findById).toHaveBeenCalled();
+      expect(DocumentType.findById).toHaveBeenCalled();
+    });
   }); //addingDocument
   /* ************************************************** */
 
@@ -743,6 +817,11 @@ describe('Tests for document services', () => {
     });
 
     //Data mock
+    const mockType = {
+      id: "ty1",
+      type: DocTypeEnum.Agreement
+    }
+
     const mockCoordinate = {
       _id: new mongoose.Types.ObjectId(),
       type: 'Point',
@@ -760,9 +839,9 @@ describe('Tests for document services', () => {
         _id: new mongoose.Types.ObjectId(),
         title: 'Document 1',
         coordinates: mockCoordinate._id,
-        stakeholders: 'Stakeholder 1',
+        stakeholders: [StakeholderEnum.LKAB],
         scale: '1:1000',
-        type: DocTypeEnum.Agreement,
+        type: mockType.id,
         date: '2024-01-01',
         language: 'EN',
         media: ['media1', 'media2'],
@@ -772,9 +851,9 @@ describe('Tests for document services', () => {
         toObject: jest.fn().mockReturnValue({
           title: 'Document 1',
           coordinates: mockCoordinate._id,
-          stakeholders: 'Stakeholder 1',
+          stakeholders: [StakeholderEnum.LKAB],
           scale: '1:1000',
-          type: DocTypeEnum.Agreement,
+          type: mockType.id,
           date: '2024-01-01',
           language: 'EN',
           media: ['media1', 'media2'],
@@ -785,9 +864,9 @@ describe('Tests for document services', () => {
         _id: new mongoose.Types.ObjectId(),
         title: 'Document 2',
         coordinates: '',
-        stakeholders: 'Stakeholder 2',
+        stakeholders: [StakeholderEnum.Citizens],
         scale: '1:1000',
-        type: DocTypeEnum.Agreement,
+        type: mockType.id,
         date: '2024-01-02',
         language: 'EN',
         media: [],
@@ -797,9 +876,9 @@ describe('Tests for document services', () => {
         toObject: jest.fn().mockReturnValue({
           title: 'Document 2',
           coordinates: null,
-          stakeholders: 'Stakeholder 2',
+          stakeholders: [StakeholderEnum.Citizens],
           scale: '1:1000',
-          type: DocTypeEnum.Agreement,
+          type: mockType.id,
           date: '2024-01-02',
           language: 'EN',
           media: null,
@@ -812,27 +891,37 @@ describe('Tests for document services', () => {
     test('Should return all documents with coordinates', async () => {
       //Support functions mocking
       (Document.find as jest.Mock).mockImplementation(async () => mockDocuments);
-      jest
-        .spyOn(
-          require('../services/coordinate.service.ts'),
-          'getCoordinateById',
-        )
-        .mockResolvedValue(mockCoordinate);
-      jest
-        .spyOn(require('../services/document.service'), 'fetchMedia')
-        .mockResolvedValue(mockMedia);
-
+      jest.spyOn(require('../services/coordinate.service.ts'),'getCoordinateById')
+        .mockResolvedValueOnce(mockCoordinate);
+      jest.spyOn(require('../services/media.service'), 'fetchMedia')
+        .mockResolvedValueOnce(mockMedia);
+      jest.spyOn(require('../services/stakeholder.service'), 'fetchStakeholders')
+        .mockResolvedValueOnce(mockDocuments[0].stakeholders)
+        .mockResolvedValueOnce(mockDocuments[1].stakeholders);
+      jest.spyOn(require("../services/documentType.service"), "fetchDocumentTypes")
+        .mockResolvedValueOnce(mockType)
+        .mockResolvedValueOnce(mockType);
+      //There are 2 documents, so method must be called twice!
+        
       //Call of getAllDocuments
       const result = await getAllDocuments();
 
-      expect(result).toHaveLength(2);
       expect(getCoordinateById).toHaveBeenCalled();
       expect(fetchMedia).toHaveBeenCalled();
+      expect(fetchStakeholders).toHaveBeenCalled();
+      expect(fetchDocumentTypes).toHaveBeenCalledTimes(2);
+
+      expect(result).toHaveLength(2);
+
       expect(result[0]).toHaveProperty('id');
       expect(result[0]).toHaveProperty('coordinates');
       expect(result[0]).toHaveProperty('media');
+      expect(result[0]).toHaveProperty('stakeholders');
+      expect(result[0]).toHaveProperty('type');
       expect(result[0].coordinates).toEqual(mockCoordinate);
       expect(result[0].media).toEqual(mockMedia);
+      expect(result[0].stakeholders).toEqual([StakeholderEnum.Citizens]);
+      expect(result[0].type).toEqual(mockType);
     });
   }); //getAllDocuments
   /* ************************************************** */
@@ -856,14 +945,15 @@ describe('Tests for document services', () => {
       { id: 'media2', url: 'https://example.com/media2' },
     ];
 
+    //2 documents are mocked to show that just one of them can be returned
     const mockDocuments = [
         {
           id: '1',
           title: 'Document 1',
           coordinates: mockCoordinate._id,
-          stakeholders: 'Stakeholder 1',
+          stakeholders: ["st1"],
           scale: '1:1000',
-          type: DocTypeEnum.Agreement,
+          type: "ty1",
           date: '2024-01-01',
           language: 'EN',
           media: ['media1', 'media2'],
@@ -873,9 +963,9 @@ describe('Tests for document services', () => {
           toObject: jest.fn().mockReturnValue({
             title: 'Document 1',
             coordinates: mockCoordinate._id,
-            stakeholders: 'Stakeholder 1',
+            stakeholders: ["st1"],
             scale: '1:1000',
-            type: DocTypeEnum.Agreement,
+            type: "ty1",
             date: '2024-01-01',
             language: 'EN',
             media: [],
@@ -886,9 +976,9 @@ describe('Tests for document services', () => {
         id: '2',
         title: 'Document 2',
         coordinates: '',
-        stakeholders: 'Stakeholder 2',
+        stakeholders: ["st2"],
         scale: '1:1000',
-        type: DocTypeEnum.Agreement,
+        type: "ty2",
         date: '2024-01-02',
         language: 'EN',
         media: [],
@@ -898,9 +988,9 @@ describe('Tests for document services', () => {
         toObject: jest.fn().mockReturnValue({
           title: 'Document 2',
           coordinates: null,
-          stakeholders: 'Stakeholder 2',
+          stakeholders: ["st2"],
           scale: '1:1000',
-          type: DocTypeEnum.Agreement,
+          type: "ty2",
           date: '2024-01-02',
           language: 'EN',
           media: null,
@@ -912,41 +1002,60 @@ describe('Tests for document services', () => {
     //test 1
     test('Should return document with its coordinates and medias', async () => {
       //Support functions mocking
-      (Document.findById as jest.Mock).mockImplementation(
-        async () => mockDocuments[0],
-      );
+      (Document.findById as jest.Mock).mockImplementation(async () => mockDocuments[0]);
+
       jest.spyOn(require('../services/coordinate.service.ts'), 'getCoordinateById')
-        .mockResolvedValue(mockCoordinate);
-      jest.spyOn(require('../services/document.service'), 'fetchMedia')
-        .mockResolvedValue(mockMedia);
+        .mockResolvedValueOnce(mockCoordinate);
+      jest.spyOn(require('../services/media.service'), 'fetchMedia')
+        .mockResolvedValueOnce(mockMedia);
+      jest.spyOn(require('../services/stakeholder.service'), 'fetchStakeholders')
+        .mockResolvedValueOnce(StakeholderEnum.LKAB);
+      jest.spyOn(require('../services/documentType.service'), 'fetchDocumentTypes')
+        .mockResolvedValueOnce(DocTypeEnum.Agreement);
 
       //Call of getDocumentById
       const result = await getDocumentById('1');
 
       expect(Document.findById).toHaveBeenCalledWith('1');
+
       expect(getCoordinateById).toHaveBeenCalled();
       expect(fetchMedia).toHaveBeenCalled();
+      expect(fetchStakeholders).toHaveBeenCalled();
+      expect(fetchDocumentTypes).toHaveBeenCalled();
+
       expect(result).toHaveProperty('id');
       expect(result).toHaveProperty('coordinates');
       expect(result).toHaveProperty('media');
+      expect(result).toHaveProperty('stakeholders');
+      expect(result).toHaveProperty('type');
       expect(result?.coordinates).toEqual(mockCoordinate);
       expect(result?.media).toEqual(mockMedia);
+      expect(result?.stakeholders).toEqual(StakeholderEnum.LKAB);
+      expect(result?.type).toEqual(DocTypeEnum.Agreement);
     });
 
     //test 2
     test('Should return document that has no coordinates or medias', async () => {
       //Support functions mocking
-      (Document.findById as jest.Mock).mockImplementation(
-        async () => mockDocuments[1],
-      );
+      (Document.findById as jest.Mock).mockImplementation(async () => mockDocuments[1]);
+
+      jest.spyOn(require('../services/stakeholder.service'), 'fetchStakeholders')
+        .mockResolvedValueOnce(StakeholderEnum.Citizens);
+      jest.spyOn(require('../services/documentType.service'), 'fetchDocumentTypes')
+        .mockResolvedValueOnce(DocTypeEnum.Conflict);
 
       //Call of getDocumentById
       const result = await getDocumentById('2');
 
       expect(Document.findById).toHaveBeenCalledWith('2');
+
       expect(result).toHaveProperty('id');
       expect(result).toHaveProperty('coordinates');
       expect(result).toHaveProperty('media');
+      expect(result).toHaveProperty('stakeholders');
+      expect(result).toHaveProperty('type');
+      expect(result?.stakeholders).toEqual(StakeholderEnum.Citizens);
+      expect(result?.type).toEqual(DocTypeEnum.Conflict);
     });
 
     //test 3
@@ -1049,18 +1158,26 @@ describe('Tests for document services', () => {
 
       //Support functions mocking
       (Document.find as jest.Mock).mockImplementation(async () => [mockDocuments[0]]);
+
       (getCoordinateById as jest.Mock).mockImplementation(async () => mockCoordinate);
-      jest
-        .spyOn(require('../services/document.service'), 'fetchMedia')
+      jest.spyOn(require('../services/media.service'), 'fetchMedia')
         .mockResolvedValueOnce(mockMedia);
+      jest.spyOn(require('../services/stakeholder.service'), 'fetchStakeholders')
+        .mockResolvedValueOnce(StakeholderEnum.ArchitectureFirms);
+      jest.spyOn(require('../services/documentType.service'), 'fetchDocumentTypes')
+        .mockResolvedValueOnce(DocTypeEnum.Agreement);
 
       //Call of searchDocuments
       //In order to navigate each if-else block of searchDocuments, all possible filters are added
       const result = await searchDocuments(['Test Document 1'], filters);
 
       expect(Document.find).toHaveBeenCalled();
+
       expect(fetchMedia).toHaveBeenCalled();
       expect(getCoordinateById).toHaveBeenCalledWith(mockCoordinate._id);
+      expect(fetchStakeholders).toHaveBeenCalled();
+      expect(fetchDocumentTypes).toHaveBeenCalled();
+
       expect(result).toEqual([
         {
           id: '1',
@@ -1087,10 +1204,19 @@ describe('Tests for document services', () => {
       //Support functions mocking
       (Document.find as jest.Mock).mockImplementation(async () => [mockDocuments[1]]);
 
+      jest.spyOn(require('../services/stakeholder.service'), 'fetchStakeholders')
+        .mockResolvedValueOnce([StakeholderEnum.Citizens, StakeholderEnum.LKAB]);
+      jest.spyOn(require('../services/documentType.service'), 'fetchDocumentTypes')
+        .mockResolvedValueOnce(DocTypeEnum.Conflict);
+
       //Call of searchDocuments
       const result = await searchDocuments([], filters);
 
       expect(Document.find).toHaveBeenCalled();
+
+      expect(fetchStakeholders).toHaveBeenCalled();
+      expect(fetchDocumentTypes).toHaveBeenCalled();
+
       expect(result).toEqual([
         {
           id: '2',
@@ -1108,7 +1234,7 @@ describe('Tests for document services', () => {
     });
 
     //test 3
-    test('Should return searched documents and relative coordinates and media (if there are any)', async () => {
+    test('Given a coordionate, the relative document is returned (with its attachments)', async () => {
       //Input mock
       const filters = {
         coordinates: mockCoordinate._id
@@ -1116,17 +1242,25 @@ describe('Tests for document services', () => {
 
       //Support functions mocking
       (Document.find as jest.Mock).mockImplementation(async () => [mockDocuments[0]]);
+
       (getCoordinateById as jest.Mock).mockImplementation(async () => mockCoordinate);
-      jest
-        .spyOn(require('../services/document.service'), 'fetchMedia')
+      jest.spyOn(require('../services/media.service'), 'fetchMedia')
         .mockResolvedValueOnce(mockMedia);
+      jest.spyOn(require('../services/stakeholder.service'), 'fetchStakeholders')
+        .mockResolvedValueOnce(StakeholderEnum.ArchitectureFirms);
+      jest.spyOn(require('../services/documentType.service'), 'fetchDocumentTypes')
+        .mockResolvedValueOnce(DocTypeEnum.Agreement);
 
       //Call of searchDocuments
       const result = await searchDocuments(['Test Document 1'], filters);
 
       expect(Document.find).toHaveBeenCalled();
+
       expect(fetchMedia).toHaveBeenCalled();
       expect(getCoordinateById).toHaveBeenCalledWith(mockCoordinate._id);
+      expect(fetchStakeholders).toHaveBeenCalled();
+      expect(fetchDocumentTypes).toHaveBeenCalled();
+
       expect(result).toEqual([
         {
           id: '1',
@@ -1177,10 +1311,10 @@ describe('Tests for document services', () => {
     const mockDocument = {
       id: '1',
       title: 'Test Document',
-      stakeholders: StakeholderEnum.Citizens,
+      stakeholders: ["sh1"],
       scale: 'Test value',
       architecturalScale: 'Test value',
-      type: DocTypeEnum.Agreement,
+      type: "ty1",
       date: '2000-01-01',
       connections: [],
       language: 'EN',
@@ -1231,8 +1365,13 @@ describe('Tests for document services', () => {
       (Document.prototype.save as jest.Mock).mockImplementation(async() => mockConnectedDoc);
       jest.spyOn(require("../services/coordinate.service"), "getCoordinateById")
         .mockResolvedValue(mockCoordinate);
-      jest.spyOn(require("../services/document.service"), "fetchMedia")
-        .mockResolvedValue(mockMedia);
+      jest.spyOn(require("../services/media.service"), "fetchMedia")
+        .mockResolvedValueOnce(mockMedia);
+      (DocumentType.findById as jest.Mock).mockImplementation(async() => DocTypeEnum.Agreement);
+      jest.spyOn(require("../services/stakeholder.service"), "fetchStakeholders")
+        .mockResolvedValueOnce(StakeholderEnum.Citizens);
+      jest.spyOn(require("../services/documentType.service"), "fetchDocumentTypes")
+        .mockResolvedValueOnce(DocTypeEnum.Agreement);
       
       //Call of updatingDocument
       const result = await updatingDocument('1', {
@@ -1243,6 +1382,14 @@ describe('Tests for document services', () => {
       });
 
       expect(Document.findByIdAndUpdate).toHaveBeenCalled();
+      expect(Document.findById).toHaveBeenCalledWith('cd1');
+      expect(DocumentType.findById).toHaveBeenCalledWith("ty1");
+
+      expect(getCoordinateById).toHaveBeenCalledWith("1");
+      expect(fetchMedia).toHaveBeenCalled();
+      expect(fetchStakeholders).toHaveBeenCalled();
+      expect(fetchDocumentTypes).toHaveBeenCalled();
+
       expect(result).toEqual({
         id: '1',
         title: 'Test document updated',
@@ -1292,8 +1439,12 @@ describe('Tests for document services', () => {
       });
       jest.spyOn(require("../services/coordinate.service"), "getCoordinateById")
         .mockResolvedValue(mockCoordinate);
-      jest.spyOn(require("../services/document.service"), "fetchMedia")
-        .mockResolvedValue(mockMedia);
+      jest.spyOn(require("../services/media.service"), "fetchMedia")
+        .mockResolvedValueOnce(mockMedia);
+      jest.spyOn(require("../services/stakeholder.service"), "fetchStakeholders")
+        .mockResolvedValueOnce(StakeholderEnum.Citizens);
+      jest.spyOn(require("../services/documentType.service"), "fetchDocumentTypes")
+        .mockResolvedValueOnce(DocTypeEnum.Agreement);
 
       //Call of updatingDocument
       const result = await updatingDocument(
@@ -1302,6 +1453,12 @@ describe('Tests for document services', () => {
       );
 
       expect(Coordinate.findById).toHaveBeenCalledWith('1');
+
+      expect(getCoordinateById).toHaveBeenCalledWith("1");
+      expect(fetchMedia).toHaveBeenCalled();
+      expect(fetchStakeholders).toHaveBeenCalled();
+      expect(fetchDocumentTypes).toHaveBeenCalled();
+
       expect(result).toEqual({
         id: '1',
         title: 'Test Document',
@@ -1338,8 +1495,12 @@ describe('Tests for document services', () => {
       (MediaDocument.findById as jest.Mock).mockImplementation(async () => mockMedia);
       jest.spyOn(require("../services/coordinate.service"), "getCoordinateById")
         .mockResolvedValueOnce(mockCoordinate);
-      jest.spyOn(require("../services/document.service"), "fetchMedia")
+      jest.spyOn(require("../services/media.service"), "fetchMedia")
         .mockResolvedValueOnce(mockMedia);
+      jest.spyOn(require("../services/stakeholder.service"), "fetchStakeholders")
+        .mockResolvedValueOnce(StakeholderEnum.Citizens);
+      jest.spyOn(require("../services/documentType.service"), "fetchDocumentTypes")
+        .mockResolvedValueOnce(DocTypeEnum.Agreement);
 
       //Call of updatingDocument
       const result = await updatingDocument(
@@ -1348,6 +1509,11 @@ describe('Tests for document services', () => {
       );
 
       expect(Media.findById).toHaveBeenCalledWith('media3');
+
+      expect(fetchMedia).toHaveBeenCalled();
+      expect(fetchStakeholders).toHaveBeenCalled();
+      expect(fetchDocumentTypes).toHaveBeenCalled();
+
       expect(result).toEqual({
         id: '1',
         title: 'Test Document',
@@ -1375,10 +1541,10 @@ describe('Tests for document services', () => {
       const mockNoMediaDoc = {
         id: '100',
         title: 'No media document',
-        stakeholders: StakeholderEnum.Citizens,
+        stakeholders: ["sh1"],
         scale: 'Test value',
         architecturalScale: 'Test value',
-        type: DocTypeEnum.Agreement,
+        type: "ty1",
         date: '2000-01-02',
         connections: [],
         language: 'EN',
@@ -1395,16 +1561,22 @@ describe('Tests for document services', () => {
         toObject: () => mockNoMediaDoc,
       });
       (MediaDocument.findById as jest.Mock).mockImplementation(async () => mockMedia);
-      jest.spyOn(require("../services/document.service"), "fetchMedia")
+      jest.spyOn(require("../services/media.service"), "fetchMedia")
         .mockResolvedValueOnce(mockMedia);
-
+      jest.spyOn(require("../services/stakeholder.service"), "fetchStakeholders")
+        .mockResolvedValueOnce(StakeholderEnum.Citizens);
+      jest.spyOn(require("../services/documentType.service"), "fetchDocumentTypes")
+        .mockResolvedValueOnce(DocTypeEnum.Agreement);
+        
       //Call of updatingDocument
-      const result = await updatingDocument(
-        '100',
-        updateMedia as unknown as Partial<IDocument>,
-      );
+      const result = await updatingDocument('100', updateMedia as unknown as Partial<IDocument>);
 
       expect(Media.findById).toHaveBeenCalledWith('media3');
+
+      expect(fetchMedia).toHaveBeenCalled();
+      expect(fetchStakeholders).toHaveBeenCalled();
+      expect(fetchDocumentTypes).toHaveBeenCalled();
+
       expect(result).toEqual({
         id: '100',
         title: 'No media document',
@@ -1488,6 +1660,90 @@ describe('Tests for document services', () => {
           runValidators: true,
         }
       );
+      expect(Document.findById).toHaveBeenCalled()
+    });
+
+    //test 9
+    test('Should throw StakeholderNotFoundError', async () => {
+      //Mocked data
+      const wrongShId = new mongoose.Types.ObjectId();
+      const err = new StakeholderNotFoundError();
+
+      //Support functions mocking
+      jest.spyOn(Document, 'findByIdAndUpdate').mockResolvedValue({
+        ...mockDocument,
+        toObject: () => mockDocument,
+      });
+      (Stakeholder.findById as jest.Mock).mockImplementation(async() => null);
+
+      //Call of updatingDocument
+      await expect(
+        updatingDocument('1', {stakeholders: [wrongShId as unknown as ObjectId]})
+      ).rejects.toThrow(err);
+
+      expect(Document.findByIdAndUpdate).toHaveBeenCalled();
+      expect(Stakeholder.findById).toHaveBeenCalled();
+    });
+
+    //test 10
+    test('Should throw an error if the same stakeholder is added more than once', async () => {
+      //Mocked data
+      const duplicateShId = "sh2";
+
+      const mockWrongUpdatedDoc = {
+        id: '2',
+        title: 'Test Document 2',
+        stakeholders: [duplicateShId, duplicateShId],
+        scale: 'Test value 2',
+        architecturalScale: 'Test value 2.2',
+        type: "ty1",
+        date: '2000-01-01',
+        connections: [],
+        language: 'EN',
+        media: [],
+        coordinates: '',
+        summary: 'Test summary 2'
+      };
+
+      const err = new Error("Duplicate stakeholderID found");
+
+      //Support functions mocking
+      jest.spyOn(Document, 'findByIdAndUpdate').mockResolvedValue({
+        ...mockWrongUpdatedDoc,
+        toObject: () => mockWrongUpdatedDoc
+      });
+      (Stakeholder.findById as jest.Mock).mockImplementation(async() => StakeholderEnum.LKAB);
+
+      //Call of updatingDocument
+      await expect(
+        updatingDocument('1', {title: "Text to trigger the method"})
+      ).rejects.toThrow(err);
+
+      expect(Document.findByIdAndUpdate).toHaveBeenCalled();
+      expect(Stakeholder.findById).toHaveBeenCalled();
+    });
+
+    //test 11
+    test('Should throw DocumentTypeNotFoundError', async () => {
+      //Mocked data
+      const err = new DocumentTypeNotFoundError();
+
+      //Support functions mocking
+      jest.spyOn(Document, 'findByIdAndUpdate').mockResolvedValue({
+        ...mockDocument,
+        toObject: () => mockDocument
+      });
+      (Stakeholder.findById as jest.Mock).mockImplementation(async() => StakeholderEnum.LKAB);
+      (DocumentType.findById as jest.Mock).mockImplementation(async() => null);
+
+      //Call of updatingDocument
+      await expect(
+        updatingDocument('1', {title: "Text to trigger the method"})
+      ).rejects.toThrow(err);
+
+      expect(Document.findByIdAndUpdate).toHaveBeenCalled();
+      expect(Stakeholder.findById).toHaveBeenCalled();
+      expect(DocumentType.findById).toHaveBeenCalled();
     });
   }); //updatingDocument
   /* ************************************************** */
@@ -1501,31 +1757,42 @@ describe('Tests for document services', () => {
       jest.clearAllMocks();
     });
 
+    //An example of default types + new ones created by a user
+    const mockDBTypes = [
+      {_id: "1", type: "test type 1"},
+      {_id: "2", type: "test type 2"},
+      {_id: "3", type: DocTypeEnum.Agreement},
+      {_id: "4", type: DocTypeEnum.Conflict}
+    ]
+
     //test 1
     test('Should retrieve all documents types', async () => {
+      //Support functions mocking
+      jest.spyOn(DocumentType, 'find').mockResolvedValueOnce(mockDBTypes);
+      
       //Call of getDocumentTypes
-      const result = getDocumentTypes();
+      const result = await getDocumentTypes();
 
+      expect(DocumentType.find).toHaveBeenCalled();
       expect(result).toEqual([
-        { label: 'Agreement', value: DocTypeEnum.Agreement },
-        { label: 'Conflict', value: DocTypeEnum.Conflict },
-        { label: 'Consultation', value: DocTypeEnum.Consultation },
-        { label: 'DesignDoc', value: DocTypeEnum.DesignDoc },
-        { label: 'InformativeDoc', value: DocTypeEnum.InformativeDoc },
-        { label: 'MaterialEffects', value: DocTypeEnum.MaterialEffects },
-        { label: 'PrescriptiveDoc', value: DocTypeEnum.PrescriptiveDoc },
-        { label: 'TechnicalDoc', value: DocTypeEnum.TechnicalDoc },
+        {value: "1", label: "test type 1"},
+        {value: "2", label: "test type 2"},
+        {value: "3", label: DocTypeEnum.Agreement},
+        {value: "4", label: DocTypeEnum.Conflict}
       ]);
     });
 
     //test 2
-    test('Should throw an error if no type is available', async () => {
+    test('Should throw a DocumentTypeNotFoundError', async () => {
       //Data mock
-      const err = new CustomError('No document types available', 404);
-      jest.spyOn(Object, "entries").mockImplementation(() => []); //This mock makes DocTypeEnum as if it was empty
+      const err = new DocumentTypeNotFoundError();
+
+      //Support functions mocking
+      (DocumentType.find as jest.Mock).mockImplementation(async() => []);
       
       //Call of getDocumentTypes + check
-      expect(() => getDocumentTypes()).toThrowError(err);
+      expect(getDocumentTypes()).rejects.toThrow(err);
+      expect(DocumentType.find).toHaveBeenCalled();
     });
   }); //getDocumentTypes
   /* ************************************************** */
@@ -1537,23 +1804,30 @@ describe('Tests for document services', () => {
     });
 
     //Mocked data
+    const mockedType = {
+      _id: "ty1",
+      type: DocTypeEnum.Agreement
+    }
+
     //Just essential fields are filled
     const mockDocuments = [
       {
         id: "d1",
         title: "Document 1",
         summary: "Test document 1",
+        stakeholders: ["st1"],
         coordinates: "c1",
         media: ["m1", "m2"],
-        type: DocTypeEnum.Agreement
+        type: mockedType._id
       },
       {
         id: "d2",
         title: "Document 2",
         summary: "Test document 2",
+        stakeholders: ["st2", "st3"],
         coordinates: null,
         media: [],
-        type: DocTypeEnum.Agreement
+        type: mockedType._id
       }
     ];
 
@@ -1572,58 +1846,106 @@ describe('Tests for document services', () => {
     //test 1
     test("Should return all the documents of the specified type", async () => {
       //Support functions mocking
-      jest.spyOn(Document, "find").mockResolvedValue(
-        mockDocuments.map((doc) => ({
-          ...doc,
-          toObject: () => doc
-        }))
-      );
+      jest.spyOn(DocumentType, 'findById').mockResolvedValueOnce(mockedType);
+
+      (Document.find as jest.Mock).mockImplementation(() => ({
+        select: jest.fn().mockImplementation(async() =>
+          mockDocuments.map((doc) => ({
+            ...doc,
+            toObject: () => doc
+          }))
+        )
+      }));
+
       (getCoordinateById as jest.Mock).mockImplementation(async() => mockCoordinate);
-      
       jest.spyOn(require("../services/media.service"), "getMediaMetadataById")
        .mockResolvedValueOnce(mockMedias[0])
        .mockResolvedValueOnce(mockMedias[1])
-      
+      jest.spyOn(require("../services/stakeholder.service"), "fetchStakeholders")
+        .mockResolvedValueOnce(StakeholderEnum.LKAB)
+        .mockResolvedValueOnce([StakeholderEnum.Citizens, StakeholderEnum.RegionalAuthority]);
+      jest.spyOn(require("../services/documentType.service"), 'fetchDocumentTypes')
+        .mockResolvedValueOnce({
+          id: 'ty1',
+          type: DocTypeEnum.Agreement
+        })
+        .mockResolvedValueOnce({
+          id: 'ty1',
+          type: DocTypeEnum.Agreement
+        }); //fetchDocumentTypes must be called 2 times because the mocked documents are 2
 
       //Call of getDocumentByType
       const result = await getDocumentByType(DocTypeEnum.Agreement);
 
-      expect(Document.find).toHaveBeenCalledWith({ type: DocTypeEnum.Agreement });
+      expect(DocumentType.findById).toHaveBeenCalledWith(DocTypeEnum.Agreement);
+      expect(Document.find).toHaveBeenCalled();
       expect(getCoordinateById).toHaveBeenCalledWith("c1");
       expect(getMediaMetadataById).toHaveBeenCalledTimes(2);
+      expect(fetchStakeholders).toHaveBeenCalledTimes(2);
+      expect(fetchDocumentTypes).toHaveBeenCalledTimes(2);
+
       expect(result).toEqual([
         {
           id: 'd1',
           title: 'Document 1',
           summary: 'Test document 1',
+          stakeholders: [StakeholderEnum.Citizens, StakeholderEnum.RegionalAuthority],
           coordinates: mockCoordinate,
           media: [mockMedias[0], mockMedias[1]],
-          type: DocTypeEnum.Agreement
+          type: {
+            id: "ty1",
+            type: DocTypeEnum.Agreement
+          }
         },
         {
           id: 'd2',
           title: 'Document 2',
           summary: 'Test document 2',
+          stakeholders: StakeholderEnum.LKAB,
           coordinates: null,
           media: null,
-          type: DocTypeEnum.Agreement
+          type: {
+            id: "ty1",
+            type: DocTypeEnum.Agreement
+          }
         }
       ]);
     });
 
     //test 2
-    test('Should throw a DocNotFoundErr', async () => {
+    test('Should throw a DocumentTypeNotFoundError', async () => {
+      //Data mock
+      const err = new DocumentTypeNotFoundError();
+
+      //Support functions mocking
+      (DocumentType.findById as jest.Mock).mockImplementation(async () => null);
+
+      //Call of getDocumentByType
+      await expect(getDocumentByType('wrongType')).rejects.toThrow(err);
+
+      expect(DocumentType.findById).toHaveBeenCalledWith('wrongType');
+    });
+
+    //test 3
+    test('Should throw a DocNotFoundError if the input type does not match any document', async () => {
       //Data mock
       const err = new DocNotFoundError();
 
-      (Document.find as jest.Mock).mockImplementation(async () => []);
+      //Support functions mocking
+      (DocumentType.findById as jest.Mock).mockImplementation(async () => mockedType);
+      (Document.find as jest.Mock).mockImplementation(() => ({
+          select: jest.fn().mockImplementation(async() => [])
+        })
+      );
 
-      await expect(getDocumentByType('FakeType')).rejects.toThrow(err);
+      //Call of getDocumentByType
+      await expect(getDocumentByType(DocTypeEnum.Agreement)).rejects.toThrow(err);
 
-      expect(Document.find).toHaveBeenCalledWith({ type: 'FakeType' });
-      expect(getCoordinateById).not.toHaveBeenCalled();
+      expect(DocumentType.findById).toHaveBeenCalledWith(DocTypeEnum.Agreement);
+      expect(Document.find).toHaveBeenCalled();
     });
   }); //getDocumentByType
+  /* ************************************************** */
 }); //END OF DOCUMENT SERVICES
 
 /* ******************************************* Suite n#4 - MEDIA ******************************************* */
@@ -1862,6 +2184,51 @@ describe('Tests for media services', () => {
       expect(Media.findById).toHaveBeenCalledWith("invalid-id");
     });
   }); //getMediaMetadataById
+  /* ************************************************** */
+
+  //fetchMedia
+  describe('Tests for fetchMedia', () => {
+    afterEach(() => {
+      jest.clearAllMocks();
+    });
+
+    //Data mock
+    const mockMedias = [
+      { id: "media1", url: "https://example.com/media1" },
+      { id: "media2", url: "https://example.com/media2" }
+    ]
+
+    //test 1
+    test("It should return null if no ids are given as an input", async () => {
+      //Call of fetchMedia
+      const result = await fetchMedia([]);
+
+      expect(result).toBeNull();
+    });
+
+    //test 2
+    test("Should return the asked medias", async () => {
+      //Input mock
+      const mediaIds = ["media1", "media2"] as unknown as ObjectId[];
+      
+      //Support functions mocking
+      jest.spyOn(require("../services/media.service"), "getMediaMetadataById" )
+        .mockResolvedValueOnce(mockMedias[0])
+        .mockResolvedValueOnce(mockMedias[1]);
+  
+      //Call of fetchMedia
+      const result = await fetchMedia(mediaIds as unknown as ObjectId[]);
+  
+      expect(getMediaMetadataById).toHaveBeenCalledTimes(mediaIds.length);
+      expect(getMediaMetadataById).toHaveBeenCalledWith("media1");
+      expect(getMediaMetadataById).toHaveBeenCalledWith("media2");
+      expect(result).toEqual([
+        { id: "media1", url: "https://example.com/media1" },
+        { id: "media2", url: "https://example.com/media2" },
+      ]);
+    });
+  }); //fetchMedia
+  /* ************************************************** */
 }); //END OF MEDIA SERVICES
 
 /* ******************************************* Suite n#5 - GRAPH ******************************************* */
@@ -1942,3 +2309,498 @@ describe('Tests for graph services', () => {
   }); //getGraphDatas
   /* ************************************************** */
 }) //END OF GRAPH SERVICES
+
+/* *************************************** Suite n#6 - DOCUMENT TYPES *************************************** */
+describe('Tests for document types services', () => {
+  beforeEach(() => {
+    jest.clearAllMocks();
+  });
+
+  //addingDocumentType
+  describe('Tests for addingDocumentType', () => {
+    afterEach(() => {
+      jest.clearAllMocks();
+    });
+
+    //test 1
+    test("Should save a new document type", async () => {
+      //Data mock
+      const mockNewType = { newDocumentType: "TestType" };
+  
+      const mockSavedObj = {
+        _id: "ty1",
+        type: "TestType"
+      };
+  
+      //Support functions mocking
+      jest.spyOn(DocumentType.prototype, "save").mockResolvedValueOnce(mockSavedObj);
+  
+      //Call of addingDocumentType
+      const result = await addingDocumentType(mockNewType);
+
+      expect(result).toEqual(mockSavedObj);
+      expect(DocumentType.prototype.save).toHaveBeenCalledTimes(1);
+      expect(DocumentType).toHaveBeenCalledWith({ type: mockNewType.newDocumentType });
+    });
+
+    //test 2
+    test("Should throw a CustomError", async () => {
+      //Data mock
+      const mockInput = { newDocumentType: "TestType" };
+      const err = new CustomError('Internal Server Error', 400);
+
+      //Support functions mocking
+      jest.spyOn(DocumentType.prototype, 'save').mockRejectedValue(Error());
+
+      //Call of addingDocumentType + error check
+      await expect(addingDocumentType(mockInput)).rejects.toThrow(err);
+
+      expect(DocumentType.prototype.save).toHaveBeenCalledTimes(1);
+    });
+  }); //addingDocumentType
+  /* ************************************************** */
+
+  //getAllDocumentTypes
+  describe('Tests for getAllDocumentTypes', () => {
+    afterEach(() => {
+      jest.clearAllMocks();
+    });
+
+    //Data mock
+    const mockDocumentTypes = [
+      { _id: "ty1", type: "TestType1" },
+      { _id: "ty2", type: "TestType2" }
+    ];
+
+    //test 1
+    test("Should return all document types", async () => {
+      //Support functions mocking
+      (DocumentType.find as jest.Mock).mockImplementation(() => ({
+        select: jest.fn().mockImplementation(async() =>
+          mockDocumentTypes.map((type) => ({
+            ...type
+          }))
+        )
+      }));
+  
+      //Call of getAllDocumentTypes
+      const result = await getAllDocumentTypes();
+  
+      expect(result).toEqual(mockDocumentTypes);
+      expect(DocumentType.find).toHaveBeenCalledTimes(1);
+    });
+
+    //test 2
+    test("Should throw DocumentTypeNotFoundError", async () => {
+      //Data mock
+      const err = new DocumentTypeNotFoundError();
+      
+      //Support functions mocking
+      (DocumentType.find as jest.Mock).mockImplementation(() => ({
+        select: jest.fn().mockImplementation(async() => [])
+      }));
+  
+      //Call of getAllDocumentTypes + error check
+      await expect(getAllDocumentTypes()).rejects.toThrow(err);
+      expect(DocumentType.find).toHaveBeenCalledTimes(1);
+    });
+  }); //getAllDocumentTypes
+  /* ************************************************** */
+
+  //getDocumentTypeById
+  describe('Tests for getDocumentTypeById', () => {
+    afterEach(() => {
+      jest.clearAllMocks();
+    });
+
+    //Data mock
+    const mockType = { _id: 'ty1', type: DocTypeEnum.Agreement };
+
+    test('Should return an existing document type', async () => {
+      //Support functions mocking
+      (DocumentType.findById as jest.Mock).mockImplementation(() => ({
+        select: jest.fn().mockImplementation(async() => {
+          return {
+            ...mockType,
+              toObject: () => mockType
+            }
+          }
+        )
+      }));
+  
+      //Call of getDocumentTypeById
+      const result = await getDocumentTypeById('ty1');
+  
+      expect(result).toEqual(mockType);
+      expect(DocumentType.findById).toHaveBeenCalledWith('ty1');
+    });
+
+    //test 2
+    test('Should throw a CustomError if the connection with the database fails', async () => {
+      //Data mock
+      const err = new CustomError('Internal Server Error', 400);
+      
+      //Support functions mocking
+      (DocumentType.findById as jest.Mock).mockImplementation(() => ({
+        select: jest.fn().mockImplementation(async() => null)
+      }));
+  
+      //Call of getDocumentTypeById
+      await expect(getDocumentTypeById('fakeId')).rejects.toThrow(err);
+      expect(DocumentType.findById).toHaveBeenCalledWith('fakeId');
+    });
+
+    //test 3...
+    // It is impossible to test when the "Error" error is thrown.
+    // The reason is that the try-catch will always be triggered first by the server error
+  }) //getDocumentTypeById
+  /* ************************************************** */
+
+  //fetchDocumentTypes
+  describe('Tests for fetchDocumentTypes', () => {
+    afterEach(() => {
+      jest.clearAllMocks();
+    });
+
+    //test 1
+    test('Should return the asked document type', async () => {
+      //Data mock
+      const mockId = new mongoose.Types.ObjectId();
+      const mockType = { _id: mockId.toString(), type: DocTypeEnum.Agreement };
+
+      //Support functions mocking
+      jest.spyOn(require('../services/documentType.service'), 'getDocumentTypeById')
+        .mockResolvedValueOnce(mockType);
+  
+      //Call of fetchDocumentTypes
+      const result = await fetchDocumentTypes(mockId as unknown as ObjectId);
+
+      expect(result).toEqual(mockType);
+      expect(getDocumentTypeById).toHaveBeenCalledWith(mockType._id.toString());
+    });
+
+    //test 2
+    test('Should return null when no match is found', async () => {
+      //Data mock
+      const mockId = new mongoose.Types.ObjectId();
+
+      //Support functions mocking
+      jest.spyOn(require('../services/documentType.service'), 'getDocumentTypeById')
+        .mockResolvedValueOnce(null);
+      
+      //Call of fetchDocumentTypes
+      const result = await fetchDocumentTypes(mockId as unknown as ObjectId);
+  
+      expect(result).toBeNull();
+      expect(getDocumentTypeById).toHaveBeenCalled();
+    });
+
+    //test 3
+    test('Should return null when no input is given', async () => {
+      //Call of fetchDocumentTypes
+      const result = await fetchDocumentTypes(null as unknown as ObjectId);
+  
+      expect(result).toBeNull();
+      expect(getDocumentTypeById).not.toHaveBeenCalled();
+    });
+  }) //fetchDocumentTypes
+  /* ************************************************** */
+
+  //fetchDocumentTypesForSearch
+  describe('Tests for fetchDocumentTypesForSearch', () => {
+    afterEach(() => {
+      jest.clearAllMocks();
+    });
+
+    //test 1
+    test('Should return the id of the searched type', async () => {
+      //Data mock
+      const mockId = new mongoose.Types.ObjectId();
+      const mockType = { _id: mockId.toString(), type: DocTypeEnum.Agreement };
+
+      //Suport functions mocking
+      (DocumentType.findOne as jest.Mock).mockImplementation(() => ({
+        select: jest.fn().mockImplementation(async() => {
+          return {
+              ...mockType,
+              toObject: () => mockType
+            }
+          }
+        )
+      }));
+  
+      //Call of fetchDocumentTypesForSearch
+      const result = await fetchDocumentTypesForSearch(DocTypeEnum.Agreement);
+  
+      expect(result).toEqual(mockId.toString());
+      expect(DocumentType.findOne).toHaveBeenCalled();
+    });
+
+    //test 2
+    test('Should return null when no match is found', async () => {
+      //Support functions mocking
+      (DocumentType.findOne as jest.Mock).mockImplementation(() => ({
+        select: jest.fn().mockImplementation(async() => null)
+      }));
+      
+      //Call of fetchDocumentTypesForSearch
+      const result = await fetchDocumentTypesForSearch('FakeType');
+  
+      expect(result).toBeNull();
+      expect(DocumentType.findOne).toHaveBeenCalled();
+    });
+
+    //test 3
+    test('Should return null when no input is given', async () => {
+      //Call of fetchDocumentTypes
+      const result = await fetchDocumentTypesForSearch(null as unknown as string);
+  
+      expect(result).toBeNull();
+      expect(getDocumentTypeById).not.toHaveBeenCalled();
+    });
+  }) //fetchDocumentTypesForSearch
+  /* ************************************************** */
+}) //END OF DOCUMENT TYPES
+
+/* ***************************************** Suite n#7 - STAKEHOLDERS ***************************************** */
+describe('Tests for stakeholders services', () => {
+  beforeEach(() => {
+    jest.clearAllMocks();
+  });
+
+  //addingStakeholder
+  describe('Tests for addingStakeholder', () => {
+    afterEach(() => {
+      jest.clearAllMocks();
+    });
+
+    //Mock of the stakeholder model
+    //This is needed in order to mock the constructor of the Stakeholder object
+    jest.mock("../schemas/stakeholder.schema", () => ({
+      __esModule: true,
+      default: jest.fn(),
+    }));
+
+    //Data mock
+    const mockInput = { newStakeholderType: StakeholderEnum.LKAB };
+
+    const mockNewStakeholder = {
+      _id: 'sh1',
+      type: StakeholderEnum.LKAB,
+      
+      save: jest.fn(),
+      toObject: jest.fn().mockReturnValue(this)
+    };
+
+    //test 1
+    test('Should save a new stakeholder', async () => {
+      //Support functions mocking
+      const MockedStakeholder = Stakeholder as jest.Mocked<typeof Stakeholder>;
+      MockedStakeholder.mockImplementation(() => mockNewStakeholder as any); //Mock of the Stakeholder constructor
+      jest.spyOn(mockNewStakeholder, "save").mockImplementation(async() => mockNewStakeholder);
+  
+      //Call of addingStakeholder
+      const result = await addingStakeholder(mockInput);
+  
+      expect(result).toEqual(mockNewStakeholder);
+      expect(Stakeholder).toHaveBeenCalledWith({ type: StakeholderEnum.LKAB });
+      expect(mockNewStakeholder.save).toHaveBeenCalled();
+    });
+
+    //test 2
+    test('Should throw a CustomError', async () => {
+      //Data mock
+      const err = new CustomError('Internal Server Error', 500);
+  
+      //Call of addingStakeholder + check
+      await expect(addingStakeholder(null)).rejects.toThrow(err);
+    });
+  }) //addingStakeholder
+  /* ************************************************** */
+
+  //getAllStakeholders
+  describe('Tests for getAllStakeholders', () => {
+    afterEach(() => {
+      jest.clearAllMocks();
+    });
+
+    //Data mock
+    const mockStakeholders = [
+      { _id: 'sh1', type: StakeholderEnum.LKAB },
+      { _id: 'sh2', type: StakeholderEnum.Citizens }
+    ];
+
+    //test 1
+    test('Should return all stakeholders', async () => {
+      //Support functions mocking
+      (Stakeholder.find as jest.Mock).mockImplementation(() => ({
+        select: jest.fn().mockImplementation(async() =>
+          mockStakeholders.map((st) => ({
+            ...st
+          }))
+        )
+      }));
+  
+      //Call of getAllStakeholders
+      const result = await getAllStakeholders();
+  
+      expect(result).toEqual(mockStakeholders);
+      expect(Stakeholder.find).toHaveBeenCalledWith();
+    });
+
+    //test 2
+    test('Should throw StakeholderNotFoundError', async () => {
+      //Data mock
+      const err = new StakeholderNotFoundError();
+      
+      //Support functions mocking
+      (Stakeholder.find as jest.Mock).mockImplementation(() => ({
+        select: jest.fn().mockImplementation(async() => [])
+      }));
+  
+      //Call of getAllStakeholders + checks
+      await expect(getAllStakeholders()).rejects.toThrow(err);
+      expect(Stakeholder.find).toHaveBeenCalledWith();
+    }) //getAllStakeholders
+  }) 
+  /* ************************************************** */
+
+  //getStakeholdersById
+  describe('Tests for getStakeholdersById', () => {
+    afterEach(() => {
+      jest.clearAllMocks();
+    });
+
+    //Data mock
+    const mockStakeholder = { _id: 'sh1', type: StakeholderEnum.LKAB };
+
+    test('Should return a saved stakeholder', async () => {
+      //Support functions mocking
+      (Stakeholder.findById as jest.Mock).mockImplementation(() => ({
+        select: jest.fn().mockImplementation(async() => {
+          return {
+              ...mockStakeholder,
+              toObject: () => mockStakeholder
+            }
+          }
+        )
+      }));
+  
+      //Call of getStakeholdersById
+      const result = await getStakeholdersById('sh1');
+  
+      expect(result).toEqual(mockStakeholder);
+      expect(Stakeholder.findById).toHaveBeenCalledWith('sh1');
+    });
+
+    //test 2
+    test('Should throw a CustomError if the connection with the database fails', async () => {
+      //Data mock
+      const err = new CustomError('Internal Server Error', 400);
+      
+      //Support functions mocking
+      (Stakeholder.findById as jest.Mock).mockImplementation(() => ({
+        select: jest.fn().mockImplementation(async() => null)
+      }));
+  
+      //Call of getStakeholdersById
+      await expect(getStakeholdersById('fakeId')).rejects.toThrow(err);
+      expect(Stakeholder.findById).toHaveBeenCalledWith('fakeId');
+    });
+  }) //getStakeholdersById
+  /* ************************************************** */
+
+  //fetchStakeholders
+  describe('Tests for fetchStakeholders', () => {
+    afterEach(() => {
+      jest.clearAllMocks();
+    });
+
+    //test 1
+    test('Should return the asked stakeholder', async () => {
+      //Data mock
+      const mockId = new mongoose.Types.ObjectId();
+      const mockStakeholder = { _id: mockId, type: StakeholderEnum.LKAB };
+
+      //Support functions mocking
+      jest.spyOn(require('../services/stakeholder.service'), 'getStakeholdersById')
+        .mockResolvedValueOnce(mockStakeholder);
+  
+      //Call of fetchStakeholders
+      const result = await fetchStakeholders([mockId] as unknown as ObjectId[]);
+
+      expect(result).toEqual([mockStakeholder]);
+      expect(getStakeholdersById).toHaveBeenCalledWith(mockId.toString());
+    });
+
+    //test 2
+    test('Should return null when no match is found', async () => {
+      //Data mock
+      const mockId = new mongoose.Types.ObjectId();
+
+      //Support functions mocking
+      jest.spyOn(require('../services/stakeholder.service'), 'getStakeholdersById')
+        .mockResolvedValueOnce(null);
+      
+      //Call of fetchStakeholders
+      const result = await fetchStakeholders([mockId] as unknown as ObjectId[]);
+  
+      expect(result).toEqual([]);
+      expect(getStakeholdersById).toHaveBeenCalled();
+    });
+
+    //test 3
+    test('Should return null when no input is given', async () => {
+      //Call of fetchStakeholders
+      const result = await fetchStakeholders([] as unknown as ObjectId[]);
+  
+      expect(result).toEqual([]);
+      expect(getStakeholdersById).not.toHaveBeenCalled();
+    });
+  }) //fetchStakeholders
+  /* ************************************************** */
+
+  //fetchStakeholdersForSearch
+  describe('Tests for fetchStakeholdersForSearch', () => {
+    afterEach(() => {
+      jest.clearAllMocks();
+    });
+
+    //test 1
+    test('Should return the id of the searched stakeholder', async () => {
+      //Data mock
+      const mockId = new mongoose.Types.ObjectId();
+      const mockStakeholder = [{ _id: mockId, type: StakeholderEnum.LKAB }];
+
+      //Suport functions mocking
+      (Stakeholder.find as jest.Mock).mockImplementation(() => ({
+        select: jest.fn().mockImplementation(async() =>
+            mockStakeholder.map((st) => ({
+              ...st
+            }))
+        )
+      }));
+  
+      //Call of fetchStakeholdersForSearch
+      const result = await fetchStakeholdersForSearch([StakeholderEnum.LKAB]);
+  
+      expect(result).toEqual([mockId]);
+      expect(Stakeholder.find).toHaveBeenCalled();
+    });
+
+    //test 2
+    test('Should return null when no match is found', async () => {
+      //Support functions mocking
+      (Stakeholder.find as jest.Mock).mockImplementation(() => ({
+        select: jest.fn().mockImplementation(async() => [])
+      }));
+      
+      //Call of fetchStakeholdersForSearch
+      const result = await fetchStakeholdersForSearch(['FakeType']);
+
+      expect(result).toEqual([]);
+      expect(Stakeholder.find).toHaveBeenCalled();
+    })
+  }) //fetchStakeholdersForSearch
+  /* ************************************************** */
+}) //END OF STAKEHOLDERS

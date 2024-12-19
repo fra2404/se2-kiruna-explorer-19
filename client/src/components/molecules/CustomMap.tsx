@@ -1,8 +1,9 @@
 import { LatLng, LatLngExpression } from 'leaflet';
 import { MapContainer, TileLayer } from 'react-leaflet';
 import CustomZoomControl from './ZoomControl';
-import { useContext } from 'react';
+import { useContext, useRef } from 'react';
 import MapStyleContext from '../../context/MapStyleContext';
+import { MunicipalityAreaOutline } from './MunicipalityArea';
 
 export const kirunaLatLngCoords: LatLngExpression = [67.85572, 20.22513];
 
@@ -20,11 +21,15 @@ const CustomMap: React.FC<CustomMapProps> = ({
   children 
 }) => {
   const {mapType} = useContext(MapStyleContext);
+
+  const mapRef = useRef<L.Map>(null);
+
   
   return (
     <MapContainer
+      ref={mapRef}
       style={{ width: '100%', height: '100%', zIndex: zIndex }}
-      center={center || kirunaLatLngCoords}
+      center={center ?? kirunaLatLngCoords}
       zoom={!allMunicipality ? 13 : 8}
       doubleClickZoom={false}
       scrollWheelZoom={true}
@@ -49,6 +54,7 @@ const CustomMap: React.FC<CustomMapProps> = ({
       />
     )}
     <CustomZoomControl />
+    <MunicipalityAreaOutline />
 
       {children}
     </MapContainer>

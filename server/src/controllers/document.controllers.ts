@@ -9,7 +9,6 @@ import {
   getDocumentByType,
   searchDocuments,
 } from '../services/document.service';
-// import { addingDocument, deleteDocumentByName, getAllDocuments, getDocumentById, updatingDocument } from '../services/document.service';
 import { IDocument } from '@interfaces/document.interface';
 import { IDocumentResponse } from '@interfaces/document.return.interface';
 import { DocNotFoundError } from '@utils/errors';
@@ -239,16 +238,16 @@ export const updateDocumentController = async (
   }
 };
 
-export const getDocumentTypesController = (
+export const getDocumentTypesController = async (
   req: Request,
   res: Response,
   next: NextFunction,
-): void => {
+): Promise<void> => {
   try {
-    const docTypes = getDocumentTypes();
-    res.status(200).json({ docTypes });
+    const docTypes = await getDocumentTypes();
+    res.status(200).json(docTypes);
   } catch (error) {
-    next(error); // Pass the error to the error handler middleware
+    next(error);
   }
 };
 
@@ -451,12 +450,13 @@ export const searchDocumentsController = async (
   next: NextFunction,
 ): Promise<void> => {
   try {
+
     let keywords: string[] = [];
     if (req.query.keywords) {
       keywords = JSON.parse(req.query.keywords as string); // Parse the input query string into an array of keywords
     }
-
     const documents = await searchDocuments(keywords, req.body);
+
     res.status(200).json(documents);
   } catch (error) {
     next(error); // Pass the error to the error handler middleware
