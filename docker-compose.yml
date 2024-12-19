@@ -20,7 +20,8 @@ services:
   server:
     image: fraalbi24/se2-kiruna-explorer-19-server:final
     depends_on:
-      - mongo
+      mongo:
+        condition: service_healthy
     ports:
       - "5001:5001"
     environment:
