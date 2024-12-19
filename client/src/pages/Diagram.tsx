@@ -71,8 +71,8 @@ const Diagram = () => {
   });
 
   const label_year = [] as any[];
-  const minYear = graphBEInfo.minYear;
-  const maxYear = graphBEInfo.maxYear;
+  const minYear = graphBEInfo?.minYear;
+  const maxYear = graphBEInfo?.maxYear;
   const networkRef = useRef<any>(null);
   const gridRef = useRef<HTMLDivElement>(null); // Added for the grid
 
