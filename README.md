@@ -47,6 +47,12 @@ We’ve made deployment incredibly simple using a **Docker Compose file**. This 
 
 ---
 
+## 📂 Database Sync
+
+The first time the database is launched, it will automatically synchronize with a pre-existing database that contains the initial values for the project. This ensures that the necessary data is readily available when you start the application.
+
+---
+
 ## 👤 Adding New Users
 
 To add new users, you can use the [create-user.sh](./create-user.sh) script. Follow these steps:
@@ -66,6 +72,16 @@ To add new users, you can use the [create-user.sh](./create-user.sh) script. Fol
 
 <br>
 By following these steps, you can create as many users as you need.
+
+---
+
+## 📝 Default User
+
+There is an existing default user already registered as an Urban Planner. You can use the following credentials to log in:
+
+Email: kiruna@gmail.com <br>
+Password: Kiruna1234 <br>
+Feel free to log in with this account to explore the platform as an Urban Planner.
 
 ---
 

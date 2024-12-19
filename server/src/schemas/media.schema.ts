@@ -40,5 +40,4 @@ const mediaSchema = new Schema<MediaDocument>(
   },
 );
 
-mediaSchema.index({ filename: 1 });
 export default mongoose.model<MediaDocument>('Media', mediaSchema);

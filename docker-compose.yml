@@ -10,13 +10,11 @@ services:
     environment:
       MONGO_INITDB_ROOT_USERNAME: admin
       MONGO_INITDB_ROOT_PASSWORD: secret
-    volumes:
-      - ./mongo_data:/data/db
     networks:
       - my-network
-    restart: always # Riavvio automatico se il container si ferma
-    entrypoint: /bin/bash
-    command: -c " curl -o /docker-entrypoint-initdb.d/init.sh https://your-server.com/path/to/init.sh && chmod +x /docker-entrypoint-initdb.d/init.sh && /usr/bin/docker-entrypoint.sh mongod --bind_ip_all"
+    entrypoint: /bin/sh -c
+    command: >
+      "apt-get update && apt-get install -y wget gnupg curl && wget -qO - https://www.mongodb.org/static/pgp/server-4.4.asc | apt-key add - && echo 'deb [ arch=amd64,arm64 ] https://repo.mongodb.org/apt/ubuntu bionic/mongodb-org/4.4 multiverse' | tee /etc/apt/sources.list.d/mongodb-org-4.4.list && apt-get update && apt-get install -y mongodb-org-tools mongodb-org-shell && curl -o /docker-entrypoint-initdb.d/init.sh https://raw.githubusercontent.com/Paolino01/se2-kiruna-explorer-19/main/mongo-init/init.sh && chmod +x /docker-entrypoint-initdb.d/init.sh && docker-entrypoint.sh mongod --bind_ip_all &  until mongo --host localhost --username admin --password secret --authenticationDatabase admin --eval 'print(\"waited for connection\")'; do sleep 5; done && /docker-entrypoint-initdb.d/init.sh"
 
   # Server
   server:

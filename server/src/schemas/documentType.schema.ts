@@ -15,5 +15,4 @@ const documentTypeSchema = new Schema<DocumentType>(
   },
 );
 
-documentTypeSchema.index({ type: 1 });
 export default mongoose.model<DocumentType>('documentType', documentTypeSchema);

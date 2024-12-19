@@ -15,5 +15,4 @@ const stakeholderSchema = new Schema<StakeholderDocument>(
   },
 );
 
-stakeholderSchema.index({ type: 1 });
 export default mongoose.model<StakeholderDocument>('Stakeholder', stakeholderSchema);
