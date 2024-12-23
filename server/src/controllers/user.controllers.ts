@@ -201,8 +201,9 @@ export const login = async (
     const { token }: { token: string } = await loginUser(email, password);
     res.cookie('auth-token', token, {
       httpOnly: true,
-      secure: true,
+      secure: process.env.NODE_ENV === 'production', // Assicurati che il cookie sia inviato solo su connessioni HTTPS in produzione
       sameSite: 'none',
+      domain: '.vercel.app',
       maxAge: 3600000, // 1 hour
       path: '/',
     });
