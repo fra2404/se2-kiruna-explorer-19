@@ -35,7 +35,9 @@ export const Sidebar: React.FC<SidebarProps> = ({
         variant="filled"
         className="bg-black px-3 text-base"
         onClick={() => setSidebarVisible(true)}
-      />
+      >
+      {<FaFolder />}
+      </ButtonRounded>
       <nav
         style={{
           background: '#ffffff',

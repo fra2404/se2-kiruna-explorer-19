@@ -26,7 +26,9 @@ export default function FloatingButton({
         onClick={onClick}
         className="bg-black text-white text-base font-bold py-2 px-4 rounded-full"
         variant={undefined}
-      ></ButtonRounded>
+      >
+        {text}
+      </ButtonRounded>
     </div>
   );
 }

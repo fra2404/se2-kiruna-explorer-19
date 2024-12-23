@@ -94,7 +94,26 @@ export const Header: React.FC<HeaderProps> = ({
           }}
           className='flex items-center border-none'
           onClick={() => navigate('/')}
-        />
+        >
+          {
+            <>
+              <img src={logo} alt='Logo' className='h-12 border border-black rounded-full '/>
+              <h1 className={"font-bold text-white ml-2 text-3xl"}>Kiruna eXplorer</h1>
+              {/* Date and time */}
+              <div className="text-white rounded-full px-3 py-2 ml-4"
+                style={{
+                  display: 'flex',
+                  justifyContent: 'center',
+                  alignItems: 'center',
+                  pointerEvents: "auto",
+                  fontSize: '15px'
+                }} 
+              >
+                {dateTime}
+              </div>
+            </>
+          }
+          </ButtonRounded>
 
         <div className='flex items-center gap-4'>
           {/* Button to switch the map/diagram view */}
@@ -104,7 +123,9 @@ export const Header: React.FC<HeaderProps> = ({
             className="bg-black pr-4 pl-4 d-flex align-items-center"
             onClick={() => navigate(page == 'map' ? '/diagram' : '/map')}
             style={{ pointerEvents: "auto" }}
-          />
+          >
+            {page == 'map' ? "Go to Diagram" : 'Go to Map'}
+            </ButtonRounded>
 
           {/* Login/logout button */}
           <div className='ml-auto' style={{ pointerEvents: "auto" }}>
@@ -113,7 +134,9 @@ export const Header: React.FC<HeaderProps> = ({
                 onClick={() => {
                   setLoginModalOpen(true);
                 }} className="bg-black pr-4 pl-4"
-              />
+              >
+              Login
+              </ButtonRounded>
             ) : (
               <div ref={dropdownRef}>
                 <ButtonRounded
@@ -121,7 +144,9 @@ export const Header: React.FC<HeaderProps> = ({
                   variant="filled"
                   className="bg-black pr-4 pl-4 d-flex align-items-center"
                   text={`Welcome, ${user?.name} ${dropdownOpen ? '▲' : '▼'}`}
-                />
+                >
+                {`Welcome, ${user?.name} ${dropdownOpen ? '▲' : '▼'}`}
+                </ButtonRounded>
               </div>
             )}
           </div>

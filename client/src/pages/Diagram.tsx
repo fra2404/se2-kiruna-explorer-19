@@ -38,9 +38,28 @@ const options = {
   },
 };
 
-const graphBEInfo = await API.getGraphInfo();
 
+const fetchGraphInfo = async () => {
+  try {
+    const graphBEInfo = await API.getGraphInfo();
+    return graphBEInfo;
+  } catch (error) {
+    console.error('Error fetching graph info:', error);
+    return null;
+  }
+};
 const Diagram = () => {
+  const [graphBEInfo, setGraphBEInfo] = useState<{ minYear: number; maxYear: number } | null>(null);
+
+  useEffect(() => {
+    const getGraphInfo = async () => {
+      const data = await fetchGraphInfo();
+      setGraphBEInfo(data);
+    };
+
+    getGraphInfo();
+  }, []);
+
   const { setFeedbackFromError } = useContext(FeedbackContext);
   const headerRef = useRef<HTMLDivElement>(null);
   const legendRef = useRef<HTMLDivElement>(null);
@@ -66,13 +85,13 @@ const Diagram = () => {
   const [state, setState] = useState({
     graph: {
       nodes: [] as any[],
-      edges: [] as { from: any; to: any; color: string }[],
+      edges: [] as { from: any; to: any; color: string; id: string }[],
     },
   });
 
   const label_year = [] as any[];
-  const minYear = graphBEInfo?.minYear;
-  const maxYear = graphBEInfo?.maxYear;
+  const minYear = graphBEInfo?.minYear ?? 2000;
+  const maxYear = graphBEInfo?.maxYear ?? 2030;
   const networkRef = useRef<any>(null);
   const gridRef = useRef<HTMLDivElement>(null); // Added for the grid
 
@@ -693,7 +712,7 @@ const Diagram = () => {
       const center_x = computeYearX(draggedNode.year);
       const center_y = computeStyleY(draggedNode);
 
-      if (/^label_/.test(draggedNode.id) || /^1:/.test(draggedNode.id)) {
+      if (draggedNode.id.startsWith('label_') || draggedNode.id.startsWith('1:')) {
         // Regex to filter the labels to avoid moving them
         newposition.x = nodeLastPosition.x;
         newposition.y = nodeLastPosition.y;
@@ -833,38 +852,39 @@ const Diagram = () => {
                 handleNodeClick(selectedNode);
               }
             },
-
+            
             click: (event: any) => {
-              console.log(event)
-              if(event.nodes.length == 0) {
-                const { edges } = event
-                const selectedEdge: {from: any, to: any, color: string, id: string, document: string, type: string} | undefined = state.graph.edges.find((e) => e.id == edges[0]) as {from: any, to: any, color: string, id: string, document: string} | undefined
+              console.log(event);
+              if (event.nodes.length == 0) {
+                const { edges } = event;
+                const selectedEdge = state.graph.edges.find(
+                  (e) => e.id == edges[0]
+                ) as { from: any; to: any; color: string; id: string; document: string; type: string } | undefined;
                 if (selectedEdge) {
                   const updatedEdges = state.graph.edges.map((edge: any) =>
                     edge.id === edges[0]
                       ? { ...edge, smooth: { enabled: !edge.smooth?.enabled, type: 'curvedCW', roundness: 0.2 } }
                       : edge
                   );
-                  setState({graph: {nodes: state.graph.nodes, edges: updatedEdges }});
-
-                  const isEdgeCurved = localStorage.getItem(`edge-${selectedEdge.document}`)
-                  if(isEdgeCurved) {
+                  setState({ graph: { nodes: state.graph.nodes, edges: updatedEdges } });
+            
+                  const isEdgeCurved = localStorage.getItem(`edge-${selectedEdge.document}`);
+                  if (isEdgeCurved) {
                     const isCurved = JSON.parse(isEdgeCurved).isCurved;
                     localStorage.setItem(
                       `edge-${selectedEdge.document}`,
-                      JSON.stringify({ isCurved: !isCurved }),
+                      JSON.stringify({ isCurved: !isCurved })
                     );
-                  }
-                  else {
+                  } else {
                     localStorage.setItem(
                       `edge-${selectedEdge.document}`,
-                      JSON.stringify({ isCurved: true }),
+                      JSON.stringify({ isCurved: true })
                     );
                   }
                 }
               }
             },
-
+            
             hoverNode: function (event: {
               node: number;
               pointer: { DOM: { x: number; y: number } };

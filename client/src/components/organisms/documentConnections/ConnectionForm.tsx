@@ -83,13 +83,17 @@ const ConnectionForm: React.FC<ConnectionFormProps> = ({
           text="Add"
           className="bg-black text-white text-base pt-2 pb-2 pl-4 pr-4 rounded mt-4"
           onClick={handleSubmit}
-        />
+        >
+          Add
+          </ButtonRounded>
         <ButtonRounded
           variant="outlined"
           text="Cancel"
           className="text-base pt-2 pb-2 pl-4 pr-4 mt-4"
           onClick={() => setModalOpen(false)}
-        />
+        >
+          Cancel
+          </ButtonRounded>
       </div>
     </div>
   );

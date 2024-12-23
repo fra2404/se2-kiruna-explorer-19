@@ -55,7 +55,9 @@ const ClickMarker: React.FC<ClickMarkerProps> = ({
                       popupRef.current?.remove();
                     }
                   }}
-                />
+                >
+                  Yes
+                  </ButtonRounded>
                 <ButtonRounded
                   variant="outlined"
                   text="Cancel"
@@ -64,7 +66,9 @@ const ClickMarker: React.FC<ClickMarkerProps> = ({
                     popupRef.current?.remove();
                     setPosition(null);
                   }}
-                />
+                >
+                  Cancel
+                  </ButtonRounded>
               </div>
             </>
           ) : 
@@ -81,7 +85,9 @@ const ClickMarker: React.FC<ClickMarkerProps> = ({
                 popupRef.current?.remove();
                 setPosition(null);
               }}
-            />
+            >
+              Cancel
+              </ButtonRounded>
           </>
         }
       </Popup>

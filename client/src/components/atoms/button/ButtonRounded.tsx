@@ -1,10 +1,10 @@
 import { Button, ButtonProps } from '@material-tailwind/react';
 import { Col, Row } from 'react-bootstrap';
 
-interface ButtonRoundedProps {
+interface ButtonRoundedProps extends ButtonProps {
   img?: string;
   className?: string;
-  variant: ButtonProps['variant'];
+  variant?: ButtonProps['variant'];
   text: string | JSX.Element;
   onClick?: (e: React.MouseEvent<HTMLButtonElement>) => void;
   style?: React.CSSProperties;
@@ -17,6 +17,7 @@ const ButtonRounded: React.FC<ButtonRoundedProps> = ({
   text,
   onClick,
   style,
+  ...props
 }) => {
   const buttonClassName = `${className} rounded-full`;
 
@@ -27,7 +28,11 @@ const ButtonRounded: React.FC<ButtonRoundedProps> = ({
           variant={variant}
           onClick={onClick}
           className={buttonClassName}
-          style={style}>
+          style={style}
+          placeholder=""
+          onPointerEnterCapture={() => {}}
+          onPointerLeaveCapture={() => {}}
+          {...props}>
           <Row>
             <Col xs="auto" className="p-0">
               <img
@@ -43,7 +48,8 @@ const ButtonRounded: React.FC<ButtonRoundedProps> = ({
         </Button>
       ) : (
         <Button variant={variant} onClick={onClick}
-          className={buttonClassName} style={style}>
+          className={buttonClassName} style={style} {...props}
+          placeholder="" onPointerEnterCapture={() => {}} onPointerLeaveCapture={() => {}}>
           {text}
         </Button>
       )}

@@ -31,13 +31,17 @@ export const DeleteCoordPopup: React.FC<DeleteCoordPopupProps> = ({
             text="Yes"
             className="border-2 border-red-500 text-red-500 text-base pt-2 pb-2 pl-3 pr-3"
             onClick={onYesClick}
-          />
+          >
+            Yes
+            </ButtonRounded>
           <ButtonRounded
             variant="outlined"
             text="Cancel"
             className="text-base pt-2 pb-2 pl-3 pr-3"
             onClick={onCancelClick}
-          />
+          >
+            Cancel
+            </ButtonRounded>
         </div>
       </>
       }

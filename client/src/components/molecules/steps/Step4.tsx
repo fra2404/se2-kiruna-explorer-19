@@ -40,7 +40,9 @@ const Step4: React.FC<Step4Props> = ({
             text="Add Connection"
             className="bg-black text-white text-xs pt-2 pb-2 pl-3 pr-3"
             onClick={() => setConnectionModalOpen(true)}
-          />
+          >
+            Add Connection
+            </ButtonRounded>
         </div>
       </div>
     </>

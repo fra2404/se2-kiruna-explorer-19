@@ -240,8 +240,8 @@ const Filters: React.FC<FiltersProps> = ({ filters, setFilters }) => {
             {/* Tabs Navigation */}
             <Tabs value={activeTab}
             onChange={(_, newValue) => setActiveTab(newValue)}
-            textColor="black"
-            indicatorColor="black"
+            textColor="primary"
+            indicatorColor="primary"
             variant="fullWidth"
             centered
             sx={{

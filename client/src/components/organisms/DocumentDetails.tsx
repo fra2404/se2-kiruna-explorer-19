@@ -191,7 +191,9 @@ const DocumentDetails: React.FC<DocumentDetailsProps> = ({
             onClick={() => {
               navigate('/diagram');
             }}
-          />
+          >
+            See on the diagram
+            </ButtonRounded>
         )}
         {
           /* Button to edit the document */
@@ -203,7 +205,9 @@ const DocumentDetails: React.FC<DocumentDetailsProps> = ({
               onClick={() => {
                 setModalOpen(true);
               }}
-            />
+            >
+              Edit
+              </ButtonRounded>
           )
         }
       </div>

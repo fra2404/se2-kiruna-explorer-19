@@ -8,6 +8,7 @@ import 'aos/dist/aos.css';
 import enFlag from '../assets/en-flag.png';
 import itFlag from '../assets/it-flag.png';
 import svFlag from '../assets/sv-flag.png';
+import Joyride, { CallBackProps, STATUS } from 'react-joyride';
 
 const texts = {
   en: {
@@ -17,6 +18,11 @@ const texts = {
     wikiLink: 'https://en.wikipedia.org/wiki/Kiruna',
     seeMap: 'See The Map',
     seeDiagram: 'See The Diagram',
+    steps: [
+      { target: '.top-4.right-4', content: 'Click on the flags to change the language.' },
+      { target: '.max-w-2xl.lg\\:mx-0', content: 'Here you can see a description of Kiruna. Click on "here" to learn more, you will be redirected to another page with a more detailed description in your language!'},      { target: '.mt-10.max-w-2xl.lg\\:mx-0', content: 'Here you can see the data related to Kiruna.' },
+      { target: '.bottom-0.left-0.right-0', content: 'Click on the buttons to see the map or the diagram.' },
+    ],
     stats: [
       { name: 'Budget', value: 1400000000, prefix: '€', suffix: '' },
       { name: 'People affected', value: 23000, suffix: '' },
@@ -31,6 +37,12 @@ const texts = {
     wikiLink: 'https://it.wikipedia.org/wiki/Kiruna',
     seeMap: 'Vedi La Mappa',
     seeDiagram: 'Vedi Il Diagramma',
+    steps: [
+      { target: '.top-4.right-4', content: 'Clicca sulle bandiere per cambiare lingua.' },
+      { target: '.max-w-2xl.lg\\:mx-0', content: 'Qui puoi vedere una descrizione di Kiruna. Clicca su "qui" per saperne di più, sarai reindirizzato su un\'altra pagina con una descrizione più dettagliata e nella tua lingua!'},
+      { target: '.mt-10.max-w-2xl.lg\\:mx-0', content: 'Qui puoi vedere i dati relativi a Kiruna.' },
+      { target: '.bottom-0.left-0.right-0', content: 'Clicca sui bottoni per vedere la mappa o il diagramma.' },
+    ],
     stats: [
       { name: 'Bilancio', value: 1400000000, prefix: '€', suffix: '' },
       { name: 'Persone coinvolte', value: 23000, suffix: '' },
@@ -50,6 +62,11 @@ const texts = {
     wikiLink: 'https://sv.wikipedia.org/wiki/Kiruna',
     seeMap: 'Se Kartan',
     seeDiagram: 'Se Diagrammet',
+    steps: [
+      { target: '.top-4.right-4', content: 'Klicka på flaggorna för att byta språk.' },
+      { target: '.max-w-2xl.lg\\:mx-0', content: 'Här kan du se en beskrivning av Kiruna. Klicka på "här" för att lära dig mer, du kommer att omdirigeras till en annan sida med en mer detaljerad beskrivning på ditt språk!'},      { target: '.mt-10.max-w-2xl.lg\\:mx-0', content: 'Här kan du se data relaterade till Kiruna.' },
+      { target: '.bottom-0.left-0.right-0', content: 'Klicka på knapparna för att se kartan eller diagrammet.' },
+    ],
     stats: [
       { name: 'Budget', value: 1400000000, prefix: '€', suffix: '' },
       { name: 'Påverkade personer', value: 23000, suffix: '' },
@@ -66,6 +83,7 @@ const LandingPage = () => {
   const [language, setLanguage] = useState<Language>('en');
   const imgRef = useRef<HTMLImageElement>(null);
   const requestRef = useRef<number>();
+  const [runTour, setRunTour] = useState(false);
 
   useEffect(() => {
     AOS.init({ duration: 2000 });
@@ -111,8 +129,56 @@ const LandingPage = () => {
 
   const text = texts[language];
 
+  const handleJoyrideCallback = (data: CallBackProps) => {
+    const { status } = data;
+    const finishedStatuses: string[] = [STATUS.FINISHED, STATUS.SKIPPED];
+
+    if (finishedStatuses.includes(status)) {
+      setRunTour(false);
+    }
+  };
+
+  const startTour = () => {
+    setRunTour(true);
+  };
+
   return (
     <div className="relative isolate overflow-hidden bg-gray-900 py-24 sm:py-32 w-full h-screen cursor-default">
+  <Joyride
+        steps={text.steps}
+        continuous
+        scrollToFirstStep
+        showProgress
+        showSkipButton
+        run={runTour}
+        callback={handleJoyrideCallback}
+        styles={{
+          options: {
+            zIndex: 10000,
+            backgroundColor: '#333',
+            width: '300px',
+            arrowColor: '#333',
+            overlayColor: 'rgba(0, 0, 0, 0.5)',
+            primaryColor: '#ff4694',
+            textColor: '#fff', // Assicurati che il colore del testo sia bianco
+          },
+          tooltipContainer: {
+            marginBottom: '4rem',
+          },
+          buttonClose: {
+            marginBottom: '4rem',
+            color: '#fff', // Assicurati che il colore del testo del pulsante sia bianco
+          },
+          buttonNext: {
+            backgroundColor: '#ff4694',
+            color: '#fff', // Assicurati che il colore del testo del pulsante sia bianco
+          },
+          buttonBack: {
+            color: '#fff', // Assicurati che il colore del testo del pulsante sia bianco
+          },
+          
+        }}
+      />
       <img
         ref={imgRef}
         alt="Kiruna"
@@ -148,17 +214,23 @@ const LandingPage = () => {
           className={`text-xs bg-black cursor-pointer ${language === 'en' ? 'border-2 border-white' : ''}`}
           text={<img src={enFlag} alt="English" className="w-5 h-5" />}
           onClick={() => setLanguage('en')}
-        />
+        >
+          <img src={enFlag} alt="English" className="w-5 h-5" />
+        </ButtonRounded>
         <ButtonRounded
           className={`text-xs bg-black cursor-pointer ${language === 'it' ? 'border-2 border-white' : ''}`}
           text={<img src={itFlag} alt="Italiano" className="w-5 h-5" />}
           onClick={() => setLanguage('it')}
-        />
+        >
+          <img src={itFlag} alt="Italiano" className="w-5 h-5" />
+        </ButtonRounded>
         <ButtonRounded
           className={`text-xs bg-black cursor-pointer ${language === 'sv' ? 'border-2 border-white' : ''}`}
           text={<img src={svFlag} alt="Svenska" className="w-5 h-5" />}
           onClick={() => setLanguage('sv')}
-        />
+        >
+          <img src={svFlag} alt="Svenska" className="w-5 h-5" />
+        </ButtonRounded>
       </div>
       <div className="mx-auto max-w-7xl px-6 lg:px-8">
         <div className="mx-auto max-w-2xl lg:mx-0" data-aos="fade-up">
@@ -176,7 +248,7 @@ const LandingPage = () => {
             </a>
           </p>
         </div>
-        <div className="mx-auto mt-10 max-w-2xl lg:mx-0 lg:max-w-none">
+        <div className="mx-auto mt-10 max-w-2xl lg:mx-0 lg:max-w-none" data-aos="fade-up">
           <dl className="mt-16 grid grid-cols-1 gap-8 sm:mt-20 sm:grid-cols-2 lg:grid-cols-4">
             {text.stats.map((stat) => (
               <div
@@ -191,15 +263,15 @@ const LandingPage = () => {
                       start={1900}
                       end={stat.value}
                       duration={2.5}
-                      suffix={stat.suffix || ''}
+                      suffix={stat.suffix ?? ''}
                       separator=""
                     />
                   ) : (
                     <CountUp
                       end={stat.value}
                       duration={2.5}
-                      prefix={stat.prefix || ''}
-                      suffix={stat.suffix || ''}
+                      prefix={stat.prefix ?? ''}
+                      suffix={stat.suffix ?? ''}
                       separator=","
                     />
                   )}
@@ -215,12 +287,26 @@ const LandingPage = () => {
           className="mr-16 text-lg bg-black cursor-pointer"
           text={text.seeMap}
           onClick={() => navigate('/map')}
-        />
+        >
+          {text.seeMap}
+        </ButtonRounded>
         <ButtonRounded
           className="text-lg bg-black cursor-pointer"
           text={text.seeDiagram}
           onClick={() => navigate('/diagram')}
-        />
+        >
+          {text.seeDiagram}
+        </ButtonRounded>
+      </div>
+
+      <div className="absolute bottom-4 left-4">
+        <ButtonRounded
+          className="text-lg bg-black cursor-pointer"
+          text="Inizia il tour"
+          onClick={startTour}
+        >
+          Inizia il tour
+        </ButtonRounded>
       </div>
     </div>
   );

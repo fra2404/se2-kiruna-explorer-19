@@ -589,7 +589,9 @@ const DocumentForm = ({
                 text="Save"
                 className="bg-black text-white text-base pt-2 pb-2 pl-4 pr-4"
                 onClick={handleSubmit}
-              />
+              >
+              Save
+              </ButtonRounded>
             </div>
 
             {toast.isShown && (
