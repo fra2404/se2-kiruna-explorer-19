@@ -17,6 +17,12 @@
     "noUnusedLocals": true,
     "noUnusedParameters": true,
     "noFallthroughCasesInSwitch": true,
+
+     // Aggiungi il percorso del file di definizione dei tipi personalizzato
+     "baseUrl": "./",
+     "paths": {
+       "react-leaflet-markercluster": ["./src/utils/custom/MarkerClusterGroup.d.ts"]
+     }
   },
   "include": ["src"]
 }
