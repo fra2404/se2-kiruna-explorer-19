@@ -7,5 +7,9 @@ export default defineConfig({
   server: {
     port: 5173,
     host: '0.0.0.0',
+    cors: {
+      origin: 'https://se2-kiruna-explorer-19-1.onrender.com',
+      credentials: true,
+    },
   },
 })
