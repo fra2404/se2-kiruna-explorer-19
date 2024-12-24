@@ -203,7 +203,7 @@ export const login = async (
       httpOnly: true,
       secure: true,
       sameSite: 'none',
-      domain: 'se2-kiruna-explorer-19-fra2404s-projects.vercel.app',
+      domain: '.falbano.it',
       maxAge: 3600000, // 1 hour
       path: '/',
     });
@@ -290,7 +290,7 @@ export const logout = async (
       httpOnly: true,
       secure: true,
       sameSite: 'none',
-      domain: 'se2-kiruna-explorer-19-fra2404s-projects.vercel.app',
+      domain: '.falbano.it',
       path: '/',
     });
     res.json({ message: 'User logged out successfully' });
