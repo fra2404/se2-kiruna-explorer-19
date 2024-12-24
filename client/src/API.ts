@@ -3,7 +3,7 @@ import { IDocumentType } from './utils/interfaces/documentTypes.interface';
 import { IStakeholder } from './utils/interfaces/stakeholders.interface';
 import { IUser } from './utils/interfaces/user.interface';
 
-const SERVER_URL = 'https://se2-kiruna-explorer-19-1.onrender.com/api'; // endpoint of the server
+const SERVER_URL = 'https://backend-kiruna.falbano.it/api'; // endpoint of the server
 
 async function login(
   email: string,
