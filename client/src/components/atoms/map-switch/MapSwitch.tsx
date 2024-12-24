@@ -20,7 +20,7 @@ const MapSwitch: React.FC = () => {
       className="mini-map custom-thumbnail"
       fluid
       thumbnail={true}
-      src="src/assets/icons/kiruna_sat.png"
+      src="/assets/kiruna_sat.png"
       rounded
       onClick={handleClick}
     />
@@ -29,7 +29,7 @@ const MapSwitch: React.FC = () => {
       className="mini-map custom-thumbnail"
       fluid
       thumbnail={true}
-      src="src/assets/icons/kiruna_osm.png"
+      src="/assets/kiruna_osm.png"
       rounded
       onClick={handleClick}
     />
