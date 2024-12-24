@@ -7,7 +7,7 @@ export default defineConfig({
     port: 5173,
     host: '0.0.0.0',
     cors: {
-      origin: 'https://se2-kiruna-explorer-19-1.onrender.com',
+      origin: 'https://backend-kiruna.falbano.it/api',
       credentials: true,
     },
     middlewareMode: false, // Usato solo per server locale
