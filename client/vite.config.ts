@@ -7,7 +7,7 @@ export default defineConfig({
     port: 5173,
     host: '0.0.0.0',
     cors: {
-      origin: 'http://localhost:5001/api',
+      origin: 'https://backend-kiruna.falbano.it/api',
       credentials: true,
     },
     middlewareMode: false, // Usato solo per server locale
