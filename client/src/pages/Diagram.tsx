@@ -801,16 +801,6 @@ const Diagram = () => {
         <Legend />
       </div>
 
-      <div
-        style={{
-          position: 'absolute',
-          top: `${headerRef.current?.offsetHeight && legendRef.current?.offsetHeight ? headerRef.current?.offsetHeight + legendRef.current?.offsetHeight + 20 : 0}px`,
-          left: '10px',
-          zIndex: 1,
-        }}
-      >
-        <StakeholderLegend />
-      </div>
 
       <button
         onClick={() => setLegendOpen(!legendOpen)}
