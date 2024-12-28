@@ -113,7 +113,7 @@ export default function KirunaMap() {
         className={`legend-button bg-black text-white text-s pt-2 pb-2 pl-3 pr-3 rounded-full ${legendOpen ? 'open' : ''}`} // Aggiungi la classe CSS
         style={{
           position: 'fixed',
-          bottom: legendOpen ? '210px' : '10px', // Sposta il bottone sopra la finestra della legenda quando è aperta
+          bottom: legendOpen ? '30vh' : '10px', // Sposta il bottone sopra la finestra della legenda quando è aperta
           left: '50%',
           transform: 'translateX(-50%)',
           zIndex: 100001,
