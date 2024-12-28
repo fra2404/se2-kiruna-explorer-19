@@ -15,10 +15,13 @@ import { renderToString } from 'react-dom/server';
 import { UserRoleEnum } from '../utils/interfaces/user.interface';
 import CustomMap from '../components/molecules/CustomMap';
 import useDocuments from '../utils/hooks/documents';
+import Legend2 from '../components/molecules/legend/Legend';
 
 import 'leaflet/dist/leaflet.css';
 import 'leaflet-draw/dist/leaflet.draw.css';
 import 'leaflet-draw';
+
+import './KirunaMap.css'; // Importa il file CSS
 
 export const modalStyles = {
   content: {
@@ -36,48 +39,48 @@ export const modalStyles = {
 };
 
 export default function KirunaMap() {
-
   const { isLoggedIn, user } = useAuth();
   const { setFeedbackFromError } = useContext(FeedbackContext);
   const { swedishFlagBlue, swedishFlagYellow } = useContext(MapStyleContext);
 
   const [coordinates, setCoordinates] = useState({});
+  const [legendOpen, setLegendOpen] = useState(false); // Stato per gestire la visibilità della legenda
 
   const { allDocuments, setAllDocuments, filteredDocuments, setFilteredDocuments } = useDocuments();
 
-  //Manages the coords modal
+  // Manages the coords modal
   const [manageCoordsModalOpen, setManageCoordsModalOpen] = useState(false);
 
   useEffect(() => {
-  API.getCoordinates()
-    .then((coords) => {
-      const result: {
-        [id: string]: {
-          type: string;
-          coordinates: LatLng | LatLng[] | LatLng[][];
-          name: string;
-        };
-      } = {};
-      coords.forEach(
-        (c: {
-          _id: string;
-          type: string;
-          coordinates: LatLng | LatLng[] | LatLng[][];
-          name: string;
-        }) => {
-          result[c._id] = {
-            type: c.type,
-            coordinates: c.coordinates,
-            name: c.name,
+    API.getCoordinates()
+      .then((coords) => {
+        const result: {
+          [id: string]: {
+            type: string;
+            coordinates: LatLng | LatLng[] | LatLng[][];
+            name: string;
           };
-        },
-      );
-      setCoordinates(result);
-    })
-    .catch((e) => {
-      console.log(e);
-      setFeedbackFromError(e);
-    });
+        } = {};
+        coords.forEach(
+          (c: {
+            _id: string;
+            type: string;
+            coordinates: LatLng | LatLng[] | LatLng[][];
+            name: string;
+          }) => {
+            result[c._id] = {
+              type: c.type,
+              coordinates: c.coordinates,
+              name: c.name,
+            };
+          },
+        );
+        setCoordinates(result);
+      })
+      .catch((e) => {
+        console.log(e);
+        setFeedbackFromError(e);
+      });
   }, []);
 
   const [width, setWidth] = useState(window.innerWidth);
@@ -93,13 +96,9 @@ export default function KirunaMap() {
   }, []);
 
   return (
-    <div style={{ 
-        width: width,
-        height: height
-      }}
-    >
-      <Header 
-        page='map'
+    <div style={{ width: width, height: height }}>
+      <Header
+        page="map"
         setManageCoordsModalOpen={setManageCoordsModalOpen}
         coordinates={coordinates}
         setCoordinates={setCoordinates}
@@ -109,7 +108,24 @@ export default function KirunaMap() {
         setFilteredDocuments={setFilteredDocuments}
       />
 
-      <Overlay 
+            <button
+        onClick={() => setLegendOpen(!legendOpen)}
+        className={`legend-button bg-black text-white text-s pt-2 pb-2 pl-3 pr-3 rounded-full ${legendOpen ? 'open' : ''}`} // Aggiungi la classe CSS
+        style={{
+          position: 'fixed',
+          bottom: legendOpen ? '210px' : '10px', // Sposta il bottone sopra la finestra della legenda quando è aperta
+          left: '50%',
+          transform: 'translateX(-50%)',
+          zIndex: 100001,
+          transition: 'bottom 0.3s ease-out', // Aggiunge la transizione
+        }}
+      >
+        {legendOpen ? '↓' : '↑'}
+      </button>
+
+      <Legend2 isOpen={legendOpen} />
+
+      <Overlay
         coordinates={coordinates}
         setCoordinates={setCoordinates}
         documents={allDocuments}

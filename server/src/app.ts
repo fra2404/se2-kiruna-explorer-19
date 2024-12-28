@@ -9,7 +9,7 @@ export const app = express();
 // Abilita CORS per la porta 5173
 app.use(
   cors({
-    origin: 'https://kiruna.falbano.it',
+    origin: true,
     credentials: true,
   }),
 );

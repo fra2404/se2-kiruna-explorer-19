@@ -17,6 +17,7 @@ import SidebarContext from '../context/SidebarContext.js';
 import { DocumentIcon } from '../components/molecules/documentsItems/DocumentIcon.js';
 import ReactDOMServer from 'react-dom/server';
 import StakeholderLegend from '../components/molecules/StakeholderLegend.js';
+import Legend2 from '../components/molecules/legend/Legend.js';
 
 const LABEL_FONT = { size: 50, color: '#000000' };
 const OFFSET_VIEW = { x: 200, y: 500 };
@@ -66,6 +67,7 @@ const Diagram = () => {
   const { selectedDocument, setSelectedDocument, setSidebarVisible } =
     useContext(SidebarContext);
   const [types, setTypes] = useState<any[]>([]);
+  const [legendOpen, setLegendOpen] = useState(false); 
 
   //Needed to show a document's information when hovering on it
   const [documentInfoPopup, setDocumentInfoPopup] = useState<{
@@ -809,6 +811,23 @@ const Diagram = () => {
       >
         <StakeholderLegend />
       </div>
+
+      <button
+        onClick={() => setLegendOpen(!legendOpen)}
+        className={`legend-button bg-black text-white text-s pt-2 pb-2 pl-3 pr-3 rounded-full ${legendOpen ? 'open' : ''}`} // Aggiungi la classe CSS
+        style={{
+          position: 'fixed',
+          bottom: legendOpen ? '210px' : '10px', // Sposta il bottone sopra la finestra della legenda quando è aperta
+          left: '50%',
+          transform: 'translateX(-50%)',
+          zIndex: 100001,
+          transition: 'bottom 0.3s ease-out', // Aggiunge la transizione
+        }}
+      >
+        {legendOpen ? '↓' : '↑'}
+      </button>
+
+      <Legend2 isOpen={legendOpen} />
 
       {state.graph && (
         <Graph

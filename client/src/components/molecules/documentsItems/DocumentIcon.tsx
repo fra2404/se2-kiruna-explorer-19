@@ -43,10 +43,10 @@ const numberToColorHex = (num: number): string => {
 };
 
 export const stakeholdersColors = (
-  stakeholders: { _id: string; type: string }[],
+  stakeholders: { _id: string; type: string }[] = [],
 ): string[] => {
   if (stakeholders.length === 0) {
-    return ['#000'];
+    return ['#000']; // Ritorna nero se non ci sono stakeholder
   }
 
   const colors = stakeholders.map((stakeholder) => {
@@ -63,7 +63,7 @@ export const stakeholdersColors = (
         case 'citizens':
           return '#a7cbce';
         default:
-          // Generatex a unique Hexadecimal color for not-predefined stakeholder types
+          // Generate a unique Hexadecimal color for not-predefined stakeholder types
           return numberToColorHex(hashString(stakeholder.type));
       }
     } else {
@@ -76,12 +76,12 @@ export const stakeholdersColors = (
 
 interface DocumentIconProps {
   type: string;
-  stakeholders: { _id: string; type: string }[];
+  stakeholders?: { _id: string; type: string }[]; // Rendi opzionale la prop stakeholders
 }
 
 export const DocumentIcon: React.FC<DocumentIconProps> = ({
   type,
-  stakeholders,
+  stakeholders = [], // Valore predefinito vuoto
 }) => {
   const colors = stakeholdersColors(stakeholders);
 
@@ -106,6 +106,6 @@ export const DocumentIcon: React.FC<DocumentIconProps> = ({
       return <TechnicalDocIcon fillColor={colors} />;
     default:
       // Default icon if type doesn't match any of the above
-      return <DefaultIcon fillColor={colors} />;;
+      return <DefaultIcon fillColor={colors} />;
   }
 };
