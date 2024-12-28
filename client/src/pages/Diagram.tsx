@@ -16,7 +16,6 @@ import { DocumentConnectionsList } from '../components/molecules/documentsItems/
 import SidebarContext from '../context/SidebarContext.js';
 import { DocumentIcon } from '../components/molecules/documentsItems/DocumentIcon.js';
 import ReactDOMServer from 'react-dom/server';
-import StakeholderLegend from '../components/molecules/StakeholderLegend.js';
 import Legend2 from '../components/molecules/legend/Legend.js';
 
 const LABEL_FONT = { size: 50, color: '#000000' };
