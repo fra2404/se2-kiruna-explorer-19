@@ -32,7 +32,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
     <>
       <ButtonRounded 
         text={
-          <div className="flex items-center">
+          <div className="flex items-center text-sm">
             <FaFolder /> &ensp; All Documents
           </div>
         }
@@ -52,7 +52,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
           right: sidebarVisible ? "0" : "-100%",
           transition: '350ms',
           maxHeight: '100vh',
-          overflow: 'auto'
+          overflow: 'auto',
         }}
         className='border-l xl:w-2/5 lg:w-4/6 md:w-5/6 w-full'
       >

@@ -794,7 +794,7 @@ const Diagram = () => {
           position: 'absolute',
           top: `${headerRef.current?.offsetHeight ? headerRef.current?.offsetHeight + 10 : 0}px`,
           left: '10px',
-          zIndex: 10,
+          zIndex: 1,
         }}
         ref={legendRef}
       >
