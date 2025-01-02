@@ -116,7 +116,7 @@ export default function KirunaMap() {
           bottom: legendOpen ? '31vh' : '10px', // Sposta il bottone sopra la finestra della legenda quando è aperta
           left: '50%',
           transform: 'translateX(-50%)',
-          zIndex: 100001,
+          zIndex: 1,
           transition: 'bottom 0.3s ease-out', // Aggiunge la transizione
         }}
       >
