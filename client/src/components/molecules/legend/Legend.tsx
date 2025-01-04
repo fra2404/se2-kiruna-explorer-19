@@ -35,7 +35,7 @@ const Legend2: React.FC<LegendProps> = ({ isOpen }) => {
     <div className={`legend ${isOpen ? 'open' : ''}`}>
       
       <div className="legend-part1">
-        <h3>Stakeholders</h3>
+        <h4>Stakeholders Colors</h4>
         <ul>
           {stakeholders.map((stakeholder) => {
             const color = stakeholdersColors([stakeholder])[0];
@@ -47,8 +47,11 @@ const Legend2: React.FC<LegendProps> = ({ isOpen }) => {
           })}
         </ul>
       </div>
+
+      <div className='vertical-line'></div>
+
       <div className="legend-part2">
-        <h3>Types of Documents</h3>
+        <h4>Documents Icons</h4>
         <ul>
           {types.map((type) => {
             return (

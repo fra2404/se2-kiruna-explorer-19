@@ -16,7 +16,6 @@ import { DocumentConnectionsList } from '../components/molecules/documentsItems/
 import SidebarContext from '../context/SidebarContext.js';
 import { DocumentIcon } from '../components/molecules/documentsItems/DocumentIcon.js';
 import ReactDOMServer from 'react-dom/server';
-import StakeholderLegend from '../components/molecules/StakeholderLegend.js';
 import Legend2 from '../components/molecules/legend/Legend.js';
 
 const LABEL_FONT = { size: 50, color: '#000000' };
@@ -794,7 +793,7 @@ const Diagram = () => {
           position: 'absolute',
           top: `${headerRef.current?.offsetHeight ? headerRef.current?.offsetHeight + 10 : 0}px`,
           left: '10px',
-          zIndex: 10,
+          zIndex: 1,
         }}
         ref={legendRef}
       >
@@ -807,10 +806,10 @@ const Diagram = () => {
         className={`legend-button bg-black text-white text-s pt-2 pb-2 pl-3 pr-3 rounded-full ${legendOpen ? 'open' : ''}`} // Aggiungi la classe CSS
         style={{
           position: 'fixed',
-          bottom: legendOpen ? '210px' : '10px', // Sposta il bottone sopra la finestra della legenda quando è aperta
+          bottom: legendOpen ? '31vh' : '10px', // Sposta il bottone sopra la finestra della legenda quando è aperta
           left: '50%',
           transform: 'translateX(-50%)',
-          zIndex: 100001,
+          zIndex: 1,
           transition: 'bottom 0.3s ease-out', // Aggiunge la transizione
         }}
       >

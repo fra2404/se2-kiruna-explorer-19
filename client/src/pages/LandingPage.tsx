@@ -9,6 +9,9 @@ import enFlag from '../assets/en-flag.png';
 import itFlag from '../assets/it-flag.png';
 import svFlag from '../assets/sv-flag.png';
 import Joyride, { CallBackProps, STATUS } from 'react-joyride';
+import { LoginModal } from '../components/organisms/modals/LoginModal';
+import { useAuth } from '../context/AuthContext';
+import DropdownModal from '../components/molecules/DropdownModal';
 
 const texts = {
   en: {
@@ -84,6 +87,16 @@ const LandingPage = () => {
   const imgRef = useRef<HTMLImageElement>(null);
   const requestRef = useRef<number>();
   const [runTour, setRunTour] = useState(false);
+  const { isLoggedIn, user, logout } = useAuth();
+
+  const [loginModalOpen, setLoginModalOpen] = useState(false);
+  const [dropdownOpen, setDropdownOpen] = useState(false);
+  const dropdownRef = useRef<HTMLDivElement>(null);
+
+  const handleLogout = async () => {
+    await logout();
+    navigate('/');
+  };
 
   useEffect(() => {
     AOS.init({ duration: 2000 });
@@ -143,172 +156,217 @@ const LandingPage = () => {
   };
 
   return (
-    <div className="relative isolate overflow-hidden bg-gray-900 py-24 sm:py-32 w-full h-screen cursor-default">
-  <Joyride
-        steps={text.steps}
-        continuous
-        scrollToFirstStep
-        showProgress
-        showSkipButton
-        run={runTour}
-        callback={handleJoyrideCallback}
-        styles={{
-          options: {
-            zIndex: 10000,
-            backgroundColor: '#333',
-            width: '300px',
-            arrowColor: '#333',
-            overlayColor: 'rgba(0, 0, 0, 0.5)',
-            primaryColor: '#ff4694',
-            textColor: '#fff', // Assicurati che il colore del testo sia bianco
-          },
-          tooltipContainer: {
-            marginBottom: '4rem',
-          },
-          buttonClose: {
-            marginBottom: '4rem',
-            color: '#fff', // Assicurati che il colore del testo del pulsante sia bianco
-          },
-          buttonNext: {
-            backgroundColor: '#ff4694',
-            color: '#fff', // Assicurati che il colore del testo del pulsante sia bianco
-          },
-          buttonBack: {
-            color: '#fff', // Assicurati che il colore del testo del pulsante sia bianco
-          },
-          
-        }}
-      />
-      <img
-        ref={imgRef}
-        alt="Kiruna"
-        src={kiruna}
-        className="absolute inset-0 -z-10 w-full h-full object-cover object-right md:object-center opacity-10 transition-transform duration-200 scale-110" // Ingrandisci l'immagine
-      />
-      <div
-        aria-hidden="true"
-        className="hidden sm:absolute sm:-top-10 sm:right-1/2 sm:-z-10 sm:mr-10 sm:block sm:transform-gpu sm:blur-3xl"
-      >
-        <div
-          style={{
-            clipPath:
-              'polygon(74.1% 44.1%, 100% 61.6%, 97.5% 26.9%, 85.5% 0.1%, 80.7% 2%, 72.5% 32.5%, 60.2% 62.4%, 52.4% 68.1%, 47.5% 58.3%, 45.2% 34.5%, 27.5% 76.7%, 0.1% 64.9%, 17.9% 100%, 27.6% 76.8%, 76.1% 97.7%, 74.1% 44.1%)',
-          }}
-          className="aspect-[1097/845] w-[68.5625rem] bg-gradient-to-tr from-[#ff4694] to-[#776fff] opacity-20"
+    <>
+      <div className="relative isolate overflow-hidden bg-gray-900 py-24 sm:py-32 w-full h-screen cursor-default">
+        <Joyride
+              steps={text.steps}
+              continuous
+              scrollToFirstStep
+              showProgress
+              showSkipButton
+              run={runTour}
+              callback={handleJoyrideCallback}
+              styles={{
+                options: {
+                  zIndex: 10000,
+                  backgroundColor: '#333',
+                  width: '300px',
+                  arrowColor: '#333',
+                  overlayColor: 'rgba(0, 0, 0, 0.5)',
+                  primaryColor: '#ff4694',
+                  textColor: '#fff',
+                },
+                tooltipContainer: {
+                  marginBottom: '4rem',
+                },
+                buttonClose: {
+                  marginBottom: '4rem',
+                  color: '#fff',
+                },
+                buttonNext: {
+                  backgroundColor: '#ff4694',
+                  color: '#fff',
+                },
+                buttonBack: {
+                  color: '#fff',
+                },
+                
+              }}
+            />
+        <img
+          ref={imgRef}
+          alt="Kiruna"
+          src={kiruna}
+          className="absolute inset-0 -z-10 w-full h-full object-cover object-right md:object-center opacity-10 transition-transform duration-200 scale-110"
         />
-      </div>
-      <div
-        aria-hidden="true"
-        className="absolute -top-52 left-1/2 -z-10 -translate-x-1/2 transform-gpu blur-3xl sm:top-[-28rem] sm:ml-16 sm:translate-x-0 sm:transform-gpu"
-      >
         <div
-          style={{
-            clipPath:
-              'polygon(74.1% 44.1%, 100% 61.6%, 97.5% 26.9%, 85.5% 0.1%, 80.7% 2%, 72.5% 32.5%, 60.2% 62.4%, 52.4% 68.1%, 47.5% 58.3%, 45.2% 34.5%, 27.5% 76.7%, 0.1% 64.9%, 17.9% 100%, 27.6% 76.8%, 76.1% 97.7%, 74.1% 44.1%)',
-          }}
-          className="aspect-[1097/845] w-[68.5625rem] bg-gradient-to-tr from-[#ff4694] to-[#776fff] opacity-20"
-        />
-      </div>
-      <div className="absolute top-4 right-4 flex space-x-2">
-        <ButtonRounded
-          className={`text-xs bg-black cursor-pointer ${language === 'en' ? 'border-2 border-white' : ''}`}
-          text={<img src={enFlag} alt="English" className="w-5 h-5" />}
-          onClick={() => setLanguage('en')}
+          aria-hidden="true"
+          className="hidden sm:absolute sm:-top-10 sm:right-1/2 sm:-z-10 sm:mr-10 sm:block sm:transform-gpu sm:blur-3xl"
         >
-          <img src={enFlag} alt="English" className="w-5 h-5" />
-        </ButtonRounded>
-        <ButtonRounded
-          className={`text-xs bg-black cursor-pointer ${language === 'it' ? 'border-2 border-white' : ''}`}
-          text={<img src={itFlag} alt="Italiano" className="w-5 h-5" />}
-          onClick={() => setLanguage('it')}
-        >
-          <img src={itFlag} alt="Italiano" className="w-5 h-5" />
-        </ButtonRounded>
-        <ButtonRounded
-          className={`text-xs bg-black cursor-pointer ${language === 'sv' ? 'border-2 border-white' : ''}`}
-          text={<img src={svFlag} alt="Svenska" className="w-5 h-5" />}
-          onClick={() => setLanguage('sv')}
-        >
-          <img src={svFlag} alt="Svenska" className="w-5 h-5" />
-        </ButtonRounded>
-      </div>
-      <div className="mx-auto max-w-7xl px-6 lg:px-8">
-        <div className="mx-auto max-w-2xl lg:mx-0" data-aos="fade-up">
-          <h2 className="text-5xl font-semibold tracking-tight text-white sm:text-7xl">
-            {text.title}
-          </h2>
-          <p className="mt-8 text-pretty text-lg font-medium text-gray-300 sm:text-xl/8">
-            {text.description}{' '}
-            <a
-              href={text.wikiLink}
-              target="blank"
-              className="text-white cursor-pointer"
-            >
-              {text.learnMore}
-            </a>
-          </p>
+          <div
+            style={{
+              clipPath:
+                'polygon(74.1% 44.1%, 100% 61.6%, 97.5% 26.9%, 85.5% 0.1%, 80.7% 2%, 72.5% 32.5%, 60.2% 62.4%, 52.4% 68.1%, 47.5% 58.3%, 45.2% 34.5%, 27.5% 76.7%, 0.1% 64.9%, 17.9% 100%, 27.6% 76.8%, 76.1% 97.7%, 74.1% 44.1%)',
+            }}
+            className="aspect-[1097/845] w-[68.5625rem] bg-gradient-to-tr from-[#ff4694] to-[#776fff] opacity-20"
+          />
         </div>
-        <div className="mx-auto mt-10 max-w-2xl lg:mx-0 lg:max-w-none" data-aos="fade-up">
-          <dl className="mt-16 grid grid-cols-1 gap-8 sm:mt-20 sm:grid-cols-2 lg:grid-cols-4">
-            {text.stats.map((stat) => (
-              <div
-                key={stat.name}
-                className="flex flex-col-reverse gap-1"
-                data-aos="fade-up"
+        <div
+          aria-hidden="true"
+          className="absolute -top-52 left-1/2 -z-10 -translate-x-1/2 transform-gpu blur-3xl sm:top-[-28rem] sm:ml-16 sm:translate-x-0 sm:transform-gpu"
+        >
+          <div
+            style={{
+              clipPath:
+                'polygon(74.1% 44.1%, 100% 61.6%, 97.5% 26.9%, 85.5% 0.1%, 80.7% 2%, 72.5% 32.5%, 60.2% 62.4%, 52.4% 68.1%, 47.5% 58.3%, 45.2% 34.5%, 27.5% 76.7%, 0.1% 64.9%, 17.9% 100%, 27.6% 76.8%, 76.1% 97.7%, 74.1% 44.1%)',
+            }}
+            className="aspect-[1097/845] w-[68.5625rem] bg-gradient-to-tr from-[#ff4694] to-[#776fff] opacity-20"
+          />
+        </div>
+        <div className="absolute top-4 left-4 flex space-x-2">
+          <ButtonRounded
+            className={`text-xs bg-black cursor-pointer ${language === 'en' ? 'border-2 border-white' : ''}`}
+            text={<img src={enFlag} alt="English" className="w-6 h-4" />}
+            onClick={() => setLanguage('en')}
+          >
+            <img src={enFlag} alt="English" className="w-6 h-4" />
+          </ButtonRounded>
+          <ButtonRounded
+            className={`text-xs bg-black cursor-pointer ${language === 'sv' ? 'border-2 border-white' : ''}`}
+            text={<img src={svFlag} alt="Svenska" className="w-6 h-4" />}
+            onClick={() => setLanguage('sv')}
+          >
+            <img src={svFlag} alt="Svenska" className="w-6 h-4" />
+          </ButtonRounded>
+          <ButtonRounded
+            className={`text-xs bg-black cursor-pointer ${language === 'it' ? 'border-2 border-white' : ''}`}
+            text={<img src={itFlag} alt="Italiano" className="w-6 h-4" />}
+            onClick={() => setLanguage('it')}
+          >
+            <img src={itFlag} alt="Italiano" className="w-6 h-4" />
+          </ButtonRounded>
+          </div>
+
+          <div className="absolute top-4 right-4">
+            {/* Login/logout button */}
+            <div className='ml-auto' style={{ pointerEvents: "auto" }}>
+              {!isLoggedIn && !user ? (
+                <ButtonRounded variant="filled" text="Login"
+                  onClick={() => {
+                    setLoginModalOpen(true);
+                  }} className="bg-black text-sm pr-4 pl-4"
+                >
+                Login
+                </ButtonRounded>
+              ) : (
+                <div ref={dropdownRef}>
+                  <ButtonRounded
+                    onClick={() => setDropdownOpen(!dropdownOpen)}
+                    variant="filled"
+                    className="bg-black pr-4 pl-4 d-flex align-items-center"
+                    text={`Welcome, ${user?.name} ${dropdownOpen ? '▲' : '▼'}`}
+                  >
+                  {`Welcome, ${user?.name} ${dropdownOpen ? '▲' : '▼'}`}
+                  </ButtonRounded>
+                </div>
+              )}
+            </div>
+        </div>
+
+        <div className="mx-auto max-w-7xl px-6 lg:px-8">
+          <div className="mx-auto max-w-2xl lg:mx-0" data-aos="fade-up">
+            <h2 className="text-5xl font-semibold tracking-tight text-white sm:text-7xl">
+              {text.title}
+            </h2>
+            <p className="mt-8 text-pretty text-lg font-medium text-gray-300 sm:text-xl/8">
+              {text.description}{' '}
+              <a
+                href={text.wikiLink}
+                target="blank"
+                className="text-white cursor-pointer"
               >
-                <dt className="text-base/7 text-gray-300">{stat.name}</dt>
-                <dd className="text-4xl font-semibold tracking-tight text-white">
-                  {stat.isYear ? (
-                    <CountUp
-                      start={1900}
-                      end={stat.value}
-                      duration={2.5}
-                      suffix={stat.suffix ?? ''}
-                      separator=""
-                    />
-                  ) : (
-                    <CountUp
-                      end={stat.value}
-                      duration={2.5}
-                      prefix={stat.prefix ?? ''}
-                      suffix={stat.suffix ?? ''}
-                      separator=","
-                    />
-                  )}
-                </dd>
-              </div>
-            ))}
-          </dl>
+                {text.learnMore}
+              </a>
+            </p>
+          </div>
+
+          <div className="mx-auto mt-10 max-w-2xl lg:mx-0 lg:max-w-none" data-aos="fade-up">
+            <dl className="mt-16 grid grid-cols-1 gap-8 sm:mt-20 sm:grid-cols-2 lg:grid-cols-4">
+              {text.stats.map((stat) => (
+                <div
+                  key={stat.name}
+                  className="flex flex-col-reverse gap-1"
+                  data-aos="fade-up"
+                >
+                  <dt className="text-base/7 text-gray-300">{stat.name}</dt>
+                  <dd className="text-4xl font-semibold tracking-tight text-white">
+                    {stat.isYear ? (
+                      <CountUp
+                        start={1900}
+                        end={stat.value}
+                        duration={2.5}
+                        suffix={stat.suffix ?? ''}
+                        separator=""
+                      />
+                    ) : (
+                      <CountUp
+                        end={stat.value}
+                        duration={2.5}
+                        prefix={stat.prefix ?? ''}
+                        suffix={stat.suffix ?? ''}
+                        separator=","
+                      />
+                    )}
+                  </dd>
+                </div>
+              ))}
+            </dl>
+          </div>
+        </div>
+
+        <div className="absolute bottom-0 left-0 right-0 flex justify-center pb-8">
+          <ButtonRounded
+            className="mr-16 text-lg bg-black cursor-pointer"
+            text={text.seeMap}
+            onClick={() => navigate('/map')}
+          >
+            {text.seeMap}
+          </ButtonRounded>
+          <ButtonRounded
+            className="text-lg bg-black cursor-pointer"
+            text={text.seeDiagram}
+            onClick={() => navigate('/diagram')}
+          >
+            {text.seeDiagram}
+          </ButtonRounded>
+        </div>
+
+        <div className="absolute bottom-4 left-4">
+          <ButtonRounded
+            className="text-lg bg-black cursor-pointer"
+            text="Inizia il tour"
+            onClick={startTour}
+          >
+            Inizia il tour
+          </ButtonRounded>
         </div>
       </div>
 
-      <div className="absolute bottom-0 left-0 right-0 flex justify-center pb-8">
-        <ButtonRounded
-          className="mr-16 text-lg bg-black cursor-pointer"
-          text={text.seeMap}
-          onClick={() => navigate('/map')}
-        >
-          {text.seeMap}
-        </ButtonRounded>
-        <ButtonRounded
-          className="text-lg bg-black cursor-pointer"
-          text={text.seeDiagram}
-          onClick={() => navigate('/diagram')}
-        >
-          {text.seeDiagram}
-        </ButtonRounded>
-      </div>
+      <LoginModal
+        isOpen={loginModalOpen}
+        onRequestClose={() => setLoginModalOpen(false)}
+        setLoginModalOpen={setLoginModalOpen}
+      />
 
-      <div className="absolute bottom-4 left-4">
-        <ButtonRounded
-          className="text-lg bg-black cursor-pointer"
-          text="Inizia il tour"
-          onClick={startTour}
-        >
-          Inizia il tour
-        </ButtonRounded>
-      </div>
-    </div>
+      <DropdownModal
+          isOpen={dropdownOpen}
+          onRequestClose={() => setDropdownOpen(false)}
+          navigate={navigate}
+          handleLogout={handleLogout}
+          dropdownRef={dropdownRef}
+          page='home'
+        />
+    </>
   );
 };
 

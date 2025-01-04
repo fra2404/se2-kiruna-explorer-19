@@ -120,7 +120,7 @@ export const Header: React.FC<HeaderProps> = ({
           <ButtonRounded
             variant="filled"
             text={page == 'map' ? "Go to Diagram" : 'Go to Map'}
-            className="bg-black pr-4 pl-4 d-flex align-items-center"
+            className="bg-black pr-4 pl-4 d-flex align-items-center text-sm"
             onClick={() => navigate(page == 'map' ? '/diagram' : '/map')}
             style={{ pointerEvents: "auto" }}
           >
@@ -133,7 +133,7 @@ export const Header: React.FC<HeaderProps> = ({
               <ButtonRounded variant="filled" text="Login"
                 onClick={() => {
                   setLoginModalOpen(true);
-                }} className="bg-black pr-4 pl-4"
+                }} className="bg-black pr-4 pl-4 text-sm"
               >
               Login
               </ButtonRounded>
@@ -142,7 +142,7 @@ export const Header: React.FC<HeaderProps> = ({
                 <ButtonRounded
                   onClick={() => setDropdownOpen(!dropdownOpen)}
                   variant="filled"
-                  className="bg-black pr-4 pl-4 d-flex align-items-center"
+                  className="bg-black pr-4 pl-4 d-flex align-items-center text-sm"
                   text={`Welcome, ${user?.name} ${dropdownOpen ? '▲' : '▼'}`}
                 >
                 {`Welcome, ${user?.name} ${dropdownOpen ? '▲' : '▼'}`}
