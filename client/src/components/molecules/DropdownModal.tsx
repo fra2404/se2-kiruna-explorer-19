@@ -61,12 +61,14 @@ const DropdownModal: React.FC<DropdownModalProps> = ({
       ariaHideApp={false}
     >
       <div>
-        <div
-          onClick={() => handleNavigate('/')}
-          className="p-2.5 cursor-pointer hover:bg-gray-200 rounded-lg"
-        >
-          Home
-        </div>
+        {page != 'home' && 
+          <div
+            onClick={() => handleNavigate('/')}
+            className="p-2.5 cursor-pointer hover:bg-gray-200 rounded-lg"
+          >
+            Home
+          </div>
+        }
 
         {isLoggedIn && user && user.role === UserRoleEnum.Uplanner && page=='map' && setManageCoordsModalOpen && (
           <div
