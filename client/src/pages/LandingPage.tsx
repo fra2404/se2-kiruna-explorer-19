@@ -71,7 +71,7 @@ const texts = {
       { target: '.bottom-0.left-0.right-0', content: 'Klicka på knapparna för att se kartan eller diagrammet.' },
     ],
     stats: [
-      { name: 'Budget', value: 1400000000, prefix: '€', suffix: '' },
+      { name: 'Budget ', value: 1400000000, prefix: '€', suffix: '' },  //DO NOT REMOVE the whitespace after "Budget ". It is a workaround: this way it is different from the one in English, and triggers an update which causes the animation
       { name: 'Påverkade personer', value: 23000, suffix: '' },
       { name: 'Historiska byggnader flyttade', value: 21, suffix: '' },
       { name: 'Nya Kiruna är klar!', value: 2033, isYear: true, suffix: '' },
@@ -274,7 +274,7 @@ const LandingPage = () => {
         </div>
 
         <div className="mx-auto max-w-7xl px-6 lg:px-8">
-          <div className="mx-auto max-w-2xl lg:mx-0" data-aos="fade-up">
+          <div className="mx-auto max-w-2xl lg:mx-0 animate-fadeUp">
             <h2 className="text-5xl font-semibold tracking-tight text-white sm:text-7xl">
               {text.title}
             </h2>
@@ -290,7 +290,7 @@ const LandingPage = () => {
             </p>
           </div>
 
-          <div className="mx-auto mt-10 max-w-2xl lg:mx-0 lg:max-w-none" data-aos="fade-up">
+          <div className="mx-auto mt-10 max-w-2xl lg:mx-0 lg:max-w-none animate-fadeUp">
             <dl className="mt-16 grid grid-cols-1 gap-8 sm:mt-20 sm:grid-cols-2 lg:grid-cols-4">
               {text.stats.map((stat) => (
                 <div
