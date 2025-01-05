@@ -201,8 +201,9 @@ export const login = async (
     const { token }: { token: string } = await loginUser(email, password);
     res.cookie('auth-token', token, {
       httpOnly: true,
-      secure: process.env.NODE_ENV === 'production',
-      sameSite: 'strict',
+      secure: true,
+      sameSite: 'none',
+      domain: '.falbano.it',
       maxAge: 3600000, // 1 hour
       path: '/',
     });
@@ -287,8 +288,9 @@ export const logout = async (
   try {
     res.clearCookie('auth-token', {
       httpOnly: true,
-      secure: process.env.NODE_ENV === 'production',
-      sameSite: 'strict',
+      secure: true,
+      sameSite: 'none',
+      domain: '.falbano.it',
       path: '/',
     });
     res.json({ message: 'User logged out successfully' });
