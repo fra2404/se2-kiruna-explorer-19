@@ -803,14 +803,14 @@ const Diagram = () => {
 
       <button
         onClick={() => setLegendOpen(!legendOpen)}
-        className={`legend-button bg-black text-white text-s pt-2 pb-2 pl-3 pr-3 rounded-full ${legendOpen ? 'open' : ''}`} // Aggiungi la classe CSS
+        className={`bg-black text-white text-base pt-2 pb-2 pl-3 pr-3 rounded-full ${legendOpen ? 'open' : ''}`}
         style={{
           position: 'fixed',
-          bottom: legendOpen ? '31vh' : '10px', // Sposta il bottone sopra la finestra della legenda quando è aperta
+          bottom: legendOpen ? '31vh' : '10px', //Moves the button above the legend window when it's open
           left: '50%',
           transform: 'translateX(-50%)',
           zIndex: 1,
-          transition: 'bottom 0.3s ease-out', // Aggiunge la transizione
+          transition: 'bottom 0.3s ease-out', //Adds the transition
         }}
       >
         {legendOpen ? '↓' : '↑'}
