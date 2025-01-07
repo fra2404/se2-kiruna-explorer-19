@@ -397,7 +397,6 @@ const Diagram = () => {
         doc.connections.forEach((connection: any) => {
           // Modify the style of the connections according to their type
           if (connection.type.toUpperCase() === 'DIRECT') {
-            console.log('Direct connection');
             connectionColor = '#007BFF';
           } else if (connection.type.toUpperCase() === 'COLLATERAL') {
             dashesType = [2, 2]; // This is good for collateral connections
@@ -418,8 +417,6 @@ const Diagram = () => {
           else {
             isCurved = false
           }
-
-          console.log(connection)
 
           if(!connections.find((c) => ((c.from == doc.id || c.from == connection.document) && (c.to == doc.id || c.from == connection.document) && c.type == connection.type))) {
             connections.push({
@@ -572,14 +569,14 @@ const Diagram = () => {
         });
         setFirstLoad(false);
       }
-      // Else center based on the current year (only at launch)
+      // Else center based on the maximum year (only at launch)
       else if (firstLoad) {
         network.fit({
-          // Filter only the node that are in the current year. In this way the graph will be centered on the current year at launch.
+          // Filter only the nodes that are in the maximum year. In this way the graph will be centered on the last year at launch.
           nodes: state.graph.nodes
             .filter((node: any) => {
-              const currentYear = new Date().getFullYear();
-              return node.year === currentYear;
+              const maxYear = Math.max(...state.graph.nodes.map((n) => n.year).filter((y) => y != undefined));
+              return node.year === maxYear;
             })
             .map((node: any) => node.id),
           animation: false,
@@ -862,7 +859,6 @@ const Diagram = () => {
             },
             
             click: (event: any) => {
-              console.log(event);
               if (event.nodes.length == 0) {
                 const { edges } = event;
                 const selectedEdge = state.graph.edges.find(

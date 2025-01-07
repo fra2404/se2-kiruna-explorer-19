@@ -8,7 +8,6 @@ import 'aos/dist/aos.css';
 import enFlag from '../assets/en-flag.png';
 import itFlag from '../assets/it-flag.png';
 import svFlag from '../assets/sv-flag.png';
-import Joyride, { CallBackProps, STATUS } from 'react-joyride';
 import { LoginModal } from '../components/organisms/modals/LoginModal';
 import { useAuth } from '../context/AuthContext';
 import DropdownModal from '../components/molecules/DropdownModal';
@@ -86,7 +85,6 @@ const LandingPage = () => {
   const [language, setLanguage] = useState<Language>('en');
   const imgRef = useRef<HTMLImageElement>(null);
   const requestRef = useRef<number>();
-  const [runTour, setRunTour] = useState(false);
   const { isLoggedIn, user, logout } = useAuth();
 
   const [loginModalOpen, setLoginModalOpen] = useState(false);
@@ -142,57 +140,9 @@ const LandingPage = () => {
 
   const text = texts[language];
 
-  const handleJoyrideCallback = (data: CallBackProps) => {
-    const { status } = data;
-    const finishedStatuses: string[] = [STATUS.FINISHED, STATUS.SKIPPED];
-
-    if (finishedStatuses.includes(status)) {
-      setRunTour(false);
-    }
-  };
-
-  const startTour = () => {
-    setRunTour(true);
-  };
-
   return (
     <>
       <div className="relative isolate overflow-hidden bg-gray-900 py-24 sm:py-32 w-full h-screen cursor-default">
-        <Joyride
-              steps={text.steps}
-              continuous
-              scrollToFirstStep
-              showProgress
-              showSkipButton
-              run={runTour}
-              callback={handleJoyrideCallback}
-              styles={{
-                options: {
-                  zIndex: 10000,
-                  backgroundColor: '#333',
-                  width: '300px',
-                  arrowColor: '#333',
-                  overlayColor: 'rgba(0, 0, 0, 0.5)',
-                  primaryColor: '#ff4694',
-                  textColor: '#fff',
-                },
-                tooltipContainer: {
-                  marginBottom: '4rem',
-                },
-                buttonClose: {
-                  marginBottom: '4rem',
-                  color: '#fff',
-                },
-                buttonNext: {
-                  backgroundColor: '#ff4694',
-                  color: '#fff',
-                },
-                buttonBack: {
-                  color: '#fff',
-                },
-                
-              }}
-            />
         <img
           ref={imgRef}
           alt="Kiruna"
@@ -338,16 +288,6 @@ const LandingPage = () => {
             onClick={() => navigate('/diagram')}
           >
             {text.seeDiagram}
-          </ButtonRounded>
-        </div>
-
-        <div className="absolute bottom-4 left-4">
-          <ButtonRounded
-            className="text-lg bg-black cursor-pointer"
-            text="Inizia il tour"
-            onClick={startTour}
-          >
-            Inizia il tour
           </ButtonRounded>
         </div>
       </div>
