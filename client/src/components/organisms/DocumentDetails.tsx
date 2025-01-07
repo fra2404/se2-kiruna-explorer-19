@@ -199,7 +199,7 @@ const DocumentDetails: React.FC<DocumentDetailsProps> = ({
         )}
         {
           /* Button to edit the document */
-          isLoggedIn && user && user.role === UserRoleEnum.Uplanner && (
+          isLoggedIn && user && (user.role === UserRoleEnum.Uplanner || user.role === UserRoleEnum.Udeveloper) && (
             <ButtonRounded
               text="Edit"
               variant="filled"

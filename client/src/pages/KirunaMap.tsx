@@ -190,7 +190,7 @@ export default function KirunaMap() {
           })}
         </MarkerClusterGroup>
 
-        {isLoggedIn && user && user.role === UserRoleEnum.Uplanner && (
+        {isLoggedIn && user && (user.role === UserRoleEnum.Uplanner || user.role === UserRoleEnum.Udeveloper) && (
           <ClickMarker
             coordinates={coordinates}
             setCoordinates={setCoordinates}

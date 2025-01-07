@@ -17,27 +17,8 @@ import SidebarContext from '../context/SidebarContext.js';
 import { DocumentIcon } from '../components/molecules/documentsItems/DocumentIcon.js';
 import ReactDOMServer from 'react-dom/server';
 import Legend2 from '../components/molecules/legend/Legend.js';
-
-const LABEL_FONT = { size: 50, color: '#000000' };
-const OFFSET_VIEW = { x: 200, y: 500 };
-const YEAR_SPACING = 500;
-const options = {
-  autoResize: true,
-  layout: {
-    hierarchical: false,
-  },
-  physics: {
-    enabled: false, // Disable physics to prevent nodes from moving
-  },
-  interaction: {
-    dragNodes: true, // Enable dragging nodes (improves the readability)
-    dragView: true, // Enable dragging of the view
-    zoomView: true, // Enable zooming of the view
-    navigationButtons: true, // Enable navigation buttons
-    hover: true,
-  },
-};
-
+import { UserRoleEnum } from '../utils/interfaces/user.interface.js';
+import { useAuth } from '../context/AuthContext.js';
 
 const fetchGraphInfo = async () => {
   try {
@@ -65,8 +46,29 @@ const Diagram = () => {
   const legendRef = useRef<HTMLDivElement>(null);
   const { selectedDocument, setSelectedDocument, setSidebarVisible } =
     useContext(SidebarContext);
+  const { isLoggedIn, user } = useAuth();
   const [types, setTypes] = useState<any[]>([]);
   const [legendOpen, setLegendOpen] = useState(false); 
+
+  const LABEL_FONT = { size: 50, color: '#000000' };
+  const OFFSET_VIEW = { x: 200, y: 500 };
+  const YEAR_SPACING = 500;
+  const options = {
+    autoResize: true,
+    layout: {
+      hierarchical: false,
+    },
+    physics: {
+      enabled: false, // Disable physics to prevent nodes from moving
+    },
+    interaction: {
+      dragNodes: (isLoggedIn && user && (user.role === UserRoleEnum.Uplanner || user.role === UserRoleEnum.Udeveloper)), // Enable dragging nodes (improves the readability)
+      dragView: true, // Enable dragging of the view
+      zoomView: true, // Enable zooming of the view
+      navigationButtons: true, // Enable navigation buttons
+      hover: true,
+    },
+  };
 
   //Needed to show a document's information when hovering on it
   const [documentInfoPopup, setDocumentInfoPopup] = useState<{
@@ -291,7 +293,6 @@ const Diagram = () => {
         setCoordinates(result);
       })
       .catch((e) => {
-        console.log(e);
         setFeedbackFromError(e);
       });
   }, []);
@@ -397,7 +398,6 @@ const Diagram = () => {
         doc.connections.forEach((connection: any) => {
           // Modify the style of the connections according to their type
           if (connection.type.toUpperCase() === 'DIRECT') {
-            console.log('Direct connection');
             connectionColor = '#007BFF';
           } else if (connection.type.toUpperCase() === 'COLLATERAL') {
             dashesType = [2, 2]; // This is good for collateral connections
@@ -418,8 +418,6 @@ const Diagram = () => {
           else {
             isCurved = false
           }
-
-          console.log(connection)
 
           if(!connections.find((c) => ((c.from == doc.id || c.from == connection.document) && (c.to == doc.id || c.from == connection.document) && c.type == connection.type))) {
             connections.push({
@@ -862,32 +860,33 @@ const Diagram = () => {
             },
             
             click: (event: any) => {
-              console.log(event);
-              if (event.nodes.length == 0) {
-                const { edges } = event;
-                const selectedEdge = state.graph.edges.find(
-                  (e) => e.id == edges[0]
-                ) as { from: any; to: any; color: string; id: string; document: string; type: string } | undefined;
-                if (selectedEdge) {
-                  const updatedEdges = state.graph.edges.map((edge: any) =>
-                    edge.id === edges[0]
-                      ? { ...edge, smooth: { enabled: !edge.smooth?.enabled, type: 'curvedCW', roundness: 0.2 } }
-                      : edge
-                  );
-                  setState({ graph: { nodes: state.graph.nodes, edges: updatedEdges } });
-            
-                  const isEdgeCurved = localStorage.getItem(`edge-${selectedEdge.document}`);
-                  if (isEdgeCurved) {
-                    const isCurved = JSON.parse(isEdgeCurved).isCurved;
-                    localStorage.setItem(
-                      `edge-${selectedEdge.document}`,
-                      JSON.stringify({ isCurved: !isCurved })
+              if(isLoggedIn && user && (user.role === UserRoleEnum.Uplanner || user.role === UserRoleEnum.Udeveloper)) {
+                if (event.nodes.length == 0) {
+                  const { edges } = event;
+                  const selectedEdge = state.graph.edges.find(
+                    (e) => e.id == edges[0]
+                  ) as { from: any; to: any; color: string; id: string; document: string; type: string } | undefined;
+                  if (selectedEdge) {
+                    const updatedEdges = state.graph.edges.map((edge: any) =>
+                      edge.id === edges[0]
+                        ? { ...edge, smooth: { enabled: !edge.smooth?.enabled, type: 'curvedCW', roundness: 0.2 } }
+                        : edge
                     );
-                  } else {
-                    localStorage.setItem(
-                      `edge-${selectedEdge.document}`,
-                      JSON.stringify({ isCurved: true })
-                    );
+                    setState({ graph: { nodes: state.graph.nodes, edges: updatedEdges } });
+              
+                    const isEdgeCurved = localStorage.getItem(`edge-${selectedEdge.document}`);
+                    if (isEdgeCurved) {
+                      const isCurved = JSON.parse(isEdgeCurved).isCurved;
+                      localStorage.setItem(
+                        `edge-${selectedEdge.document}`,
+                        JSON.stringify({ isCurved: !isCurved })
+                      );
+                    } else {
+                      localStorage.setItem(
+                        `edge-${selectedEdge.document}`,
+                        JSON.stringify({ isCurved: true })
+                      );
+                    }
                   }
                 }
               }
