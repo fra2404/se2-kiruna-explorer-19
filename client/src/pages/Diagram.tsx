@@ -570,14 +570,14 @@ const Diagram = () => {
         });
         setFirstLoad(false);
       }
-      // Else center based on the current year (only at launch)
+      // Else center based on the maximum year (only at launch)
       else if (firstLoad) {
         network.fit({
-          // Filter only the node that are in the current year. In this way the graph will be centered on the current year at launch.
+          // Filter only the nodes that are in the maximum year. In this way the graph will be centered on the last year at launch.
           nodes: state.graph.nodes
             .filter((node: any) => {
-              const currentYear = new Date().getFullYear();
-              return node.year === currentYear;
+              const maxYear = Math.max(...state.graph.nodes.map((n) => n.year).filter((y) => y != undefined));
+              return node.year === maxYear;
             })
             .map((node: any) => node.id),
           animation: false,
@@ -886,6 +886,21 @@ const Diagram = () => {
                         `edge-${selectedEdge.document}`,
                         JSON.stringify({ isCurved: true })
                       );
+                      setState({ graph: { nodes: state.graph.nodes, edges: updatedEdges } });
+                
+                      const isEdgeCurved = localStorage.getItem(`edge-${selectedEdge.document}`);
+                      if (isEdgeCurved) {
+                        const isCurved = JSON.parse(isEdgeCurved).isCurved;
+                        localStorage.setItem(
+                          `edge-${selectedEdge.document}`,
+                          JSON.stringify({ isCurved: !isCurved })
+                        );
+                      } else {
+                        localStorage.setItem(
+                          `edge-${selectedEdge.document}`,
+                          JSON.stringify({ isCurved: true })
+                        );
+                      }
                     }
                   }
                 }
