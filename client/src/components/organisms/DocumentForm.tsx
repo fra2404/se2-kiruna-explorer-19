@@ -206,8 +206,14 @@ const DocumentForm = ({
   const [showFiles, setShowFiles] = useState(!!selectedDocument?.media?.length);
   const [showConnections, setShowConnections] = useState(!!connections.length);
   const [showGeoreferencing, setShowGeoreferencing] = useState(
-    !!positionProp || !!selectedCoordIdProp,
+    !!positionProp || !!selectedCoordIdProp
   );
+
+  useEffect(() => {
+    setShowGeoreferencing(!!positionProp || !!selectedCoordIdProp);
+    setSelectedCoordId(selectedCoordIdProp);
+    setConnectToMap(!!positionProp || !!selectedCoordIdProp);
+  }, [selectedCoordIdProp, positionProp]);
 
   const handleAddConnection = (connection: Connection) => {
     setConnections([...connections, connection]);
@@ -589,7 +595,9 @@ const DocumentForm = ({
                 text="Save"
                 className="bg-black text-white text-base pt-2 pb-2 pl-4 pr-4"
                 onClick={handleSubmit}
-              />
+              >
+              Save
+              </ButtonRounded>
             </div>
 
             {toast.isShown && (

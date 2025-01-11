@@ -161,7 +161,9 @@ const Step2: React.FC<Step2Props> = ({
                 text="Confirm"
                 className="ml-4 bg-black text-white text-xs pt-2 pb-2 pl-3 pr-3"
                 onClick={handleSaveNewDocType}
-              />
+              >
+                Confirm
+              </ButtonRounded>
             </div>
           )}
         </div>

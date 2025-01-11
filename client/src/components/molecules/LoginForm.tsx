@@ -84,7 +84,9 @@ const LoginForm = (props: any) => {
           variant="filled"
           className="w-full bg-black text-white"
           onClick={handleLogin}
-        />
+        >
+          Log In
+        </ButtonRounded>
       </div>
     </div>
   );

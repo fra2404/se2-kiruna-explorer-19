@@ -181,7 +181,9 @@ const Step1: React.FC<Step1Props> = ({
               text="Confirm"
               className="ml-4 bg-black text-white text-xs pt-2 pb-2 pl-3 pr-3"
               onClick={() => handleSaveNewStakeholder(newOptionLabel)}
-            />
+            >
+              Confirm
+            </ButtonRounded>
           </div>
         )}
       </div>

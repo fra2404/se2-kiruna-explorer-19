@@ -16,37 +16,59 @@ import { DocumentConnectionsList } from '../components/molecules/documentsItems/
 import SidebarContext from '../context/SidebarContext.js';
 import { DocumentIcon } from '../components/molecules/documentsItems/DocumentIcon.js';
 import ReactDOMServer from 'react-dom/server';
-import StakeholderLegend from '../components/molecules/StakeholderLegend.js';
+import Legend2 from '../components/molecules/legend/Legend.js';
+import { UserRoleEnum } from '../utils/interfaces/user.interface.js';
+import { useAuth } from '../context/AuthContext.js';
 
-const LABEL_FONT = { size: 50, color: '#000000' };
-const OFFSET_VIEW = { x: 200, y: 500 };
-const YEAR_SPACING = 500;
-const options = {
-  autoResize: true,
-  layout: {
-    hierarchical: false,
-  },
-  physics: {
-    enabled: false, // Disable physics to prevent nodes from moving
-  },
-  interaction: {
-    dragNodes: true, // Enable dragging nodes (improves the readability)
-    dragView: true, // Enable dragging of the view
-    zoomView: true, // Enable zooming of the view
-    navigationButtons: true, // Enable navigation buttons
-    hover: true,
-  },
+const fetchGraphInfo = async () => {
+  try {
+    const graphBEInfo = await API.getGraphInfo();
+    return graphBEInfo;
+  } catch (error) {
+    console.error('Error fetching graph info:', error);
+    return null;
+  }
 };
-
-const graphBEInfo = await API.getGraphInfo();
-
 const Diagram = () => {
+  const [graphBEInfo, setGraphBEInfo] = useState<{ minYear: number; maxYear: number } | null>(null);
+
+  useEffect(() => {
+    const getGraphInfo = async () => {
+      const data = await fetchGraphInfo();
+      setGraphBEInfo(data);
+    };
+
+    getGraphInfo();
+  }, []);
+
   const { setFeedbackFromError } = useContext(FeedbackContext);
   const headerRef = useRef<HTMLDivElement>(null);
   const legendRef = useRef<HTMLDivElement>(null);
   const { selectedDocument, setSelectedDocument, setSidebarVisible } =
     useContext(SidebarContext);
+  const { isLoggedIn, user } = useAuth();
   const [types, setTypes] = useState<any[]>([]);
+  const [legendOpen, setLegendOpen] = useState(false); 
+
+  const LABEL_FONT = { size: 50, color: '#000000' };
+  const OFFSET_VIEW = { x: 200, y: 500 };
+  const YEAR_SPACING = 500;
+  const options = {
+    autoResize: true,
+    layout: {
+      hierarchical: false,
+    },
+    physics: {
+      enabled: false, // Disable physics to prevent nodes from moving
+    },
+    interaction: {
+      dragNodes: (isLoggedIn && user && (user.role === UserRoleEnum.Uplanner || user.role === UserRoleEnum.Udeveloper)), // Enable dragging nodes (improves the readability)
+      dragView: true, // Enable dragging of the view
+      zoomView: true, // Enable zooming of the view
+      navigationButtons: true, // Enable navigation buttons
+      hover: true,
+    },
+  };
 
   //Needed to show a document's information when hovering on it
   const [documentInfoPopup, setDocumentInfoPopup] = useState<{
@@ -66,13 +88,13 @@ const Diagram = () => {
   const [state, setState] = useState({
     graph: {
       nodes: [] as any[],
-      edges: [] as { from: any; to: any; color: string }[],
+      edges: [] as { from: any; to: any; color: string; id: string }[],
     },
   });
 
   const label_year = [] as any[];
-  const minYear = graphBEInfo?.minYear;
-  const maxYear = graphBEInfo?.maxYear;
+  const minYear = graphBEInfo?.minYear ?? 2000;
+  const maxYear = graphBEInfo?.maxYear ?? 2030;
   const networkRef = useRef<any>(null);
   const gridRef = useRef<HTMLDivElement>(null); // Added for the grid
 
@@ -271,7 +293,6 @@ const Diagram = () => {
         setCoordinates(result);
       })
       .catch((e) => {
-        console.log(e);
         setFeedbackFromError(e);
       });
   }, []);
@@ -377,7 +398,6 @@ const Diagram = () => {
         doc.connections.forEach((connection: any) => {
           // Modify the style of the connections according to their type
           if (connection.type.toUpperCase() === 'DIRECT') {
-            console.log('Direct connection');
             connectionColor = '#007BFF';
           } else if (connection.type.toUpperCase() === 'COLLATERAL') {
             dashesType = [2, 2]; // This is good for collateral connections
@@ -398,8 +418,6 @@ const Diagram = () => {
           else {
             isCurved = false
           }
-
-          console.log(connection)
 
           if(!connections.find((c) => ((c.from == doc.id || c.from == connection.document) && (c.to == doc.id || c.from == connection.document) && c.type == connection.type))) {
             connections.push({
@@ -552,14 +570,14 @@ const Diagram = () => {
         });
         setFirstLoad(false);
       }
-      // Else center based on the current year (only at launch)
+      // Else center based on the maximum year (only at launch)
       else if (firstLoad) {
         network.fit({
-          // Filter only the node that are in the current year. In this way the graph will be centered on the current year at launch.
+          // Filter only the nodes that are in the maximum year. In this way the graph will be centered on the last year at launch.
           nodes: state.graph.nodes
             .filter((node: any) => {
-              const currentYear = new Date().getFullYear();
-              return node.year === currentYear;
+              const maxYear = Math.max(...state.graph.nodes.map((n) => n.year).filter((y) => y != undefined));
+              return node.year === maxYear;
             })
             .map((node: any) => node.id),
           animation: false,
@@ -693,7 +711,7 @@ const Diagram = () => {
       const center_x = computeYearX(draggedNode.year);
       const center_y = computeStyleY(draggedNode);
 
-      if (/^label_/.test(draggedNode.id) || /^1:/.test(draggedNode.id)) {
+      if (draggedNode.id.startsWith('label_') || draggedNode.id.startsWith('1:')) {
         // Regex to filter the labels to avoid moving them
         newposition.x = nodeLastPosition.x;
         newposition.y = nodeLastPosition.y;
@@ -773,23 +791,30 @@ const Diagram = () => {
           position: 'absolute',
           top: `${headerRef.current?.offsetHeight ? headerRef.current?.offsetHeight + 10 : 0}px`,
           left: '10px',
-          zIndex: 10,
+          zIndex: 1,
         }}
         ref={legendRef}
       >
         <Legend />
       </div>
 
-      <div
+
+      <button
+        onClick={() => setLegendOpen(!legendOpen)}
+        className={`bg-black text-white text-base pt-2 pb-2 pl-3 pr-3 rounded-full ${legendOpen ? 'open' : ''}`}
         style={{
-          position: 'absolute',
-          top: `${headerRef.current?.offsetHeight && legendRef.current?.offsetHeight ? headerRef.current?.offsetHeight + legendRef.current?.offsetHeight + 20 : 0}px`,
-          left: '10px',
+          position: 'fixed',
+          bottom: legendOpen ? '31vh' : '10px', //Moves the button above the legend window when it's open
+          left: '50%',
+          transform: 'translateX(-50%)',
           zIndex: 1,
+          transition: 'bottom 0.3s ease-out', //Adds the transition
         }}
       >
-        <StakeholderLegend />
-      </div>
+        {legendOpen ? '↓' : '↑'}
+      </button>
+
+      <Legend2 isOpen={legendOpen} />
 
       {state.graph && (
         <Graph
@@ -833,38 +858,55 @@ const Diagram = () => {
                 handleNodeClick(selectedNode);
               }
             },
-
+            
             click: (event: any) => {
-              console.log(event)
-              if(event.nodes.length == 0) {
-                const { edges } = event
-                const selectedEdge: {from: any, to: any, color: string, id: string, document: string, type: string} | undefined = state.graph.edges.find((e) => e.id == edges[0]) as {from: any, to: any, color: string, id: string, document: string} | undefined
-                if (selectedEdge) {
-                  const updatedEdges = state.graph.edges.map((edge: any) =>
-                    edge.id === edges[0]
-                      ? { ...edge, smooth: { enabled: !edge.smooth?.enabled, type: 'curvedCW', roundness: 0.2 } }
-                      : edge
-                  );
-                  setState({graph: {nodes: state.graph.nodes, edges: updatedEdges }});
-
-                  const isEdgeCurved = localStorage.getItem(`edge-${selectedEdge.document}`)
-                  if(isEdgeCurved) {
-                    const isCurved = JSON.parse(isEdgeCurved).isCurved;
-                    localStorage.setItem(
-                      `edge-${selectedEdge.document}`,
-                      JSON.stringify({ isCurved: !isCurved }),
+              if(isLoggedIn && user && (user.role === UserRoleEnum.Uplanner || user.role === UserRoleEnum.Udeveloper)) {
+                if (event.nodes.length == 0) {
+                  const { edges } = event;
+                  const selectedEdge = state.graph.edges.find(
+                    (e) => e.id == edges[0]
+                  ) as { from: any; to: any; color: string; id: string; document: string; type: string } | undefined;
+                  if (selectedEdge) {
+                    const updatedEdges = state.graph.edges.map((edge: any) =>
+                      edge.id === edges[0]
+                        ? { ...edge, smooth: { enabled: !edge.smooth?.enabled, type: 'curvedCW', roundness: 0.2 } }
+                        : edge
                     );
-                  }
-                  else {
-                    localStorage.setItem(
-                      `edge-${selectedEdge.document}`,
-                      JSON.stringify({ isCurved: true }),
-                    );
+                    setState({ graph: { nodes: state.graph.nodes, edges: updatedEdges } });
+              
+                    const isEdgeCurved = localStorage.getItem(`edge-${selectedEdge.document}`);
+                    if (isEdgeCurved) {
+                      const isCurved = JSON.parse(isEdgeCurved).isCurved;
+                      localStorage.setItem(
+                        `edge-${selectedEdge.document}`,
+                        JSON.stringify({ isCurved: !isCurved })
+                      );
+                    } else {
+                      localStorage.setItem(
+                        `edge-${selectedEdge.document}`,
+                        JSON.stringify({ isCurved: true })
+                      );
+                      setState({ graph: { nodes: state.graph.nodes, edges: updatedEdges } });
+                
+                      const isEdgeCurved = localStorage.getItem(`edge-${selectedEdge.document}`);
+                      if (isEdgeCurved) {
+                        const isCurved = JSON.parse(isEdgeCurved).isCurved;
+                        localStorage.setItem(
+                          `edge-${selectedEdge.document}`,
+                          JSON.stringify({ isCurved: !isCurved })
+                        );
+                      } else {
+                        localStorage.setItem(
+                          `edge-${selectedEdge.document}`,
+                          JSON.stringify({ isCurved: true })
+                        );
+                      }
+                    }
                   }
                 }
               }
             },
-
+            
             hoverNode: function (event: {
               node: number;
               pointer: { DOM: { x: number; y: number } };

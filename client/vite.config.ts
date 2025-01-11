@@ -1,11 +1,18 @@
-import { defineConfig } from 'vite'
-import react from '@vitejs/plugin-react'
+import { defineConfig } from 'vite';
+import react from '@vitejs/plugin-react';
 
-// https://vite.dev/config/
 export default defineConfig({
   plugins: [react()],
   server: {
     port: 5173,
     host: '0.0.0.0',
-  }
-})
+    cors: {
+      origin: 'https://backend-kiruna.falbano.it/api',
+      credentials: true,
+    },
+    middlewareMode: false, // Usato solo per server locale
+  },
+  build: {
+    outDir: 'dist', // Specifica la directory di output
+  },
+});

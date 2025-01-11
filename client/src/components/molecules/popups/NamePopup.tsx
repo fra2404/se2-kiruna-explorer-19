@@ -57,7 +57,9 @@ const NamePopup: React.FC<NamePopupProps> = ({
                   popupRef.current?.remove();
                 }
               }}
-            />
+            >
+              Confirm
+            </ButtonRounded>
             <ButtonRounded
               variant="outlined"
               text="Cancel"
@@ -68,7 +70,8 @@ const NamePopup: React.FC<NamePopupProps> = ({
                 setCoordNamePopupOpen(false);
                 popupRef.current?.remove();
               }}
-            />
+            >Cancel
+            </ButtonRounded>
           </div>
         </>
         :
@@ -87,7 +90,9 @@ const NamePopup: React.FC<NamePopupProps> = ({
                 setCoordNamePopupOpen(false);
                 popupRef.current?.remove();
             }}
-          />
+          >
+            Cancel
+            </ButtonRounded>
         </>
       }
     </Popup>

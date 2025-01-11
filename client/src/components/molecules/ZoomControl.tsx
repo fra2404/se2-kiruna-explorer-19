@@ -31,13 +31,17 @@ function CustomZoomControl() {
           text="+"
           className="bg-black text-white text-lg w-12 h-12 rounded-full flex items-center justify-center mb-2"
           onClick={handleZoomIn}
-        />
+        >
+          +
+          </ButtonRounded>
         <ButtonRounded
           variant="filled"
           text="-"
           className="bg-black text-white text-lg w-12 h-12 rounded-full flex items-center justify-center"
           onClick={handleZoomOut}
-        />
+        >
+          -
+        </ButtonRounded>
       </div>
       <MapSwitch />
     </div>

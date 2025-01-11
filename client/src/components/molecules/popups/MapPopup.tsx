@@ -38,7 +38,7 @@ export const MapPopup: React.FC<MapPopupProps> = ({
 
       <hr />
 
-      {(isLoggedIn && user && user.role === UserRoleEnum.Uplanner) && (
+      {(isLoggedIn && user && (user.role === UserRoleEnum.Uplanner || user.role === UserRoleEnum.Udeveloper)) && (
         <>
           <span className="text-base">{message}</span>
           <br />
@@ -48,13 +48,17 @@ export const MapPopup: React.FC<MapPopupProps> = ({
               text="Yes"
               className="bg-black text-white text-base pt-2 pb-2 pl-3 pr-3"
               onClick={onYesClick}
-            />
+            >
+            Yes
+            </ButtonRounded>
             <ButtonRounded
               variant="outlined"
               text="Cancel"
               className="text-base pt-2 pb-2 pl-3 pr-3"
               onClick={onCancelClick}
-            />
+            >
+              Cancel
+              </ButtonRounded>
           </div>
         </>
       )}

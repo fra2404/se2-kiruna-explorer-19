@@ -31,11 +31,17 @@ export const Sidebar: React.FC<SidebarProps> = ({
   return (
     <>
       <ButtonRounded 
-        text={<FaFolder />}
+        text={
+          <div className="flex items-center text-sm">
+            <FaFolder /> &ensp; All Documents
+          </div>
+        }
         variant="filled"
-        className="bg-black px-3 text-base"
+        className="bg-black px-4"
         onClick={() => setSidebarVisible(true)}
-      />
+      >
+      {<FaFolder />}
+      </ButtonRounded>
       <nav
         style={{
           background: '#ffffff',
@@ -46,7 +52,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
           right: sidebarVisible ? "0" : "-100%",
           transition: '350ms',
           maxHeight: '100vh',
-          overflow: 'auto'
+          overflow: 'auto',
         }}
         className='border-l xl:w-2/5 lg:w-4/6 md:w-5/6 w-full'
       >
