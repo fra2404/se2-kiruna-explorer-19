@@ -8,7 +8,6 @@ import 'aos/dist/aos.css';
 import enFlag from '../assets/en-flag.png';
 import itFlag from '../assets/it-flag.png';
 import svFlag from '../assets/sv-flag.png';
-import Joyride, { CallBackProps, STATUS } from 'react-joyride';
 import { LoginModal } from '../components/organisms/modals/LoginModal';
 import { useAuth } from '../context/AuthContext';
 import DropdownModal from '../components/molecules/DropdownModal';
@@ -71,7 +70,7 @@ const texts = {
       { target: '.bottom-0.left-0.right-0', content: 'Klicka på knapparna för att se kartan eller diagrammet.' },
     ],
     stats: [
-      { name: 'Budget', value: 1400000000, prefix: '€', suffix: '' },
+      { name: 'Budget ', value: 1400000000, prefix: '€', suffix: '' },  //DO NOT REMOVE the whitespace after "Budget ". It is a workaround: this way it is different from the one in English, and triggers an update which causes the animation
       { name: 'Påverkade personer', value: 23000, suffix: '' },
       { name: 'Historiska byggnader flyttade', value: 21, suffix: '' },
       { name: 'Nya Kiruna är klar!', value: 2033, isYear: true, suffix: '' },
@@ -86,7 +85,6 @@ const LandingPage = () => {
   const [language, setLanguage] = useState<Language>('en');
   const imgRef = useRef<HTMLImageElement>(null);
   const requestRef = useRef<number>();
-  const [runTour, setRunTour] = useState(false);
   const { isLoggedIn, user, logout } = useAuth();
 
   const [loginModalOpen, setLoginModalOpen] = useState(false);
@@ -142,57 +140,9 @@ const LandingPage = () => {
 
   const text = texts[language];
 
-  const handleJoyrideCallback = (data: CallBackProps) => {
-    const { status } = data;
-    const finishedStatuses: string[] = [STATUS.FINISHED, STATUS.SKIPPED];
-
-    if (finishedStatuses.includes(status)) {
-      setRunTour(false);
-    }
-  };
-
-  const startTour = () => {
-    setRunTour(true);
-  };
-
   return (
     <>
       <div className="relative isolate overflow-hidden bg-gray-900 py-24 sm:py-32 w-full h-screen cursor-default">
-        <Joyride
-              steps={text.steps}
-              continuous
-              scrollToFirstStep
-              showProgress
-              showSkipButton
-              run={runTour}
-              callback={handleJoyrideCallback}
-              styles={{
-                options: {
-                  zIndex: 10000,
-                  backgroundColor: '#333',
-                  width: '300px',
-                  arrowColor: '#333',
-                  overlayColor: 'rgba(0, 0, 0, 0.5)',
-                  primaryColor: '#ff4694',
-                  textColor: '#fff',
-                },
-                tooltipContainer: {
-                  marginBottom: '4rem',
-                },
-                buttonClose: {
-                  marginBottom: '4rem',
-                  color: '#fff',
-                },
-                buttonNext: {
-                  backgroundColor: '#ff4694',
-                  color: '#fff',
-                },
-                buttonBack: {
-                  color: '#fff',
-                },
-                
-              }}
-            />
         <img
           ref={imgRef}
           alt="Kiruna"
@@ -274,7 +224,7 @@ const LandingPage = () => {
         </div>
 
         <div className="mx-auto max-w-7xl px-6 lg:px-8">
-          <div className="mx-auto max-w-2xl lg:mx-0" data-aos="fade-up">
+          <div className="mx-auto max-w-2xl lg:mx-0 animate-fadeUp">
             <h2 className="text-5xl font-semibold tracking-tight text-white sm:text-7xl">
               {text.title}
             </h2>
@@ -290,7 +240,7 @@ const LandingPage = () => {
             </p>
           </div>
 
-          <div className="mx-auto mt-10 max-w-2xl lg:mx-0 lg:max-w-none" data-aos="fade-up">
+          <div className="mx-auto mt-10 max-w-2xl lg:mx-0 lg:max-w-none animate-fadeUp">
             <dl className="mt-16 grid grid-cols-1 gap-8 sm:mt-20 sm:grid-cols-2 lg:grid-cols-4">
               {text.stats.map((stat) => (
                 <div
@@ -338,16 +288,6 @@ const LandingPage = () => {
             onClick={() => navigate('/diagram')}
           >
             {text.seeDiagram}
-          </ButtonRounded>
-        </div>
-
-        <div className="absolute bottom-4 left-4">
-          <ButtonRounded
-            className="text-lg bg-black cursor-pointer"
-            text="Inizia il tour"
-            onClick={startTour}
-          >
-            Inizia il tour
           </ButtonRounded>
         </div>
       </div>

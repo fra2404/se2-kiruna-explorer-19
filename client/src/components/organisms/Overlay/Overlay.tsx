@@ -80,7 +80,7 @@ const Overlay: React.FC<OverlayProps> = ({
         className={sidebarVisible ? 'floating-button-right mr-button' : 'floating-button-right'}
       />
 
-      {isLoggedIn && user && user.role === UserRoleEnum.Uplanner && (
+      {isLoggedIn && user && (user.role === UserRoleEnum.Uplanner || user.role === UserRoleEnum.Udeveloper) && (
         <FloatingButton
           text={
             isHoveredNewDocument ? (

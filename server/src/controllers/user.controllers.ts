@@ -204,7 +204,7 @@ export const login = async (
       secure: true,
       sameSite: 'none',
       domain: '.falbano.it',
-      maxAge: 3600000, // 1 hour
+      maxAge: 64800000, // 18 hours
       path: '/',
     });
     res.json({ token });
