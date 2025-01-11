@@ -1,11 +1,3 @@
-.legend-button {
-  animation: bounce 2s infinite;
-}
-
-.legend-button.open {
-  animation: none;
-}
-
 @keyframes bounce {
 
   0%,

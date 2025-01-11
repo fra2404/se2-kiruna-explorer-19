@@ -206,8 +206,14 @@ const DocumentForm = ({
   const [showFiles, setShowFiles] = useState(!!selectedDocument?.media?.length);
   const [showConnections, setShowConnections] = useState(!!connections.length);
   const [showGeoreferencing, setShowGeoreferencing] = useState(
-    !!positionProp || !!selectedCoordIdProp,
+    !!positionProp || !!selectedCoordIdProp
   );
+
+  useEffect(() => {
+    setShowGeoreferencing(!!positionProp || !!selectedCoordIdProp);
+    setSelectedCoordId(selectedCoordIdProp);
+    setConnectToMap(!!positionProp || !!selectedCoordIdProp);
+  }, [selectedCoordIdProp, positionProp]);
 
   const handleAddConnection = (connection: Connection) => {
     setConnections([...connections, connection]);

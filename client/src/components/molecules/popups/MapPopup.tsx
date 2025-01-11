@@ -38,7 +38,7 @@ export const MapPopup: React.FC<MapPopupProps> = ({
 
       <hr />
 
-      {(isLoggedIn && user && user.role === UserRoleEnum.Uplanner) && (
+      {(isLoggedIn && user && (user.role === UserRoleEnum.Uplanner || user.role === UserRoleEnum.Udeveloper)) && (
         <>
           <span className="text-base">{message}</span>
           <br />

@@ -34,7 +34,7 @@ const Searchbar : React.FC<SearchbarProps> = ({
     }
 
     return (
-        <div className='my-4 w-full flex items-center justify-between gap-x-1'>
+        <div className='my-4 w-full flex items-center justify-between gap-x-1 px-2'>
             <input value={searchQuery} onChange={handleInputChange} type="search" placeholder="Search for documents..."
             className="outline-none px-3 py-2 w-[90%] border rounded bg-white" />
             <button onClick={() => {handleSearch(filters, searchQuery, setFilteredDocuments, showToast)}}
